@@ -4,6 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hub Principal Seller Pro</title>
+
+<script>
+  const logado = sessionStorage.getItem("logado");
+  const tipoUsuario = sessionStorage.getItem("tipoUsuario");
+
+  if (logado !== "sim" || tipoUsuario !== "suporte") {
+    window.location.href = "index.html";
+  }
+</script>
+
+<style>
+  body {
+    display: none;
+  }
+</style>
+
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    document.body.style.display = "block";
+  });
+</script>
+  
   <style>
     :root {
       --laranja: #ff7a00;
