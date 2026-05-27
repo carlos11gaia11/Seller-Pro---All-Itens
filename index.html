@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hub Principal Seller Pro</title>
+  <style>
+    :root {
+      --laranja: #ff7a00;
+      --laranja-claro: #ff9f3f;
+      --preto: #0f0f0f;
+      --cinza-escuro: #1b1b1b;
+      --cinza: #2a2a2a;
+      --branco: #ffffff;
+      --texto-suave: #d7d7d7;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        linear-gradient(rgba(15, 15, 15, 0.92), rgba(15, 15, 15, 0.94)),
+        url("doc/seller pro.png") center center / 420px auto no-repeat fixed;
+      color: var(--branco);
+      padding: 32px 18px;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 34px;
+      padding: 32px 20px;
+      background: rgba(255, 122, 0, 0.08);
+      border: 1px solid rgba(255, 122, 0, 0.35);
+      border-radius: 24px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(6px);
+    }
+
+    .logo-marca {
+      width: 110px;
+      max-width: 35%;
+      margin-bottom: 16px;
+      opacity: 0.92;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 4rem);
+      color: var(--laranja);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .subtitulo {
+      color: var(--texto-suave);
+      font-size: 1.08rem;
+      line-height: 1.6;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 22px;
+      margin-bottom: 22px;
+    }
+
+    .card {
+      background: rgba(27, 27, 27, 0.94);
+      border: 1px solid rgba(255, 122, 0, 0.22);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 122, 0, 0.65);
+      box-shadow: 0 18px 42px rgba(255, 122, 0, 0.12);
+    }
+
+    .card h2 {
+      color: var(--laranja);
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card p {
+      color: var(--texto-suave);
+      font-size: 0.96rem;
+      line-height: 1.55;
+      margin-bottom: 18px;
+    }
+
+    .botoes {
+      display: grid;
+      gap: 10px;
+    }
+
+    .botao {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--branco);
+      background: linear-gradient(135deg, var(--laranja), #e86100);
+      padding: 13px 15px;
+      border-radius: 14px;
+      font-weight: 700;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .botao:hover {
+      transform: scale(1.015);
+      filter: brightness(1.08);
+    }
+
+    .botao.secundario {
+      background: #101010;
+      border: 1px solid rgba(255, 122, 0, 0.45);
+      color: var(--laranja-claro);
+    }
+
+    .botao.download {
+      background: linear-gradient(135deg, #2a2a2a, #111111);
+      border: 1px solid rgba(255, 122, 0, 0.55);
+    }
+
+    .seta {
+      opacity: 0.85;
+      font-size: 1.1rem;
+    }
+
+    .certificados {
+      margin-top: 22px;
+      background: linear-gradient(135deg, rgba(255, 122, 0, 0.14), rgba(27, 27, 27, 0.96));
+      border: 1px solid rgba(255, 122, 0, 0.38);
+    }
+
+    .certificados ul {
+      margin-top: 12px;
+      padding-left: 20px;
+      color: var(--texto-suave);
+      line-height: 1.7;
+    }
+
+    .destaque {
+      color: var(--laranja-claro);
+      font-weight: 700;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 34px;
+      color: #9f9f9f;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 18px 12px;
+        background-size: 280px auto;
+      }
+
+      header {
+        padding: 24px 16px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <img class="logo-marca" src="doc/seller pro.png" alt="Logo Seller Pro" />
+      <h1>Hub Principal Seller Pro</h1>
+      <p class="subtitulo">
+        Central interna de acesso rápido para o suporte Seller Pro. Aqui ficam os principais links, planilhas, mapas mentais, treinamentos, documentos e materiais de consulta usados no atendimento.
+      </p>
+    </header>
+
+    <section class="grid">
+      <div class="card">
+        <h2>📊 Planilhas Online</h2>
+        <p>Acesso direto às planilhas principais utilizadas no acompanhamento dos sellers, lançamentos e comissões.</p>
+        <div class="botoes">
+          <a class="botao" href="https://docs.google.com/spreadsheets/d/1WtQe9W1QOZKp2oLLxd8SjZdSfhGZn59ui-tarTujK48/edit?pli=1&gid=684575404#gid=684575404" target="_blank" rel="noopener">Alunos ativos <span class="seta">↗</span></a>
+          <a class="botao" href="https://docs.google.com/spreadsheets/d/1vaHiIlOC7W_slkoCDd7rjUl-TkQWVe5Tr-M1eTzzY5I/edit?gid=272235016#gid=272235016" target="_blank" rel="noopener">Comissões Loja Pronta <span class="seta">↗</span></a>
+          <a class="botao" href="https://docs.google.com/spreadsheets/d/1xXvoZ1hHPz77E0NHXwV6hxXjAqBKUPYDgnU-P98E1NQ/edit?gid=897940405#gid=897940405" target="_blank" rel="noopener">Planilha de lançamentos <span class="seta">↗</span></a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🧭 Mapas Mentais</h2>
+        <p>Materiais visuais para guiar briefing, onboarding e entendimento das etapas do processo.</p>
+        <div class="botoes">
+          <a class="botao" href="https://accounts.meister.co/login/google?locale=pt&product=mindmeister&r=140672&return_to=https%3A%2F%2Fwww.mindmeister.com%2Fapp%2Fmap%2F3789495295" target="_blank" rel="noopener">Mapa mental de briefing <span class="seta">↗</span></a>
+          <a class="botao" href="https://www.mindmeister.com/app/map/3817061493?t=E1i5moM1Wj" target="_blank" rel="noopener">Mapa mental Onboard <span class="seta">↗</span></a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🚚 Operação e Coleta</h2>
+        <p>Links importantes para consulta de pontos de envio e organização das coletas dos produtos.</p>
+        <div class="botoes">
+          <a class="botao" href="https://venda.amazon.com.br/pontos-de-envio" target="_blank" rel="noopener">Pontos de coleta DBA <span class="seta">↗</span></a>
+          <a class="botao" href="https://carlos11gaia11.github.io/coleta_produtos-sellerpro/" target="_blank" rel="noopener">Aplicativo de organização de coleta <span class="seta">↗</span></a>
+        <a class="botao" href="doc/planilhaFBA.xmls" target="_blank" rel="noopener">Planilha de cobertura FBA<span class="seta">↗</span></a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🎓 Treinamento e Loja Pronta</h2>
+        <p>Acessos relacionados aos treinamentos Seller Pro e aos produtos utilizados no processo de Loja Pronta.</p>
+        <div class="botoes">
+          <a class="botao" href="https://sellerpro.cademi.com.br/auth/login?redirect=https%3A%2F%2Fsellerpro.cademi.com.br%2Farea%2Fvitrine" target="_blank" rel="noopener">Treinamento Seller Pro <span class="seta">↗</span></a>
+          <a class="botao" href="https://hermix.streamlit.app" target="_blank" rel="noopener">Produtos de Loja Pronta Hermix <span class="seta">↗</span></a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📁 Arquivos para Baixar</h2>
+        <p>Arquivos locais salvos na pasta <span class="destaque">doc</span>. Mantenha os nomes dos arquivos iguais aos links abaixo para o download funcionar corretamente.</p>
+        <div class="botoes">
+          <a class="botao download" href="doc/hazmat baterias.xlsx" download>Baixar planilha de HAZMAT baterias <span class="seta">↓</span></a>
+          <a class="botao download" href="doc/hazmat quimicos.xlsx" download>Baixar planilha de HAZMAT químicos <span class="seta">↓</span></a>
+          <a class="botao download" href="doc/carta de autorizacao.docx" download>Baixar carta de autorização <span class="seta">↓</span></a>
+          <a class="botao download" href="doc/carta de revenda de marca.docx" download>Baixar carta de revenda de marca <span class="seta">↓</span></a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🧾 Documentos e Orientações</h2>
+        <p>Espaço para organizar os documentos usados pelo suporte em processos de validação, marca, autorização e conformidade.</p>
+        <div class="botoes">
+          <a class="botao secundario" href="doc/" target="_blank" rel="noopener">Abrir pasta de documentos <span class="seta">↗</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card certificados">
+      <h2>✅ Quando solicitar certificados: ANVISA, INMETRO e ANATEL</h2>
+      <p>
+        Alguns produtos podem exigir certificados ou comprovações regulatórias antes de serem vendidos ou aprovados na Amazon. A necessidade varia conforme o tipo de produto, categoria, composição, uso e risco associado.
+      </p>
+      <ul>
+        <li><span class="destaque">ANVISA:</span> normalmente relacionada a produtos ligados à saúde, higiene, cosméticos, saneantes, alimentos, suplementos, produtos médicos e itens que tenham contato direto com o corpo ou consumo.</li>
+        <li><span class="destaque">INMETRO:</span> pode ser solicitado para produtos que possuem normas obrigatórias de segurança, como brinquedos, itens infantis, equipamentos elétricos, capacetes, escadas, pneus e outros produtos regulamentados.</li>
+        <li><span class="destaque">ANATEL:</span> geralmente exigida para produtos com comunicação sem fio, Bluetooth, Wi-Fi, rádio frequência, telecomunicação, celulares, roteadores, fones sem fio, smartwatches e dispositivos conectados.</li>
+        <li><span class="destaque">Atenção:</span> quando a Amazon solicitar documentação, o suporte deve orientar o seller a verificar se o produto realmente se enquadra na exigência e reunir documentos oficiais, válidos e compatíveis com o produto anunciado.</li>
+      </ul>
+    </section>
+
+<section class="card certificados">
+  <h2>✅ Qual a diferença entre DBA e FBA?</h2>
+  <p>
+    DBA e FBA são modelos logísticos da Amazon, mas funcionam de formas diferentes. No DBA, o estoque fica com o vendedor e a Amazon faz a entrega. No FBA, o estoque fica armazenado na Amazon, que cuida da separação, embalagem, envio e parte do atendimento ao cliente.
+  </p>
+
+  <ul>
+    <li>
+      <span class="destaque">DBA — Delivery by Amazon:</span>
+      o vendedor mantém o produto em seu próprio estoque, separa e embala o pedido. Depois, a Amazon coleta ou o vendedor posta em um ponto parceiro para que a Amazon realize a entrega ao cliente.
+    </li>
+
+    <li>
+      <span class="destaque">Vantagens do DBA:</span>
+      menor investimento inicial, mais controle do estoque e bom modelo para quem está começando ou testando produtos.
+    </li>
+
+    <li>
+      <span class="destaque">Pontos de atenção no DBA:</span>
+      o vendedor precisa cuidar da separação, embalagem e despacho dos pedidos, o que gera mais trabalho operacional no dia a dia.
+    </li>
+
+    <li>
+      <span class="destaque">FBA — Fulfillment by Amazon:</span>
+      o vendedor envia o estoque para o centro de distribuição da Amazon. Quando o produto vende, a Amazon armazena, separa, embala, envia e cuida de parte das devoluções.
+    </li>
+
+    <li>
+      <span class="destaque">Vantagens do FBA:</span>
+      maior escala, entrega Prime, mais chances de ganhar Buy Box, operação mais automatizada e menos trabalho diário para o vendedor.
+    </li>
+
+    <li>
+      <span class="destaque">Pontos de atenção no FBA:</span>
+      exige investimento em estoque, planejamento logístico e pode gerar custos de armazenagem ou estoque parado.
+    </li>
+
+    <li>
+      <span class="destaque">Método Seller Pro:</span>
+      muitos sellers começam no DBA para validar a demanda e, depois, migram os produtos vencedores para o FBA para ganhar escala, melhorar a conversão e automatizar a operação.
+    </li>
+  </ul>
+</section>
+
+    <footer>
+      Criado pelo Carlos 
+    </footer>
+  </main>
+</body>
+</html>
