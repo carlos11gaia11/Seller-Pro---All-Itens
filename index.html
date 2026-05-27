@@ -139,24 +139,27 @@
   </div>
 
   <script>
-    function fazerLogin(event) {
-      event.preventDefault();
+  function fazerLogin(event) {
+    event.preventDefault();
 
-      const usuario = document.getElementById("usuario").value.trim();
-      const senha = document.getElementById("senha").value.trim();
-      const mensagemErro = document.getElementById("mensagemErro");
+    const usuario = document.getElementById("usuario").value.trim();
+    const senha = document.getElementById("senha").value.trim();
+    const mensagemErro = document.getElementById("mensagemErro");
 
-      if (usuario.toLowerCase() === "suporte" && senha === "suporte99@") {
-        window.location.href = "menu.html";
-      } 
-      else if (usuario.toUpperCase() === "MENTORIA" && senha === "99@mentoria") {
-        window.location.href = "menu_mentoria.html";
-      } 
-      else {
-        mensagemErro.style.display = "block";
-      }
+    if (usuario.toLowerCase() === "suporte" && senha === "suporte99@") {
+      sessionStorage.setItem("logado", "sim");
+      sessionStorage.setItem("tipoUsuario", "suporte");
+      window.location.href = "menu.html";
+    } 
+    else if (usuario.toUpperCase() === "MENTORIA" && senha === "99@mentoria") {
+      sessionStorage.setItem("logado", "sim");
+      sessionStorage.setItem("tipoUsuario", "mentoria");
+      window.location.href = "menu_mentoria.html";
+    } 
+    else {
+      mensagemErro.style.display = "block";
     }
-  </script>
-
+  }
+</script>
 </body>
 </html>
