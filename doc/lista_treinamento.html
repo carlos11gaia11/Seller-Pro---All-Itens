@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel de Sellers | Seller Pro</title>
+
+  <!-- CSS Framework: Tailwind + DaisyUI -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
+          boxShadow: {
+            glow: '0 20px 60px rgba(249, 115, 22, .20)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    .glass { backdrop-filter: blur(14px); background: rgba(255,255,255,.82); }
+    .support-dot { width: 8px; height: 8px; border-radius: 999px; display: inline-block; flex: 0 0 auto; }
+    .table-card-header { position: sticky; top: 0; z-index: 40; background: rgba(255,255,255,.96); backdrop-filter: blur(10px); }
+    .table-scroll { max-height: calc(100vh - 230px); overflow-y: auto; overflow-x: hidden; }
+    .table-sticky thead th { position: sticky; top: 0; z-index: 50; background: #18181b !important; color: #fff !important; box-shadow: 0 1px 0 rgba(255,255,255,.12), 0 6px 14px rgba(24,24,27,.12); }
+    .sort-btn { width: 100%; display: inline-flex; align-items: center; gap: 4px; justify-content: flex-start; font-size: 11px; font-weight: 800; letter-spacing: .02em; text-transform: uppercase; }
+    .sort-btn:hover { color: #fb923c; }
+    .sort-icon { opacity: .65; font-size: 10px; min-width: 10px; }
+    th.text-right .sort-btn { justify-content: flex-end; }
+    .compact-table { width: 100%; table-layout: fixed; font-size: 12px; }
+    .compact-table th, .compact-table td { padding: .42rem .45rem !important; vertical-align: middle; }
+    .cell-truncate { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+    .compact-table .badge { min-height: 1.25rem; height: 1.25rem; padding-left: .45rem; padding-right: .45rem; font-size: 10px; }
+    .compact-actions { display: flex; justify-content: flex-end; gap: .25rem; flex-wrap: nowrap; }
+    .compact-actions .btn { min-height: 1.55rem; height: 1.55rem; padding-left: .45rem; padding-right: .45rem; font-size: 10px; }
+    .left-panel { position: sticky; top: 1rem; align-self: start; max-height: calc(100vh - 2rem); overflow: auto; }
+    .mini-stat { padding: .85rem; }
+    .mini-stat .stat-title { font-size: .72rem; }
+    .mini-stat .stat-value { font-size: 1.75rem; line-height: 1; }
+    .support-card { padding: .72rem .8rem; min-width: 0; }
+    @media (max-width: 1279px) { .left-panel { position: static; max-height: none; } }
+    @media (max-width: 1024px) {
+      main { padding-left: .5rem !important; padding-right: .5rem !important; }
+      .compact-table { font-size: 11px; }
+      .compact-table th, .compact-table td { padding: .35rem .32rem !important; }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-orange-50 via-white to-zinc-100 font-sans text-zinc-800">
+  <div class="fixed inset-0 -z-10 overflow-hidden">
+    <div class="absolute -top-28 -left-24 w-96 h-96 rounded-full bg-orange-300/30 blur-3xl"></div>
+    <div class="absolute top-24 right-0 w-96 h-96 rounded-full bg-zinc-900/10 blur-3xl"></div>
+  </div>
+
+  <main class="max-w-[1800px] mx-auto px-3 sm:px-4 lg:px-6 py-5 lg:py-8">
+    <!-- Header -->
+    <section class="glass border border-white rounded-3xl shadow-glow p-5 lg:p-7 mb-6">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 text-orange-700 text-sm font-semibold mb-3">
+            <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+            Atualização em tempo real via Supabase
+          </div>
+          <h1 class="text-3xl lg:text-5xl font-extrabold tracking-tight text-zinc-950">Painel de Sellers</h1>
+          <p class="text-zinc-500 mt-2 max-w-2xl">Controle de alunos, suportes, validade anual, status e notificações de sellers expirados.</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button onclick="openSellerModal()" class="btn bg-orange-500 hover:bg-orange-600 text-white border-0 rounded-2xl px-6">
+            + Adicionar Seller
+          </button>
+          <a id="lojasProntasBtn" href="#" target="_blank" class="btn bg-zinc-950 hover:bg-zinc-800 text-white border-0 rounded-2xl px-6">
+            Ir para Lojas Prontas
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Expired Alert -->
+    <section id="expiredAlert" class="hidden mb-6 rounded-3xl border border-red-200 bg-red-50 p-4 lg:p-5">
+      <div class="flex flex-col lg:flex-row lg:items-start gap-3">
+        <div class="text-2xl">⚠️</div>
+        <div class="flex-1">
+          <h2 class="font-bold text-red-700">Sellers expirados encontrados</h2>
+          <p class="text-red-600 text-sm mt-1">Existem sellers com validade vencida. Eles foram marcados automaticamente como expirados.</p>
+          <div id="expiredList" class="mt-3 flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Counters on top -->
+    <section class="bg-white border border-zinc-100 shadow rounded-3xl p-4 lg:p-5 mb-5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
+        <div>
+          <h2 class="text-xl font-bold text-zinc-950">Contagem de Sellers</h2>
+          <p class="text-sm text-zinc-500">Contagem geral carregada do Supabase, com suporte normalizado automaticamente.</p>
+        </div>
+        <span class="badge badge-ghost">geral</span>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <div class="stats shadow-sm rounded-2xl bg-zinc-50 border border-zinc-100">
+          <div class="stat mini-stat"><div class="stat-title">Total</div><div id="totalCount" class="stat-value text-zinc-950">0</div></div>
+        </div>
+        <div class="stats shadow-sm rounded-2xl bg-green-50 border border-green-100">
+          <div class="stat mini-stat"><div class="stat-title">Ativos</div><div id="activeCount" class="stat-value text-green-600">0</div></div>
+        </div>
+        <div class="stats shadow-sm rounded-2xl bg-red-50 border border-red-100">
+          <div class="stat mini-stat"><div class="stat-title">Expirados</div><div id="expiredCount" class="stat-value text-red-500">0</div></div>
+        </div>
+        <div class="stats shadow-sm rounded-2xl bg-zinc-100 border border-zinc-200">
+          <div class="stat mini-stat"><div class="stat-title">Cancelados</div><div id="canceledCount" class="stat-value text-zinc-500">0</div></div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between gap-3 mb-3">
+        <h3 class="text-base font-bold text-zinc-950">Por suporte</h3>
+        <span class="badge badge-ghost">ativos · expirados · cancelados</span>
+      </div>
+      <div id="supportCounters" class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-2"></div>
+    </section>
+
+    <!-- Filters -->
+    <section class="bg-white border border-zinc-100 shadow rounded-3xl p-5 mb-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+        <label class="input input-bordered rounded-2xl flex items-center gap-2 lg:col-span-2">
+          🔎
+          <input id="searchInput" type="text" class="grow" placeholder="Buscar por nome, e-mail, MCID ou telefone" oninput="applyFilters()" />
+        </label>
+
+        <select id="filterSupport" class="select select-bordered rounded-2xl" onchange="applyFilters()">
+          <option value="">Todos os suportes</option>
+        </select>
+
+        <select id="filterStatus" class="select select-bordered rounded-2xl" onchange="applyFilters()">
+          <option value="">Todos os status</option>
+          <option value="Ativou">Ativou</option>
+          <option value="Cancelado">Cancelado</option>
+        </select>
+
+        <select id="filterSituacao" class="select select-bordered rounded-2xl" onchange="applyFilters()">
+          <option value="">Todas as situações</option>
+          <option value="Ativo">Ativo</option>
+          <option value="Expirado">Expirado</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Table -->
+    <section class="bg-white border border-zinc-100 shadow rounded-3xl overflow-hidden">
+      <div class="table-card-header p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-zinc-100">
+        <div>
+          <h2 class="text-xl font-bold text-zinc-950">Tabela de Sellers</h2>
+          <p class="text-sm text-zinc-500">Validade calculada automaticamente: data de início + 1 ano.</p><p id="loadInfo" class="text-xs text-zinc-400 mt-1">Carregando dados...</p>
+        </div>
+        <button onclick="refreshSellers()" class="btn btn-sm rounded-xl">Atualizar agora</button>
+      </div>
+
+      <div class="table-scroll table-sticky">
+        <table class="table table-zebra compact-table">
+          <thead class="bg-zinc-950 text-white">
+            <tr>
+              <th style="width:9%"><button class="sort-btn" onclick="setSort('mcid')">MCID <span class="sort-icon" data-sort-icon="mcid">↕</span></button></th>
+              <th style="width:7%"><button class="sort-btn" onclick="setSort('status')">Status <span class="sort-icon" data-sort-icon="status">↕</span></button></th>
+              <th style="width:17%"><button class="sort-btn" onclick="setSort('nome')">Nome <span class="sort-icon" data-sort-icon="nome">↕</span></button></th>
+              <th style="width:18%"><button class="sort-btn" onclick="setSort('email')">E-mail <span class="sort-icon" data-sort-icon="email">↕</span></button></th>
+              <th style="width:10%"><button class="sort-btn" onclick="setSort('telefone')">Telefone <span class="sort-icon" data-sort-icon="telefone">↕</span></button></th>
+              <th style="width:9%"><button class="sort-btn" onclick="setSort('suporte')">Suporte <span class="sort-icon" data-sort-icon="suporte">↕</span></button></th>
+              <th style="width:9%"><button class="sort-btn" onclick="setSort('data_inicio')">Início <span class="sort-icon" data-sort-icon="data_inicio">↕</span></button></th>
+              <th style="width:9%"><button class="sort-btn" onclick="setSort('validade')">Validade <span class="sort-icon" data-sort-icon="validade">↕</span></button></th>
+              <th style="width:7%"><button class="sort-btn" onclick="setSort('situacao')">Situação <span class="sort-icon" data-sort-icon="situacao">↕</span></button></th>
+              <th style="width:5%" class="text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="sellerTableBody"></tbody>
+        </table>
+      </div>
+
+      <div id="emptyState" class="hidden text-center py-12 px-6">
+        <div class="text-5xl mb-3">📋</div>
+        <h3 class="text-xl font-bold">Nenhum seller encontrado</h3>
+        <p class="text-zinc-500 mt-1">Adicione um novo seller ou ajuste os filtros.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <dialog id="sellerModal" class="modal">
+    <div class="modal-box max-w-4xl rounded-3xl">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
+      </form>
+
+      <h3 id="modalTitle" class="text-2xl font-extrabold text-zinc-950 mb-1">Adicionar Seller</h3>
+      <p class="text-zinc-500 mb-6">Preencha os dados abaixo. A validade será calculada automaticamente.</p>
+
+      <form id="sellerForm" onsubmit="saveSeller(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="hidden" id="sellerId" />
+
+        <label class="form-control">
+          <div class="label"><span class="label-text font-semibold">MCID</span></div>
+          <input id="mcid" type="text" class="input input-bordered rounded-2xl" placeholder="Ex: A1B2C3" />
+        </label>
+
+        <label class="form-control">
+          <div class="label"><span class="label-text font-semibold">Status</span></div>
+          <select id="status" class="select select-bordered rounded-2xl" required>
+            <option value="Ativou">Ativou</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+        </label>
+
+        <label class="form-control">
+          <div class="label"><span class="label-text font-semibold">Nome</span></div>
+          <input id="nome" type="text" class="input input-bordered rounded-2xl" placeholder="Nome do seller" required />
+        </label>
+
+        <label class="form-control">
+          <div class="label"><span class="label-text font-semibold">E-mail</span></div>
+          <input id="email" type="email" class="input input-bordered rounded-2xl" placeholder="email@exemplo.com" />
+        </label>
+
+        <label class="form-control">
+          <div class="label"><span class="label-text font-semibold">Telefone</span></div>
+          <input id="telefone" type="text" class="input input-bordered rounded-2xl" placeholder="(00) 00000-0000" />
+        </label>
+
+        <label class="form-control">
+          <div class="label"><span class="label-text font-semibold">Suporte</span></div>
+          <select id="suporte" class="select select-bordered rounded-2xl" required></select>
+        </label>
+
+        <label class="form-control">
+          <div class="label"><span class="label-text font-semibold">Data de Início</span></div>
+          <input id="data_inicio" type="date" class="input input-bordered rounded-2xl" onchange="previewValidity()" required />
+        </label>
+
+        <label class="form-control">
+          <div class="label"><span class="label-text font-semibold">Validade automática</span></div>
+          <input id="validadePreview" type="text" class="input input-bordered rounded-2xl bg-zinc-50" readonly />
+        </label>
+
+        <div class="md:col-span-2 flex flex-col sm:flex-row justify-end gap-3 mt-4">
+          <button type="button" onclick="sellerModal.close()" class="btn rounded-2xl">Cancelar</button>
+          <button type="submit" class="btn bg-orange-500 hover:bg-orange-600 text-white border-0 rounded-2xl px-8">Salvar Seller</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <div id="toastArea" class="toast toast-top toast-end z-50"></div>
+
+  <script>
+    const SUPABASE_URL = 'https://owgvzmeewzpmzgcdwbfq.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    /*
+      IMPORTANTE - rode uma única vez no SQL Editor do Supabase:
+
+      create extension if not exists "pgcrypto";
+
+      alter table public.sellers
+      add column if not exists id uuid default gen_random_uuid();
+
+      update public.sellers
+      set id = gen_random_uuid()
+      where id is null;
+
+      alter table public.sellers
+      alter column id set default gen_random_uuid();
+
+      alter table public.sellers
+      alter column id set not null;
+
+      do $$
+      begin
+        if not exists (
+          select 1 from pg_constraint
+          where conname = 'sellers_id_key'
+        ) then
+          alter table public.sellers add constraint sellers_id_key unique (id);
+        end if;
+      end $$;
+    */
+
+    // Troque este link pelo link real da planilha/painel de lojas prontas.
+    const LOJAS_PRONTAS_URL = 'https://docs.google.com/spreadsheets/';
+
+    const supports = ['CARLOS', 'DANIELA', 'FELIPE', 'GABRIEL', 'JOSE', 'MELISSA', 'POLYANNA', 'SILAS'];
+    const supportColors = {
+      CARLOS: '#f97316', DANIELA: '#ec4899', FELIPE: '#3b82f6', GABRIEL: '#22c55e',
+      JOSE: '#a855f7', MELISSA: '#14b8a6', POLYANNA: '#eab308', SILAS: '#ef4444'
+    };
+
+    const supportAliases = {
+      CARLOS: ['CARLOS'],
+      DANIELA: ['DANIELA'],
+      FELIPE: ['FELIPE', 'FILIPE', 'FELIPPE'],
+      GABRIEL: ['GABRIEL'],
+      JOSE: ['JOSE', 'JOSÉ'],
+      MELISSA: ['MELISSA', 'MELISSAH'],
+      POLYANNA: ['POLYANNA', 'POLIANA', 'POLLYANNA'],
+      SILAS: ['SILAS']
+    };
+
+    function normalizeText(value) {
+      return String(value ?? '')
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/[​-‍﻿]/g, '')
+        .replace(/ /g, ' ')
+        .trim()
+        .replace(/\s+/g, ' ')
+        .toUpperCase();
+    }
+
+    function normalizeSupport(value) {
+      const raw = normalizeText(value);
+      const clean = raw
+        .replace(/[^A-Z0-9]+/g, ' ')
+        .replace(/(SUPORTE|CONSULTOR|CONSULTORA|RESPONSAVEL|RESPONSAVEL:)/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (!clean) return '';
+
+      const padded = ` ${clean} `;
+      for (const support of supports) {
+        const aliases = supportAliases[support] || [support];
+        for (const alias of aliases.map(normalizeText)) {
+          const aliasClean = alias.replace(/[^A-Z0-9]+/g, ' ').trim();
+          if (padded.includes(` ${aliasClean} `)) return support;
+        }
+      }
+
+      return supports.includes(clean) ? clean : clean;
+    }
+
+    function supportKey(seller) {
+      return normalizeSupport(seller && seller.suporte);
+    }
+
+    function normalizeStatus(value) {
+      const v = normalizeText(value);
+      if (v.includes('CANCEL')) return 'Cancelado';
+      if (v.includes('ATIV')) return 'Ativou';
+      return value || '';
+    }
+
+    function parseDateFlexible(value) {
+      if (!value) return null;
+      if (value instanceof Date) return value;
+      const raw = String(value).trim();
+      if (/^\d{4}-\d{2}-\d{2}/.test(raw)) return new Date(raw.slice(0, 10) + 'T00:00:00');
+      const br = raw.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (br) return new Date(`${br[3]}-${br[2].padStart(2, '0')}-${br[1].padStart(2, '0')}T00:00:00`);
+      const d = new Date(raw);
+      return isNaN(d.getTime()) ? null : d;
+    }
+
+    function realSituation(seller) {
+      const status = normalizeStatus(seller?.status);
+      if (status === 'Cancelado') return 'Cancelado';
+      const validadeDate = parseDateFlexible(seller?.validade);
+      if (!validadeDate) return normalizeText(seller?.situacao).includes('EXPIR') ? 'Expirado' : 'Ativo';
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      validadeDate.setHours(0, 0, 0, 0);
+      return validadeDate < today ? 'Expirado' : 'Ativo';
+    }
+
+    function isActiveSeller(seller) {
+      return normalizeStatus(seller?.status) === 'Ativou' && realSituation(seller) === 'Ativo';
+    }
+
+    function isExpiredSeller(seller) {
+      return normalizeStatus(seller?.status) === 'Ativou' && realSituation(seller) === 'Expirado';
+    }
+
+    function isCanceledSeller(seller) {
+      return normalizeStatus(seller?.status) === 'Cancelado';
+    }
+
+    let sellers = [];
+    let filteredSellers = [];
+    let currentSort = { column: 'nome', direction: 'asc' };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('lojasProntasBtn').href = LOJAS_PRONTAS_URL;
+      fillSupportSelects();
+      refreshSellers();
+      setupRealtime();
+    });
+
+    function fillSupportSelects() {
+      const suporteSelect = document.getElementById('suporte');
+      const filterSupport = document.getElementById('filterSupport');
+      supports.forEach(name => {
+        suporteSelect.insertAdjacentHTML('beforeend', `<option value="${name}">${name}</option>`);
+        filterSupport.insertAdjacentHTML('beforeend', `<option value="${name}">${name}</option>`);
+      });
+    }
+
+    function addOneYear(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString + 'T00:00:00');
+      date.setFullYear(date.getFullYear() + 1);
+      return date.toISOString().slice(0, 10);
+    }
+
+    function calcSituation(validade, status = 'Ativou') {
+      return realSituation({ validade, status });
+    }
+
+    function formatDate(dateString) {
+      const date = parseDateFlexible(dateString);
+      return date ? date.toLocaleDateString('pt-BR') : '-';
+    }
+
+    function previewValidity() {
+      const dataInicio = document.getElementById('data_inicio').value;
+      const validade = addOneYear(dataInicio);
+      document.getElementById('validadePreview').value = validade ? formatDate(validade) : '';
+    }
+
+
+    function makeId() {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+    }
+
+    function rowKey(row, index = 0) {
+      return row?.id || row?.ID || row?.mcid || row?.MCID || `${row?.email || ''}|${row?.telefone || ''}|${row?.nome || ''}|${row?.data_inicio || ''}|${index}`;
+    }
+
+    function findSellerByLocalKey(key) {
+      return sellers.find(s => String(s.__localKey) === String(key));
+    }
+
+    function getSellerId(row) {
+      return row?.id || row?.ID || '';
+    }
+
+    async function safeUpdateSeller(originalRow, payload) {
+      const id = getSellerId(originalRow);
+      if (!id) {
+        throw new Error('Este seller ainda não tem ID. Rode o SQL de criação/backfill do ID no Supabase e recarregue a página.');
+      }
+      return await supabaseClient.from('sellers').update(payload).eq('id', id);
+    }
+
+    async function safeDeleteSeller(originalRow) {
+      const id = getSellerId(originalRow);
+      if (!id) {
+        throw new Error('Este seller ainda não tem ID. Rode o SQL de criação/backfill do ID no Supabase e recarregue a página.');
+      }
+      return await supabaseClient.from('sellers').delete().eq('id', id);
+    }
+
+    async function fetchAllSellers() {
+      const pageSize = 1000;
+      let from = 0;
+      let allRows = [];
+
+      while (true) {
+        const { data, error } = await supabaseClient
+          .from('sellers')
+          .select('*')
+          .range(from, from + pageSize - 1);
+
+        if (error) throw error;
+
+        const rows = data || [];
+        allRows = allRows.concat(rows);
+
+        if (rows.length < pageSize) break;
+        from += pageSize;
+      }
+
+      return Array.from(new Map(allRows.map((row, index) => [rowKey(row, index), { ...row, __localKey: rowKey(row, index) }])).values());
+    }
+
+    async function refreshSellers() {
+      const loadInfo = document.getElementById('loadInfo');
+      if (loadInfo) loadInfo.textContent = 'Carregando todos os sellers...';
+
+      try {
+        sellers = await fetchAllSellers();
+        await updateExpiredSellersIfNeeded();
+        applyFilters();
+        if (loadInfo) loadInfo.textContent = `${sellers.length.toLocaleString('pt-BR')} seller(s) carregado(s) no total.`;
+      } catch (error) {
+        const msg = String(error.message || error);
+        if (msg.includes('sellers.id') || msg.includes('column') && msg.includes('id')) {
+          showToast('Erro: a coluna ID ainda não existe no Supabase. Rode o SQL enviado junto com este arquivo.', 'error');
+          if (loadInfo) loadInfo.textContent = 'Falta criar a coluna id no Supabase.';
+        } else {
+          showToast('Erro ao carregar dados: ' + msg, 'error');
+          if (loadInfo) loadInfo.textContent = 'Erro ao carregar dados.';
+        }
+      }
+    }
+
+    async function updateExpiredSellersIfNeeded() {
+      const updates = sellers
+        .filter(s => s.validade && calcSituation(s.validade, s.status) !== s.situacao)
+        .map(s => ({ ...s, situacao: calcSituation(s.validade, s.status) }));
+
+      for (const item of updates) {
+        await safeUpdateSeller(item, { situacao: item.situacao });
+        const local = sellers.find(s => s.__localKey === item.__localKey);
+        if (local) local.situacao = item.situacao;
+      }
+    }
+
+    function applyFilters() {
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+      const filterSupport = document.getElementById('filterSupport').value;
+      const filterStatus = document.getElementById('filterStatus').value;
+      const filterSituacao = document.getElementById('filterSituacao').value;
+
+      filteredSellers = sellers.filter(s => {
+        const text = `${s.mcid || ''} ${s.nome || ''} ${s.email || ''} ${s.telefone || ''}`.toLowerCase();
+        return (!search || text.includes(search)) &&
+          (!filterSupport || supportKey(s) === filterSupport) &&
+          (!filterStatus || normalizeStatus(s.status) === filterStatus) &&
+          (!filterSituacao || realSituation(s) === filterSituacao);
+      });
+
+      applySort();
+      renderTable();
+      renderMetrics();
+      renderSupportCounters();
+      renderExpiredAlert();
+    }
+
+
+    function normalizeSortText(value) {
+      return normalizeText(value || '').replace(/[^A-Z0-9]/g, ' ').trim();
+    }
+
+    function getSortValue(seller, column) {
+      if (column === 'status') return normalizeStatus(seller.status) || '';
+      if (column === 'suporte') return supportKey(seller) || '';
+      if (column === 'situacao') return realSituation(seller) || '';
+      if (column === 'data_inicio' || column === 'validade') {
+        const d = parseDateFlexible(seller[column]);
+        return d ? d.getTime() : 0;
+      }
+      return normalizeSortText(seller[column]);
+    }
+
+    function setSort(column) {
+      if (currentSort.column === column) {
+        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort = { column, direction: 'asc' };
+      }
+      applySort();
+      renderTable();
+    }
+
+    function applySort() {
+      const { column, direction } = currentSort;
+      const factor = direction === 'asc' ? 1 : -1;
+
+      filteredSellers.sort((a, b) => {
+        const va = getSortValue(a, column);
+        const vb = getSortValue(b, column);
+
+        if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * factor;
+        return String(va).localeCompare(String(vb), 'pt-BR', { numeric: true, sensitivity: 'base' }) * factor;
+      });
+
+      renderSortIndicators();
+    }
+
+    function renderSortIndicators() {
+      document.querySelectorAll('[data-sort-icon]').forEach(icon => {
+        const col = icon.getAttribute('data-sort-icon');
+        icon.textContent = col === currentSort.column ? (currentSort.direction === 'asc' ? '▲' : '▼') : '↕';
+      });
+    }
+
+    function renderTable() {
+      renderSortIndicators();
+      const tbody = document.getElementById('sellerTableBody');
+      const emptyState = document.getElementById('emptyState');
+      tbody.innerHTML = '';
+
+      emptyState.classList.toggle('hidden', filteredSellers.length > 0);
+
+      filteredSellers.forEach(s => {
+        const suporteKey = supportKey(s);
+        const color = supportColors[suporteKey] || '#71717a';
+        const suporteLabel = supports.includes(suporteKey) ? suporteKey : (s.suporte || '-');
+        const statusValue = normalizeStatus(s.status) || '-';
+        const situationValue = realSituation(s);
+        const statusBadge = statusValue === 'Ativou' ? 'badge-success' : 'badge-neutral';
+        const situationBadge = situationValue === 'Ativo' ? 'badge-success' : (situationValue === 'Cancelado' ? 'badge-neutral' : 'badge-error');
+
+        tbody.insertAdjacentHTML('beforeend', `
+          <tr class="hover">
+            <td class="font-semibold"><span class="cell-truncate" title="${s.mcid || '-'}">${s.mcid || '-'}</span></td>
+            <td><span class="badge ${statusBadge} text-white">${statusValue}</span></td>
+            <td class="font-semibold text-zinc-950"><span class="cell-truncate" title="${s.nome || '-'}">${s.nome || '-'}</span></td>
+            <td><span class="cell-truncate" title="${s.email || '-'}">${s.email || '-'}</span></td>
+            <td><span class="cell-truncate" title="${s.telefone || '-'}">${s.telefone || '-'}</span></td>
+            <td><span class="inline-flex items-center gap-1 min-w-0"><span class="support-dot" style="background:${color}"></span><span class="font-semibold cell-truncate" title="${suporteLabel}">${suporteLabel}</span></span></td>
+            <td>${formatDate(s.data_inicio)}</td>
+            <td>${formatDate(s.validade)}</td>
+            <td><span class="badge ${situationBadge} text-white">${situationValue}</span></td>
+            <td class="text-right">
+              <div class="compact-actions">
+                <button title="Editar" class="btn btn-xs rounded-xl" onclick='openSellerModal(${JSON.stringify(s)})'>✎</button>
+                <button title="Excluir" class="btn btn-xs btn-error text-white rounded-xl" onclick='deleteSeller(${JSON.stringify(s.__localKey)})'>×</button>
+              </div>
+            </td>
+          </tr>
+        `);
+      });
+    }
+
+    function renderMetrics() {
+      document.getElementById('totalCount').textContent = sellers.length.toLocaleString('pt-BR');
+      document.getElementById('activeCount').textContent = sellers.filter(isActiveSeller).length.toLocaleString('pt-BR');
+      document.getElementById('expiredCount').textContent = sellers.filter(isExpiredSeller).length.toLocaleString('pt-BR');
+      document.getElementById('canceledCount').textContent = sellers.filter(isCanceledSeller).length.toLocaleString('pt-BR');
+    }
+
+    function renderSupportCounters() {
+      const box = document.getElementById('supportCounters');
+      box.innerHTML = '';
+
+      const grouped = supports.reduce((acc, name) => {
+        acc[name] = { total: 0, active: 0, expired: 0, canceled: 0 };
+        return acc;
+      }, {});
+
+      sellers.forEach(s => {
+        const name = supportKey(s);
+        if (!grouped[name]) return;
+        grouped[name].total += 1;
+        if (isCanceledSeller(s)) grouped[name].canceled += 1;
+        if (isActiveSeller(s)) grouped[name].active += 1;
+        if (isExpiredSeller(s)) grouped[name].expired += 1;
+      });
+
+      supports.forEach(name => {
+        const item = grouped[name];
+        box.insertAdjacentHTML('beforeend', `
+          <div class="support-card rounded-2xl border border-zinc-100 bg-zinc-50">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 text-sm font-bold min-w-0" style="color:${supportColors[name]}">
+                <span class="support-dot" style="background:${supportColors[name]}"></span><span class="cell-truncate">${name}</span>
+              </div>
+              <div class="text-xl font-extrabold text-zinc-950">${item.total.toLocaleString('pt-BR')}</div>
+            </div>
+            <div class="text-[11px] text-zinc-500 mt-1">${item.active} ativo(s) · ${item.expired} expirado(s) · ${item.canceled} cancelado(s)</div>
+          </div>
+        `);
+      });
+    }
+
+    function renderExpiredAlert() {
+      const expired = sellers.filter(isExpiredSeller);
+      const alert = document.getElementById('expiredAlert');
+      const list = document.getElementById('expiredList');
+      alert.classList.toggle('hidden', expired.length === 0);
+      list.innerHTML = '';
+      expired.slice(0, 12).forEach(s => {
+        list.insertAdjacentHTML('beforeend', `<span class="badge badge-error text-white p-3">${s.nome || s.mcid} · ${formatDate(s.validade)}</span>`);
+      });
+      if (expired.length > 12) list.insertAdjacentHTML('beforeend', `<span class="badge p-3">+${expired.length - 12} outros</span>`);
+    }
+
+    function openSellerModal(seller = null) {
+      document.getElementById('sellerForm').reset();
+      document.getElementById('sellerId').value = '';
+      document.getElementById('modalTitle').textContent = seller ? 'Editar Seller' : 'Adicionar Seller';
+
+      if (seller) {
+        document.getElementById('sellerId').value = seller.__localKey || rowKey(seller);
+        document.getElementById('mcid').value = seller.mcid || '';
+        document.getElementById('status').value = seller.status || 'Ativou';
+        document.getElementById('nome').value = seller.nome || '';
+        document.getElementById('email').value = seller.email || '';
+        document.getElementById('telefone').value = seller.telefone || '';
+        document.getElementById('suporte').value = supports.includes(supportKey(seller)) ? supportKey(seller) : supports[0];
+        document.getElementById('data_inicio').value = seller.data_inicio || '';
+        document.getElementById('validadePreview').value = seller.validade ? formatDate(seller.validade) : '';
+      } else {
+        document.getElementById('status').value = 'Ativou';
+        document.getElementById('suporte').value = supports[0];
+        document.getElementById('data_inicio').value = new Date().toISOString().slice(0, 10);
+        previewValidity();
+      }
+
+      sellerModal.showModal();
+    }
+
+    async function saveSeller(event) {
+      event.preventDefault();
+
+      const id = document.getElementById('sellerId').value;
+      const dataInicio = document.getElementById('data_inicio').value;
+      const validade = addOneYear(dataInicio);
+      const status = document.getElementById('status').value;
+
+      const payload = {
+        mcid: document.getElementById('mcid').value.trim(),
+        status,
+        nome: document.getElementById('nome').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        telefone: document.getElementById('telefone').value.trim(),
+        suporte: normalizeSupport(document.getElementById('suporte').value),
+        data_inicio: dataInicio,
+        validade,
+        situacao: calcSituation(validade, status)
+      };
+
+      const originalSeller = id ? findSellerByLocalKey(id) : null;
+      if (!originalSeller) payload.id = makeId();
+
+      const response = originalSeller
+        ? await safeUpdateSeller(originalSeller, payload)
+        : await supabaseClient.from('sellers').insert(payload);
+
+      if (response.error) {
+        showToast('Erro ao salvar: ' + response.error.message, 'error');
+        return;
+      }
+
+      sellerModal.close();
+      showToast(id ? 'Seller atualizado com sucesso!' : 'Seller adicionado com sucesso!', 'success');
+      refreshSellers();
+    }
+
+    async function deleteSeller(localKey) {
+      if (!confirm('Deseja excluir este seller?')) return;
+      const originalSeller = findSellerByLocalKey(localKey);
+      if (!originalSeller) {
+        showToast('Não encontrei este seller carregado para excluir.', 'error');
+        return;
+      }
+      const { error } = await safeDeleteSeller(originalSeller);
+      if (error) {
+        showToast('Erro ao excluir: ' + error.message, 'error');
+        return;
+      }
+      showToast('Seller excluído com sucesso!', 'success');
+      refreshSellers();
+    }
+
+    function setupRealtime() {
+      supabaseClient
+        .channel('sellers-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'sellers' }, () => refreshSellers())
+        .subscribe();
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toastArea');
+      const color = type === 'error' ? 'alert-error' : 'alert-success';
+      const item = document.createElement('div');
+      item.className = `alert ${color} text-white rounded-2xl shadow-lg`;
+      item.innerHTML = `<span>${message}</span>`;
+      toast.appendChild(item);
+      setTimeout(() => item.remove(), 3500);
+    }
+  </script>
+</body>
+</html>
