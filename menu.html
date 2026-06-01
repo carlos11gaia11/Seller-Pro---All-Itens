@@ -15,6 +15,14 @@
     }
   </script>
 
+  <script>
+    // Aplica o tema salvo antes do carregamento visual da página
+    const temaSalvo = localStorage.getItem("sellerProTema");
+    if (temaSalvo === "claro") {
+      document.documentElement.classList.add("theme-light-preload");
+    }
+  </script>
+
   <!-- Frameworks e bibliotecas visuais -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
@@ -629,6 +637,190 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+
+
+    /* Alternância de tema claro/escuro */
+    html.theme-light-preload body,
+    body.theme-light {
+      --black: #f6f7fb;
+      --dark: #ffffff;
+      --card: rgba(255, 255, 255, 0.78);
+      --card-strong: rgba(255, 255, 255, 0.94);
+      --line: rgba(255, 122, 0, 0.28);
+      --text: #15151a;
+      --muted: #555766;
+      --soft: #777987;
+      --shadow: 0 24px 80px rgba(25, 25, 35, 0.14);
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 12%, rgba(255, 122, 0, 0.18), transparent 28%),
+        radial-gradient(circle at 86% 8%, rgba(255, 159, 63, 0.16), transparent 30%),
+        radial-gradient(circle at 50% 100%, rgba(255, 122, 0, 0.12), transparent 34%),
+        linear-gradient(135deg, #f6f7fb 0%, #ffffff 48%, #fff3e8 100%);
+    }
+
+    body.theme-light::before {
+      background-image:
+        linear-gradient(rgba(15, 15, 20, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 15, 20, 0.045) 1px, transparent 1px);
+    }
+
+    body.theme-light::after {
+      background: linear-gradient(120deg, transparent 0%, rgba(255, 122, 0, 0.12) 48%, transparent 64%);
+    }
+
+    body.theme-light .topbar {
+      background: rgba(255, 255, 255, 0.74);
+      border-color: rgba(10, 10, 15, 0.08);
+      box-shadow: 0 16px 50px rgba(20, 20, 30, 0.10);
+    }
+
+    body.theme-light .brand-title,
+    body.theme-light .section-title h2,
+    body.theme-light .hub-card h3,
+    body.theme-light .info-card h3 {
+      color: #15151a;
+    }
+
+    body.theme-light .brand-subtitle,
+    body.theme-light .hero-copy,
+    body.theme-light .section-title p,
+    body.theme-light .hub-card p,
+    body.theme-light .info-card p,
+    body.theme-light .info-list li,
+    body.theme-light .stat-label {
+      color: var(--muted);
+    }
+
+    body.theme-light .nav-pill {
+      color: #2d2d34;
+      background: rgba(255, 255, 255, 0.70);
+      border-color: rgba(10, 10, 15, 0.08);
+    }
+
+    body.theme-light .nav-pill:hover {
+      color: #141414;
+      background: var(--orange-light);
+    }
+
+    body.theme-light .hero {
+      border-color: rgba(255, 122, 0, 0.30);
+      background:
+        linear-gradient(135deg, rgba(255, 122, 0, 0.18), rgba(255, 255, 255, 0.94) 48%, rgba(255, 122, 0, 0.08)),
+        url("doc/seller pro.png") right 7% center / min(410px, 44vw) auto no-repeat;
+      box-shadow: var(--shadow);
+    }
+
+    body.theme-light .gradient-text {
+      background: linear-gradient(135deg, #141414 0%, var(--orange-dark) 35%, var(--orange) 72%, #141414 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      background-size: 220% auto;
+    }
+
+    body.theme-light .stat-card,
+    body.theme-light .hub-card,
+    body.theme-light .info-card {
+      background: rgba(255, 255, 255, 0.72);
+      border-color: rgba(10, 10, 15, 0.08);
+      box-shadow: 0 18px 60px rgba(20, 20, 35, 0.12);
+    }
+
+    body.theme-light .info-card {
+      background: linear-gradient(135deg, rgba(255, 122, 0, 0.14), rgba(255, 255, 255, 0.86) 42%, rgba(255, 255, 255, 0.92));
+      border-color: rgba(255, 122, 0, 0.22);
+    }
+
+    body.theme-light .link-button {
+      color: #22232a;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 244, 233, 0.72));
+      border-color: rgba(10, 10, 15, 0.08);
+    }
+
+    body.theme-light .link-button:hover {
+      color: #111;
+      border-color: rgba(255, 122, 0, 0.45);
+    }
+
+    body.theme-light .info-list li {
+      background: rgba(255, 255, 255, 0.72);
+      border-color: rgba(10, 10, 15, 0.08);
+    }
+
+    body.theme-light .footer {
+      color: #60616d;
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 42px;
+      padding: 9px 13px;
+      border: 1px solid rgba(255, 122, 0, 0.26);
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+      font-weight: 850;
+      font-size: 0.84rem;
+      transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+      white-space: nowrap;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 122, 0, 0.55);
+      background: rgba(255, 122, 0, 0.12);
+    }
+
+    .theme-toggle .toggle-track {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      border-radius: 999px;
+      background: rgba(255, 122, 0, 0.22);
+      border: 1px solid rgba(255, 122, 0, 0.22);
+      transition: 0.22s ease;
+    }
+
+    .theme-toggle .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--orange-light);
+      box-shadow: 0 0 18px rgba(255, 122, 0, 0.45);
+      transition: 0.22s ease;
+    }
+
+    body.theme-light .theme-toggle {
+      background: rgba(255, 255, 255, 0.76);
+      color: #22232a;
+      border-color: rgba(10, 10, 15, 0.10);
+    }
+
+    body.theme-light .theme-toggle .toggle-track {
+      background: rgba(255, 122, 0, 0.28);
+    }
+
+    body.theme-light .theme-toggle .toggle-thumb {
+      left: 23px;
+      background: #ffffff;
+      box-shadow: 0 0 0 1px rgba(255, 122, 0, 0.30), 0 6px 14px rgba(20, 20, 35, 0.16);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     @media (max-width: 1080px) {
       .hub-card {
         grid-column: span 6;
@@ -655,6 +847,11 @@
         position: static;
         align-items: flex-start;
         flex-direction: column;
+      }
+
+      .topbar-actions {
+        justify-content: flex-start;
+        width: 100%;
       }
 
       .quick-nav {
@@ -721,10 +918,17 @@
         </div>
       </div>
 
-      <div class="quick-nav">
-        <a class="nav-pill" href="#acessos">Acessos</a>
-        <a class="nav-pill" href="#certificados">Certificados</a>
-        <a class="nav-pill" href="#logistica">DBA x FBA</a>
+      <div class="topbar-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema claro ou escuro">
+          <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
+          <span id="themeToggleText">Tema claro</span>
+        </button>
+
+        <div class="quick-nav">
+          <a class="nav-pill" href="#acessos">Acessos</a>
+          <a class="nav-pill" href="#certificados">Certificados</a>
+          <a class="nav-pill" href="#logistica">DBA x FBA</a>
+        </div>
       </div>
     </nav>
 
@@ -916,6 +1120,25 @@
       once: true,
       offset: 80,
       easing: "ease-out-cubic"
+    });
+
+    const themeToggle = document.getElementById("themeToggle");
+    const themeToggleText = document.getElementById("themeToggleText");
+
+    function aplicarTema(tema) {
+      const temaClaro = tema === "claro";
+      document.body.classList.toggle("theme-light", temaClaro);
+      document.documentElement.classList.toggle("theme-light-preload", temaClaro);
+      themeToggleText.textContent = temaClaro ? "Tema escuro" : "Tema claro";
+      themeToggle.setAttribute("aria-pressed", String(temaClaro));
+      localStorage.setItem("sellerProTema", temaClaro ? "claro" : "escuro");
+    }
+
+    aplicarTema(localStorage.getItem("sellerProTema") === "claro" ? "claro" : "escuro");
+
+    themeToggle.addEventListener("click", () => {
+      const novoTema = document.body.classList.contains("theme-light") ? "escuro" : "claro";
+      aplicarTema(novoTema);
     });
 
     const glow = document.getElementById("cursorGlow");
