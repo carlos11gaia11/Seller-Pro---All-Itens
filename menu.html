@@ -5,36 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hub Principal Seller Pro</title>
 
-<script>
-  const logado = sessionStorage.getItem("logado");
-  const tipoUsuario = sessionStorage.getItem("tipoUsuario");
+  <!-- Segurança de acesso -->
+  <script>
+    const logado = sessionStorage.getItem("logado");
+    const tipoUsuario = sessionStorage.getItem("tipoUsuario");
 
-  if (logado !== "sim" || tipoUsuario !== "suporte") {
-    window.location.href = "index.html";
-  }
-</script>
+    if (logado !== "sim" || tipoUsuario !== "suporte") {
+      window.location.href = "index.html";
+    }
+  </script>
 
-<style>
-  body {
-    display: none;
-  }
-</style>
+  <!-- Frameworks e bibliotecas visuais -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
 
-<script>
-  window.addEventListener("DOMContentLoaded", function () {
-    document.body.style.display = "block";
-  });
-</script>
-  
   <style>
     :root {
-      --laranja: #ff7a00;
-      --laranja-claro: #ff9f3f;
-      --preto: #0f0f0f;
-      --cinza-escuro: #1b1b1b;
-      --cinza: #2a2a2a;
-      --branco: #ffffff;
-      --texto-suave: #d7d7d7;
+      --orange: #ff7a00;
+      --orange-light: #ffb15c;
+      --orange-dark: #d95f00;
+      --black: #050505;
+      --dark: #0b0b0f;
+      --card: rgba(18, 18, 26, 0.76);
+      --card-strong: rgba(24, 24, 34, 0.92);
+      --line: rgba(255, 122, 0, 0.25);
+      --text: #ffffff;
+      --muted: #b9bac7;
+      --soft: #777987;
+      --green: #20e6a1;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
     }
 
     * {
@@ -43,311 +44,907 @@
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
       background:
-        linear-gradient(rgba(15, 15, 15, 0.92), rgba(15, 15, 15, 0.94)),
-        url("doc/seller pro.png") center center / 420px auto no-repeat fixed;
-      color: var(--branco);
-      padding: 32px 18px;
+        radial-gradient(circle at 15% 12%, rgba(255, 122, 0, 0.22), transparent 28%),
+        radial-gradient(circle at 86% 8%, rgba(255, 159, 63, 0.12), transparent 30%),
+        radial-gradient(circle at 50% 100%, rgba(255, 122, 0, 0.10), transparent 34%),
+        linear-gradient(135deg, #040404 0%, #0b0b0f 45%, #111018 100%);
+      overflow-x: hidden;
     }
 
-    .container {
-      max-width: 1180px;
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.75), transparent 82%);
+      z-index: 0;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(120deg, transparent 0%, rgba(255, 122, 0, 0.08) 48%, transparent 64%);
+      transform: translateX(-120%);
+      animation: ambientLight 9s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes ambientLight {
+      0%, 18% { transform: translateX(-120%); opacity: 0; }
+      35% { opacity: 1; }
+      65%, 100% { transform: translateX(120%); opacity: 0; }
+    }
+
+    .page-shell {
+      position: relative;
+      z-index: 2;
+      width: min(1220px, calc(100% - 32px));
       margin: 0 auto;
+      padding: 28px 0 42px;
     }
 
-    header {
-      text-align: center;
-      margin-bottom: 34px;
-      padding: 32px 20px;
-      background: rgba(255, 122, 0, 0.08);
+    .topbar {
+      position: sticky;
+      top: 16px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 16px;
+      margin-bottom: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 22px;
+      background: rgba(10, 10, 15, 0.72);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 16px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background:
+        linear-gradient(135deg, rgba(255, 122, 0, 0.95), rgba(255, 177, 92, 0.8));
+      box-shadow: 0 0 30px rgba(255, 122, 0, 0.38);
+      animation: pulseMark 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseMark {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 24px rgba(255, 122, 0, 0.32); }
+      50% { transform: scale(1.04); box-shadow: 0 0 42px rgba(255, 122, 0, 0.48); }
+    }
+
+    .brand-title {
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .quick-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .nav-pill {
+      padding: 9px 12px;
+      border-radius: 999px;
+      color: #f4f4f5;
+      font-size: 0.83rem;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.05);
+      transition: 0.22s ease;
+    }
+
+    .nav-pill:hover {
+      color: #111;
+      background: var(--orange-light);
+      border-color: rgba(255, 122, 0, 0.7);
+      transform: translateY(-2px);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 360px;
+      padding: clamp(34px, 6vw, 68px);
+      margin-bottom: 26px;
+      border: 1px solid rgba(255, 122, 0, 0.26);
+      border-radius: 34px;
+      background:
+        linear-gradient(135deg, rgba(255, 122, 0, 0.16), rgba(16, 16, 24, 0.92) 46%, rgba(255, 122, 0, 0.06)),
+        url("doc/seller pro.png") right 7% center / min(410px, 44vw) auto no-repeat;
+      box-shadow: var(--shadow);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background:
+        linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.10) 18%, transparent 34%);
+      transform: translateX(-120%);
+      animation: shine 5.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes shine {
+      0%, 28% { transform: translateX(-120%); }
+      58%, 100% { transform: translateX(120%); }
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      margin-bottom: 18px;
       border: 1px solid rgba(255, 122, 0, 0.35);
-      border-radius: 24px;
-      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(6px);
-    }
-
-    .logo-marca {
-      width: 110px;
-      max-width: 35%;
-      margin-bottom: 16px;
-      opacity: 0.92;
+      border-radius: 999px;
+      background: rgba(255, 122, 0, 0.10);
+      color: var(--orange-light);
+      font-size: 0.84rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
 
     h1 {
-      font-size: clamp(2rem, 5vw, 4rem);
-      color: var(--laranja);
-      letter-spacing: 0.5px;
+      max-width: 780px;
+      font-size: clamp(2.6rem, 7vw, 5.8rem);
+      line-height: 0.92;
+      font-weight: 950;
+      letter-spacing: -0.075em;
       text-transform: uppercase;
-      margin-bottom: 10px;
     }
 
-    .subtitulo {
-      color: var(--texto-suave);
-      font-size: 1.08rem;
+    .gradient-text {
+      background: linear-gradient(135deg, #fff 0%, var(--orange-light) 35%, var(--orange) 72%, #fff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      background-size: 220% auto;
+      animation: textFlow 6s ease-in-out infinite;
+    }
+
+    @keyframes textFlow {
+      0%, 100% { background-position: 0% center; }
+      50% { background-position: 100% center; }
+    }
+
+    .hero-copy {
+      max-width: 720px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.18rem);
+      line-height: 1.75;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .hero-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 18px;
+      border-radius: 16px;
+      text-decoration: none;
+      font-weight: 850;
+      color: #141414;
+      background: linear-gradient(135deg, var(--orange-light), var(--orange));
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 14px 36px rgba(255, 122, 0, 0.24);
+      transition: 0.22s ease;
+    }
+
+    .hero-button:hover {
+      transform: translateY(-3px) scale(1.01);
+      box-shadow: 0 20px 52px rgba(255, 122, 0, 0.34);
+    }
+
+    .hero-button.secondary {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 122, 0, 0.28);
+      box-shadow: none;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+
+    .stat-card {
+      position: relative;
+      overflow: hidden;
+      padding: 20px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.055);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+    }
+
+    .stat-card::after {
+      content: "";
+      position: absolute;
+      right: -36px;
+      top: -36px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: rgba(255, 122, 0, 0.12);
+      filter: blur(2px);
+    }
+
+    .stat-number {
+      display: block;
+      color: var(--orange-light);
+      font-size: 2rem;
+      font-weight: 950;
+      letter-spacing: -0.06em;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin: 34px 0 16px;
+    }
+
+    .section-title h2 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 950;
+      letter-spacing: -0.05em;
+    }
+
+    .section-title p {
+      max-width: 520px;
+      color: var(--muted);
       line-height: 1.6;
-      max-width: 760px;
-      margin: 0 auto;
+      text-align: right;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 22px;
-      margin-bottom: 22px;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
     }
 
-    .card {
-      background: rgba(27, 27, 27, 0.94);
-      border: 1px solid rgba(255, 122, 0, 0.22);
-      border-radius: 22px;
+    .hub-card {
+      position: relative;
+      isolation: isolate;
+      grid-column: span 4;
+      min-height: 100%;
+      overflow: hidden;
       padding: 24px;
-      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      border-radius: 28px;
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(18px);
+      transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
     }
 
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(255, 122, 0, 0.65);
-      box-shadow: 0 18px 42px rgba(255, 122, 0, 0.12);
+    .hub-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(255, 122, 0, 0.8), rgba(255, 255, 255, 0.08), rgba(255, 122, 0, 0.12));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.28s ease;
+      pointer-events: none;
     }
 
-    .card h2 {
-      color: var(--laranja);
-      font-size: 1.25rem;
-      margin-bottom: 8px;
+    .hub-card::after {
+      content: "";
+      position: absolute;
+      inset: auto -70px -90px auto;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 122, 0, 0.28), transparent 70%);
+      z-index: -1;
+      transition: 0.28s ease;
+    }
+
+    .hub-card:hover {
+      transform: translateY(-7px);
+      border-color: rgba(255, 122, 0, 0.28);
+      box-shadow: 0 28px 85px rgba(0, 0, 0, 0.46), 0 0 42px rgba(255, 122, 0, 0.08);
+    }
+
+    .hub-card:hover::before {
+      opacity: 1;
+    }
+
+    .hub-card:hover::after {
+      transform: scale(1.22);
+      opacity: 0.9;
+    }
+
+    .card-top {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
     }
 
-    .card p {
-      color: var(--texto-suave);
+    .icon-box {
+      width: 50px;
+      height: 50px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      border-radius: 18px;
+      color: #141414;
+      background: linear-gradient(135deg, var(--orange-light), var(--orange));
+      box-shadow: 0 14px 38px rgba(255, 122, 0, 0.26);
+    }
+
+    .tag {
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--orange-light);
+      font-size: 0.75rem;
+      font-weight: 800;
+      background: rgba(255, 122, 0, 0.10);
+      border: 1px solid rgba(255, 122, 0, 0.18);
+    }
+
+    .hub-card h3 {
+      margin-bottom: 10px;
+      font-size: 1.26rem;
+      font-weight: 920;
+      letter-spacing: -0.03em;
+    }
+
+    .hub-card p {
+      min-height: 74px;
+      color: var(--muted);
       font-size: 0.96rem;
-      line-height: 1.55;
-      margin-bottom: 18px;
+      line-height: 1.65;
     }
 
-    .botoes {
+    .links {
       display: grid;
       gap: 10px;
+      margin-top: 18px;
     }
 
-    .botao {
+    .link-button {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 14px;
+      min-height: 48px;
+      padding: 12px 13px 12px 14px;
+      border-radius: 16px;
       text-decoration: none;
-      color: var(--branco);
-      background: linear-gradient(135deg, var(--laranja), #e86100);
-      padding: 13px 15px;
-      border-radius: 14px;
-      font-weight: 700;
-      transition: transform 0.2s ease, filter 0.2s ease;
+      color: #f8f8f8;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025));
+      transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+      overflow: hidden;
     }
 
-    .botao:hover {
-      transform: scale(1.015);
-      filter: brightness(1.08);
+    .link-button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 122, 0, 0.95), rgba(255, 159, 63, 0.72));
+      opacity: 0;
+      transition: opacity 0.22s ease;
+      z-index: -1;
     }
 
-    .botao.secundario {
-      background: #101010;
-      border: 1px solid rgba(255, 122, 0, 0.45);
-      color: var(--laranja-claro);
+    .link-button:hover {
+      transform: translateX(5px);
+      border-color: rgba(255, 122, 0, 0.45);
+      color: #111;
     }
 
-    .botao.download {
-      background: linear-gradient(135deg, #2a2a2a, #111111);
-      border: 1px solid rgba(255, 122, 0, 0.55);
+    .link-button:hover::before {
+      opacity: 1;
     }
 
-    .seta {
+    .link-button i {
       opacity: 0.85;
-      font-size: 1.1rem;
+      transition: transform 0.22s ease;
     }
 
-    .certificados {
-      margin-top: 22px;
-      background: linear-gradient(135deg, rgba(255, 122, 0, 0.14), rgba(27, 27, 27, 0.96));
-      border: 1px solid rgba(255, 122, 0, 0.38);
+    .link-button:hover i {
+      transform: translate(2px, -2px);
     }
 
-    .certificados ul {
-      margin-top: 12px;
-      padding-left: 20px;
-      color: var(--texto-suave);
-      line-height: 1.7;
+    .link-button.download:hover i {
+      transform: translateY(2px);
     }
 
-    .destaque {
-      color: var(--laranja-claro);
-      font-weight: 700;
+    .info-card {
+      margin-top: 18px;
+      padding: 28px;
+      border-radius: 30px;
+      background:
+        linear-gradient(135deg, rgba(255, 122, 0, 0.13), rgba(255, 255, 255, 0.05) 38%, rgba(10, 10, 15, 0.88));
+      border: 1px solid rgba(255, 122, 0, 0.22);
+      box-shadow: 0 18px 70px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(18px);
     }
 
-    footer {
-      text-align: center;
-      margin-top: 34px;
-      color: #9f9f9f;
-      font-size: 0.9rem;
+    .info-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      font-weight: 950;
+      letter-spacing: -0.04em;
+      margin-bottom: 12px;
     }
 
-    @media (max-width: 640px) {
-      body {
-        padding: 18px 12px;
-        background-size: 280px auto;
+    .info-card h3 i {
+      color: var(--orange-light);
+    }
+
+    .info-card p {
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 16px;
+    }
+
+    .info-list {
+      display: grid;
+      gap: 12px;
+      list-style: none;
+    }
+
+    .info-list li {
+      position: relative;
+      padding: 14px 15px 14px 46px;
+      border-radius: 18px;
+      color: var(--muted);
+      line-height: 1.65;
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .info-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 14px;
+      top: 16px;
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #101010;
+      font-weight: 950;
+      background: var(--orange-light);
+    }
+
+    .highlight {
+      color: var(--orange-light);
+      font-weight: 850;
+    }
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 28px;
+      padding: 18px 4px 0;
+      color: var(--soft);
+      font-size: 0.92rem;
+    }
+
+    .scroll-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--orange-light);
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    .cursor-glow {
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 122, 0, 0.12), transparent 65%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .reveal {
+      animation: revealUp 0.8s ease both;
+    }
+
+    @keyframes revealUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1080px) {
+      .hub-card {
+        grid-column: span 6;
       }
 
-      header {
-        padding: 24px 16px;
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
       }
 
-      .card {
-        padding: 20px;
+      .hero {
+        background:
+          linear-gradient(135deg, rgba(255, 122, 0, 0.16), rgba(16, 16, 24, 0.94) 48%, rgba(255, 122, 0, 0.06)),
+          url("doc/seller pro.png") right -120px center / 360px auto no-repeat;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page-shell {
+        width: min(100% - 22px, 1220px);
+        padding-top: 12px;
+      }
+
+      .topbar {
+        position: static;
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .quick-nav {
+        justify-content: flex-start;
+      }
+
+      .hero {
+        min-height: auto;
+        padding: 30px 22px;
+        border-radius: 28px;
+        background:
+          linear-gradient(135deg, rgba(255, 122, 0, 0.17), rgba(16, 16, 24, 0.96)),
+          url("doc/seller pro.png") right -90px bottom -24px / 260px auto no-repeat;
+      }
+
+      .section-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .section-title p {
+        text-align: left;
+      }
+
+      .hub-card {
+        grid-column: span 12;
+        padding: 22px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .footer {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
       }
     }
   </style>
 </head>
+
 <body>
-  <main class="container">
-    <header>
-      
-      <h1>Hub Principal Seller Pro</h1>
-      <p class="subtitulo">
-        Central interna de acesso rápido para o suporte Seller Pro. Aqui ficam os principais links, planilhas, mapas mentais, treinamentos, documentos e materiais de consulta usados no atendimento.
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <main class="page-shell" id="topo">
+    <nav class="topbar reveal">
+      <div class="brand">
+        <div class="brand-mark">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div>
+          <div class="brand-title">Seller Pro Hub</div>
+          <div class="brand-subtitle">Central interna do suporte</div>
+        </div>
+      </div>
+
+      <div class="quick-nav">
+        <a class="nav-pill" href="#acessos">Acessos</a>
+        <a class="nav-pill" href="#certificados">Certificados</a>
+        <a class="nav-pill" href="#logistica">DBA x FBA</a>
+      </div>
+    </nav>
+
+    <header class="hero reveal">
+      <span class="eyebrow">
+        <i class="fa-solid fa-layer-group"></i>
+        Hub Principal
+      </span>
+
+      <h1>
+        <span class="gradient-text">Hub Principal Seller Pro</span>
+      </h1>
+
+      <p class="hero-copy">
+        Central interna de acesso rápido para o suporte Seller Pro. Aqui ficam os principais links,
+        planilhas, mapas mentais, treinamentos, documentos e materiais de consulta usados no atendimento.
       </p>
+
+      <div class="hero-actions">
+        <a class="hero-button" href="#acessos">
+          Ver acessos rápidos
+          <i class="fa-solid fa-arrow-down"></i>
+        </a>
+        <a class="hero-button secondary" href="#certificados">
+          Consultar certificados
+          <i class="fa-solid fa-shield-halved"></i>
+        </a>
+      </div>
     </header>
 
-    <section class="grid">
-      <div class="card">
-        <h2>📊 Planilhas Online</h2>
-        <p>Acesso direto às planilhas principais utilizadas no acompanhamento dos sellers, lançamentos e comissões.</p>
-        <div class="botoes">
-          <a class="botao" href="https://docs.google.com/spreadsheets/d/1WtQe9W1QOZKp2oLLxd8SjZdSfhGZn59ui-tarTujK48/edit?pli=1&gid=684575404#gid=684575404" target="_blank" rel="noopener">Alunos ativos <span class="seta">↗</span></a>
-          <a class="botao" href="https://docs.google.com/spreadsheets/d/1xXvoZ1hHPz77E0NHXwV6hxXjAqBKUPYDgnU-P98E1NQ/edit?gid=897940405#gid=897940405" target="_blank" rel="noopener">Planilha de lançamentos <span class="seta">↗</span></a>
-          <a class="botao" href="https://docs.google.com/spreadsheets/d/1vaHiIlOC7W_slkoCDd7rjUl-TkQWVe5Tr-M1eTzzY5I/edit?gid=272235016#gid=272235016" target="_blank" rel="noopener">Comissões Loja Pronta <span class="seta">↗</span></a>
-          <a class="botao" href="https://docs.google.com/spreadsheets/d/1kL5XwGSN8-DmMVdWfVgbp7b4TIiFWMGtgZ2K8pPacsg/edit?usp=sharing" target="_blank" rel="noopener">Resposta loja pronta Janeiro <span class="seta">↗</span></a>
-          <a class="botao" href="https://docs.google.com/spreadsheets/d/1Ai4rPIFeRTxPiJUb6j1yUPjjv7BpX72efZEaoV_8aYk/edit?usp=sharing" target="_blank" rel="noopener">Resposta loja pronta Março <span class="seta">↗</span></a>
-          <a class="botao" href="https://docs.google.com/spreadsheets/d/1OPnim8rTY8JGBATGMcMtvsF_uJQcFZnCvZ5q5GvFIHk/edit?usp=sharing" target="_blank" rel="noopener">Resposta loja pronta Junho <span class="seta">↗</span></a>
-        </div>
-        </div>
+    <section class="stats" aria-label="Resumo do hub">
+      <div class="stat-card" data-aos="fade-up">
+        <span class="stat-number">6</span>
+        <span class="stat-label">áreas principais organizadas</span>
       </div>
-
-      <div class="card">
-        <h2>Loja Pronta</h2>
-        <p>Acesso para todo conceito de loja pronta, documentos, guias, mapas mentais e mais.</p>
-        <div class="botoes">
-          <a class="botao secundario" href="doc/Guia.pdf" target="_blank" rel="noopener">Guia de Criação de loja <span class="seta">↗</span></a>
-          <a class="botao" href="https://accounts.meister.co/login/google?locale=pt&product=mindmeister&r=140672&return_to=https%3A%2F%2Fwww.mindmeister.com%2Fapp%2Fmap%2F3789495295" target="_blank" rel="noopener">Mapa mental de briefing <span class="seta">↗</span></a>
-          <a class="botao" href="https://www.mindmeister.com/app/map/3817061493?t=E1i5moM1Wj" target="_blank" rel="noopener">Mapa mental Onboard <span class="seta">↗</span></a>
-          <a class="botao" href="https://hermix-pro.vercel.app" target="_blank" rel="noopener">Produtos de Loja Pronta Hermix <span class="seta">↗</span></a>
-          <a class="botao" href="doc/lojas_prontas" target="_blank" rel="noopener">Lista de Lojas Prontas <span class="seta">↗</span></a>
-          <a class="botao" href="doc/lista_treinamento" target="_blank" rel="noopener">Lista de Sellers <span class="seta">↗</span></a>
-        </div>
+      <div class="stat-card" data-aos="fade-up" data-aos-delay="80">
+        <span class="stat-number">24+</span>
+        <span class="stat-label">links e arquivos reunidos</span>
       </div>
-
-      <div class="card">
-        <h2>🚚 FBA & DBA</h2>
-        <p>Links importantes para consulta de pontos de envio e organização das coletas dos produtos.</p>
-        <div class="botoes">
-          <a class="botao" href="https://venda.amazon.com.br/pontos-de-envio" target="_blank" rel="noopener">Pontos de coleta DBA <span class="seta">↗</span></a>
-        <a class="botao" href="doc/planilhaFBA.xlsx" target="_blank" rel="noopener">Planilha de cobertura FBA<span class="seta">↗</span></a>
-        </div>
+      <div class="stat-card" data-aos="fade-up" data-aos-delay="160">
+        <span class="stat-number">100%</span>
+        <span class="stat-label">tema escuro com visual premium</span>
       </div>
-
-      <div class="card">
-        <h2>🎓 Treinamento</h2>
-        <p>Acessos relacionados aos treinamentos Seller Pro e aos produtos utilizados no processo de Loja Pronta.</p>
-        <div class="botoes">
-          <a class="botao" href="https://sellerpro.cademi.com.br/auth/login?redirect=https%3A%2F%2Fsellerpro.cademi.com.br%2Farea%2Fvitrine" target="_blank" rel="noopener">Treinamento VIdeos Seller Pro <span class="seta">↗</span></a>
-         
-          <a class="botao" href="https://listadefornecedores-six.vercel.app" target="_blank" rel="noopener">Lista de Fornecedores <span class="seta">↗</span></a>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>📁 Arquivos para Baixar</h2>
-        <p>Arquivos locais salvos na pasta <span class="destaque">doc</span>. Mantenha os nomes dos arquivos iguais aos links abaixo para o download funcionar corretamente.</p>
-        <div class="botoes">
-          <a class="botao download" href="doc/hazmat baterias.xlsx" download>Baixar planilha de HAZMAT baterias <span class="seta">↓</span></a>
-          <a class="botao download" href="doc/hazmat quimicos.xlsx" download>Baixar planilha de HAZMAT químicos <span class="seta">↓</span></a>
-          <a class="botao download" href="doc/carta de autorizacao.docx" download>Baixar carta de autorização <span class="seta">↓</span></a>
-          <a class="botao download" href="doc/carta de revenda de marca.docx" download>Baixar carta de revenda de marca <span class="seta">↓</span></a>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>A Definir</h2>
-        <p>A Definir</p>
-        <div class="botoes">
-          <a class="botao secundario" href="doc/criacao.pdf" target="_blank" rel="noopener">A definir <span class="seta">↗</span></a>
-          
+      <div class="stat-card" data-aos="fade-up" data-aos-delay="240">
+        <span class="stat-number">⚡</span>
+        <span class="stat-label">navegação rápida para suporte</span>
       </div>
     </section>
 
-    <section class="card certificados">
-      <h2>✅ Quando solicitar certificados: ANVISA, INMETRO e ANATEL</h2>
+    <section class="section-title" id="acessos">
+      <h2>Acessos rápidos</h2>
+      <p>Cards organizados por rotina para facilitar o uso no atendimento, treinamento e acompanhamento dos sellers.</p>
+    </section>
+
+    <section class="grid">
+      <article class="hub-card" data-aos="fade-up">
+        <div class="card-top">
+          <div class="icon-box"><i class="fa-solid fa-table"></i></div>
+          <span class="tag">Planilhas</span>
+        </div>
+        <h3>Planilhas Online</h3>
+        <p>Acesso direto às planilhas principais utilizadas no acompanhamento dos sellers, lançamentos e comissões.</p>
+        <div class="links">
+          <a class="link-button" href="https://docs.google.com/spreadsheets/d/1WtQe9W1QOZKp2oLLxd8SjZdSfhGZn59ui-tarTujK48/edit?pli=1&gid=684575404#gid=684575404" target="_blank" rel="noopener">Alunos ativos <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a class="link-button" href="https://docs.google.com/spreadsheets/d/1xXvoZ1hHPz77E0NHXwV6hxXjAqBKUPYDgnU-P98E1NQ/edit?gid=897940405#gid=897940405" target="_blank" rel="noopener">Planilha de lançamentos <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a class="link-button" href="https://docs.google.com/spreadsheets/d/1vaHiIlOC7W_slkoCDd7rjUl-TkQWVe5Tr-M1eTzzY5I/edit?gid=272235016#gid=272235016" target="_blank" rel="noopener">Comissões Loja Pronta <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a class="link-button" href="https://docs.google.com/spreadsheets/d/1kL5XwGSN8-DmMVdWfVgbp7b4TIiFWMGtgZ2K8pPacsg/edit?usp=sharing" target="_blank" rel="noopener">Resposta loja pronta Janeiro <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a class="link-button" href="https://docs.google.com/spreadsheets/d/1Ai4rPIFeRTxPiJUb6j1yUPjjv7BpX72efZEaoV_8aYk/edit?usp=sharing" target="_blank" rel="noopener">Resposta loja pronta Março <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a class="link-button" href="https://docs.google.com/spreadsheets/d/1OPnim8rTY8JGBATGMcMtvsF_uJQcFZnCvZ5q5GvFIHk/edit?usp=sharing" target="_blank" rel="noopener">Resposta loja pronta Junho <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+      </article>
+
+      <article class="hub-card" data-aos="fade-up" data-aos-delay="80">
+        <div class="card-top">
+          <div class="icon-box"><i class="fa-solid fa-store"></i></div>
+          <span class="tag">Loja Pronta</span>
+        </div>
+        <h3>Loja Pronta</h3>
+        <p>Acesso para conceitos, documentos, guias, mapas mentais e materiais de apoio do fluxo de Loja Pronta.</p>
+        <div class="links">
+          <a class="link-button" href="doc/Guia.pdf" target="_blank" rel="noopener">Guia de Criação de loja <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a class="link-button" href="https://accounts.meister.co/login/google?locale=pt&product=mindmeister&r=140672&return_to=https%3A%2F%2Fwww.mindmeister.com%2Fapp%2Fmap%2F3789495295" target="_blank" rel="noopener">Mapa mental de briefing <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a class="link-button" href="https://www.mindmeister.com/app/map/3817061493?t=E1i5moM1Wj" target="_blank" rel="noopener">Mapa mental Onboard <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a class="link-button" href="https://hermix-pro.vercel.app" target="_blank" rel="noopener">Produtos de Loja Pronta Hermix <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a class="link-button" href="doc/lojas_prontas" target="_blank" rel="noopener">Lista de Lojas Prontas <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a class="link-button" href="doc/lista_treinamento" target="_blank" rel="noopener">Lista de Sellers <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+      </article>
+
+      <article class="hub-card" data-aos="fade-up" data-aos-delay="160">
+        <div class="card-top">
+          <div class="icon-box"><i class="fa-solid fa-truck-fast"></i></div>
+          <span class="tag">Logística</span>
+        </div>
+        <h3>FBA & DBA</h3>
+        <p>Links importantes para consulta de pontos de envio, cobertura FBA e organização logística dos produtos.</p>
+        <div class="links">
+          <a class="link-button" href="https://venda.amazon.com.br/pontos-de-envio" target="_blank" rel="noopener">Pontos de coleta DBA <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a class="link-button download" href="doc/planilhaFBA.xlsx" target="_blank" rel="noopener">Planilha de cobertura FBA <i class="fa-solid fa-file-excel"></i></a>
+        </div>
+      </article>
+
+      <article class="hub-card" data-aos="fade-up">
+        <div class="card-top">
+          <div class="icon-box"><i class="fa-solid fa-graduation-cap"></i></div>
+          <span class="tag">Treinamento</span>
+        </div>
+        <h3>Treinamento</h3>
+        <p>Acessos relacionados aos treinamentos Seller Pro e aos produtos utilizados no processo de Loja Pronta.</p>
+        <div class="links">
+          <a class="link-button" href="https://sellerpro.cademi.com.br/auth/login?redirect=https%3A%2F%2Fsellerpro.cademi.com.br%2Farea%2Fvitrine" target="_blank" rel="noopener">Treinamento Vídeos Seller Pro <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          <a class="link-button" href="https://listadefornecedores-six.vercel.app" target="_blank" rel="noopener">Lista de Fornecedores <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+      </article>
+
+      <article class="hub-card" data-aos="fade-up" data-aos-delay="80">
+        <div class="card-top">
+          <div class="icon-box"><i class="fa-solid fa-folder-open"></i></div>
+          <span class="tag">Downloads</span>
+        </div>
+        <h3>Arquivos para Baixar</h3>
+        <p>Arquivos locais salvos na pasta <span class="highlight">doc</span>. Mantenha os nomes iguais aos links para o download funcionar.</p>
+        <div class="links">
+          <a class="link-button download" href="doc/hazmat baterias.xlsx" download>Baixar planilha de HAZMAT baterias <i class="fa-solid fa-download"></i></a>
+          <a class="link-button download" href="doc/hazmat quimicos.xlsx" download>Baixar planilha de HAZMAT químicos <i class="fa-solid fa-download"></i></a>
+          <a class="link-button download" href="doc/carta de autorizacao.docx" download>Baixar carta de autorização <i class="fa-solid fa-download"></i></a>
+          <a class="link-button download" href="doc/carta de revenda de marca.docx" download>Baixar carta de revenda de marca <i class="fa-solid fa-download"></i></a>
+        </div>
+      </article>
+
+      <article class="hub-card" data-aos="fade-up" data-aos-delay="160">
+        <div class="card-top">
+          <div class="icon-box"><i class="fa-solid fa-plus"></i></div>
+          <span class="tag">Em breve</span>
+        </div>
+        <h3>A Definir</h3>
+        <p>Espaço reservado para novos documentos, ferramentas, manuais ou acessos internos que forem adicionados futuramente.</p>
+        <div class="links">
+          <a class="link-button" href="doc/criacao.pdf" target="_blank" rel="noopener">A definir <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>
+      </article>
+    </section>
+
+    <section class="info-card" id="certificados" data-aos="fade-up">
+      <h3><i class="fa-solid fa-certificate"></i> Quando solicitar certificados: ANVISA, INMETRO e ANATEL</h3>
       <p>
-        Alguns produtos podem exigir certificados ou comprovações regulatórias antes de serem vendidos ou aprovados na Amazon. A necessidade varia conforme o tipo de produto, categoria, composição, uso e risco associado.
+        Alguns produtos podem exigir certificados ou comprovações regulatórias antes de serem vendidos ou aprovados na Amazon.
+        A necessidade varia conforme o tipo de produto, categoria, composição, uso e risco associado.
       </p>
-      <ul>
-        <li><span class="destaque">ANVISA:</span> normalmente relacionada a produtos ligados à saúde, higiene, cosméticos, saneantes, alimentos, suplementos, produtos médicos e itens que tenham contato direto com o corpo ou consumo.</li>
-        <li><span class="destaque">INMETRO:</span> pode ser solicitado para produtos que possuem normas obrigatórias de segurança, como brinquedos, itens infantis, equipamentos elétricos, capacetes, escadas, pneus e outros produtos regulamentados.</li>
-        <li><span class="destaque">ANATEL:</span> geralmente exigida para produtos com comunicação sem fio, Bluetooth, Wi-Fi, rádio frequência, telecomunicação, celulares, roteadores, fones sem fio, smartwatches e dispositivos conectados.</li>
-        <li><span class="destaque">Atenção:</span> quando a Amazon solicitar documentação, o suporte deve orientar o seller a verificar se o produto realmente se enquadra na exigência e reunir documentos oficiais, válidos e compatíveis com o produto anunciado.</li>
+
+      <ul class="info-list">
+        <li><span class="highlight">ANVISA:</span> normalmente relacionada a produtos ligados à saúde, higiene, cosméticos, saneantes, alimentos, suplementos, produtos médicos e itens que tenham contato direto com o corpo ou consumo.</li>
+        <li><span class="highlight">INMETRO:</span> pode ser solicitado para produtos que possuem normas obrigatórias de segurança, como brinquedos, itens infantis, equipamentos elétricos, capacetes, escadas, pneus e outros produtos regulamentados.</li>
+        <li><span class="highlight">ANATEL:</span> geralmente exigida para produtos com comunicação sem fio, Bluetooth, Wi‑Fi, rádio frequência, telecomunicação, celulares, roteadores, fones sem fio, smartwatches e dispositivos conectados.</li>
+        <li><span class="highlight">Atenção:</span> quando a Amazon solicitar documentação, o suporte deve orientar o seller a verificar se o produto realmente se enquadra na exigência e reunir documentos oficiais, válidos e compatíveis com o produto anunciado.</li>
       </ul>
     </section>
 
-<section class="card certificados">
-  <h2>✅ Qual a diferença entre DBA e FBA?</h2>
-  <p>
-    DBA e FBA são modelos logísticos da Amazon, mas funcionam de formas diferentes. No DBA, o estoque fica com o vendedor e a Amazon faz a entrega. No FBA, o estoque fica armazenado na Amazon, que cuida da separação, embalagem, envio e parte do atendimento ao cliente.
-  </p>
+    <section class="info-card" id="logistica" data-aos="fade-up">
+      <h3><i class="fa-solid fa-boxes-stacked"></i> Qual a diferença entre DBA e FBA?</h3>
+      <p>
+        DBA e FBA são modelos logísticos da Amazon, mas funcionam de formas diferentes. No DBA, o estoque fica com o vendedor e a Amazon faz a entrega.
+        No FBA, o estoque fica armazenado na Amazon, que cuida da separação, embalagem, envio e parte do atendimento ao cliente.
+      </p>
 
-  <ul>
-    <li>
-      <span class="destaque">DBA — Delivery by Amazon:</span>
-      o vendedor mantém o produto em seu próprio estoque, separa e embala o pedido. Depois, a Amazon coleta ou o vendedor posta em um ponto parceiro para que a Amazon realize a entrega ao cliente.
-    </li>
+      <ul class="info-list">
+        <li><span class="highlight">DBA — Delivery by Amazon:</span> o vendedor mantém o produto em seu próprio estoque, separa e embala o pedido. Depois, a Amazon coleta ou o vendedor posta em um ponto parceiro para que a Amazon realize a entrega ao cliente.</li>
+        <li><span class="highlight">Vantagens do DBA:</span> menor investimento inicial, mais controle do estoque e bom modelo para quem está começando ou testando produtos.</li>
+        <li><span class="highlight">Pontos de atenção no DBA:</span> o vendedor precisa cuidar da separação, embalagem e despacho dos pedidos, o que gera mais trabalho operacional no dia a dia.</li>
+        <li><span class="highlight">FBA — Fulfillment by Amazon:</span> o vendedor envia o estoque para o centro de distribuição da Amazon. Quando o produto vende, a Amazon armazena, separa, embala, envia e cuida de parte das devoluções.</li>
+        <li><span class="highlight">Vantagens do FBA:</span> maior escala, entrega Prime, mais chances de ganhar Buy Box, operação mais automatizada e menos trabalho diário para o vendedor.</li>
+        <li><span class="highlight">Pontos de atenção no FBA:</span> exige investimento em estoque, planejamento logístico e pode gerar custos de armazenagem ou estoque parado.</li>
+        <li><span class="highlight">Método Seller Pro:</span> muitos sellers começam no DBA para validar a demanda e, depois, migram os produtos vencedores para o FBA para ganhar escala, melhorar a conversão e automatizar a operação.</li>
+      </ul>
+    </section>
 
-    <li>
-      <span class="destaque">Vantagens do DBA:</span>
-      menor investimento inicial, mais controle do estoque e bom modelo para quem está começando ou testando produtos.
-    </li>
-
-    <li>
-      <span class="destaque">Pontos de atenção no DBA:</span>
-      o vendedor precisa cuidar da separação, embalagem e despacho dos pedidos, o que gera mais trabalho operacional no dia a dia.
-    </li>
-
-    <li>
-      <span class="destaque">FBA — Fulfillment by Amazon:</span>
-      o vendedor envia o estoque para o centro de distribuição da Amazon. Quando o produto vende, a Amazon armazena, separa, embala, envia e cuida de parte das devoluções.
-    </li>
-
-    <li>
-      <span class="destaque">Vantagens do FBA:</span>
-      maior escala, entrega Prime, mais chances de ganhar Buy Box, operação mais automatizada e menos trabalho diário para o vendedor.
-    </li>
-
-    <li>
-      <span class="destaque">Pontos de atenção no FBA:</span>
-      exige investimento em estoque, planejamento logístico e pode gerar custos de armazenagem ou estoque parado.
-    </li>
-
-    <li>
-      <span class="destaque">Método Seller Pro:</span>
-      muitos sellers começam no DBA para validar a demanda e, depois, migram os produtos vencedores para o FBA para ganhar escala, melhorar a conversão e automatizar a operação.
-    </li>
-  </ul>
-</section>
-
-    <footer>
-      Criado pelo Carlos 
+    <footer class="footer">
+      <span>Criado pelo Carlos • Hub interno Seller Pro</span>
+      <a class="scroll-top" href="#topo">
+        Voltar ao topo <i class="fa-solid fa-arrow-up"></i>
+      </a>
     </footer>
   </main>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 850,
+      once: true,
+      offset: 80,
+      easing: "ease-out-cubic"
+    });
+
+    const glow = document.getElementById("cursorGlow");
+
+    window.addEventListener("mousemove", (event) => {
+      glow.style.opacity = "1";
+      glow.style.left = `${event.clientX}px`;
+      glow.style.top = `${event.clientY}px`;
+    });
+
+    window.addEventListener("mouseleave", () => {
+      glow.style.opacity = "0";
+    });
+
+    document.querySelectorAll(".hub-card").forEach((card) => {
+      card.addEventListener("mousemove", (event) => {
+        const rect = card.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        card.style.background = `
+          radial-gradient(circle at ${x}px ${y}px, rgba(255, 122, 0, 0.14), transparent 34%),
+          var(--card)
+        `;
+      });
+
+      card.addEventListener("mouseleave", () => {
+        card.style.background = "var(--card)";
+      });
+    });
+  </script>
 </body>
 </html>
