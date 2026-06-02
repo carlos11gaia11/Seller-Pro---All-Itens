@@ -476,12 +476,16 @@
         return;
       }
 
-      showMessage("success", "Conta criada com sucesso! Caso a confirmação por e-mail esteja ativa no Supabase, o usuário precisa confirmar o e-mail antes de acessar.");
-      form.reset();
-      strengthFill.style.width = "0%";
-      strengthText.textContent = "Força da senha";
-      strengthText.style.color = "#71717a";
-    });
+      showMessage("success", "Cadastro realizado com sucesso! Você será redirecionado para a tela de login.");
+
+form.reset();
+strengthFill.style.width = "0%";
+strengthText.textContent = "Força da senha";
+strengthText.style.color = "#71717a";
+
+setTimeout(() => {
+  window.location.href = "index.html";
+}, 2500);
 
     window.addEventListener("mousemove", (event) => {
       glow.style.opacity = "1";
