@@ -692,30 +692,20 @@
         return;
       }
 
-      const user = data.user;
+     const user = data.user;
 
-      const { data: perfil, error: perfilError } = await supabaseClient
-        .from("profiles")
-        .select("nome, cargo, avatar_url")
-        .eq("id", user.id)
-        .single();
+const nomeUsuario = user.user_metadata?.nome || user.email;
+const cargoUsuario = user.user_metadata?.cargo || "Usuário";
 
-      if (perfilError || !perfil) {
-        exibirErro("Login realizado, mas não foi possível carregar o perfil do usuário.");
-        await supabaseClient.auth.signOut();
-        resetarBotao();
-        return;
-      }
+sessionStorage.setItem("logado", "sim");
+sessionStorage.setItem("tipoUsuario", cargoUsuario);
+sessionStorage.setItem("userId", user.id);
+sessionStorage.setItem("nomeUsuario", nomeUsuario);
+sessionStorage.setItem("cargoUsuario", cargoUsuario);
+sessionStorage.setItem("avatarUsuario", "");
+sessionStorage.setItem("acessoTemporario", "nao");
 
-      sessionStorage.setItem("logado", "sim");
-      sessionStorage.setItem("tipoUsuario", perfil.cargo);
-      sessionStorage.setItem("userId", user.id);
-      sessionStorage.setItem("nomeUsuario", perfil.nome);
-      sessionStorage.setItem("cargoUsuario", perfil.cargo);
-      sessionStorage.setItem("avatarUsuario", perfil.avatar_url || "");
-      sessionStorage.setItem("acessoTemporario", "nao");
-
-      window.location.href = "menu.html";
+window.location.href = "menu.html";
 
       function exibirErro(texto) {
         mensagemErro.querySelector("span").textContent = texto;
