@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Login - Seller Pro</title>
+
   <link rel="icon" type="image/png" href="doc/iconnovaera.png">
-  
 
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
@@ -391,6 +394,18 @@
       color: var(--muted);
     }
 
+    .signup-link {
+      color: var(--orange-light);
+      text-decoration: none;
+      font-weight: 800;
+      transition: 0.22s ease;
+    }
+
+    .signup-link:hover {
+      color: #ffffff;
+      text-shadow: 0 0 18px rgba(255, 122, 0, 0.55);
+    }
+
     .submit-button {
       position: relative;
       width: 100%;
@@ -435,6 +450,11 @@
     .submit-button i {
       position: relative;
       z-index: 1;
+    }
+
+    .submit-button.loading {
+      pointer-events: none;
+      opacity: 0.78;
     }
 
     .erro {
@@ -566,13 +586,19 @@
         </div>
 
         <h2 class="login-title">Login</h2>
-        <p class="login-subtitle">Entre com seu usuário e senha para acessar sua área restrita.</p>
+        <p class="login-subtitle">Entre com seu e-mail e senha para acessar sua área restrita.</p>
 
         <form onsubmit="fazerLogin(event)">
           <div class="input-group">
-            <label for="usuario"><i class="fa-solid fa-user"></i> Usuário</label>
+            <label for="email"><i class="fa-solid fa-envelope"></i> E-mail ou chave de acesso</label>
             <div class="input-wrap">
-              <input type="text" id="usuario" placeholder="Digite seu usuário" autocomplete="username" required />
+              <input
+                type="text"
+                id="email"
+                placeholder="Digite seu e-mail ou chave temporária"
+                autocomplete="username"
+                required
+              />
               <i class="fa-solid fa-circle-user field-icon"></i>
             </div>
           </div>
@@ -580,7 +606,13 @@
           <div class="input-group">
             <label for="senha"><i class="fa-solid fa-key"></i> Senha</label>
             <div class="input-wrap">
-              <input type="password" id="senha" placeholder="Digite sua senha" autocomplete="current-password" required />
+              <input
+                type="password"
+                id="senha"
+                placeholder="Digite sua senha"
+                autocomplete="current-password"
+                required
+              />
               <i class="fa-solid fa-lock field-icon"></i>
               <button class="toggle-password" type="button" onclick="alternarSenha()" aria-label="Mostrar ou ocultar senha">
                 <i class="fa-solid fa-eye" id="iconeSenha"></i>
@@ -590,17 +622,17 @@
 
           <div class="form-actions">
             <span class="secure-chip"><i class="fa-solid fa-shield-heart"></i> Sessão protegida</span>
-            <span>Seller Pro Hub</span>
+            <a href="signup_novaera.html" class="signup-link">Criar conta</a>
           </div>
 
-          <button class="submit-button" type="submit">
-            <span>Entrar</span>
-            <i class="fa-solid fa-arrow-right"></i>
+          <button class="submit-button" type="submit" id="botaoLogin">
+            <span id="textoBotao">Entrar</span>
+            <i class="fa-solid fa-arrow-right" id="iconeBotao"></i>
           </button>
 
           <div class="erro" id="mensagemErro">
             <i class="fa-solid fa-circle-exclamation"></i>
-            <span>Usuário ou senha incorretos. Confira os dados e tente novamente.</span>
+            <span>E-mail ou senha incorretos. Confira os dados e tente novamente.</span>
           </div>
         </form>
 
@@ -612,25 +644,88 @@
   </main>
 
   <script>
-    function fazerLogin(event) {
+    const SUPABASE_URL = "https://owgvzmeewzpmzgcdwbfq.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function fazerLogin(event) {
       event.preventDefault();
 
-      const usuario = document.getElementById("usuario").value.trim();
+      const emailOuChave = document.getElementById("email").value.trim();
       const senha = document.getElementById("senha").value.trim();
       const mensagemErro = document.getElementById("mensagemErro");
+      const botaoLogin = document.getElementById("botaoLogin");
+      const textoBotao = document.getElementById("textoBotao");
+      const iconeBotao = document.getElementById("iconeBotao");
 
-      if (usuario.toLowerCase() === "suporte" && senha === "suporte99@") {
+      mensagemErro.style.display = "none";
+
+      botaoLogin.classList.add("loading");
+      textoBotao.textContent = "Entrando...";
+      iconeBotao.className = "fa-solid fa-spinner fa-spin";
+
+      /*
+        ACESSO TEMPORÁRIO / CHAVE MIXA
+        Depois é só apagar esse bloco inteiro.
+      */
+      if (emailOuChave.toLowerCase() === "suporte" && senha === "suporte99@") {
         sessionStorage.setItem("logado", "sim");
         sessionStorage.setItem("tipoUsuario", "suporte");
+        sessionStorage.setItem("userId", "chave-temporaria-suporte");
+        sessionStorage.setItem("nomeUsuario", "Suporte");
+        sessionStorage.setItem("cargoUsuario", "Suporte Lider");
+        sessionStorage.setItem("acessoTemporario", "sim");
+
         window.location.href = "menu.html";
+        return;
       }
-      else if (usuario.toUpperCase() === "MENTORIA" && senha === "99@mentoria") {
-        sessionStorage.setItem("logado", "sim");
-        sessionStorage.setItem("tipoUsuario", "mentoria");
-        window.location.href = "menu_mentoria.html";
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: emailOuChave,
+        password: senha
+      });
+
+      if (error) {
+        exibirErro("E-mail ou senha incorretos. Confira os dados e tente novamente.");
+        resetarBotao();
+        return;
       }
-      else {
+
+      const user = data.user;
+
+      const { data: perfil, error: perfilError } = await supabaseClient
+        .from("profiles")
+        .select("nome, cargo, avatar_url")
+        .eq("id", user.id)
+        .single();
+
+      if (perfilError || !perfil) {
+        exibirErro("Login realizado, mas não foi possível carregar o perfil do usuário.");
+        await supabaseClient.auth.signOut();
+        resetarBotao();
+        return;
+      }
+
+      sessionStorage.setItem("logado", "sim");
+      sessionStorage.setItem("tipoUsuario", perfil.cargo);
+      sessionStorage.setItem("userId", user.id);
+      sessionStorage.setItem("nomeUsuario", perfil.nome);
+      sessionStorage.setItem("cargoUsuario", perfil.cargo);
+      sessionStorage.setItem("avatarUsuario", perfil.avatar_url || "");
+      sessionStorage.setItem("acessoTemporario", "nao");
+
+      window.location.href = "menu.html";
+
+      function exibirErro(texto) {
+        mensagemErro.querySelector("span").textContent = texto;
         mensagemErro.style.display = "flex";
+      }
+
+      function resetarBotao() {
+        botaoLogin.classList.remove("loading");
+        textoBotao.textContent = "Entrar";
+        iconeBotao.className = "fa-solid fa-arrow-right";
       }
     }
 
