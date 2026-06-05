@@ -11,9 +11,13 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
   <script src="https://cdn.tailwindcss.com"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
@@ -51,9 +55,13 @@
       --line: rgba(255,255,255,.105);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       min-height: 100vh;
@@ -90,7 +98,11 @@
       opacity: .9;
     }
 
-    @keyframes slowSpin { to { transform: rotate(360deg); } }
+    @keyframes slowSpin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     .noise {
       position: fixed;
@@ -148,16 +160,35 @@
     }
 
     @keyframes floatOrb {
-      0%, 100% { transform: translate3d(0,0,0) scale(1); }
-      50% { transform: translate3d(18px,-24px,0) scale(1.07); }
+      0%, 100% {
+        transform: translate3d(0,0,0) scale(1);
+      }
+
+      50% {
+        transform: translate3d(18px,-24px,0) scale(1.07);
+      }
     }
 
-    .reveal { animation: reveal .85s cubic-bezier(.2,.9,.2,1) both; }
-    .reveal-delay { animation: reveal .95s cubic-bezier(.2,.9,.2,1) .12s both; }
+    .reveal {
+      animation: reveal .85s cubic-bezier(.2,.9,.2,1) both;
+    }
+
+    .reveal-delay {
+      animation: reveal .95s cubic-bezier(.2,.9,.2,1) .12s both;
+    }
 
     @keyframes reveal {
-      from { opacity: 0; transform: translateY(28px) scale(.985); filter: blur(12px); }
-      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+      from {
+        opacity: 0;
+        transform: translateY(28px) scale(.985);
+        filter: blur(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
     }
 
     .logo-float {
@@ -166,8 +197,13 @@
     }
 
     @keyframes logoFloat {
-      0%, 100% { transform: translateY(0) rotateX(0deg); }
-      50% { transform: translateY(-12px) rotateX(4deg); }
+      0%, 100% {
+        transform: translateY(0) rotateX(0deg);
+      }
+
+      50% {
+        transform: translateY(-12px) rotateX(4deg);
+      }
     }
 
     .scan-line {
@@ -180,9 +216,19 @@
     }
 
     @keyframes scan {
-      0%, 35% { transform: translateX(-120%); opacity: 0; }
-      50% { opacity: 1; }
-      75%, 100% { transform: translateX(120%); opacity: 0; }
+      0%, 35% {
+        transform: translateX(-120%);
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      75%, 100% {
+        transform: translateX(120%);
+        opacity: 0;
+      }
     }
 
     .field {
@@ -210,18 +256,39 @@
       transition: transform .65s ease;
     }
 
-    .btn-glow:hover::before { transform: translateX(120%); }
+    .btn-glow:hover::before {
+      transform: translateX(120%);
+    }
 
-    .message { display: none; }
-    .message.show { display: flex; animation: pop .28s ease both; }
+    .message {
+      display: none;
+    }
+
+    .message.show {
+      display: flex;
+      animation: pop .28s ease both;
+    }
 
     @keyframes pop {
-      from { opacity: 0; transform: translateY(8px) scale(.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
     }
   </style>
 </head>
@@ -251,11 +318,14 @@
             </div>
 
             <h1 class="mt-8 max-w-xl font-display text-4xl sm:text-5xl lg:text-6xl font-black leading-[.95] tracking-[-.06em]">
-              Criação de acesso <span class="block bg-gradient-to-r from-white via-orange-200 to-orange-500 bg-clip-text text-transparent">Nova Era</span>
+              Criação de acesso
+              <span class="block bg-gradient-to-r from-white via-orange-200 to-orange-500 bg-clip-text text-transparent">
+                Nova Era
+              </span>
             </h1>
 
             <p class="mt-6 max-w-xl text-base leading-8 text-zinc-300">
-              Cadastre usuários com nome, e-mail, senha e cargo. O acesso será criado direto no Supabase Auth para preparar a próxima etapa: login, sessão ativa e permissões por nível.
+              Cadastre usuários com nome, e-mail, senha e cargo. O acesso será criado direto no Supabase Auth.
             </p>
           </div>
 
@@ -265,15 +335,17 @@
               <p class="mt-2 text-sm font-bold">Auth real</p>
               <span class="text-xs text-zinc-400">Supabase</span>
             </div>
+
             <div class="rounded-2xl border border-white/10 bg-white/[.055] p-4 backdrop-blur-xl">
               <i class="fa-solid fa-id-badge text-orange-300"></i>
               <p class="mt-2 text-sm font-bold">Cargo interno</p>
               <span class="text-xs text-zinc-400">Níveis e liderança</span>
             </div>
+
             <div class="rounded-2xl border border-white/10 bg-white/[.055] p-4 backdrop-blur-xl">
               <i class="fa-solid fa-bolt text-orange-300"></i>
-              <p class="mt-2 text-sm font-bold">Pronto p/ login</p>
-              <span class="text-xs text-zinc-400">Próxima etapa</span>
+              <p class="mt-2 text-sm font-bold">Pronto para login</p>
+              <span class="text-xs text-zinc-400">Acesso imediato</span>
             </div>
           </div>
         </aside>
@@ -286,63 +358,129 @@
               <div class="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-gradient-to-br from-orange-200 to-orange-500 text-black shadow-glow">
                 <i class="fa-solid fa-user-plus text-2xl"></i>
               </div>
-              <h2 class="mt-5 font-display text-3xl font-black tracking-[-.05em]">Criar conta</h2>
-              <p class="mt-2 text-sm leading-6 text-zinc-400">Preencha os dados abaixo para gerar um novo usuário.</p>
+
+              <h2 class="mt-5 font-display text-3xl font-black tracking-[-.05em]">
+                Criar conta
+              </h2>
+
+              <p class="mt-2 text-sm leading-6 text-zinc-400">
+                Preencha os dados abaixo para gerar um novo usuário.
+              </p>
             </div>
 
             <form id="signupForm" class="space-y-4" autocomplete="on">
               <div>
                 <label for="nome" class="mb-2 flex items-center gap-2 text-sm font-extrabold text-zinc-100">
-                  <i class="fa-solid fa-signature text-orange-300"></i> Nome completo
+                  <i class="fa-solid fa-signature text-orange-300"></i>
+                  Nome completo
                 </label>
+
                 <div class="field flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.055] px-4">
                   <i class="fa-solid fa-circle-user text-zinc-500"></i>
-                  <input class="h-14 w-full bg-transparent text-white outline-none placeholder:text-zinc-600" type="text" id="nome" placeholder="Ex: Felipe Lobão" required />
+                  <input
+                    class="h-14 w-full bg-transparent text-white outline-none placeholder:text-zinc-600"
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Ex: Felipe Lobão"
+                    required
+                  />
                 </div>
               </div>
 
               <div>
                 <label for="email" class="mb-2 flex items-center gap-2 text-sm font-extrabold text-zinc-100">
-                  <i class="fa-solid fa-envelope text-orange-300"></i> E-mail
+                  <i class="fa-solid fa-envelope text-orange-300"></i>
+                  E-mail
                 </label>
+
                 <div class="field flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.055] px-4">
                   <i class="fa-solid fa-at text-zinc-500"></i>
-                  <input class="h-14 w-full bg-transparent text-white outline-none placeholder:text-zinc-600" type="email" id="email" placeholder="usuario@sellerpro.com" required />
+                  <input
+                    class="h-14 w-full bg-transparent text-white outline-none placeholder:text-zinc-600"
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="usuario@sellerpro.com"
+                    required
+                  />
                 </div>
               </div>
 
               <div>
                 <label for="senha" class="mb-2 flex items-center gap-2 text-sm font-extrabold text-zinc-100">
-                  <i class="fa-solid fa-key text-orange-300"></i> Senha
+                  <i class="fa-solid fa-key text-orange-300"></i>
+                  Senha
                 </label>
+
                 <div class="field flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.055] px-4">
                   <i class="fa-solid fa-lock text-zinc-500"></i>
-                  <input class="h-14 w-full bg-transparent text-white outline-none placeholder:text-zinc-600" type="password" id="senha" placeholder="Mínimo 6 caracteres" required minlength="6" />
-                  <button type="button" id="togglePassword" class="grid h-10 w-10 place-items-center rounded-xl text-zinc-400 transition hover:bg-orange-300 hover:text-black" aria-label="Mostrar ou ocultar senha">
+
+                  <input
+                    class="h-14 w-full bg-transparent text-white outline-none placeholder:text-zinc-600"
+                    type="password"
+                    id="senha"
+                    name="senha"
+                    placeholder="Mínimo 6 caracteres"
+                    required
+                    minlength="6"
+                  />
+
+                  <button
+                    type="button"
+                    id="togglePassword"
+                    class="grid h-10 w-10 place-items-center rounded-xl text-zinc-400 transition hover:bg-orange-300 hover:text-black"
+                    aria-label="Mostrar ou ocultar senha"
+                  >
                     <i class="fa-solid fa-eye" id="passwordIcon"></i>
                   </button>
                 </div>
-                <div class="strength-bar mt-2 h-1.5 overflow-hidden rounded-full bg-white/10"><span id="strengthFill" class="block h-full rounded-full"></span></div>
-                <p id="strengthText" class="mt-1 text-xs text-zinc-500">Força da senha</p>
+
+                <div class="strength-bar mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+                  <span id="strengthFill" class="block h-full rounded-full"></span>
+                </div>
+
+                <p id="strengthText" class="mt-1 text-xs text-zinc-500">
+                  Força da senha
+                </p>
               </div>
 
               <div>
                 <label for="confirmarSenha" class="mb-2 flex items-center gap-2 text-sm font-extrabold text-zinc-100">
-                  <i class="fa-solid fa-shield-check text-orange-300"></i> Confirmar senha
+                  <i class="fa-solid fa-shield-halved text-orange-300"></i>
+                  Confirmar senha
                 </label>
+
                 <div class="field flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.055] px-4">
                   <i class="fa-solid fa-check-double text-zinc-500"></i>
-                  <input class="h-14 w-full bg-transparent text-white outline-none placeholder:text-zinc-600" type="password" id="confirmarSenha" placeholder="Digite a senha novamente" required minlength="6" />
+
+                  <input
+                    class="h-14 w-full bg-transparent text-white outline-none placeholder:text-zinc-600"
+                    type="password"
+                    id="confirmarSenha"
+                    name="confirmarSenha"
+                    placeholder="Digite a senha novamente"
+                    required
+                    minlength="6"
+                  />
                 </div>
               </div>
 
               <div>
                 <label for="cargo" class="mb-2 flex items-center gap-2 text-sm font-extrabold text-zinc-100">
-                  <i class="fa-solid fa-users-gear text-orange-300"></i> Cargo
+                  <i class="fa-solid fa-users-gear text-orange-300"></i>
+                  Cargo
                 </label>
+
                 <div class="field flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[.055] px-4">
                   <i class="fa-solid fa-layer-group text-zinc-500"></i>
-                  <select id="cargo" required class="h-14 w-full bg-transparent text-white outline-none [&>option]:bg-zinc-950 [&>option]:text-white">
+
+                  <select
+                    id="cargo"
+                    name="cargo"
+                    required
+                    class="h-14 w-full bg-transparent text-white outline-none [&>option]:bg-zinc-950 [&>option]:text-white"
+                  >
                     <option value="">Selecione o cargo</option>
                     <option value="Suporte Lider">Suporte Lider</option>
                     <option value="Mentor Lider">Mentor Lider</option>
@@ -356,7 +494,11 @@
                 </div>
               </div>
 
-              <button id="submitButton" type="submit" class="btn-glow relative mt-3 flex h-14 w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-200 via-orange-400 to-orange-600 font-black text-black shadow-glow transition duration-300 hover:-translate-y-1 hover:brightness-110 active:translate-y-0">
+              <button
+                id="submitButton"
+                type="submit"
+                class="btn-glow relative mt-3 flex h-14 w-full items-center justify-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-orange-200 via-orange-400 to-orange-600 font-black text-black shadow-glow transition duration-300 hover:-translate-y-1 hover:brightness-110 active:translate-y-0"
+              >
                 <span id="buttonText" class="relative z-10">Criar conta</span>
                 <i id="buttonIcon" class="fa-solid fa-arrow-right relative z-10"></i>
               </button>
@@ -377,77 +519,122 @@
     const SUPABASE_URL = "https://owgvzmeewzpmzgcdwbfq.supabase.co";
     const SUPABASE_KEY = "sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr";
 
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    if (!window.supabase) {
+      alert("Erro: biblioteca do Supabase não foi carregada. Verifique sua internet ou o CDN.");
+    }
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const form = document.getElementById("signupForm");
     const mensagem = document.getElementById("mensagem");
     const submitButton = document.getElementById("submitButton");
     const buttonText = document.getElementById("buttonText");
     const buttonIcon = document.getElementById("buttonIcon");
+
     const senha = document.getElementById("senha");
     const confirmarSenha = document.getElementById("confirmarSenha");
     const togglePassword = document.getElementById("togglePassword");
     const passwordIcon = document.getElementById("passwordIcon");
+
     const strengthFill = document.getElementById("strengthFill");
     const strengthText = document.getElementById("strengthText");
+
     const glow = document.getElementById("cursorGlow");
 
     function showMessage(type, text) {
       const isSuccess = type === "success";
-      mensagem.className = "message show items-start gap-3 rounded-2xl border p-4 text-sm leading-6 " +
-        (isSuccess
-          ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
-          : "border-rose-400/30 bg-rose-400/10 text-rose-200");
-      mensagem.innerHTML = `<i class="fa-solid ${isSuccess ? "fa-circle-check" : "fa-circle-exclamation"} mt-1"></i><span>${text}</span>`;
+
+      mensagem.className =
+        "message show items-start gap-3 rounded-2xl border p-4 text-sm leading-6 " +
+        (
+          isSuccess
+            ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-200"
+            : "border-rose-400/30 bg-rose-400/10 text-rose-200"
+        );
+
+      mensagem.innerHTML = `
+        <i class="fa-solid ${isSuccess ? "fa-circle-check" : "fa-circle-exclamation"} mt-1"></i>
+        <span>${text}</span>
+      `;
+    }
+
+    function clearMessage() {
+      mensagem.className = "message";
+      mensagem.innerHTML = "";
     }
 
     function setLoading(isLoading) {
       submitButton.disabled = isLoading;
+
       submitButton.classList.toggle("opacity-70", isLoading);
       submitButton.classList.toggle("cursor-not-allowed", isLoading);
+
       buttonText.textContent = isLoading ? "Criando conta..." : "Criar conta";
-      buttonIcon.className = isLoading ? "fa-solid fa-spinner fa-spin relative z-10" : "fa-solid fa-arrow-right relative z-10";
+
+      buttonIcon.className = isLoading
+        ? "fa-solid fa-spinner fa-spin relative z-10"
+        : "fa-solid fa-arrow-right relative z-10";
     }
 
     function calculateStrength(value) {
       let score = 0;
+
       if (value.length >= 6) score++;
       if (value.length >= 10) score++;
       if (/[A-Z]/.test(value)) score++;
       if (/[0-9]/.test(value)) score++;
       if (/[^A-Za-z0-9]/.test(value)) score++;
+
       return score;
     }
 
     senha.addEventListener("input", () => {
       const score = calculateStrength(senha.value);
+
       const widths = [0, 22, 42, 64, 82, 100];
       const labels = ["Força da senha", "Muito fraca", "Fraca", "Boa", "Forte", "Excelente"];
       const colors = ["transparent", "#fb7185", "#fb923c", "#facc15", "#34d399", "#20e6a1"];
 
       strengthFill.style.width = `${widths[score]}%`;
       strengthFill.style.background = colors[score];
+
       strengthText.textContent = labels[score];
       strengthText.style.color = colors[score] === "transparent" ? "#71717a" : colors[score];
     });
 
     togglePassword.addEventListener("click", () => {
       const isPassword = senha.type === "password";
+
       senha.type = isPassword ? "text" : "password";
       confirmarSenha.type = isPassword ? "text" : "password";
+
       passwordIcon.className = isPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
     });
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      mensagem.className = "message";
-      mensagem.innerHTML = "";
+      clearMessage();
 
       const nome = document.getElementById("nome").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const senhaValor = senha.value;
-      const confirmarSenhaValor = confirmarSenha.value;
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const senhaValor = senha.value.trim();
+      const confirmarSenhaValor = confirmarSenha.value.trim();
       const cargo = document.getElementById("cargo").value;
+
+      if (!nome) {
+        showMessage("error", "Informe o nome completo.");
+        return;
+      }
+
+      if (!email) {
+        showMessage("error", "Informe o e-mail.");
+        return;
+      }
+
+      if (senhaValor.length < 6) {
+        showMessage("error", "A senha precisa ter no mínimo 6 caracteres.");
+        return;
+      }
 
       if (senhaValor !== confirmarSenhaValor) {
         showMessage("error", "As senhas não conferem. Verifique e tente novamente.");
@@ -461,39 +648,75 @@
 
       setLoading(true);
 
-      const { error } = await supabaseClient.auth.signUp({
-        email,
-        password: senhaValor,
-        options: {
-          data: { nome, cargo }
+      try {
+        const { data, error } = await supabaseClient.auth.signUp({
+          email: email,
+          password: senhaValor,
+          options: {
+            data: {
+              nome: nome,
+              cargo: cargo
+            }
+          }
+        });
+
+        if (error) {
+          throw error;
         }
-      });
 
-      setLoading(false);
+        if (!data || !data.user) {
+          throw new Error("O Supabase não retornou o usuário criado.");
+        }
 
-      if (error) {
-        showMessage("error", "Erro ao criar conta: " + error.message);
-        return;
+        await supabaseClient.auth.signOut();
+
+        showMessage("success", "Cadastro realizado com sucesso! Redirecionando para a tela de login...");
+
+        form.reset();
+
+        strengthFill.style.width = "0%";
+        strengthFill.style.background = "transparent";
+        strengthText.textContent = "Força da senha";
+        strengthText.style.color = "#71717a";
+
+        setTimeout(() => {
+          window.location.href = "index.html?cadastro=sucesso";
+        }, 1800);
+
+      } catch (error) {
+        console.error("Erro ao criar conta:", error);
+
+        let errorMessage = "Erro ao criar conta. Tente novamente.";
+
+        if (error.message) {
+          if (error.message.toLowerCase().includes("already registered")) {
+            errorMessage = "Este e-mail já está cadastrado.";
+          } else if (error.message.toLowerCase().includes("invalid email")) {
+            errorMessage = "O e-mail informado é inválido.";
+          } else if (error.message.toLowerCase().includes("password")) {
+            errorMessage = "A senha informada não atende aos requisitos.";
+          } else {
+            errorMessage = "Erro ao criar conta: " + error.message;
+          }
+        }
+
+        showMessage("error", errorMessage);
+      } finally {
+        setLoading(false);
       }
-
-      showMessage("success", "Cadastro realizado com sucesso! Você será redirecionado para a tela de login.");
-
-form.reset();
-strengthFill.style.width = "0%";
-strengthText.textContent = "Força da senha";
-strengthText.style.color = "#71717a";
-
-setTimeout(() => {
-  window.location.href = "index.html";
-}, 2500);
+    });
 
     window.addEventListener("mousemove", (event) => {
+      if (!glow) return;
+
       glow.style.opacity = "1";
       glow.style.left = `${event.clientX}px`;
       glow.style.top = `${event.clientY}px`;
     });
 
     window.addEventListener("mouseleave", () => {
+      if (!glow) return;
+
       glow.style.opacity = "0";
     });
   </script>
