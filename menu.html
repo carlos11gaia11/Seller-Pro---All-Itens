@@ -100,6 +100,288 @@
       65%, 100% { transform: translateX(120%); opacity: 0; }
     }
 
+    /* Tela de entrada premium */
+    .welcome-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 122, 0, 0.38), transparent 28%),
+        radial-gradient(circle at 80% 10%, rgba(255, 177, 92, 0.22), transparent 30%),
+        radial-gradient(circle at 50% 90%, rgba(255, 122, 0, 0.22), transparent 35%),
+        linear-gradient(135deg, #020202 0%, #09090d 48%, #140c05 100%);
+      transition: opacity 0.9s ease, visibility 0.9s ease;
+    }
+
+    .welcome-screen.hide-welcome {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .welcome-screen::before {
+      content: "";
+      position: absolute;
+      inset: -50%;
+      background:
+        conic-gradient(
+          from 0deg,
+          transparent,
+          rgba(255, 122, 0, 0.22),
+          transparent,
+          rgba(255, 255, 255, 0.12),
+          transparent
+        );
+      animation: welcomeRotate 7s linear infinite;
+    }
+
+    .welcome-screen::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.08) 45%, transparent 62%);
+      transform: translateX(-120%);
+      animation: welcomeFlash 2.7s ease-in-out infinite;
+    }
+
+    @keyframes welcomeRotate {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes welcomeFlash {
+      0%, 35% {
+        transform: translateX(-120%);
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      80%, 100% {
+        transform: translateX(120%);
+        opacity: 0;
+      }
+    }
+
+    .welcome-content {
+      position: relative;
+      z-index: 2;
+      width: min(1100px, calc(100% - 28px));
+      padding: clamp(34px, 7vw, 78px);
+      text-align: center;
+      border-radius: 38px;
+      background: rgba(8, 8, 13, 0.58);
+      border: 1px solid rgba(255, 122, 0, 0.35);
+      box-shadow:
+        0 0 45px rgba(255, 122, 0, 0.20),
+        0 0 120px rgba(255, 122, 0, 0.16),
+        inset 0 0 60px rgba(255, 122, 0, 0.08);
+      backdrop-filter: blur(22px);
+      animation: welcomeContentIn 1s ease both;
+    }
+
+    @keyframes welcomeContentIn {
+      from {
+        opacity: 0;
+        transform: scale(0.92) translateY(28px);
+        filter: blur(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    .welcome-small {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      padding: 9px 16px;
+      border-radius: 999px;
+      color: var(--orange-light);
+      font-size: clamp(0.72rem, 2vw, 0.92rem);
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      background: rgba(255, 122, 0, 0.12);
+      border: 1px solid rgba(255, 122, 0, 0.35);
+      box-shadow: 0 0 28px rgba(255, 122, 0, 0.20);
+    }
+
+    .welcome-title {
+      min-height: clamp(92px, 15vw, 170px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: clamp(2.3rem, 8vw, 7.5rem);
+      line-height: 0.95;
+      font-weight: 1000;
+      letter-spacing: -0.08em;
+      text-transform: uppercase;
+    }
+
+    #welcomeScreen .welcome-title span#typingWelcome {
+      background: linear-gradient(
+        120deg,
+        #ffffff 0%,
+        #ffe3c2 18%,
+        #ffb15c 35%,
+        #ff7a00 52%,
+        #ffffff 72%,
+        #ffb15c 100%
+      );
+      background-size: 260% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation:
+        welcomeTextGlow 2.8s ease-in-out infinite,
+        welcomeGradientMove 3.2s ease-in-out infinite;
+      text-shadow:
+        0 0 20px rgba(255, 122, 0, 0.45),
+        0 0 60px rgba(255, 122, 0, 0.24);
+    }
+
+    @keyframes welcomeTextGlow {
+      0%, 100% {
+        filter: drop-shadow(0 0 12px rgba(255, 122, 0, 0.45));
+      }
+
+      50% {
+        filter:
+          drop-shadow(0 0 26px rgba(255, 177, 92, 0.92))
+          drop-shadow(0 0 70px rgba(255, 122, 0, 0.42));
+      }
+    }
+
+    @keyframes welcomeGradientMove {
+      0%, 100% {
+        background-position: 0% center;
+      }
+
+      50% {
+        background-position: 100% center;
+      }
+    }
+
+    .typing-cursor {
+      width: clamp(4px, 0.7vw, 8px);
+      height: clamp(44px, 8vw, 92px);
+      border-radius: 999px;
+      background: var(--orange-light);
+      box-shadow:
+        0 0 20px rgba(255, 177, 92, 0.95),
+        0 0 60px rgba(255, 122, 0, 0.55);
+      animation: cursorBlink 0.75s infinite;
+    }
+
+    @keyframes cursorBlink {
+      0%, 45% {
+        opacity: 1;
+      }
+
+      46%, 100% {
+        opacity: 0;
+      }
+    }
+
+    .welcome-line {
+      width: min(580px, 82%);
+      height: 3px;
+      margin: 22px auto 18px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, var(--orange-light), var(--orange), var(--orange-light), transparent);
+      box-shadow: 0 0 32px rgba(255, 122, 0, 0.72);
+      animation: welcomeLine 1.8s ease-in-out infinite;
+    }
+
+    @keyframes welcomeLine {
+      0%, 100% {
+        transform: scaleX(0.78);
+        opacity: 0.65;
+      }
+
+      50% {
+        transform: scaleX(1);
+        opacity: 1;
+      }
+    }
+
+    .welcome-subtitle {
+      color: rgba(255, 255, 255, 0.72);
+      font-size: clamp(0.95rem, 2vw, 1.25rem);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .welcome-particles,
+    .welcome-particles::before,
+    .welcome-particles::after {
+      position: absolute;
+      inset: 0;
+      content: "";
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.95) 0 1px, transparent 2px),
+        radial-gradient(circle, rgba(255,122,0,0.9) 0 1.5px, transparent 3px),
+        radial-gradient(circle, rgba(255,177,92,0.75) 0 1px, transparent 2px);
+      background-size: 130px 130px, 190px 190px, 260px 260px;
+      background-position: 0 0, 40px 60px, 90px 20px;
+      animation: particlesFloat 8s linear infinite;
+      opacity: 0.65;
+    }
+
+    .welcome-particles::before {
+      animation-duration: 12s;
+      animation-direction: reverse;
+      opacity: 0.42;
+    }
+
+    .welcome-particles::after {
+      animation-duration: 15s;
+      opacity: 0.32;
+    }
+
+    @keyframes particlesFloat {
+      from {
+        transform: translateY(0);
+      }
+
+      to {
+        transform: translateY(-160px);
+      }
+    }
+
+    body.welcome-active {
+      overflow: hidden;
+    }
+
+    body.theme-light .welcome-screen {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 122, 0, 0.32), transparent 28%),
+        radial-gradient(circle at 80% 10%, rgba(255, 177, 92, 0.22), transparent 30%),
+        linear-gradient(135deg, #fff7ef 0%, #ffffff 48%, #ffe4c6 100%);
+    }
+
+    body.theme-light .welcome-content {
+      background: rgba(255, 255, 255, 0.62);
+    }
+
+    body.theme-light .welcome-subtitle {
+      color: rgba(20, 20, 20, 0.7);
+    }
+
     .page-shell {
       position: relative;
       z-index: 2;
@@ -638,8 +920,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-
-
     /* Alternância de tema claro/escuro */
     html.theme-light-preload body,
     body.theme-light {
@@ -890,6 +1170,14 @@
         align-items: flex-start;
         flex-direction: column;
       }
+
+      .welcome-title {
+        letter-spacing: -0.055em;
+      }
+
+      .welcome-content {
+        border-radius: 28px;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -900,11 +1188,35 @@
         transition: none !important;
         scroll-behavior: auto !important;
       }
+
+      .welcome-screen {
+        display: none;
+      }
+
+      body.welcome-active {
+        overflow: auto;
+      }
     }
   </style>
 </head>
 
 <body>
+  <div class="welcome-screen" id="welcomeScreen">
+    <div class="welcome-particles"></div>
+
+    <div class="welcome-content">
+      <span class="welcome-small">Seller Pro apresenta</span>
+
+      <h1 class="welcome-title">
+        <span id="typingWelcome"></span><span class="typing-cursor"></span>
+      </h1>
+
+      <div class="welcome-line"></div>
+
+      <p class="welcome-subtitle">Central interna do suporte</p>
+    </div>
+  </div>
+
   <div class="cursor-glow" id="cursorGlow"></div>
 
   <main class="page-shell" id="topo">
@@ -1085,7 +1397,7 @@
       <ul class="info-list">
         <li><span class="highlight">ANVISA:</span> normalmente relacionada a produtos ligados à saúde, higiene, cosméticos, saneantes, alimentos, suplementos, produtos médicos e itens que tenham contato direto com o corpo ou consumo.</li>
         <li><span class="highlight">INMETRO:</span> pode ser solicitado para produtos que possuem normas obrigatórias de segurança, como brinquedos, itens infantis, equipamentos elétricos, capacetes, escadas, pneus e outros produtos regulamentados.</li>
-        <li><span class="highlight">ANATEL:</span> geralmente exigida para produtos com comunicação sem fio, Bluetooth, Wi‑Fi, rádio frequência, telecomunicação, celulares, roteadores, fones sem fio, smartwatches e dispositivos conectados.</li>
+        <li><span class="highlight">ANATEL:</span> geralmente exigida para produtos com comunicação sem fio, Bluetooth, Wi-Fi, rádio frequência, telecomunicação, celulares, roteadores, fones sem fio, smartwatches e dispositivos conectados.</li>
         <li><span class="highlight">Atenção:</span> quando a Amazon solicitar documentação, o suporte deve orientar o seller a verificar se o produto realmente se enquadra na exigência e reunir documentos oficiais, válidos e compatíveis com o produto anunciado.</li>
       </ul>
     </section>
@@ -1170,6 +1482,34 @@
       card.addEventListener("mouseleave", () => {
         card.style.background = "var(--card)";
       });
+    });
+
+    // Animação de entrada escrevendo
+    const welcomeScreen = document.getElementById("welcomeScreen");
+    const typingWelcome = document.getElementById("typingWelcome");
+    const welcomeText = "Bem Vindo ao HUB Seller Pro";
+
+    let welcomeIndex = 0;
+
+    document.body.classList.add("welcome-active");
+
+    function escreverBoasVindas() {
+      if (!typingWelcome || !welcomeScreen) return;
+
+      if (welcomeIndex < welcomeText.length) {
+        typingWelcome.textContent += welcomeText.charAt(welcomeIndex);
+        welcomeIndex++;
+        setTimeout(escreverBoasVindas, 65);
+      } else {
+        setTimeout(() => {
+          welcomeScreen.classList.add("hide-welcome");
+          document.body.classList.remove("welcome-active");
+        }, 1300);
+      }
+    }
+
+    window.addEventListener("load", () => {
+      setTimeout(escreverBoasVindas, 450);
     });
   </script>
 </body>
