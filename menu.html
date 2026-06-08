@@ -8,11 +8,14 @@
 
   <!-- Segurança de acesso -->
   <script>
-    const logado = sessionStorage.getItem("logado");
-    const tipoUsuario = sessionStorage.getItem("tipoUsuario");
+    const logado =
+      sessionStorage.getItem("logado") === "sim" ||
+      localStorage.getItem("logado") === "sim" ||
+      sessionStorage.getItem("autenticado") === "sim" ||
+      localStorage.getItem("autenticado") === "sim";
 
-    if (logado !== "sim" || tipoUsuario !== "suporte") {
-      window.location.href = "index.html";
+    if (!logado) {
+      window.location.replace("index.html");
     }
   </script>
 
