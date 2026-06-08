@@ -518,12 +518,7 @@
   <script>
     const SUPABASE_URL = "https://owgvzmeewzpmzgcdwbfq.supabase.co";
     const SUPABASE_KEY = "sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr";
-
-    if (!window.supabase) {
-      alert("Erro: biblioteca do Supabase não foi carregada. Verifique sua internet ou o CDN.");
-    }
-
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const LOGIN_PAGE = "index.html";
 
     const form = document.getElementById("signupForm");
     const mensagem = document.getElementById("mensagem");
@@ -531,15 +526,25 @@
     const buttonText = document.getElementById("buttonText");
     const buttonIcon = document.getElementById("buttonIcon");
 
+    const nomeInput = document.getElementById("nome");
+    const emailInput = document.getElementById("email");
     const senha = document.getElementById("senha");
     const confirmarSenha = document.getElementById("confirmarSenha");
+    const cargoInput = document.getElementById("cargo");
     const togglePassword = document.getElementById("togglePassword");
     const passwordIcon = document.getElementById("passwordIcon");
 
     const strengthFill = document.getElementById("strengthFill");
     const strengthText = document.getElementById("strengthText");
-
     const glow = document.getElementById("cursorGlow");
+
+    let supabaseClient = null;
+
+    function getLoginRedirectUrl() {
+      const redirectUrl = new URL(LOGIN_PAGE, window.location.href);
+      redirectUrl.searchParams.set("cadastro", "sucesso");
+      return redirectUrl.href;
+    }
 
     function showMessage(type, text) {
       const isSuccess = type === "success";
@@ -565,49 +570,93 @@
 
     function setLoading(isLoading) {
       submitButton.disabled = isLoading;
-
       submitButton.classList.toggle("opacity-70", isLoading);
       submitButton.classList.toggle("cursor-not-allowed", isLoading);
-
       buttonText.textContent = isLoading ? "Criando conta..." : "Criar conta";
-
       buttonIcon.className = isLoading
         ? "fa-solid fa-spinner fa-spin relative z-10"
         : "fa-solid fa-arrow-right relative z-10";
     }
 
+    function resetStrength() {
+      strengthFill.style.width = "0%";
+      strengthFill.style.background = "transparent";
+      strengthText.textContent = "Força da senha";
+      strengthText.style.color = "#71717a";
+    }
+
     function calculateStrength(value) {
       let score = 0;
-
       if (value.length >= 6) score++;
       if (value.length >= 10) score++;
       if (/[A-Z]/.test(value)) score++;
       if (/[0-9]/.test(value)) score++;
       if (/[^A-Za-z0-9]/.test(value)) score++;
-
       return score;
+    }
+
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function translateSupabaseError(error) {
+      const message = String(error?.message || "").toLowerCase();
+
+      if (message.includes("already registered") || message.includes("already exists") || message.includes("user already")) {
+        return "Este e-mail já está cadastrado.";
+      }
+
+      if (message.includes("invalid email") || message.includes("email address")) {
+        return "O e-mail informado é inválido.";
+      }
+
+      if (message.includes("password") || message.includes("weak")) {
+        return "A senha informada não atende aos requisitos do Supabase.";
+      }
+
+      if (message.includes("rate limit") || message.includes("security purposes")) {
+        return "Muitas tentativas em pouco tempo. Aguarde alguns instantes e tente novamente.";
+      }
+
+      if (message.includes("fetch") || message.includes("network")) {
+        return "Não foi possível conectar ao Supabase. Verifique a internet, a URL e a chave do projeto.";
+      }
+
+      return error?.message ? "Erro ao criar conta: " + error.message : "Erro ao criar conta. Tente novamente.";
+    }
+
+    function initSupabase() {
+      if (!window.supabase || typeof window.supabase.createClient !== "function") {
+        showMessage("error", "Erro: biblioteca do Supabase não carregou. Verifique o CDN e a conexão com a internet.");
+        submitButton.disabled = true;
+        return;
+      }
+
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true
+        }
+      });
     }
 
     senha.addEventListener("input", () => {
       const score = calculateStrength(senha.value);
-
       const widths = [0, 22, 42, 64, 82, 100];
       const labels = ["Força da senha", "Muito fraca", "Fraca", "Boa", "Forte", "Excelente"];
       const colors = ["transparent", "#fb7185", "#fb923c", "#facc15", "#34d399", "#20e6a1"];
 
       strengthFill.style.width = `${widths[score]}%`;
       strengthFill.style.background = colors[score];
-
       strengthText.textContent = labels[score];
       strengthText.style.color = colors[score] === "transparent" ? "#71717a" : colors[score];
     });
 
     togglePassword.addEventListener("click", () => {
       const isPassword = senha.type === "password";
-
       senha.type = isPassword ? "text" : "password";
       confirmarSenha.type = isPassword ? "text" : "password";
-
       passwordIcon.className = isPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
     });
 
@@ -615,100 +664,102 @@
       event.preventDefault();
       clearMessage();
 
-      const nome = document.getElementById("nome").value.trim();
-      const email = document.getElementById("email").value.trim().toLowerCase();
-      const senhaValor = senha.value.trim();
-      const confirmarSenhaValor = confirmarSenha.value.trim();
-      const cargo = document.getElementById("cargo").value;
-
-      if (!nome) {
-        showMessage("error", "Informe o nome completo.");
+      if (!supabaseClient) {
+        showMessage("error", "Supabase não foi inicializado. Recarregue a página e tente novamente.");
         return;
       }
 
-      if (!email) {
-        showMessage("error", "Informe o e-mail.");
+      const nome = nomeInput.value.trim();
+      const email = emailInput.value.trim().toLowerCase();
+      const senhaValor = senha.value;
+      const confirmarSenhaValor = confirmarSenha.value;
+      const cargo = cargoInput.value;
+
+      if (!nome || nome.length < 3) {
+        showMessage("error", "Informe o nome completo.");
+        nomeInput.focus();
+        return;
+      }
+
+      if (!email || !validateEmail(email)) {
+        showMessage("error", "Informe um e-mail válido.");
+        emailInput.focus();
         return;
       }
 
       if (senhaValor.length < 6) {
         showMessage("error", "A senha precisa ter no mínimo 6 caracteres.");
+        senha.focus();
         return;
       }
 
       if (senhaValor !== confirmarSenhaValor) {
         showMessage("error", "As senhas não conferem. Verifique e tente novamente.");
+        confirmarSenha.focus();
         return;
       }
 
       if (!cargo) {
         showMessage("error", "Selecione um cargo antes de criar a conta.");
+        cargoInput.focus();
         return;
       }
 
       setLoading(true);
+      let cadastroConcluido = false;
 
       try {
+        const redirectUrl = getLoginRedirectUrl();
+
         const { data, error } = await supabaseClient.auth.signUp({
-          email: email,
+          email,
           password: senhaValor,
           options: {
+            emailRedirectTo: redirectUrl,
             data: {
-              nome: nome,
-              cargo: cargo
+              nome,
+              cargo,
+              nome_completo: nome
             }
           }
         });
 
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
 
-        if (!data || !data.user) {
+        if (!data?.user) {
           throw new Error("O Supabase não retornou o usuário criado.");
         }
 
-        await supabaseClient.auth.signOut();
+        if (Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+          throw new Error("Este e-mail já está cadastrado.");
+        }
+
+        cadastroConcluido = true;
+
+        if (data.session) {
+          await supabaseClient.auth.signOut();
+        }
+
+        form.reset();
+        resetStrength();
 
         showMessage("success", "Cadastro realizado com sucesso! Redirecionando para a tela de login...");
 
-        form.reset();
-
-        strengthFill.style.width = "0%";
-        strengthFill.style.background = "transparent";
-        strengthText.textContent = "Força da senha";
-        strengthText.style.color = "#71717a";
-
         setTimeout(() => {
-          window.location.href = "index.html?cadastro=sucesso";
-        }, 1800);
-
+          window.location.assign(redirectUrl);
+        }, 1400);
       } catch (error) {
         console.error("Erro ao criar conta:", error);
-
-        let errorMessage = "Erro ao criar conta. Tente novamente.";
-
-        if (error.message) {
-          if (error.message.toLowerCase().includes("already registered")) {
-            errorMessage = "Este e-mail já está cadastrado.";
-          } else if (error.message.toLowerCase().includes("invalid email")) {
-            errorMessage = "O e-mail informado é inválido.";
-          } else if (error.message.toLowerCase().includes("password")) {
-            errorMessage = "A senha informada não atende aos requisitos.";
-          } else {
-            errorMessage = "Erro ao criar conta: " + error.message;
-          }
-        }
-
-        showMessage("error", errorMessage);
+        showMessage("error", translateSupabaseError(error));
       } finally {
-        setLoading(false);
+        if (!cadastroConcluido) {
+          setLoading(false);
+        }
       }
     });
 
     window.addEventListener("mousemove", (event) => {
       if (!glow) return;
-
       glow.style.opacity = "1";
       glow.style.left = `${event.clientX}px`;
       glow.style.top = `${event.clientY}px`;
@@ -716,9 +767,10 @@
 
     window.addEventListener("mouseleave", () => {
       if (!glow) return;
-
       glow.style.opacity = "0";
     });
+
+    initSupabase();
   </script>
 </body>
 </html>
