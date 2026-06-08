@@ -676,14 +676,28 @@
     }
 
     function salvarSessao(user, perfil, acessoTemporario = false) {
-      sessionStorage.setItem("logado", "sim");
-      sessionStorage.setItem("tipoUsuario", perfil.cargo || "Usuário");
-      sessionStorage.setItem("userId", user.id || "chave-temporaria-suporte");
-      sessionStorage.setItem("emailUsuario", user.email || "");
-      sessionStorage.setItem("nomeUsuario", perfil.nome || user.email || "Usuário");
-      sessionStorage.setItem("cargoUsuario", perfil.cargo || "Usuário");
-      sessionStorage.setItem("avatarUsuario", perfil.avatar_url || "");
-      sessionStorage.setItem("acessoTemporario", acessoTemporario ? "sim" : "nao");
+      const dadosSessao = {
+        logado: "sim",
+        autenticado: "sim",
+        tipoUsuario: perfil.cargo || "Usuário",
+        userId: user.id || "chave-temporaria-suporte",
+        emailUsuario: user.email || "",
+        nomeUsuario: perfil.nome || user.email || "Usuário",
+        cargoUsuario: perfil.cargo || "Usuário",
+        avatarUsuario: perfil.avatar_url || "",
+        acessoTemporario: acessoTemporario ? "sim" : "nao"
+      };
+
+      Object.entries(dadosSessao).forEach(([chave, valor]) => {
+        sessionStorage.setItem(chave, valor);
+        localStorage.setItem(chave, valor);
+      });
+    }
+
+    function irParaMenu() {
+      // Use replace para não voltar para o login ao apertar "voltar".
+      // O ./ evita erro quando o navegador interpreta caminho relativo diferente.
+      window.location.replace("./menu.html");
     }
 
     form.addEventListener("submit", async (event) => {
@@ -716,7 +730,7 @@
             { nome: "Suporte", cargo: "Suporte Lider", avatar_url: "" },
             true
           );
-          window.location.assign("menu.html");
+          irParaMenu();
           return;
         }
 
@@ -741,7 +755,7 @@
         exibirMensagem("sucesso", "Login realizado com sucesso! Redirecionando...");
 
         setTimeout(() => {
-          window.location.assign("menu.html");
+          irParaMenu();
         }, 500);
       } catch (error) {
         console.error("Erro ao fazer login:", error);
