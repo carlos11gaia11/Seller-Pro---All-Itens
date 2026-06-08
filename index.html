@@ -695,9 +695,29 @@
     }
 
     function irParaMenu() {
-      // Use replace para não voltar para o login ao apertar "voltar".
-      // O ./ evita erro quando o navegador interpreta caminho relativo diferente.
-      window.location.replace("./menu.html");
+      const destino = new URL("menu.html", window.location.href).href;
+
+      console.log("Redirecionando para:", destino);
+
+      // Salva uma marca extra para qualquer validação do menu.html reconhecer o login.
+      sessionStorage.setItem("redirectLiberado", "sim");
+      localStorage.setItem("redirectLiberado", "sim");
+
+      // Método principal.
+      window.location.href = destino;
+
+      // Fallbacks caso algum navegador/script bloqueie o primeiro redirecionamento.
+      setTimeout(() => {
+        if (!window.location.href.includes("menu.html")) {
+          window.location.assign(destino);
+        }
+      }, 150);
+
+      setTimeout(() => {
+        if (!window.location.href.includes("menu.html")) {
+          window.location.replace(destino);
+        }
+      }, 350);
     }
 
     form.addEventListener("submit", async (event) => {
@@ -752,11 +772,9 @@
         const perfil = await carregarPerfilSeguro(data.user);
         salvarSessao(data.user, perfil, false);
 
-        exibirMensagem("sucesso", "Login realizado com sucesso! Redirecionando...");
+        exibirMensagem("sucesso", "Login realizado com sucesso! Abrindo o menu...");
 
-        setTimeout(() => {
-          irParaMenu();
-        }, 500);
+        irParaMenu();
       } catch (error) {
         console.error("Erro ao fazer login:", error);
         exibirMensagem("erro", traduzirErroLogin(error));
