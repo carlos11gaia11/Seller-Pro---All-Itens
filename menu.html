@@ -1105,6 +1105,156 @@
       flex-wrap: wrap;
     }
 
+    .user-area {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 6px 8px 6px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 122, 0, 0.24);
+      background:
+        linear-gradient(135deg, rgba(255, 122, 0, 0.10), rgba(255, 255, 255, 0.045));
+      box-shadow: 0 14px 38px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(14px);
+    }
+
+    .user-avatar {
+      position: relative;
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      overflow: hidden;
+      border-radius: 50%;
+      color: #151515;
+      font-size: 0.82rem;
+      font-weight: 950;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--orange-light), var(--orange));
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 0 24px rgba(255, 122, 0, 0.34);
+    }
+
+    .user-avatar img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .user-area.has-photo .user-avatar img {
+      display: block;
+    }
+
+    .user-area.has-photo .user-avatar span {
+      display: none;
+    }
+
+    .user-info {
+      min-width: 116px;
+      max-width: 180px;
+      line-height: 1.1;
+    }
+
+    .user-label {
+      display: block;
+      color: var(--soft);
+      font-size: 0.68rem;
+      font-weight: 850;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .user-name {
+      display: block;
+      margin-top: 3px;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 950;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-email {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 36px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #f8f8f8;
+      background: rgba(255, 255, 255, 0.055);
+      font-size: 0.8rem;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+      transition: 0.22s ease;
+    }
+
+    .user-btn:hover {
+      transform: translateY(-2px);
+      color: #111;
+      background: var(--orange-light);
+      border-color: rgba(255, 122, 0, 0.65);
+    }
+
+    .logout-btn {
+      color: #ffd6d6;
+      border-color: rgba(255, 87, 87, 0.22);
+      background: rgba(255, 87, 87, 0.08);
+    }
+
+    .logout-btn:hover {
+      color: #111;
+      background: #ff8b8b;
+      border-color: rgba(255, 87, 87, 0.65);
+    }
+
+    body.theme-light .user-area {
+      background: rgba(255, 255, 255, 0.72);
+      border-color: rgba(255, 122, 0, 0.22);
+      box-shadow: 0 14px 36px rgba(20, 20, 35, 0.10);
+    }
+
+    body.theme-light .user-btn {
+      color: #25252d;
+      background: rgba(255, 244, 233, 0.86);
+      border-color: rgba(10, 10, 15, 0.08);
+    }
+
+    body.theme-light .user-btn:hover {
+      color: #111;
+      background: var(--orange-light);
+    }
+
+    body.theme-light .logout-btn {
+      color: #7a1616;
+      background: rgba(255, 87, 87, 0.10);
+      border-color: rgba(255, 87, 87, 0.20);
+    }
+
+    body.theme-light .logout-btn:hover {
+      color: #111;
+      background: #ff9d9d;
+    }
+
     @media (max-width: 1080px) {
       .hub-card {
         grid-column: span 6;
@@ -1136,6 +1286,18 @@
       .topbar-actions {
         justify-content: flex-start;
         width: 100%;
+      }
+
+      .user-area {
+        width: 100%;
+        justify-content: flex-start;
+        border-radius: 22px;
+        flex-wrap: wrap;
+      }
+
+      .user-info {
+        flex: 1 1 150px;
+        max-width: none;
       }
 
       .quick-nav {
@@ -1239,6 +1401,29 @@
           <span class="toggle-track" aria-hidden="true"><span class="toggle-thumb"></span></span>
           <span id="themeToggleText">Tema claro</span>
         </button>
+
+        <div class="user-area" id="userArea" aria-label="Usuário logado">
+          <div class="user-avatar" aria-hidden="true">
+            <img id="userAvatarImg" src="" alt="" />
+            <span id="userAvatarInitials">SP</span>
+          </div>
+
+          <div class="user-info">
+            <span class="user-label">Logado como</span>
+            <span class="user-name" id="loggedUserName">Usuário</span>
+            <span class="user-email" id="loggedUserEmail">Sessão ativa</span>
+          </div>
+
+          <a class="user-btn" href="perfil.html" title="Abrir perfil">
+            <i class="fa-solid fa-user"></i>
+            Perfil
+          </a>
+
+          <button class="user-btn logout-btn" id="logoutBtn" type="button" title="Sair da conta">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            Sair
+          </button>
+        </div>
 
         <div class="quick-nav">
           <a class="nav-pill" href="#acessos">Acessos</a>
@@ -1439,6 +1624,135 @@
       offset: 80,
       easing: "ease-out-cubic"
     });
+
+    const userArea = document.getElementById("userArea");
+    const userAvatarImg = document.getElementById("userAvatarImg");
+    const userAvatarInitials = document.getElementById("userAvatarInitials");
+    const loggedUserName = document.getElementById("loggedUserName");
+    const loggedUserEmail = document.getElementById("loggedUserEmail");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    function buscarValorSalvo(chaves) {
+      for (const chave of chaves) {
+        const valorSessao = sessionStorage.getItem(chave);
+        const valorLocal = localStorage.getItem(chave);
+        if (valorSessao) return valorSessao;
+        if (valorLocal) return valorLocal;
+      }
+      return "";
+    }
+
+    function buscarObjetoUsuario() {
+      const chaves = [
+        "usuarioLogado",
+        "usuario",
+        "user",
+        "currentUser",
+        "sellerProUsuario",
+        "dadosUsuario"
+      ];
+
+      for (const chave of chaves) {
+        const valor = buscarValorSalvo([chave]);
+        if (!valor) continue;
+
+        try {
+          const objeto = JSON.parse(valor);
+          if (objeto && typeof objeto === "object") return objeto;
+        } catch (erro) {
+          // Caso o valor salvo seja texto simples, seguimos para as próximas chaves.
+        }
+      }
+
+      return {};
+    }
+
+    function gerarIniciais(nomeOuEmail) {
+      const texto = String(nomeOuEmail || "Seller Pro").trim();
+      const partes = texto.replace(/@.*/, "").split(/\s+/).filter(Boolean);
+
+      if (partes.length >= 2) {
+        return `${partes[0][0]}${partes[1][0]}`.toUpperCase();
+      }
+
+      return texto.slice(0, 2).toUpperCase();
+    }
+
+    function carregarUsuarioLogado() {
+      const usuario = buscarObjetoUsuario();
+
+      const email =
+        usuario.email ||
+        usuario.user_email ||
+        buscarValorSalvo(["email", "userEmail", "usuarioEmail", "loginEmail", "sellerProEmail"]);
+
+      const nome =
+        usuario.nome ||
+        usuario.name ||
+        usuario.full_name ||
+        usuario.nomeCompleto ||
+        usuario.displayName ||
+        buscarValorSalvo(["nome", "nomeUsuario", "userName", "usuarioNome", "sellerProNome"]) ||
+        (email ? email.split("@")[0] : "Usuário Seller Pro");
+
+      const foto =
+        usuario.foto ||
+        usuario.avatar ||
+        usuario.avatar_url ||
+        usuario.picture ||
+        usuario.photoURL ||
+        buscarValorSalvo(["foto", "avatar", "avatarUrl", "userPhoto", "fotoUsuario", "sellerProFoto"]);
+
+      loggedUserName.textContent = nome;
+      loggedUserEmail.textContent = email || "Sessão ativa";
+      userAvatarInitials.textContent = gerarIniciais(nome || email);
+
+      if (foto) {
+        userAvatarImg.src = foto;
+        userArea.classList.add("has-photo");
+      } else {
+        userArea.classList.remove("has-photo");
+      }
+    }
+
+    function sairDaConta() {
+      const chavesParaRemover = [
+        "logado",
+        "autenticado",
+        "usuarioLogado",
+        "usuario",
+        "user",
+        "currentUser",
+        "sellerProUsuario",
+        "dadosUsuario",
+        "email",
+        "userEmail",
+        "usuarioEmail",
+        "loginEmail",
+        "sellerProEmail",
+        "nome",
+        "nomeUsuario",
+        "userName",
+        "usuarioNome",
+        "sellerProNome",
+        "foto",
+        "avatar",
+        "avatarUrl",
+        "userPhoto",
+        "fotoUsuario",
+        "sellerProFoto"
+      ];
+
+      chavesParaRemover.forEach((chave) => {
+        localStorage.removeItem(chave);
+        sessionStorage.removeItem(chave);
+      });
+
+      window.location.replace("index.html");
+    }
+
+    carregarUsuarioLogado();
+    logoutBtn.addEventListener("click", sairDaConta);
 
     const themeToggle = document.getElementById("themeToggle");
     const themeToggleText = document.getElementById("themeToggleText");
