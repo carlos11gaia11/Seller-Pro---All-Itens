@@ -1463,6 +1463,36 @@
       font-size: 0.72rem;
     }
 
+
+    .notification-delete-btn {
+      width: 31px;
+      height: 31px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 999px;
+      color: #ffd6d6;
+      background: rgba(255, 87, 87, 0.10);
+      border: 1px solid rgba(255, 87, 87, 0.24);
+      cursor: pointer;
+      transition: 0.22s ease;
+      flex: 0 0 auto;
+    }
+
+    .notification-delete-btn:hover {
+      color: #111;
+      background: #ff8b8b;
+      border-color: rgba(255, 87, 87, 0.68);
+      transform: translateY(-2px);
+    }
+
+    .notification-debug-role {
+      display: block;
+      margin-top: 5px;
+      color: var(--orange-light);
+      font-size: 0.71rem;
+      font-weight: 850;
+    }
+
     .notification-empty {
       padding: 26px 16px;
       text-align: center;
@@ -2215,7 +2245,13 @@
         "funcao",
         "função",
         "role",
-        "sellerProCargo"
+        "sellerProCargo",
+        "usuarioCargo",
+        "perfil",
+        "tipo",
+        "nivel",
+        "nível",
+        "userRole"
       ];
 
       chavesParaRemover.forEach((chave) => {
@@ -2250,26 +2286,98 @@
       return String(texto || "")
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[_-]+/g, " ")
+        .replace(/\s+/g, " ")
         .trim()
         .toLowerCase();
+    }
+
+    function buscarCampoEmObjeto(objeto, camposPermitidos, profundidade = 0) {
+      if (!objeto || typeof objeto !== "object" || profundidade > 5) return "";
+
+      for (const chave of Object.keys(objeto)) {
+        const chaveNormalizada = normalizarTexto(chave);
+        if (camposPermitidos.includes(chaveNormalizada) && objeto[chave]) {
+          return objeto[chave];
+        }
+      }
+
+      for (const chave of Object.keys(objeto)) {
+        const valor = objeto[chave];
+
+        if (valor && typeof valor === "object") {
+          const encontrado = buscarCampoEmObjeto(valor, camposPermitidos, profundidade + 1);
+          if (encontrado) return encontrado;
+        }
+      }
+
+      return "";
     }
 
     function obterCargoUsuario() {
       const usuario = buscarObjetoUsuario();
 
+      const camposCargo = [
+        "cargo",
+        "funcao",
+        "função",
+        "role",
+        "perfil",
+        "tipo",
+        "nivel",
+        "nível",
+        "user role",
+        "userrole",
+        "sellerprocargo",
+        "usuariocargo"
+      ];
+
+      const cargoNoObjeto = buscarCampoEmObjeto(usuario, camposCargo);
+
       return (
+        cargoNoObjeto ||
         usuario.cargo ||
         usuario.funcao ||
         usuario.função ||
         usuario.role ||
         usuario.perfil ||
         usuario.tipo ||
-        buscarValorSalvo(["cargo", "funcao", "função", "role", "perfil", "tipo", "sellerProCargo"])
+        usuario.user_metadata?.cargo ||
+        usuario.user_metadata?.funcao ||
+        usuario.user_metadata?.função ||
+        usuario.user_metadata?.role ||
+        usuario.raw_user_meta_data?.cargo ||
+        usuario.raw_user_meta_data?.funcao ||
+        usuario.raw_user_meta_data?.função ||
+        usuario.raw_user_meta_data?.role ||
+        usuario.app_metadata?.cargo ||
+        usuario.app_metadata?.role ||
+        buscarValorSalvo([
+          "cargo",
+          "funcao",
+          "função",
+          "role",
+          "perfil",
+          "tipo",
+          "nivel",
+          "nível",
+          "sellerProCargo",
+          "usuarioCargo",
+          "userRole"
+        ])
       );
     }
 
     function usuarioPodeEnviarNotificacao() {
-      return normalizarTexto(obterCargoUsuario()) === "Suporte Lider";
+      const cargo = normalizarTexto(obterCargoUsuario());
+
+      return (
+        cargo === "suporte lider" ||
+        cargo === "lider suporte" ||
+        cargo.includes("suporte lider") ||
+        cargo.includes("lider de suporte") ||
+        cargo.includes("lider suporte")
+      );
     }
 
     function obterChaveLeituraNotificacoes() {
@@ -2336,9 +2444,11 @@
 
       newNotificationBtn.style.display = podeEnviar ? "inline-flex" : "none";
       notificationRestricted.style.display = podeEnviar ? "none" : "block";
-      notificationPermissionText.textContent = podeEnviar
-        ? "Você pode enviar avisos para todos."
-        : "Você pode visualizar os avisos internos.";
+      const cargoAtual = obterCargoUsuario() || "cargo não encontrado";
+
+      notificationPermissionText.innerHTML = podeEnviar
+        ? `Você pode enviar avisos para todos.<span class="notification-debug-role">Cargo detectado: ${escaparHtml(cargoAtual)}</span>`
+        : `Você pode visualizar os avisos internos.<span class="notification-debug-role">Cargo detectado: ${escaparHtml(cargoAtual)}</span>`;
 
       notificationBadge.textContent = naoLidas.length > 99 ? "99+" : String(naoLidas.length);
       notificationBadge.classList.toggle("show", naoLidas.length > 0);
@@ -2356,6 +2466,11 @@
 
       notificationList.innerHTML = notificacoes.map((item) => {
         const unread = !idsLidos.includes(item.id);
+        const botaoExcluir = podeEnviar
+          ? `<button class="notification-delete-btn" type="button" data-delete-notification="${escaparHtml(item.id)}" title="Excluir notificação" aria-label="Excluir notificação">
+              <i class="fa-solid fa-trash"></i>
+            </button>`
+          : "";
 
         return `
           <article class="notification-item ${unread ? "unread" : ""}">
@@ -2367,6 +2482,7 @@
             <div class="notification-item-meta">
               <span>${escaparHtml(item.autor || "Suporte Líder")}</span>
               <span>${formatarDataNotificacao(item.criadoEm)}</span>
+              ${botaoExcluir}
             </div>
           </article>
         `;
@@ -2376,6 +2492,24 @@
     function marcarTodasComoLidas() {
       const ids = carregarNotificacoes().map((item) => item.id);
       salvarIdsLidos(ids);
+      renderizarNotificacoes();
+    }
+
+    function excluirNotificacao(id) {
+      if (!usuarioPodeEnviarNotificacao()) {
+        alert("Apenas usuários com cargo Suporte Líder podem excluir notificações.");
+        return;
+      }
+
+      const confirmar = confirm("Deseja excluir esta notificação para todos?");
+      if (!confirmar) return;
+
+      const notificacoesAtualizadas = carregarNotificacoes().filter((item) => item.id !== id);
+      salvarNotificacoes(notificacoesAtualizadas);
+
+      const idsLidosAtualizados = carregarIdsLidos().filter((itemId) => itemId !== id);
+      salvarIdsLidos(idsLidosAtualizados);
+
       renderizarNotificacoes();
     }
 
@@ -2410,6 +2544,14 @@
 
     newNotificationBtn.addEventListener("click", abrirModalNotificacao);
     markAllReadBtn.addEventListener("click", marcarTodasComoLidas);
+
+    notificationList.addEventListener("click", (event) => {
+      const botaoExcluir = event.target.closest("[data-delete-notification]");
+      if (!botaoExcluir) return;
+
+      excluirNotificacao(botaoExcluir.dataset.deleteNotification);
+    });
+
     closeNotificationModal.addEventListener("click", fecharModalNotificacao);
 
     notificationModalBackdrop.addEventListener("click", (event) => {
