@@ -573,7 +573,8 @@ body[data-theme="light"] {
       display: flex;
       flex-direction: column;
       scroll-snap-align: start;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,.06);
       transition: .22s ease;
       animation: fadeUp .7s ease both;
@@ -2219,6 +2220,8 @@ body[data-theme="light"] {
             <div class="cards">
               ${columnTasks.length ? columnTasks.map(taskTemplate).join('') : '<div class="empty">Nenhum trabalho nesta divisão</div>'}
             </div>
+
+            <button class="btn" style="width: 100%; margin-top: auto; padding: 10px;" onclick="openModalForColumn('${escapeHTML(column)}')">+ Novo trabalho</button>
           </div>
         `;
       }).join('');
@@ -2628,6 +2631,30 @@ body[data-theme="light"] {
         saveButton.disabled = false;
         saveButton.textContent = 'Salvar trabalho';
       }
+    }
+
+    function openModalForColumn(columnName) {
+      currentEditingTaskId = null;
+      const saveButton = document.getElementById('saveTaskButton');
+
+      document.getElementById('taskModalTitle').textContent = 'Novo trabalho';
+
+      if (saveButton) {
+        saveButton.disabled = false;
+        saveButton.textContent = 'Salvar trabalho';
+      }
+
+      clearForm();
+      document.getElementById('taskProject').value = state.activeProject;
+      document.getElementById('taskStatus').value = columnName;
+      currentTaskAttachments = [];
+
+      renderAttachmentManager();
+      document.getElementById('taskModal').classList.add('show');
+
+      setTimeout(() => {
+        document.getElementById('pastePrintZone')?.focus();
+      }, 80);
     }
 
     function clearForm() {
