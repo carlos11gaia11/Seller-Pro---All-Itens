@@ -2246,157 +2246,310 @@
 
     const NOTIFICATIONS_KEY = "sellerProNotificacoesGlobais";
 
-    function normalizarTexto(texto) {
-      return String(texto || "")
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim()
-        .toLowerCase();
-    }
-
+    /*
+      IMPORTANTE:
+      O Supabase costuma salvar role como "authenticated".
+      Isso NÃO é cargo da equipe. Por isso o sistema ignora "authenticated"
+      e procura o cargo real em campos como cargo, funcao, perfil, nivel etc.
+    */
     const EMAILS_SUPORTE_LIDER = [
       "suporte99@",
       "suporte.lider@",
       "suportelider@"
+      // Coloque aqui o e-mail exato de quem deve escrever/excluir notificações.
+      // Exemplo: "nome@sellerpro.com.br"
     ];
 
-    function limparCargoParaComparacao(texto) {
-      return normalizarTexto(texto).replace(/[^a-z0-9]/g, "");
+    const CHAVES_CARGO_PRIORITARIAS = [
+      "cargo",
+      "funcao",
+      "função",
+      "funcoes",
+      "funções",
+      "perfil",
+      "tipo",
+      "nivel",
+      "nível",
+      "setor",
+      "departamento",
+      "jobTitle",
+      "job_title",
+      "sellerProCargo",
+      "usuarioCargo",
+      "userCargo",
+      "cargoUsuario",
+      "position",
+      "permission",
+      "permissions",
+      "accessLevel",
+      "access_level",
+      "roleName",
+      "role_name"
+    ];
+
+    const CHAVES_ROLE_BAIXA_PRIORIDADE = [
+      "role",
+      "userRole",
+      "roles"
+    ];
+
+    const VALORES_IGNORADOS_COMO_CARGO = [
+      "authenticated",
+      "anon",
+      "anonymous",
+      "user",
+      "usuario",
+      "usuário",
+      "member",
+      "membro",
+      "logged",
+      "logado",
+      "active",
+      "ativo",
+      "sim",
+      "true"
+    ];
+
+    function normalizarTexto(texto) {
+      return String(texto || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[_\-.]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
     }
 
-    function procurarCargoEmObjeto(objeto, profundidade = 0) {
-      if (!objeto || typeof objeto !== "object" || profundidade > 5) return "";
+    function valorEhCargoValido(valor) {
+      const normalizado = normalizarTexto(valor);
+      if (!normalizado) return false;
+      return !VALORES_IGNORADOS_COMO_CARGO.map(normalizarTexto).includes(normalizado);
+    }
 
-      const chavesCargo = [
-        "cargo",
-        "funcao",
-        "função",
-        "role",
-        "perfil",
-        "tipo",
-        "nivel",
-        "nível",
-        "sellerProCargo",
-        "usuarioCargo",
-        "userRole",
-        "position",
-        "jobTitle",
-        "accessLevel"
-      ];
+    function textoEhSuporteLider(valor) {
+      const normalizado = normalizarTexto(valor);
+      return (
+        normalizado === "suporte lider" ||
+        normalizado.includes("suporte lider") ||
+        normalizado === "lider suporte" ||
+        normalizado.includes("lider suporte")
+      );
+    }
 
-      for (const chave of chavesCargo) {
-        if (objeto[chave]) return objeto[chave];
+    function tentarParseJson(valor) {
+      if (!valor || typeof valor !== "string") return null;
+      const texto = valor.trim();
+      if (!texto.startsWith("{") && !texto.startsWith("[")) return null;
+
+      try {
+        return JSON.parse(texto);
+      } catch (erro) {
+        return null;
       }
+    }
 
-      const objetosPrioritarios = [
-        objeto.user_metadata,
-        objeto.raw_user_meta_data,
-        objeto.app_metadata,
-        objeto.metadata,
-        objeto.user,
-        objeto.profile,
-        objeto.perfilUsuario,
-        objeto.dadosUsuario
-      ];
+    function obterValorPorCaminho(objeto, caminho) {
+      return caminho.split(".").reduce((atual, chave) => {
+        if (!atual || typeof atual !== "object") return undefined;
+        return atual[chave];
+      }, objeto);
+    }
 
-      for (const item of objetosPrioritarios) {
-        const cargoEncontrado = procurarCargoEmObjeto(item, profundidade + 1);
-        if (cargoEncontrado) return cargoEncontrado;
-      }
+    function procurarCampoEmObjeto(objeto, chavesPermitidas, profundidade = 0) {
+      if (!objeto || typeof objeto !== "object" || profundidade > 6) return "";
 
-      for (const valor of Object.values(objeto)) {
-        if (valor && typeof valor === "object") {
-          const cargoEncontrado = procurarCargoEmObjeto(valor, profundidade + 1);
-          if (cargoEncontrado) return cargoEncontrado;
+      if (Array.isArray(objeto)) {
+        for (const item of objeto) {
+          const encontrado = procurarCampoEmObjeto(item, chavesPermitidas, profundidade + 1);
+          if (encontrado) return encontrado;
         }
+        return "";
+      }
+
+      for (const chave of Object.keys(objeto)) {
+        const chaveNormalizada = normalizarTexto(chave);
+        const bateu = chavesPermitidas.some((chavePermitida) => normalizarTexto(chavePermitida) === chaveNormalizada);
+        const valor = objeto[chave];
+
+        if (bateu) {
+          if (Array.isArray(valor)) {
+            const cargoArray = valor.find((item) => valorEhCargoValido(item) && textoEhSuporteLider(item));
+            if (cargoArray) return cargoArray;
+
+            const primeiroValido = valor.find((item) => valorEhCargoValido(item));
+            if (primeiroValido) return primeiroValido;
+          }
+
+          if (valorEhCargoValido(valor)) return valor;
+        }
+      }
+
+      for (const chave of Object.keys(objeto)) {
+        const encontrado = procurarCampoEmObjeto(objeto[chave], chavesPermitidas, profundidade + 1);
+        if (encontrado) return encontrado;
       }
 
       return "";
     }
 
-    function procurarCargoEmStorage(storage) {
-      const chavesDiretas = [
-        "cargo",
-        "funcao",
-        "função",
-        "role",
-        "perfil",
-        "tipo",
-        "nivel",
-        "nível",
-        "sellerProCargo",
-        "usuarioCargo",
-        "userRole",
-        "position",
-        "jobTitle",
-        "accessLevel"
-      ];
+    function procurarSuporteLiderEmObjeto(objeto, profundidade = 0) {
+      if (!objeto || typeof objeto !== "object" || profundidade > 6) return "";
 
-      for (const chave of chavesDiretas) {
-        const valor = storage.getItem(chave);
-        if (valor) return valor;
+      if (Array.isArray(objeto)) {
+        for (const item of objeto) {
+          if (typeof item === "string" && textoEhSuporteLider(item)) return item;
+          const encontrado = procurarSuporteLiderEmObjeto(item, profundidade + 1);
+          if (encontrado) return encontrado;
+        }
+        return "";
       }
 
-      for (let i = 0; i < storage.length; i++) {
-        const chave = storage.key(i);
-        const valor = storage.getItem(chave);
-        if (!valor) continue;
-
-        try {
-          const objeto = JSON.parse(valor);
-          const cargoEncontrado = procurarCargoEmObjeto(objeto);
-          if (cargoEncontrado) return cargoEncontrado;
-        } catch (erro) {
-          // Ignora valores que não são JSON.
-        }
+      for (const chave of Object.keys(objeto)) {
+        const valor = objeto[chave];
+        if (typeof valor === "string" && textoEhSuporteLider(valor)) return valor;
+        const encontrado = procurarSuporteLiderEmObjeto(valor, profundidade + 1);
+        if (encontrado) return encontrado;
       }
 
       return "";
+    }
+
+    function lerTodosDadosSalvos() {
+      const dados = [];
+      const storages = [localStorage, sessionStorage];
+
+      storages.forEach((storage) => {
+        for (let i = 0; i < storage.length; i++) {
+          const chave = storage.key(i);
+          const valor = storage.getItem(chave);
+          dados.push({ chave, valor });
+
+          const json = tentarParseJson(valor);
+          if (json) dados.push({ chave: `${chave}:json`, valor: json });
+        }
+      });
+
+      return dados;
+    }
+
+    function obterEmailAtual() {
+      const usuario = buscarObjetoUsuario();
+      const possiveisEmails = [
+        loggedUserEmail.textContent,
+        usuario.email,
+        usuario.user_email,
+        usuario?.user?.email,
+        usuario?.profile?.email,
+        usuario?.session?.user?.email,
+        buscarValorSalvo(["email", "userEmail", "usuarioEmail", "loginEmail", "sellerProEmail"])
+      ];
+
+      return possiveisEmails.find((email) => email && email !== "Sessão ativa") || "";
+    }
+
+    function emailEstaAutorizadoComoLider(email) {
+      const emailNormalizado = normalizarTexto(email).replace(/\s/g, "");
+      if (!emailNormalizado) return false;
+
+      return EMAILS_SUPORTE_LIDER.some((item) => {
+        const autorizado = normalizarTexto(item).replace(/\s/g, "");
+        if (!autorizado) return false;
+
+        // Permite cadastrar o e-mail inteiro ou apenas o começo, como "suporte99@".
+        return emailNormalizado === autorizado || emailNormalizado.startsWith(autorizado);
+      });
     }
 
     function obterCargoUsuario() {
       const usuario = buscarObjetoUsuario();
-      const cargoDoObjeto = procurarCargoEmObjeto(usuario);
-      if (cargoDoObjeto) return cargoDoObjeto;
+      const caminhosComuns = [
+        "cargo",
+        "funcao",
+        "função",
+        "perfil",
+        "tipo",
+        "nivel",
+        "nível",
+        "sellerProCargo",
+        "usuarioCargo",
+        "user_metadata.cargo",
+        "user_metadata.funcao",
+        "user_metadata.função",
+        "user_metadata.perfil",
+        "raw_user_meta_data.cargo",
+        "raw_user_meta_data.funcao",
+        "raw_user_meta_data.função",
+        "raw_user_meta_data.perfil",
+        "app_metadata.cargo",
+        "app_metadata.funcao",
+        "app_metadata.função",
+        "app_metadata.perfil",
+        "profile.cargo",
+        "profile.funcao",
+        "profile.função",
+        "profile.perfil",
+        "user.cargo",
+        "user.funcao",
+        "user.função",
+        "user.perfil"
+      ];
 
-      const cargoSessao = procurarCargoEmStorage(sessionStorage);
-      if (cargoSessao) return cargoSessao;
+      for (const caminho of caminhosComuns) {
+        const valor = obterValorPorCaminho(usuario, caminho);
+        if (valorEhCargoValido(valor)) return valor;
+      }
 
-      const cargoLocal = procurarCargoEmStorage(localStorage);
-      if (cargoLocal) return cargoLocal;
+      const cargoDireto = buscarValorSalvo(CHAVES_CARGO_PRIORITARIAS);
+      if (valorEhCargoValido(cargoDireto)) return cargoDireto;
+
+      const todosDados = lerTodosDadosSalvos();
+
+      // Primeiro procura campos realmente relacionados a cargo/função/perfil.
+      for (const item of todosDados) {
+        if (typeof item.valor === "object") {
+          const encontrado = procurarCampoEmObjeto(item.valor, CHAVES_CARGO_PRIORITARIAS);
+          if (encontrado) return encontrado;
+        }
+      }
+
+      // Depois procura especificamente qualquer texto contendo "Suporte Líder" em JSON salvo.
+      for (const item of todosDados) {
+        if (typeof item.valor === "object") {
+          const encontrado = procurarSuporteLiderEmObjeto(item.valor);
+          if (encontrado) return encontrado;
+        }
+      }
+
+      // Role fica por último, porque no Supabase normalmente vem "authenticated".
+      for (const item of todosDados) {
+        if (typeof item.valor === "object") {
+          const encontrado = procurarCampoEmObjeto(item.valor, CHAVES_ROLE_BAIXA_PRIORIDADE);
+          if (encontrado) return encontrado;
+        }
+      }
+
+      const roleDireto = buscarValorSalvo(CHAVES_ROLE_BAIXA_PRIORIDADE);
+      if (valorEhCargoValido(roleDireto)) return roleDireto;
+
+      const email = obterEmailAtual();
+      if (emailEstaAutorizadoComoLider(email)) return "Suporte Líder (e-mail autorizado)";
 
       return "";
     }
 
-    function obterEmailUsuarioAtual() {
-      const usuario = buscarObjetoUsuario();
-      return (
-        usuario.email ||
-        usuario.user_email ||
-        usuario.mail ||
-        loggedUserEmail.textContent ||
-        buscarValorSalvo(["email", "userEmail", "usuarioEmail", "loginEmail", "sellerProEmail"])
-      );
-    }
-
-    function emailEstaLiberadoComoSuporteLider() {
-      const emailNormalizado = normalizarTexto(obterEmailUsuarioAtual());
-      return EMAILS_SUPORTE_LIDER.some((emailLiberado) => {
-        const liberadoNormalizado = normalizarTexto(emailLiberado);
-        return emailNormalizado === liberadoNormalizado || emailNormalizado.startsWith(liberadoNormalizado);
-      });
-    }
-
     function usuarioPodeEnviarNotificacao() {
-      const cargoNormalizado = limparCargoParaComparacao(obterCargoUsuario());
+      const cargo = obterCargoUsuario();
+      const email = obterEmailAtual();
+      return textoEhSuporteLider(cargo) || emailEstaAutorizadoComoLider(email);
+    }
 
-      return (
-        cargoNormalizado === "suportelider" ||
-        cargoNormalizado === "lidersuporte" ||
-        cargoNormalizado === "supportleader" ||
-        cargoNormalizado === "suporteleader" ||
-        emailEstaLiberadoComoSuporteLider()
-      );
+    function obterCargoDetectadoTexto() {
+      const cargo = obterCargoUsuario();
+      const email = obterEmailAtual();
+
+      if (cargo) return cargo;
+      if (emailEstaAutorizadoComoLider(email)) return "Suporte Líder (e-mail autorizado)";
+      return "cargo não encontrado";
     }
 
     function obterChaveLeituraNotificacoes() {
@@ -2455,19 +2608,32 @@
         .replace(/'/g, "&#039;");
     }
 
+    function excluirNotificacao(id) {
+      if (!usuarioPodeEnviarNotificacao()) {
+        alert("Apenas usuários com cargo Suporte Líder podem excluir notificações.");
+        return;
+      }
+
+      const confirmar = confirm("Deseja excluir esta notificação?");
+      if (!confirmar) return;
+
+      const notificacoes = carregarNotificacoes().filter((item) => item.id !== id);
+      salvarNotificacoes(notificacoes);
+      renderizarNotificacoes();
+    }
+
     function renderizarNotificacoes() {
       const notificacoes = carregarNotificacoes().sort((a, b) => new Date(b.criadoEm) - new Date(a.criadoEm));
       const idsLidos = carregarIdsLidos();
       const naoLidas = notificacoes.filter((item) => !idsLidos.includes(item.id));
       const podeEnviar = usuarioPodeEnviarNotificacao();
+      const cargoDetectado = obterCargoDetectadoTexto();
 
       newNotificationBtn.style.display = podeEnviar ? "inline-flex" : "none";
       notificationRestricted.style.display = podeEnviar ? "none" : "block";
-      const cargoDetectado = obterCargoUsuario();
-      const emailLiberado = emailEstaLiberadoComoSuporteLider();
       notificationPermissionText.textContent = podeEnviar
-        ? `Você pode enviar avisos para todos. ${cargoDetectado ? "Cargo detectado: " + cargoDetectado : emailLiberado ? "Acesso liberado pelo e-mail." : ""}`
-        : `Você pode visualizar os avisos internos. ${cargoDetectado ? "Cargo detectado: " + cargoDetectado : "Cargo não encontrado no login."}`;
+        ? `Você pode enviar e excluir avisos para todos. Cargo detectado: ${cargoDetectado}.`
+        : `Você pode visualizar os avisos internos. Cargo detectado: ${cargoDetectado}.`;
 
       notificationBadge.textContent = naoLidas.length > 99 ? "99+" : String(naoLidas.length);
       notificationBadge.classList.toggle("show", naoLidas.length > 0);
@@ -2485,6 +2651,9 @@
 
       notificationList.innerHTML = notificacoes.map((item) => {
         const unread = !idsLidos.includes(item.id);
+        const botaoExcluir = podeEnviar
+          ? `<button class="notification-small-btn secondary" type="button" onclick="excluirNotificacao('${escaparHtml(item.id)}')"><i class="fa-solid fa-trash"></i> Excluir</button>`
+          : "";
 
         return `
           <article class="notification-item ${unread ? "unread" : ""}">
@@ -2497,12 +2666,7 @@
               <span>${escaparHtml(item.autor || "Suporte Líder")}</span>
               <span>${formatarDataNotificacao(item.criadoEm)}</span>
             </div>
-            ${podeEnviar ? `
-              <button class="notification-small-btn secondary delete-notification-btn" type="button" data-notification-id="${escaparHtml(item.id)}" style="margin-top:10px; width:100%; color:#ffd6d6; border-color:rgba(255,87,87,.25); background:rgba(255,87,87,.08);">
-                <i class="fa-solid fa-trash"></i>
-                Excluir notificação
-              </button>
-            ` : ""}
+            ${botaoExcluir ? `<div style="margin-top: 10px; display: flex; justify-content: flex-end;">${botaoExcluir}</div>` : ""}
           </article>
         `;
       }).join("");
@@ -2511,20 +2675,6 @@
     function marcarTodasComoLidas() {
       const ids = carregarNotificacoes().map((item) => item.id);
       salvarIdsLidos(ids);
-      renderizarNotificacoes();
-    }
-
-
-    function excluirNotificacao(id) {
-      if (!usuarioPodeEnviarNotificacao()) {
-        alert("Apenas usuários com cargo Suporte Líder podem excluir notificações.");
-        return;
-      }
-
-      if (!confirm("Deseja excluir esta notificação para todos?")) return;
-
-      const notificacoesAtualizadas = carregarNotificacoes().filter((item) => item.id !== id);
-      salvarNotificacoes(notificacoesAtualizadas);
       renderizarNotificacoes();
     }
 
@@ -2555,12 +2705,6 @@
         notificationPanel.classList.remove("open");
         notificationBell.classList.remove("active");
       }
-    });
-
-    notificationList.addEventListener("click", (event) => {
-      const botaoExcluir = event.target.closest(".delete-notification-btn");
-      if (!botaoExcluir) return;
-      excluirNotificacao(botaoExcluir.dataset.notificationId);
     });
 
     newNotificationBtn.addEventListener("click", abrirModalNotificacao);
