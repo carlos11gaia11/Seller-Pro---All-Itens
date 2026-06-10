@@ -1913,6 +1913,75 @@ body[data-theme="light"] {
         .replaceAll("'", '&#039;');
     }
 
+
+    const SOUND_FILES = {
+      site: 'sound/som1.mp3',
+      button: 'sound/som2.mp3',
+      drag: 'sound/som3.mp3',
+      drop: 'sound/som4.mp3',
+      image: 'sound/som5.mp3'
+    };
+
+    const soundCache = {};
+    let soundUnlocked = false;
+    let pendingSiteSound = true;
+
+    function getSound(name) {
+      const source = SOUND_FILES[name];
+      if (!source) return null;
+
+      if (!soundCache[name]) {
+        const audio = new Audio(source);
+        audio.preload = 'auto';
+        soundCache[name] = audio;
+      }
+
+      return soundCache[name];
+    }
+
+    function playSound(name) {
+      const audio = getSound(name);
+      if (!audio) return;
+
+      try {
+        const sound = audio.cloneNode(true);
+        sound.volume = 0.55;
+        const playPromise = sound.play();
+
+        if (playPromise?.catch) {
+          playPromise.catch(() => {
+            // O navegador pode bloquear som automático até o primeiro clique/toque do usuário.
+          });
+        }
+      } catch (error) {
+        console.warn('Não foi possível tocar o som:', name, error);
+      }
+    }
+
+    function unlockSounds() {
+      if (!soundUnlocked) {
+        soundUnlocked = true;
+      }
+
+      if (pendingSiteSound) {
+        pendingSiteSound = false;
+        playSound('site');
+      }
+    }
+
+    function setupGlobalSoundEvents() {
+      document.addEventListener('pointerdown', unlockSounds, { once: true });
+      document.addEventListener('keydown', unlockSounds, { once: true });
+
+      document.addEventListener('click', event => {
+        const clickedButton = event.target.closest('button, .btn, .nav-btn, .mini-btn, .add-project, .project-edit-btn, .attachment-add-btn, .zoom-action-btn');
+
+        if (clickedButton) {
+          playSound('button');
+        }
+      });
+    }
+
     function showToast(message) {
       const toast = document.getElementById('statusToast');
       toast.textContent = message;
@@ -1947,6 +2016,7 @@ body[data-theme="light"] {
 
     async function initApp() {
       applySavedTheme();
+      playSound('site');
 
       try {
         await loadData();
@@ -2318,6 +2388,10 @@ body[data-theme="light"] {
       let addedCount = 0;
 
       for (const file of imageFiles) {
+        if (currentTaskAttachments.some(attachment => attachment.name === file.name && attachment.size === file.size && attachment.type === file.type)) {
+          continue;
+        }
+
         if (file.size > 8 * 1024 * 1024) {
           showToast(`O print "${file.name || 'imagem'}" passou de 8MB. Use uma imagem menor.`);
           continue;
@@ -2339,12 +2413,16 @@ body[data-theme="light"] {
       renderAttachmentManager();
 
       if (addedCount) {
+        playSound('image');
         const editingText = currentEditingTaskId ? ' ao trabalho em edição' : '';
         showToast(`${addedCount} print(s) adicionado(s)${editingText}.`);
       }
     }
 
     function handlePrintPaste(event) {
+      if (event.__sellerProPrintPasteHandled) return;
+      event.__sellerProPrintPasteHandled = true;
+
       const items = Array.from(event.clipboardData?.items || []);
       const files = [];
 
@@ -2846,6 +2924,7 @@ body[data-theme="light"] {
     }
 
     function dragStart(event, taskId) {
+      playSound('drag');
       event.dataTransfer.setData('taskId', taskId);
       event.currentTarget.classList.add('dragging');
     }
@@ -2875,6 +2954,7 @@ body[data-theme="light"] {
       const previousStatus = task.status;
 
       task.status = status;
+      playSound('drop');
       renderBoard();
 
       const { error } = await supabaseClient
@@ -3258,6 +3338,7 @@ body[data-theme="light"] {
       }
     });
 
+    setupGlobalSoundEvents();
     initApp();
   </script>
 </body>
