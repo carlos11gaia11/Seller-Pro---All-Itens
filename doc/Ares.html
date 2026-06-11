@@ -16,6 +16,47 @@
       font-family: Inter, Arial, sans-serif;
     }
 
+    .column > .btn.icon-btn {
+      width: auto;
+      min-width: 44px;
+      align-self: center;
+      margin: 8px auto 0;
+    }
+
+    .btn.icon-btn {
+      width: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0;
+      margin-top: 0;
+      font-size: 20px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.22);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,.26);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), 0 14px 36px rgba(0,0,0,.14);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+      background-clip: padding-box;
+    }
+
+    .btn.icon-btn:hover {
+      background: rgba(255,255,255,.28);
+      transform: translateY(-1px);
+      filter: none;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.16), 0 12px 28px rgba(0,0,0,.16);
+    }
+
+    body[data-theme="light"] .btn.icon-btn {
+      background: rgba(248, 250, 252, .22);
+      color: #6b7280;
+      border-color: rgba(255,255,255,.36);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.12), 0 10px 24px rgba(0,0,0,.08);
+    }
     :root {
       --bg: #050505;
       --bg-soft: #090909;
@@ -39,35 +80,6 @@
       --empty-bg: rgba(255,255,255,.025);
     }
 
-    body[data-theme="light"] {
-  --bg: #ff1ee5;
-  --bg-soft: #f5fbff;
-  --panel: rgb(230, 107, 255);
-  --panel-strong: rgba(245, 251, 255, .96);
-  --card: rgba(248, 252, 255, .94);
-  --card-hover: rgba(232, 246, 255, .98);
-  --border: rgba(20, 74, 110, 0.14);
-  --border-orange: rgba(255, 122, 24, .28);
-  --text: #102638;
-  --muted: #527086;
-  --shadow-soft: 0 18px 60px rgba(35, 99, 140, .14);
-  --header-bg: linear-gradient(
-      135deg,
-      rgb(216, 89, 255),
-      rgba(245, 251, 255, .88) 42%,
-      rgba(255, 0, 157, 0.36)
-    ),
-    rgba(232, 246, 255, .82);
-  --sidebar-bg: linear-gradient(
-      180deg,
-      rgba(245, 251, 255, .92),
-      rgba(220, 241, 255, .86)
-    ),
-    rgba(232, 246, 255, .82);
-  --field-bg: rgba(255, 255, 255, .72);
-  --empty-bg: rgba(186, 230, 253, .22);
-}
-
     html,
     body {
       width: 100%;
@@ -88,10 +100,29 @@
 }
 
 body[data-theme="light"] {
+  --bg: #fff7fb;
+  --bg-soft: #fff2f6;
+  --panel: rgba(255, 245, 249, .90);
+  --panel-strong: rgba(255, 249, 251, .98);
+  --card: rgba(255, 255, 255, .96);
+  --card-hover: rgba(255, 250, 252, .99);
+  --border: rgba(150, 110, 130, 0.12);
+  --border-orange: rgba(255, 122, 24, .18);
+  --text: #2b1220;
+  --muted: #a07f8f;
+  --primary: #ff7a9a;
+  --primary-2: #ffb0c9;
+  --primary-3: #ff3d6a;
+  --radius: 22px;
+  --shadow-soft: 0 18px 60px rgba(199, 120, 150, .08);
+  --header-bg: linear-gradient(135deg, rgba(255, 190, 210, .60), rgba(255,255,255,.88) 42%, rgba(255, 214, 220, .36)), rgba(255,240,245,.92);
+  --sidebar-bg: linear-gradient(180deg, rgba(255, 249, 251, .92), rgba(255, 240, 246, .86)), rgba(255,246,249,.92);
+  --field-bg: rgba(255, 255, 255, .92);
+  --empty-bg: rgba(255,230,240,.22);
   background:
-    radial-gradient(circle at 18% 8%, rgb(234, 0, 255), transparent 30%),
-    radial-gradient(circle at 88% 14%, rgba(0, 0, 0, 0.36), transparent 28%),
-    radial-gradient(circle at 48% 88%, rgba(147, 197, 253, .32), transparent 34%),
+    radial-gradient(circle at 18% 8%, rgba(255, 190, 220, .28), transparent 30%),
+    radial-gradient(circle at 88% 14%, rgba(255, 214, 230, .18), transparent 28%),
+    radial-gradient(circle at 48% 88%, rgba(255, 200, 220, .12), transparent 34%),
     linear-gradient(145deg, var(--bg) 0%, var(--bg-soft) 44%, var(--bg) 100%);
 }
 
@@ -698,6 +729,7 @@ body[data-theme="light"] {
       max-height: 36px;
       overflow: hidden;
       display: -webkit-box;
+      line-clamp: 2;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       position: relative;
@@ -780,6 +812,7 @@ body[data-theme="light"] {
       max-height: 18px;
       overflow: hidden;
       display: -webkit-box;
+      line-clamp: 1;
       -webkit-line-clamp: 1;
       -webkit-box-orient: vertical;
       position: relative;
@@ -816,6 +849,7 @@ body[data-theme="light"] {
       font-size: 12px;
       line-height: 1.35;
       display: -webkit-box;
+      line-clamp: 3;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
@@ -2291,7 +2325,7 @@ body[data-theme="light"] {
               ${columnTasks.length ? columnTasks.map(taskTemplate).join('') : '<div class="empty">Nenhum trabalho nesta divisão</div>'}
             </div>
 
-            <button class="btn" style="width: 100%; margin-top: auto; padding: 10px;" onclick="openModalForColumn('${escapeHTML(column)}')">+ Novo trabalho</button>
+            <button class="btn icon-btn" onclick="openModalForColumn('${escapeHTML(column)}')">+</button>
           </div>
         `;
       }).join('');
