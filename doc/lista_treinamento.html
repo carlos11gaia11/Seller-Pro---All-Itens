@@ -295,22 +295,9 @@
     // Troque este link pelo link real da planilha/painel de lojas prontas.
     const LOJAS_PRONTAS_URL = 'https://docs.google.com/spreadsheets/';
 
-    const supports = ['CARLOS', 'DANIELA', 'FELIPE', 'GABRIEL', 'JOSE', 'MELISSA', 'POLYANNA', 'SILAS'];
-    const supportColors = {
-      CARLOS: '#f97316', DANIELA: '#ec4899', FELIPE: '#3b82f6', GABRIEL: '#22c55e',
-      JOSE: '#a855f7', MELISSA: '#14b8a6', POLYANNA: '#eab308', SILAS: '#ef4444'
-    };
-
-    const supportAliases = {
-      CARLOS: ['CARLOS'],
-      DANIELA: ['DANIELA'],
-      FELIPE: ['FELIPE', 'FILIPE', 'FELIPPE'],
-      GABRIEL: ['GABRIEL'],
-      JOSE: ['JOSE', 'JOSÉ'],
-      MELISSA: ['MELISSA', 'MELISSAH'],
-      POLYANNA: ['POLYANNA', 'POLIANA', 'POLLYANNA'],
-      SILAS: ['SILAS']
-    };
+    let supports = [];
+    let supportColors = {};
+    let supportAliases = {};
 
     function normalizeText(value) {
       return String(value ?? '')
@@ -394,16 +381,66 @@
     let filteredSellers = [];
     let currentSort = { column: 'nome', direction: 'asc' };
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('lojasProntasBtn').href = LOJAS_PRONTAS_URL;
-      fillSupportSelects();
-      refreshSellers();
-      setupRealtime();
+
+      try {
+        await fetchSupports();
+        fillSupportSelects();
+        await refreshSellers();
+        setupRealtime();
+        setupSupportsRealtime();
+      } catch (error) {
+        showToast('Erro ao carregar dados iniciais: ' + (error.message || error), 'error');
+      }
     });
+
+    async function fetchSupports() {
+      const { data, error } = await supabaseClient
+        .from('suportes_sellerpro')
+        .select('*');
+
+      if (error) throw error;
+
+      supports = [];
+      supportColors = {};
+      supportAliases = {};
+
+      (data || [])
+        .filter(item => item.ativo !== false)
+        .forEach(item => {
+          const nomeBruto = item.nome || item.suporte || item.name || item.responsavel || '';
+          const nome = normalizeSupport(nomeBruto);
+
+          if (!nome) return;
+
+          supports.push(nome);
+          supportColors[nome] = item.cor || item.color || item.hex || '#71717a';
+
+          if (Array.isArray(item.aliases)) {
+            supportAliases[nome] = item.aliases;
+          } else if (item.aliases) {
+            supportAliases[nome] = String(item.aliases)
+              .split(',')
+              .map(alias => alias.trim())
+              .filter(Boolean);
+          } else {
+            supportAliases[nome] = [nome];
+          }
+        });
+
+      supports = [...new Set(supports)].sort((a, b) =>
+        a.localeCompare(b, 'pt-BR', { sensitivity: 'base' })
+      );
+    }
 
     function fillSupportSelects() {
       const suporteSelect = document.getElementById('suporte');
       const filterSupport = document.getElementById('filterSupport');
+
+      suporteSelect.innerHTML = '';
+      filterSupport.innerHTML = '<option value="">Todos os suportes</option>';
+
       supports.forEach(name => {
         suporteSelect.insertAdjacentHTML('beforeend', `<option value="${name}">${name}</option>`);
         filterSupport.insertAdjacentHTML('beforeend', `<option value="${name}">${name}</option>`);
@@ -695,12 +732,12 @@
         document.getElementById('nome').value = seller.nome || '';
         document.getElementById('email').value = seller.email || '';
         document.getElementById('telefone').value = seller.telefone || '';
-        document.getElementById('suporte').value = supports.includes(supportKey(seller)) ? supportKey(seller) : supports[0];
+        document.getElementById('suporte').value = supports.includes(supportKey(seller)) ? supportKey(seller) : (supports[0] || '');
         document.getElementById('data_inicio').value = seller.data_inicio || '';
         document.getElementById('validadePreview').value = seller.validade ? formatDate(seller.validade) : '';
       } else {
         document.getElementById('status').value = 'Ativou';
-        document.getElementById('suporte').value = supports[0];
+        document.getElementById('suporte').value = supports[0] || '';
         document.getElementById('data_inicio').value = new Date().toISOString().slice(0, 10);
         previewValidity();
       }
@@ -765,6 +802,21 @@
       supabaseClient
         .channel('sellers-realtime')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'sellers' }, () => refreshSellers())
+        .subscribe();
+    }
+
+    function setupSupportsRealtime() {
+      supabaseClient
+        .channel('supports-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'suportes_sellerpro' }, async () => {
+          try {
+            await fetchSupports();
+            fillSupportSelects();
+            applyFilters();
+          } catch (error) {
+            showToast('Erro ao atualizar suportes: ' + (error.message || error), 'error');
+          }
+        })
         .subscribe();
     }
 
