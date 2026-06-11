@@ -1859,7 +1859,7 @@
             <span class="user-email" id="loggedUserEmail">Sessão ativa</span>
           </div>
 
-          <a class="user-btn" href="doc/perfil.html" title="Abrir perfil">
+          <a class="user-btn" id="profileBtn" href="doc/perfil.html" title="Abrir perfil">
             <i class="fa-solid fa-user"></i>
             Perfil
           </a>
@@ -2545,6 +2545,17 @@
       return textoEhSuporteLider(cargo) || emailEstaAutorizadoComoLider(email);
     }
 
+    function configurarBotaoPerfilPorCargo() {
+      const profileBtn = document.getElementById("profileBtn");
+      if (!profileBtn) return;
+
+      const ehLiderSuporte = usuarioPodeEnviarNotificacao();
+
+      profileBtn.href = ehLiderSuporte ? "perfillider.html" : "doc/perfil.html";
+      profileBtn.title = ehLiderSuporte ? "Abrir Perfil Líder" : "Abrir perfil";
+      profileBtn.setAttribute("aria-label", ehLiderSuporte ? "Abrir Perfil Líder" : "Abrir perfil");
+    }
+
     function obterCargoDetectadoTexto() {
       const cargo = obterCargoUsuario();
       const email = obterEmailAtual();
@@ -2748,6 +2759,7 @@
       }
     });
 
+    configurarBotaoPerfilPorCargo();
     renderizarNotificacoes();
 
 
