@@ -2551,9 +2551,17 @@
 
       const ehLiderSuporte = usuarioPodeEnviarNotificacao();
 
-      profileBtn.href = ehLiderSuporte ? "perfillider.html" : "doc/perfil.html";
-      profileBtn.title = ehLiderSuporte ? "Abrir Perfil Líder" : "Abrir perfil";
-      profileBtn.setAttribute("aria-label", ehLiderSuporte ? "Abrir Perfil Líder" : "Abrir perfil");
+      if (ehLiderSuporte) {
+        profileBtn.href = "doc/perfillider.html";
+        profileBtn.title = "Abrir Perfil Líder";
+        profileBtn.setAttribute("aria-label", "Abrir Perfil Líder");
+        profileBtn.innerHTML = '<i class="fa-solid fa-user-tie"></i> Perfil Líder';
+      } else {
+        profileBtn.href = "doc/perfil.html";
+        profileBtn.title = "Abrir perfil";
+        profileBtn.setAttribute("aria-label", "Abrir perfil");
+        profileBtn.innerHTML = '<i class="fa-solid fa-user"></i> Perfil';
+      }
     }
 
     function obterCargoDetectadoTexto() {
