@@ -365,6 +365,49 @@ body[data-theme="light"] {
       overflow: hidden;
     }
 
+    .column > .btn {
+      width: 100%;
+      margin-top: auto;
+      padding: 13px 16px;
+      min-height: 50px;
+      font-size: 14px;
+    }
+
+    .btn.icon-btn {
+      width: 44px;
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0;
+      margin-top: auto;
+      font-size: 20px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.14);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.10), 0 12px 30px rgba(0,0,0,.12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      align-self: center;
+      background-clip: padding-box;
+    }
+
+    .btn.icon-btn:hover {
+      background: rgba(255,255,255,.18);
+      transform: translateY(-1px);
+      filter: none;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), 0 10px 26px rgba(0,0,0,.14);
+    }
+
+    body[data-theme="light"] .btn.icon-btn {
+      background: rgba(248, 250, 252, .14);
+      color: #6b7280;
+      border-color: rgba(255,255,255,.30);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.10), 0 10px 24px rgba(0,0,0,.08);
+    }
+
     .btn:hover {
       transform: translateY(-2px);
       filter: brightness(1.08);
@@ -573,7 +616,8 @@ body[data-theme="light"] {
       display: flex;
       flex-direction: column;
       scroll-snap-align: start;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
       box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,.06);
       transition: .22s ease;
       animation: fadeUp .7s ease both;
@@ -651,9 +695,7 @@ body[data-theme="light"] {
     }
 
     .card {
-      height: 315px;
       min-height: 315px;
-      max-height: 315px;
       background:
         linear-gradient(180deg, rgba(255, 255, 255, .085), rgba(255, 255, 255, .035)),
         var(--card);
@@ -666,6 +708,27 @@ body[data-theme="light"] {
       overflow: hidden;
       display: flex;
       flex-direction: column;
+    }
+
+    .card.editing {
+      background: linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 122, 24, .08));
+      cursor: default;
+    }
+
+    .card.editing input,
+    .card.editing textarea,
+    .card.editing select {
+      background: rgba(255,255,255,.10);
+      color: var(--text);
+      border-color: rgba(255, 122, 24, .32);
+    }
+
+    .inline-edit-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .card::before {
@@ -1891,6 +1954,7 @@ body[data-theme="light"] {
     const searchResults = document.getElementById('searchResults');
 
     let currentEditingTaskId = null;
+    let currentInlineEditTaskId = null;
     let currentTaskAttachments = [];
 
     function slugify(text) {
@@ -2219,6 +2283,8 @@ body[data-theme="light"] {
             <div class="cards">
               ${columnTasks.length ? columnTasks.map(taskTemplate).join('') : '<div class="empty">Nenhum trabalho nesta divisão</div>'}
             </div>
+
+            <button class="btn icon-btn" onclick='openModalForColumn(${JSON.stringify(column)})'>+</button>
           </div>
         `;
       }).join('');
@@ -2240,9 +2306,110 @@ body[data-theme="light"] {
       return updates.length ? updates[updates.length - 1] : 'Nenhuma atualização ainda.';
     }
 
+    function startInlineEdit(taskId) {
+      currentInlineEditTaskId = taskId;
+      renderBoard();
+    }
+
+    function cancelInlineEdit() {
+      currentInlineEditTaskId = null;
+      renderBoard();
+    }
+
+    async function saveInlineTask(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      const name = document.getElementById(`inlineTaskName-${taskId}`)?.value.trim();
+      if (!name) {
+        alert('Coloque um nome para identificar o trabalho.');
+        return;
+      }
+
+      const updatesText = document.getElementById(`inlineTaskUpdates-${taskId}`)?.value.trim() || '';
+      const updates = updatesText ? updatesText.split('\n').map(line => line.trim()).filter(Boolean) : [];
+
+      const taskData = {
+        project_id: task.project,
+        status: document.getElementById(`inlineTaskStatus-${taskId}`)?.value || task.status,
+        name,
+        owner: document.getElementById(`inlineTaskOwner-${taskId}`)?.value.trim() || '',
+        description: document.getElementById(`inlineTaskDescription-${taskId}`)?.value.trim() || '',
+        updates,
+        attachments: task.attachments || []
+      };
+
+      const { error } = await supabaseClient
+        .from('sp_tasks')
+        .update(taskData)
+        .eq('id', taskId);
+
+      if (error) {
+        showToast('Não consegui salvar o trabalho. Verifique o Supabase.');
+        console.error(error);
+        return;
+      }
+
+      Object.assign(task, {
+        status: taskData.status,
+        name: taskData.name,
+        owner: taskData.owner,
+        description: taskData.description,
+        updates: taskData.updates
+      });
+
+      currentInlineEditTaskId = null;
+      renderFilters();
+      renderBoard();
+      showToast('Trabalho atualizado inline.');
+    }
+
     function taskTemplate(task) {
+      const isEditingInline = task.id === currentInlineEditTaskId;
+
+      if (isEditingInline) {
+        return `
+          <article class="card editing" data-task-id="${escapeHTML(task.id)}" onclick="event.stopPropagation();">
+            <div class="field full">
+              <label>Nome do trabalho</label>
+              <input id="inlineTaskName-${escapeHTML(task.id)}" value="${escapeHTML(task.name)}" />
+            </div>
+
+            <div class="field">
+              <label>Responsável</label>
+              <input id="inlineTaskOwner-${escapeHTML(task.id)}" value="${escapeHTML(task.owner)}" />
+            </div>
+
+            <div class="field">
+              <label>Situação</label>
+              <select id="inlineTaskStatus-${escapeHTML(task.id)}">
+                ${state.columns.map(status => `
+                  <option value="${escapeHTML(status)}" ${status === task.status ? 'selected' : ''}>${escapeHTML(status)}</option>
+                `).join('')}
+              </select>
+            </div>
+
+            <div class="field full">
+              <label>Descrição</label>
+              <textarea id="inlineTaskDescription-${escapeHTML(task.id)}">${escapeHTML(task.description)}</textarea>
+            </div>
+
+            <div class="field full">
+              <label>Atualizações</label>
+              <textarea id="inlineTaskUpdates-${escapeHTML(task.id)}">${escapeHTML((task.updates || []).join('\n'))}</textarea>
+            </div>
+
+            <div class="inline-edit-actions">
+              <button class="mini-btn" onclick="event.stopPropagation(); saveInlineTask('${escapeHTML(task.id)}')">Salvar</button>
+              <button class="mini-btn secondary" onclick="event.stopPropagation(); cancelInlineEdit()">Cancelar</button>
+              <button class="mini-btn secondary" onclick="event.stopPropagation(); openModal('${escapeHTML(task.id)}')">Abrir modal</button>
+            </div>
+          </article>
+        `;
+      }
+
       return `
-        <article class="card" data-task-id="${escapeHTML(task.id)}" draggable="true" onclick="openTaskDetails('${escapeHTML(task.id)}')" ondragstart="dragStart(event, '${escapeHTML(task.id)}')" ondragend="dragEnd(event)">
+        <article class="card" data-task-id="${escapeHTML(task.id)}" draggable="true" onclick="startInlineEdit('${escapeHTML(task.id)}')" ondragstart="dragStart(event, '${escapeHTML(task.id)}')" ondragend="dragEnd(event)">
           <h3>${escapeHTML(task.name)}</h3>
 
           <div class="owner-highlight">
@@ -2628,6 +2795,30 @@ body[data-theme="light"] {
         saveButton.disabled = false;
         saveButton.textContent = 'Salvar trabalho';
       }
+    }
+
+    function openModalForColumn(columnName) {
+      currentEditingTaskId = null;
+      const saveButton = document.getElementById('saveTaskButton');
+
+      document.getElementById('taskModalTitle').textContent = 'Novo trabalho';
+
+      if (saveButton) {
+        saveButton.disabled = false;
+        saveButton.textContent = 'Salvar trabalho';
+      }
+
+      clearForm();
+      document.getElementById('taskProject').value = state.activeProject;
+      document.getElementById('taskStatus').value = columnName;
+      currentTaskAttachments = [];
+
+      renderAttachmentManager();
+      document.getElementById('taskModal').classList.add('show');
+
+      setTimeout(() => {
+        document.getElementById('pastePrintZone')?.focus();
+      }, 80);
     }
 
     function clearForm() {
