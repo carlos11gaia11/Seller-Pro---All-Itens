@@ -968,151 +968,68 @@
     }
 
     async function checkLeaderAccess() {
-  const {
-    data: { session },
-    error: sessionError
-  } = await supabaseClient.auth.getSession();
+      const {
+        data: { session },
+        error: sessionError
+      } = await supabaseClient.auth.getSession();
 
-  if (sessionError) {
-    throw sessionError;
-  }
+      if (sessionError) {
+        throw sessionError;
+      }
 
-  if (!session?.user) {
-    window.location.href = LOGIN_PAGE;
-    return false;
-  }
+      if (!session?.user) {
+        window.location.href = LOGIN_PAGE;
+        return false;
+      }
 
-  currentUser = session.user;
-  userEmail.textContent = currentUser.email || "Usuário conectado";
+      currentUser = session.user;
+      userEmail.textContent = currentUser.email || "Usuário conectado";
 
-  const loggedEmail = String(currentUser.email || "")
-    .trim()
-    .toLowerCase();
+      const loggedEmail = String(currentUser.email || "").trim().toLowerCase();
 
-  /*
-    Busca pelo e-mail usando ilike para evitar erro por:
-    - letra maiúscula/minúscula
-    - diferença de capitalização no Supabase
-  */
-  const { data: suporte, error } = await supabaseClient
-    .from(TABLE_NAME)
-    .select("*")
-    .ilike("email", loggedEmail)
-    .maybeSingle();
+      if (!loggedEmail) {
+        throw new Error("Não foi possível identificar o e-mail do usuário logado.");
+      }
 
-  if (error) {
-    console.error("Erro ao validar acesso na tabela suportes_sellerpro:", error);
-    throw new Error(`Erro ao validar acesso: ${error.message}`);
-  }
+      const { data: suporte, error } = await supabaseClient
+        .from(TABLE_NAME)
+        .select("*")
+        .eq("email", loggedEmail)
+        .maybeSingle();
 
-  if (!suporte) {
-    document.body.innerHTML = `
-      <div class="loader">
-        <div class="loader-box">
-          <h2 style="color: var(--orange); margin-top: 0;">Acesso negado</h2>
+      if (error) {
+        console.error("Erro ao validar acesso na tabela suportes_sellerpro:", error);
+        throw new Error(`Erro ao validar acesso na tabela ${TABLE_NAME}: ${error.message}`);
+      }
 
-          <p style="color: var(--muted); line-height: 1.6;">
-            Seu e-mail está logado, mas não foi encontrado na tabela <b>${TABLE_NAME}</b>.
-          </p>
+      if (!suporte) {
+        document.body.innerHTML = `
+          <div class="loader">
+            <div class="loader-box">
+              <h2 style="color: var(--orange); margin-top: 0;">Acesso negado</h2>
 
-          <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-            E-mail logado: <b>${escapeHtml(loggedEmail)}</b>
-          </p>
+              <p style="color: var(--muted); line-height: 1.6;">
+                Seu usuário está logado, mas o e-mail não foi encontrado na tabela <b>${TABLE_NAME}</b>.
+              </p>
 
-          <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
-            Voltar para login
-          </button>
-        </div>
-      </div>
-    `;
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                E-mail logado: <b>${escapeHtml(loggedEmail)}</b>
+              </p>
 
-    return false;
-  }
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                Cadastre esse e-mail na tabela <b>${TABLE_NAME}</b> com <b>role</b> como
+                <b>lider_suporte</b> ou <b>admin</b> e <b>status</b> como <b>ativo</b>.
+              </p>
 
-  const rawRole =
-    suporte.role ||
-    suporte.cargo ||
-    suporte.perfil ||
-    suporte.tipo ||
-    suporte.funcao ||
-    "";
+              <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
+                Voltar para login
+              </button>
+            </div>
+          </div>
+        `;
 
-  const rawStatus =
-    suporte.status ||
-    suporte.situacao ||
-    suporte.situação ||
-    "";
-
-  const role = normalize(rawRole)
-    .replace(/-/g, "_")
-    .replace(/\s+/g, "_");
-
-  const status = normalize(rawStatus)
-    .replace(/-/g, "_")
-    .replace(/\s+/g, "_");
-
-  const allowedRoles = [
-    "lider_suporte",
-    "lider",
-    "admin",
-    "administrador"
-  ];
-
-  const allowedStatuses = [
-    "",
-    "ativo",
-    "active"
-  ];
-
-  const isLeader = allowedRoles.includes(role);
-  const isActive = allowedStatuses.includes(status);
-
-  console.log("Validação de acesso:", {
-    emailLogado: loggedEmail,
-    suporteEncontrado: suporte,
-    roleOriginal: rawRole,
-    roleNormalizada: role,
-    statusOriginal: rawStatus,
-    statusNormalizado: status,
-    isLeader,
-    isActive
-  });
-
-  if (isLeader && isActive) {
-    return true;
-  }
-
-  document.body.innerHTML = `
-    <div class="loader">
-      <div class="loader-box">
-        <h2 style="color: var(--orange); margin-top: 0;">Acesso negado</h2>
-
-        <p style="color: var(--muted); line-height: 1.6;">
-          Seu usuário está logado, mas não foi identificado como <b>líder suporte</b>.
-        </p>
-
-        <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-          E-mail logado: <b>${escapeHtml(loggedEmail)}</b><br>
-          E-mail na tabela: <b>${escapeHtml(suporte.email || "-")}</b><br>
-          Role atual: <b>${escapeHtml(rawRole || "-")}</b><br>
-          Status atual: <b>${escapeHtml(rawStatus || "-")}</b>
-        </p>
-
-        <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-          Para liberar o acesso, esse e-mail precisa estar na tabela <b>${TABLE_NAME}</b>
-          com <b>role</b> igual a <b>lider_suporte</b> ou <b>admin</b>,
-          e <b>status</b> igual a <b>ativo</b>.
-        </p>
-
-        <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
-          Voltar para login
-        </button>
-      </div>
-    </div>
-  `;
-
-  return false;
-}
+        return false;
+      }
 
       const roleValue = suporte.role ?? suporte.cargo ?? suporte.perfil ?? suporte.tipo ?? suporte.funcao ?? "";
       const statusValue = suporte.status ?? suporte.situacao ?? suporte.situação ?? "ativo";
