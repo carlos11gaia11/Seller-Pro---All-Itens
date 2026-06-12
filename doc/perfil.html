@@ -650,7 +650,7 @@
               <span class="dot"></span>
               <div>
                 <b>Editar cadastro</b>
-                <small>Alterar nome, e-mail, cargo e status.</small>
+                <small>Alterar nome, e-mail, role e status.</small>
               </div>
             </div>
 
@@ -692,7 +692,7 @@
             </div>
 
             <div class="field">
-              <label for="cargo">Cargo / Perfil</label>
+              <label for="cargo">Role / Perfil</label>
               <select id="cargo" class="select">
                 <option value="suporte">Suporte</option>
                 <option value="lider_suporte">Líder suporte</option>
@@ -728,7 +728,7 @@
           <div id="tableAlert" class="alert"></div>
 
           <div class="toolbar">
-            <input id="searchInput" class="input searchbox" type="search" placeholder="Buscar por nome, e-mail, ou cargo..." />
+            <input id="searchInput" class="input searchbox" type="search" placeholder="Buscar por nome, e-mail ou role..." />
             <button class="btn secondary" id="clearSearchBtn">Limpar busca</button>
           </div>
 
@@ -738,7 +738,7 @@
                 <tr>
                   <th>Nome</th>
                   <th>E-mail</th>
-                  <th>Cargo</th>
+                  <th>Role</th>
                   <th>Status</th>
                   <th>Ações</th>
                 </tr>
@@ -819,6 +819,8 @@
         "login"
       ],
       cargo: [
+        "role",
+        "Role",
         "cargo",
         "Cargo",
         "perfil",
@@ -852,7 +854,7 @@
       id: "id",
       nome: "nome",
       email: "email",
-      cargo: "cargo",
+      cargo: "role",
       status: "status"
     };
 
@@ -983,32 +985,72 @@
       currentUser = session.user;
       userEmail.textContent = currentUser.email || "Usuário conectado";
 
-      const metadata = currentUser.user_metadata || {};
+      const loggedEmail = String(currentUser.email || "").trim().toLowerCase();
 
-      const metadataRole =
-        metadata.role ||
-        metadata.cargo ||
-        metadata.perfil ||
-        metadata.tipo ||
-        metadata.funcao;
-
-      if (isLeaderValue(metadataRole)) {
-        return true;
+      if (!loggedEmail) {
+        throw new Error("Não foi possível identificar o e-mail do usuário logado.");
       }
 
-      const rows = await fetchSupports();
+      const { data: suporte, error } = await supabaseClient
+        .from(TABLE_NAME)
+        .select("*")
+        .eq("email", loggedEmail)
+        .maybeSingle();
 
-      const loggedEmail = normalize(currentUser.email);
+      if (error) {
+        console.error("Erro ao validar acesso na tabela suportes_sellerpro:", error);
+        throw new Error(`Erro ao validar acesso na tabela ${TABLE_NAME}: ${error.message}`);
+      }
 
-      const currentSupport = rows.find(row => {
-        const rowEmail = normalize(getValue(row, "email"));
-        return rowEmail && rowEmail === loggedEmail;
-      });
+      if (!suporte) {
+        document.body.innerHTML = `
+          <div class="loader">
+            <div class="loader-box">
+              <h2 style="color: var(--orange); margin-top: 0;">Acesso negado</h2>
 
-      const tableRole = getValue(currentSupport, "cargo");
-      const tableStatus = getValue(currentSupport, "status");
+              <p style="color: var(--muted); line-height: 1.6;">
+                Seu usuário está logado, mas o e-mail não foi encontrado na tabela <b>${TABLE_NAME}</b>.
+              </p>
 
-      if (isLeaderValue(tableRole) && normalize(tableStatus) !== "inativo") {
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                E-mail logado: <b>${escapeHtml(loggedEmail)}</b>
+              </p>
+
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                Cadastre esse e-mail na tabela <b>${TABLE_NAME}</b> com <b>role</b> como
+                <b>lider_suporte</b> ou <b>admin</b> e <b>status</b> como <b>ativo</b>.
+              </p>
+
+              <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
+                Voltar para login
+              </button>
+            </div>
+          </div>
+        `;
+
+        return false;
+      }
+
+      const roleValue = suporte.role ?? suporte.cargo ?? suporte.perfil ?? suporte.tipo ?? suporte.funcao ?? "";
+      const statusValue = suporte.status ?? suporte.situacao ?? suporte.situação ?? "ativo";
+
+      const role = normalize(roleValue)
+        .replace(/-/g, "_")
+        .replace(/\s+/g, "_");
+
+      const status = normalize(statusValue);
+
+      const allowedRoles = [
+        "lider_suporte",
+        "lider",
+        "admin",
+        "administrador"
+      ];
+
+      const isLeader = allowedRoles.includes(role);
+      const isActive = !status || status === "ativo" || status === "active";
+
+      if (isLeader && isActive) {
         return true;
       }
 
@@ -1022,8 +1064,14 @@
             </p>
 
             <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-              Verifique se o e-mail do login está cadastrado na tabela <b>${TABLE_NAME}</b>
-              e se o cargo está como <b>lider_suporte</b> ou <b>admin</b>.
+              E-mail encontrado: <b>${escapeHtml(loggedEmail)}</b><br>
+              Role atual: <b>${escapeHtml(roleValue || "-")}</b><br>
+              Status atual: <b>${escapeHtml(statusValue || "-")}</b>
+            </p>
+
+            <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+              Para liberar o acesso, use <b>role = lider_suporte</b> ou <b>role = admin</b>
+              e <b>status = ativo</b> na tabela <b>${TABLE_NAME}</b>.
             </p>
 
             <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
