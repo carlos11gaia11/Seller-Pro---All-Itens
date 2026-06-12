@@ -581,7 +581,7 @@
       <div class="spinner"></div>
       <h2>Verificando acesso</h2>
       <p style="color: var(--muted); margin-bottom: 0;">
-        Aguarde enquanto validamos seu login como líder de suporte.
+        Aguarde enquanto validamos seu login na tabela profiles.
       </p>
     </div>
   </div>
@@ -592,7 +592,7 @@
         <div class="logo">SP</div>
         <div>
           <h1>Seller Pro Admin</h1>
-          <p>Painel do líder de suporte</p>
+          <p>Painel administrativo</p>
         </div>
       </div>
 
@@ -609,7 +609,7 @@
           <h2 class="headline">Gestão de <span>suportes</span> Seller Pro</h2>
 
           <p class="subtext">
-            Área administrativa para líderes criarem, editarem, ativarem e organizarem os suportes cadastrados.
+            Área administrativa para consultar o perfil logado e gerenciar os suportes cadastrados.
           </p>
 
           <div class="stats">
@@ -658,7 +658,7 @@
               <span class="dot"></span>
               <div>
                 <b>Controle de acesso</b>
-                <small>A página abre para qualquer usuário autenticado.</small>
+                <small>A página valida o usuário pela tabela profiles.</small>
               </div>
             </div>
           </div>
@@ -721,7 +721,7 @@
           <div class="section-title">
             <div>
               <h2>Suportes cadastrados</h2>
-              <small>Dados carregados da tabela de suportes.</small>
+              <small>Dados carregados da tabela suportes_sellerpro.</small>
             </div>
           </div>
 
@@ -762,6 +762,7 @@
 
     const LOGIN_PAGE = "login.html";
     const TABLE_NAME = "suportes_sellerpro";
+    const PROFILES_TABLE_NAME = "profiles";
 
     const supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
@@ -889,8 +890,101 @@
       currentUser = session.user;
       userEmail.textContent = currentUser.email || "Usuário conectado";
 
-      // Restrição de cargo removida:
-      // qualquer usuário autenticado consegue acessar o painel.
+      const loggedEmail = normalizeEmail(currentUser.email);
+      const loggedUserId = currentUser.id;
+
+      /*
+        A validação de acesso agora vem da tabela profiles.
+        A tabela suportes_sellerpro fica somente para a tela de suportes:
+        listar, criar, editar e excluir.
+      */
+      const { data: profileRows, error } = await supabaseClient
+        .from(PROFILES_TABLE_NAME)
+        .select("*")
+        .or(`id.eq.${loggedUserId},email.eq.${loggedEmail}`);
+
+      if (error) {
+        console.error("Erro ao validar acesso na tabela profiles:", error);
+
+        document.body.innerHTML = `
+          <div class="loader">
+            <div class="loader-box">
+              <h2 style="color: var(--danger); margin-top: 0;">Erro ao validar acesso</h2>
+
+              <p style="color: var(--muted); line-height: 1.6;">
+                Não foi possível consultar a tabela <b>${PROFILES_TABLE_NAME}</b>.
+              </p>
+
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                Erro: <b>${escapeHtml(error.message)}</b>
+              </p>
+
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                Verifique se a tabela <b>${PROFILES_TABLE_NAME}</b> existe e se as policies de RLS permitem a leitura do perfil logado.
+              </p>
+
+              <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
+                Voltar para login
+              </button>
+            </div>
+          </div>
+        `;
+
+        return false;
+      }
+
+      const profiles = profileRows || [];
+
+      const currentProfile = profiles.find(row => {
+        const rowEmail = normalizeEmail(row.email);
+        const rowId = String(row.id || "");
+        const rowUserId = String(row.user_id || "");
+
+        return (
+          rowId === String(loggedUserId) ||
+          rowUserId === String(loggedUserId) ||
+          rowEmail === loggedEmail
+        );
+      });
+
+      console.log("Validação de acesso pela tabela profiles:", {
+        userIdLogado: loggedUserId,
+        emailLogado: loggedEmail,
+        registrosRetornados: profiles.length,
+        profileEncontrado: currentProfile || null
+      });
+
+      if (!currentProfile) {
+        document.body.innerHTML = `
+          <div class="loader">
+            <div class="loader-box">
+              <h2 style="color: var(--orange); margin-top: 0;">Acesso não encontrado</h2>
+
+              <p style="color: var(--muted); line-height: 1.6;">
+                Seu login está ativo, mas não foi encontrado nenhum registro correspondente na tabela <b>${PROFILES_TABLE_NAME}</b>.
+              </p>
+
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                E-mail logado: <b>${escapeHtml(loggedEmail)}</b><br>
+                ID do usuário: <b>${escapeHtml(loggedUserId)}</b><br>
+                Registros retornados: <b>${profiles.length}</b>
+              </p>
+
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                O painel precisa encontrar esse usuário em <b>${PROFILES_TABLE_NAME}</b>.
+                Depois disso, a gestão de suportes usa a tabela <b>${TABLE_NAME}</b>.
+              </p>
+
+              <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
+                Voltar para login
+              </button>
+            </div>
+          </div>
+        `;
+
+        return false;
+      }
+
       return true;
     }
 
