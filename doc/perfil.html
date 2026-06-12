@@ -11,12 +11,9 @@
   <style>
     :root {
       --bg: #070707;
-      --bg-2: #101010;
       --card: rgba(20, 20, 20, 0.86);
-      --card-2: rgba(31, 31, 31, 0.9);
       --orange: #ff7a00;
       --orange-2: #ff9d2e;
-      --orange-dark: #b94d00;
       --text: #f7f7f7;
       --muted: #aaa;
       --line: rgba(255, 122, 0, 0.18);
@@ -133,7 +130,9 @@
       white-space: nowrap;
     }
 
-    button, input, select {
+    button,
+    input,
+    select {
       font: inherit;
     }
 
@@ -338,7 +337,8 @@
       font-weight: 700;
     }
 
-    .input, .select {
+    .input,
+    .select {
       width: 100%;
       border: 1px solid rgba(255,255,255,.1);
       background: rgba(255,255,255,.055);
@@ -353,7 +353,8 @@
       color: #111;
     }
 
-    .input:focus, .select:focus {
+    .input:focus,
+    .select:focus {
       border-color: rgba(255,122,0,.65);
       box-shadow: 0 0 0 4px rgba(255,122,0,.12);
       background: rgba(255,255,255,.075);
@@ -393,7 +394,8 @@
       min-width: 760px;
     }
 
-    th, td {
+    th,
+    td {
       padding: 14px 14px;
       text-align: left;
       border-bottom: 1px solid rgba(255,255,255,.07);
@@ -522,7 +524,9 @@
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .hidden {
@@ -530,7 +534,8 @@
     }
 
     @media (max-width: 980px) {
-      .hero, .grid {
+      .hero,
+      .grid {
         grid-template-columns: 1fr;
       }
 
@@ -764,42 +769,6 @@
     const LOGIN_PAGE = "login.html";
     const TABLE_NAME = "suportes_sellerpro";
 
-    /*
-      IMPORTANTE:
-      O erro anterior acontecia porque o código tentava usar diretamente a coluna "email".
-      Agora o sistema tenta localizar automaticamente qual coluna representa o e-mail.
-
-      Se quiser forçar manualmente, altere aqui:
-      email: "nome_exato_da_sua_coluna"
-    */
-    const COLUMN_CANDIDATES = {
-      id: ["id", "uuid", "codigo"],
-      nome: ["nome", "name", "Nome", "suporte", "nome_suporte"],
-      email: ["email", "Email", "e_mail", "e-mail", "E-mail", "email_suporte", "usuario", "login"],
-      telefone: ["telefone", "Telefone", "phone", "celular", "whatsapp"],
-      cargo: ["cargo", "Cargo", "perfil", "Perfil", "tipo", "Tipo", "funcao", "função", "role"],
-      status: ["status", "Status", "situacao", "situação", "ativo"],
-      createdAt: ["created_at", "criado_em", "data_criacao"]
-    };
-
-    const DEFAULT_INSERT_COLUMNS = {
-      nome: "nome",
-      email: "email",
-      telefone: "telefone",
-      cargo: "cargo",
-      status: "status"
-    };
-
-    const ALLOWED_LEADER_VALUES = [
-      "lider_suporte",
-      "lider suporte",
-      "líder suporte",
-      "lider",
-      "líder",
-      "admin",
-      "administrador"
-    ];
-
     const supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_PUBLISHABLE_KEY
@@ -816,7 +785,93 @@
 
     let supports = [];
     let currentUser = null;
-    let detectedColumns = { ...DEFAULT_INSERT_COLUMNS, id: "id" };
+    let detectedColumns = {};
+
+    const LEADER_VALUES = [
+      "lider_suporte",
+      "lider suporte",
+      "líder suporte",
+      "lider",
+      "líder",
+      "admin",
+      "administrador"
+    ];
+
+    const COLUMN_OPTIONS = {
+      id: [
+        "id",
+        "uuid",
+        "codigo",
+        "código"
+      ],
+      nome: [
+        "nome",
+        "Nome",
+        "name",
+        "Name",
+        "suporte",
+        "Suporte",
+        "nome_suporte"
+      ],
+      email: [
+        "email",
+        "Email",
+        "e_mail",
+        "E-mail",
+        "e-mail",
+        "email_suporte",
+        "usuario",
+        "usuário",
+        "login"
+      ],
+      telefone: [
+        "telefone",
+        "Telefone",
+        "phone",
+        "Phone",
+        "celular",
+        "Celular",
+        "whatsapp",
+        "WhatsApp"
+      ],
+      cargo: [
+        "cargo",
+        "Cargo",
+        "perfil",
+        "Perfil",
+        "tipo",
+        "Tipo",
+        "funcao",
+        "função",
+        "Função",
+        "role",
+        "Role"
+      ],
+      status: [
+        "status",
+        "Status",
+        "situacao",
+        "situação",
+        "Situação",
+        "ativo",
+        "Ativo"
+      ],
+      createdAt: [
+        "created_at",
+        "criado_em",
+        "data_criacao",
+        "data_criação"
+      ]
+    };
+
+    const FALLBACK_COLUMNS = {
+      id: "id",
+      nome: "nome",
+      email: "email",
+      telefone: "telefone",
+      cargo: "cargo",
+      status: "status"
+    };
 
     function normalize(value) {
       return String(value || "")
@@ -826,16 +881,6 @@
         .replace(/[\u0300-\u036f]/g, "");
     }
 
-    function isLeaderValue(value) {
-      const normalized = normalize(value)
-        .replace(/-/g, "_")
-        .replace(/\s+/g, "_");
-
-      return ALLOWED_LEADER_VALUES
-        .map(v => normalize(v).replace(/-/g, "_").replace(/\s+/g, "_"))
-        .includes(normalized);
-    }
-
     function escapeHtml(value) {
       return String(value ?? "")
         .replaceAll("&", "&amp;")
@@ -843,6 +888,16 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+    }
+
+    function isLeaderValue(value) {
+      const normalized = normalize(value)
+        .replace(/-/g, "_")
+        .replace(/\s+/g, "_");
+
+      return LEADER_VALUES
+        .map(item => normalize(item).replace(/-/g, "_").replace(/\s+/g, "_"))
+        .includes(normalized);
     }
 
     function showAlert(elementId, message, type = "success") {
@@ -863,45 +918,17 @@
       app.classList.toggle("hidden", isLoading);
     }
 
-    function getDetectedColumn(type) {
-      return detectedColumns[type] || DEFAULT_INSERT_COLUMNS[type] || type;
-    }
+    function detectColumns(rows) {
+      detectedColumns = { ...FALLBACK_COLUMNS };
 
-    function getValue(row, type) {
-      if (!row) return "";
-
-      const detected = getDetectedColumn(type);
-
-      if (detected && Object.prototype.hasOwnProperty.call(row, detected)) {
-        return row[detected];
-      }
-
-      const candidates = COLUMN_CANDIDATES[type] || [];
-
-      for (const candidate of candidates) {
-        if (Object.prototype.hasOwnProperty.call(row, candidate)) {
-          return row[candidate];
-        }
-      }
-
-      return "";
-    }
-
-    function detectColumnsFromRows(rows) {
-      if (!rows || !rows.length) {
-        return;
-      }
-
-      const sampleKeys = new Set();
+      const keys = new Set();
 
       rows.forEach(row => {
-        Object.keys(row || {}).forEach(key => sampleKeys.add(key));
+        Object.keys(row || {}).forEach(key => keys.add(key));
       });
 
-      const keys = Array.from(sampleKeys);
-
-      Object.entries(COLUMN_CANDIDATES).forEach(([type, candidates]) => {
-        const found = candidates.find(candidate => keys.includes(candidate));
+      Object.entries(COLUMN_OPTIONS).forEach(([type, options]) => {
+        const found = options.find(option => keys.has(option));
 
         if (found) {
           detectedColumns[type] = found;
@@ -911,21 +938,46 @@
       console.log("Colunas detectadas:", detectedColumns);
     }
 
-    async function fetchAllSupports() {
+    function getColumn(type) {
+      return detectedColumns[type] || FALLBACK_COLUMNS[type] || type;
+    }
+
+    function hasColumn(row, columnName) {
+      return row && Object.prototype.hasOwnProperty.call(row, columnName);
+    }
+
+    function getValue(row, type) {
+      if (!row) return "";
+
+      const detectedColumn = getColumn(type);
+
+      if (hasColumn(row, detectedColumn)) {
+        return row[detectedColumn];
+      }
+
+      const options = COLUMN_OPTIONS[type] || [];
+
+      for (const option of options) {
+        if (hasColumn(row, option)) {
+          return row[option];
+        }
+      }
+
+      return "";
+    }
+
+    async function fetchSupports() {
       const { data, error } = await supabaseClient
         .from(TABLE_NAME)
         .select("*");
 
       if (error) {
-        console.error("Erro ao buscar tabela:", error);
-
-        throw new Error(
-          `Erro ao buscar dados da tabela ${TABLE_NAME}: ${error.message}`
-        );
+        console.error("Erro Supabase:", error);
+        throw new Error(`Erro ao acessar a tabela ${TABLE_NAME}: ${error.message}`);
       }
 
       const rows = data || [];
-      detectColumnsFromRows(rows);
+      detectColumns(rows);
 
       return rows;
     }
@@ -961,7 +1013,7 @@
         return true;
       }
 
-      const rows = await fetchAllSupports();
+      const rows = await fetchSupports();
 
       const loggedEmail = normalize(currentUser.email);
 
@@ -987,7 +1039,8 @@
             </p>
 
             <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-              Verifique se existe um cadastro na tabela <b>${TABLE_NAME}</b> com o mesmo e-mail do login e cargo como <b>lider_suporte</b> ou <b>admin</b>.
+              Verifique se o e-mail do login está cadastrado na tabela <b>${TABLE_NAME}</b>
+              e se o cargo está como <b>lider_suporte</b> ou <b>admin</b>.
             </p>
 
             <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
@@ -1008,12 +1061,11 @@
       `;
 
       try {
-        const rows = await fetchAllSupports();
+        const rows = await fetchSupports();
 
         supports = rows.sort((a, b) => {
           const nameA = normalize(getValue(a, "nome"));
           const nameB = normalize(getValue(b, "nome"));
-
           return nameA.localeCompare(nameB);
         });
 
@@ -1031,11 +1083,7 @@
           </tr>
         `;
 
-        showAlert(
-          "#tableAlert",
-          `Erro ao carregar suportes: ${error.message}`,
-          "error"
-        );
+        showAlert("#tableAlert", error.message, "error");
       }
     }
 
@@ -1043,7 +1091,8 @@
       const total = supports.length;
 
       const active = supports.filter(item => {
-        return normalize(getValue(item, "status")) !== "inativo";
+        const status = normalize(getValue(item, "status"));
+        return status !== "inativo";
       }).length;
 
       const leaders = supports.filter(item => {
@@ -1065,9 +1114,7 @@
           getValue(item, "telefone"),
           getValue(item, "cargo"),
           getValue(item, "status")
-        ]
-          .map(normalize)
-          .join(" ");
+        ].map(normalize).join(" ");
 
         return searchable.includes(term);
       });
@@ -1090,6 +1137,7 @@
 
         const statusRaw = getValue(item, "status");
         const statusValue = normalize(statusRaw) === "inativo" ? "inativo" : "ativo";
+
         const leaderClass = isLeaderValue(getValue(item, "cargo")) ? " lider" : "";
 
         return `
@@ -1125,11 +1173,17 @@
     function getFormPayload() {
       const payload = {};
 
-      payload[getDetectedColumn("nome")] = $("#nome").value.trim();
-      payload[getDetectedColumn("email")] = $("#email").value.trim().toLowerCase();
-      payload[getDetectedColumn("telefone")] = $("#telefone").value.trim();
-      payload[getDetectedColumn("cargo")] = $("#cargo").value;
-      payload[getDetectedColumn("status")] = $("#status").value;
+      const nomeColumn = getColumn("nome");
+      const emailColumn = getColumn("email");
+      const telefoneColumn = getColumn("telefone");
+      const cargoColumn = getColumn("cargo");
+      const statusColumn = getColumn("status");
+
+      payload[nomeColumn] = $("#nome").value.trim();
+      payload[emailColumn] = $("#email").value.trim().toLowerCase();
+      payload[telefoneColumn] = $("#telefone").value.trim();
+      payload[cargoColumn] = $("#cargo").value;
+      payload[statusColumn] = $("#status").value;
 
       return payload;
     }
@@ -1152,9 +1206,14 @@
       $("#telefone").value = getValue(item, "telefone") || "";
 
       const cargo = getValue(item, "cargo") || "suporte";
-      $("#cargo").value = ["suporte", "lider_suporte", "admin"].includes(cargo) ? cargo : "suporte";
 
-      $("#status").value = normalize(getValue(item, "status")) === "inativo" ? "inativo" : "ativo";
+      $("#cargo").value = ["suporte", "lider_suporte", "admin"].includes(cargo)
+        ? cargo
+        : "suporte";
+
+      $("#status").value = normalize(getValue(item, "status")) === "inativo"
+        ? "inativo"
+        : "ativo";
 
       $("#formTitle").textContent = "Editar suporte";
       $("#saveBtn").textContent = "Atualizar";
@@ -1173,7 +1232,7 @@
         return;
       }
 
-      const idColumn = getDetectedColumn("id");
+      const idColumn = getColumn("id");
 
       const { error } = await supabaseClient
         .from(TABLE_NAME)
@@ -1196,7 +1255,6 @@
       event.preventDefault();
 
       const id = $("#supportId").value;
-      const payload = getFormPayload();
       const saveBtn = $("#saveBtn");
 
       const nomeValue = $("#nome").value.trim();
@@ -1207,6 +1265,8 @@
         return;
       }
 
+      const payload = getFormPayload();
+
       saveBtn.disabled = true;
       saveBtn.textContent = id ? "Atualizando..." : "Salvando...";
 
@@ -1216,7 +1276,7 @@
         response = await supabaseClient
           .from(TABLE_NAME)
           .update(payload)
-          .eq(getDetectedColumn("id"), id);
+          .eq(getColumn("id"), id);
       } else {
         response = await supabaseClient
           .from(TABLE_NAME)
@@ -1231,7 +1291,7 @@
 
         showAlert(
           "#formAlert",
-          `Erro ao salvar: ${response.error.message}. Confira se as colunas da tabela existem no Supabase.`,
+          `Erro ao salvar: ${response.error.message}. Confira se as colunas existem na tabela.`,
           "error"
         );
 
