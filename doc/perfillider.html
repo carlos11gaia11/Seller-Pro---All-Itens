@@ -658,7 +658,7 @@
               <span class="dot"></span>
               <div>
                 <b>Controle de acesso</b>
-                <small>A página só abre para usuário autenticado como líder.</small>
+                <small>A página abre para qualquer usuário autenticado.</small>
               </div>
             </div>
           </div>
@@ -889,135 +889,9 @@
       currentUser = session.user;
       userEmail.textContent = currentUser.email || "Usuário conectado";
 
-      const loggedEmail = normalizeEmail(currentUser.email);
-
-      const { data: rows, error } = await supabaseClient
-        .from(TABLE_NAME)
-        .select("*");
-
-      if (error) {
-        console.error("Erro ao validar acesso na tabela suportes_sellerpro:", error);
-
-        document.body.innerHTML = `
-          <div class="loader">
-            <div class="loader-box">
-              <h2 style="color: var(--danger); margin-top: 0;">Erro ao validar acesso</h2>
-
-              <p style="color: var(--muted); line-height: 1.6;">
-                Não foi possível consultar a tabela <b>${TABLE_NAME}</b>.
-              </p>
-
-              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-                Erro: <b>${escapeHtml(error.message)}</b>
-              </p>
-
-              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-                Se a tabela existe, verifique as policies de RLS no Supabase.
-              </p>
-
-              <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
-                Voltar para login
-              </button>
-            </div>
-          </div>
-        `;
-
-        return false;
-      }
-
-      const registros = rows || [];
-
-      const currentSupport = registros.find(row => {
-        const rowEmail = normalizeEmail(row.email);
-        return rowEmail === loggedEmail;
-      });
-
-      console.log("Validação de acesso:", {
-        emailLogado: loggedEmail,
-        registrosRetornados: registros.length,
-        usuarioEncontrado: currentSupport || null
-      });
-
-      if (!currentSupport) {
-        document.body.innerHTML = `
-          <div class="loader">
-            <div class="loader-box">
-              <h2 style="color: var(--orange); margin-top: 0;">Acesso negado</h2>
-
-              <p style="color: var(--muted); line-height: 1.6;">
-                Seu e-mail está logado, mas não foi encontrado na tabela <b>${TABLE_NAME}</b>.
-              </p>
-
-              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-                E-mail logado: <b>${escapeHtml(loggedEmail)}</b><br>
-                Registros retornados: <b>${registros.length}</b>
-              </p>
-
-              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-                Se existem registros no Supabase e aqui aparece 0, o problema provavelmente é RLS.
-              </p>
-
-              <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
-                Voltar para login
-              </button>
-            </div>
-          </div>
-        `;
-
-        return false;
-      }
-
-      const cargo = currentSupport.cargo || "";
-      const status = currentSupport.status || "";
-
-      const isLeader = isLeaderCargo(cargo);
-      const isActive = isActiveStatus(status);
-
-      console.log("Resultado validação líder:", {
-        emailLogado: loggedEmail,
-        emailTabela: currentSupport.email,
-        cargoOriginal: cargo,
-        cargoNormalizado: normalizeKey(cargo),
-        statusOriginal: status,
-        statusNormalizado: normalizeKey(status),
-        isLeader,
-        isActive
-      });
-
-      if (isLeader && isActive) {
-        return true;
-      }
-
-      document.body.innerHTML = `
-        <div class="loader">
-          <div class="loader-box">
-            <h2 style="color: var(--orange); margin-top: 0;">Acesso negado</h2>
-
-            <p style="color: var(--muted); line-height: 1.6;">
-              Seu usuário está logado, mas não foi identificado como <b>líder suporte</b>.
-            </p>
-
-            <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-              E-mail logado: <b>${escapeHtml(loggedEmail)}</b><br>
-              E-mail na tabela: <b>${escapeHtml(currentSupport.email || "-")}</b><br>
-              Cargo encontrado: <b>${escapeHtml(cargo || "-")}</b><br>
-              Status encontrado: <b>${escapeHtml(status || "-")}</b>
-            </p>
-
-            <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-              Para liberar o acesso, esse e-mail precisa estar na tabela <b>${TABLE_NAME}</b>
-              com <b>cargo = lider_suporte</b> ou <b>cargo = admin</b>,
-              e <b>status = ativo</b>.
-            </p>
-
-            <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
-              Voltar para login
-            </button>
-          </div>
-        </div>
-      `;
-
-      return false;
+      // Restrição de cargo removida:
+      // qualquer usuário autenticado consegue acessar o painel.
+      return true;
     }
 
     async function loadSupports() {
