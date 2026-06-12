@@ -24,9 +24,7 @@
       --radius: 22px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -130,11 +128,7 @@
       white-space: nowrap;
     }
 
-    button,
-    input,
-    select {
-      font: inherit;
-    }
+    button, input, select { font: inherit; }
 
     .btn {
       border: 0;
@@ -225,7 +219,7 @@
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 12px;
       margin-top: 22px;
     }
@@ -306,6 +300,13 @@
       align-items: start;
     }
 
+    .full-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 22px;
+      margin-top: 22px;
+    }
+
     .section-title {
       display: flex;
       justify-content: space-between;
@@ -320,9 +321,7 @@
       letter-spacing: -0.04em;
     }
 
-    .section-title small {
-      color: var(--muted);
-    }
+    .section-title small { color: var(--muted); }
 
     .form {
       display: grid;
@@ -337,8 +336,7 @@
       font-weight: 700;
     }
 
-    .input,
-    .select {
+    .input, .select {
       width: 100%;
       border: 1px solid rgba(255,255,255,.1);
       background: rgba(255,255,255,.055);
@@ -349,12 +347,9 @@
       transition: border .18s ease, box-shadow .18s ease, background .18s ease;
     }
 
-    .select option {
-      color: #111;
-    }
+    .select option { color: #111; }
 
-    .input:focus,
-    .select:focus {
+    .input:focus, .select:focus {
       border-color: rgba(255,122,0,.65);
       box-shadow: 0 0 0 4px rgba(255,122,0,.12);
       background: rgba(255,255,255,.075);
@@ -394,8 +389,7 @@
       min-width: 760px;
     }
 
-    th,
-    td {
+    th, td {
       padding: 14px 14px;
       text-align: left;
       border-bottom: 1px solid rgba(255,255,255,.07);
@@ -411,9 +405,7 @@
       letter-spacing: .06em;
     }
 
-    tr:hover td {
-      background: rgba(255,122,0,.035);
-    }
+    tr:hover td { background: rgba(255,122,0,.035); }
 
     .status {
       display: inline-flex;
@@ -457,13 +449,9 @@
       font-weight: 800;
     }
 
-    .icon-btn:hover {
-      border-color: rgba(255,122,0,.5);
-    }
+    .icon-btn:hover { border-color: rgba(255,122,0,.5); }
 
-    .icon-btn.delete {
-      color: #ffadad;
-    }
+    .icon-btn.delete { color: #ffadad; }
 
     .alert {
       display: none;
@@ -476,9 +464,7 @@
       line-height: 1.45;
     }
 
-    .alert.show {
-      display: block;
-    }
+    .alert.show { display: block; }
 
     .alert.success {
       border-color: rgba(48,209,88,.3);
@@ -523,19 +509,40 @@
       margin: 0 auto 16px;
     }
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hidden { display: none !important; }
+
+    .collapsible .collapsible-body {
+      display: block;
     }
 
-    .hidden {
-      display: none !important;
+    .collapsible.is-collapsed .collapsible-body {
+      display: none;
+    }
+
+    .collapse-btn {
+      min-width: 112px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .mini-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 0;
     }
 
     @media (max-width: 980px) {
-      .hero,
-      .grid {
+      .hero, .grid, .form-grid-2 {
         grid-template-columns: 1fr;
       }
 
@@ -547,6 +554,10 @@
       .actions {
         width: 100%;
         justify-content: flex-start;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
@@ -606,26 +617,36 @@
     <section class="hero">
       <div class="panel">
         <div class="panel-inner">
-          <h2 class="headline">Gestão de <span>suportes</span> Seller Pro</h2>
+          <h2 class="headline">Gestão de <span>suportes</span> e sellers</h2>
 
           <p class="subtext">
-            Área administrativa para consultar o perfil logado e gerenciar os suportes cadastrados.
+            Área administrativa para consultar o perfil logado, gerenciar suportes e distribuir novos sellers automaticamente.
           </p>
 
           <div class="stats">
             <div class="stat">
               <strong id="totalCount">0</strong>
-              <span>Total cadastrados</span>
+              <span>Suportes cadastrados</span>
             </div>
 
             <div class="stat">
               <strong id="activeCount">0</strong>
-              <span>Ativos</span>
+              <span>Suportes ativos</span>
             </div>
 
             <div class="stat">
               <strong id="leaderCount">0</strong>
               <span>Líderes</span>
+            </div>
+
+            <div class="stat">
+              <strong id="sellerCount">0</strong>
+              <span>Sellers cadastrados</span>
+            </div>
+
+            <div class="stat">
+              <strong id="leastLoadedSupport">-</strong>
+              <span>Menor fila</span>
             </div>
           </div>
         </div>
@@ -641,24 +662,32 @@
             <div class="quick-item">
               <span class="dot"></span>
               <div>
-                <b>Criar suporte</b>
-                <small>Adicionar novo suporte diretamente no Supabase.</small>
+                <b>Minimizar funções</b>
+                <small>Cada área pode ser recolhida para deixar a tela mais limpa.</small>
               </div>
             </div>
 
             <div class="quick-item">
               <span class="dot"></span>
               <div>
-                <b>Editar cadastro</b>
-                <small>Alterar nome, e-mail, cargo e status.</small>
+                <b>Adicionar seller</b>
+                <small>Cadastro direto na tabela sellers do Supabase.</small>
               </div>
             </div>
 
             <div class="quick-item">
               <span class="dot"></span>
               <div>
-                <b>Controle de acesso</b>
-                <small>A página valida o usuário pela tabela profiles.</small>
+                <b>Distribuição automática</b>
+                <small>O sistema identifica o suporte ativo com menos sellers e atribui automaticamente.</small>
+              </div>
+            </div>
+
+            <div class="quick-item">
+              <span class="dot"></span>
+              <div>
+                <b>Escolha manual</b>
+                <small>Também é possível selecionar exatamente qual suporte receberá o seller.</small>
               </div>
             </div>
           </div>
@@ -666,90 +695,165 @@
       </div>
     </section>
 
+    <section class="full-grid">
+      <section class="panel collapsible" id="sellerPanel">
+        <div class="panel-inner">
+          <div class="section-title">
+            <div>
+              <h2>Novo seller</h2>
+              <small>Adicionar na tabela sellers com suporte automático ou manual.</small>
+            </div>
+            <button class="btn secondary collapse-btn" type="button" data-collapse-target="sellerPanel">Minimizar</button>
+          </div>
+
+          <div class="collapsible-body">
+            <div id="sellerFormAlert" class="alert"></div>
+
+            <form id="sellerForm" class="form">
+              <div class="form-grid-2">
+                <div class="field">
+                  <label for="sellerNome">Nome do seller</label>
+                  <input id="sellerNome" class="input" type="text" placeholder="Ex: Loja Exemplo" required />
+                </div>
+
+                <div class="field">
+                  <label for="sellerEmail">E-mail</label>
+                  <input id="sellerEmail" class="input" type="email" placeholder="email@empresa.com.br" />
+                </div>
+
+                <div class="field">
+                  <label for="sellerTelefone">Telefone</label>
+                  <input id="sellerTelefone" class="input" type="text" placeholder="(00) 00000-0000" />
+                </div>
+
+                <div class="field">
+                  <label for="sellerMcid">MCID</label>
+                  <input id="sellerMcid" class="input" type="text" placeholder="MCID do seller" />
+                </div>
+
+                <div class="field">
+                  <label for="sellerStatus">Status</label>
+                  <select id="sellerStatus" class="select">
+                    <option value="ativo">Ativo</option>
+                    <option value="em_andamento">Em andamento</option>
+                    <option value="pendente">Pendente</option>
+                    <option value="inativo">Inativo</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label for="sellerSupportSelect">Suporte responsável</label>
+                  <select id="sellerSupportSelect" class="select">
+                    <option value="__auto__">Automático: suporte com menos sellers</option>
+                  </select>
+                </div>
+              </div>
+
+              <p class="mini-note" id="autoSupportPreview">
+                O suporte automático será calculado após carregar os dados.
+              </p>
+
+              <div class="form-actions">
+                <button class="btn" type="submit" id="saveSellerBtn">Adicionar seller</button>
+                <button class="btn secondary" type="button" id="clearSellerBtn">Limpar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </section>
+
     <section class="grid">
-      <aside class="panel">
+      <aside class="panel collapsible" id="supportFormPanel">
         <div class="panel-inner">
           <div class="section-title">
             <div>
               <h2 id="formTitle">Novo suporte</h2>
               <small>Preencha os dados abaixo.</small>
             </div>
+            <button class="btn secondary collapse-btn" type="button" data-collapse-target="supportFormPanel">Minimizar</button>
           </div>
 
-          <div id="formAlert" class="alert"></div>
+          <div class="collapsible-body">
+            <div id="formAlert" class="alert"></div>
 
-          <form id="supportForm" class="form">
-            <input type="hidden" id="supportId" />
+            <form id="supportForm" class="form">
+              <input type="hidden" id="supportId" />
 
-            <div class="field">
-              <label for="nome">Nome</label>
-              <input id="nome" class="input" type="text" placeholder="Ex: Gabriel Volte" required />
-            </div>
+              <div class="field">
+                <label for="nome">Nome</label>
+                <input id="nome" class="input" type="text" placeholder="Ex: Gabriel Volte" required />
+              </div>
 
-            <div class="field">
-              <label for="email">E-mail</label>
-              <input id="email" class="input" type="email" placeholder="email@sellerpro.com.br" required />
-            </div>
+              <div class="field">
+                <label for="email">E-mail</label>
+                <input id="email" class="input" type="email" placeholder="email@sellerpro.com.br" required />
+              </div>
 
-            <div class="field">
-              <label for="cargo">Cargo / Perfil</label>
-              <select id="cargo" class="select">
-                <option value="suporte">Suporte</option>
-                <option value="lider_suporte">Líder suporte</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
+              <div class="field">
+                <label for="cargo">Cargo / Perfil</label>
+                <select id="cargo" class="select">
+                  <option value="suporte">Suporte</option>
+                  <option value="lider_suporte">Líder suporte</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
 
-            <div class="field">
-              <label for="status">Status</label>
-              <select id="status" class="select">
-                <option value="ativo">Ativo</option>
-                <option value="inativo">Inativo</option>
-              </select>
-            </div>
+              <div class="field">
+                <label for="status">Status</label>
+                <select id="status" class="select">
+                  <option value="ativo">Ativo</option>
+                  <option value="inativo">Inativo</option>
+                </select>
+              </div>
 
-            <div class="form-actions">
-              <button class="btn" type="submit" id="saveBtn">Salvar</button>
-              <button class="btn secondary" type="button" id="clearBtn">Limpar</button>
-            </div>
-          </form>
+              <div class="form-actions">
+                <button class="btn" type="submit" id="saveBtn">Salvar</button>
+                <button class="btn secondary" type="button" id="clearBtn">Limpar</button>
+              </div>
+            </form>
+          </div>
         </div>
       </aside>
 
-      <section class="panel">
+      <section class="panel collapsible" id="supportTablePanel">
         <div class="panel-inner">
           <div class="section-title">
             <div>
               <h2>Suportes cadastrados</h2>
-              <small>Dados carregados da tabela suportes_sellerpro.</small>
+              <small>Contagem de sellers por suporte carregada da tabela sellers.</small>
             </div>
+            <button class="btn secondary collapse-btn" type="button" data-collapse-target="supportTablePanel">Minimizar</button>
           </div>
 
-          <div id="tableAlert" class="alert"></div>
+          <div class="collapsible-body">
+            <div id="tableAlert" class="alert"></div>
 
-          <div class="toolbar">
-            <input id="searchInput" class="input searchbox" type="search" placeholder="Buscar por nome, e-mail, ou cargo..." />
-            <button class="btn secondary" id="clearSearchBtn">Limpar busca</button>
-          </div>
+            <div class="toolbar">
+              <input id="searchInput" class="input searchbox" type="search" placeholder="Buscar por nome, e-mail, cargo ou quantidade..." />
+              <button class="btn secondary" id="clearSearchBtn">Limpar busca</button>
+            </div>
 
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th>E-mail</th>
-                  <th>Cargo</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Cargo</th>
+                    <th>Status</th>
+                    <th>Sellers</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
 
-              <tbody id="supportTableBody">
-                <tr>
-                  <td colspan="5">Carregando...</td>
-                </tr>
-              </tbody>
-            </table>
+                <tbody id="supportTableBody">
+                  <tr>
+                    <td colspan="6">Carregando...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -761,8 +865,15 @@
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr";
 
     const LOGIN_PAGE = "login.html";
-    const TABLE_NAME = "suportes_sellerpro";
+    const SUPPORTS_TABLE_NAME = "suportes_sellerpro";
+    const SELLERS_TABLE_NAME = "sellers";
     const PROFILES_TABLE_NAME = "profiles";
+
+    /*
+      A distribuição automática usa sellers.suporte com o mesmo nome do suporte em suportes_sellerpro.nome.
+      Se sua tabela usar outro campo, altere SELLER_SUPPORT_FIELD abaixo.
+    */
+    const SELLER_SUPPORT_FIELD = "suporte";
 
     const supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
@@ -770,15 +881,19 @@
     );
 
     const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => document.querySelectorAll(selector);
 
     const loading = $("#loading");
     const app = $("#app");
     const supportForm = $("#supportForm");
+    const sellerForm = $("#sellerForm");
     const supportTableBody = $("#supportTableBody");
     const searchInput = $("#searchInput");
     const userEmail = $("#userEmail");
 
     let supports = [];
+    let sellers = [];
+    let sellerCountBySupport = {};
     let currentUser = null;
 
     const LEADER_VALUES = [
@@ -841,6 +956,18 @@
       );
     }
 
+    function getSupportName(row) {
+      return String(row?.nome || row?.name || "").trim();
+    }
+
+    function getSellerSupportValue(row) {
+      return String(row?.[SELLER_SUPPORT_FIELD] || "").trim();
+    }
+
+    function getSupportCount(supportName) {
+      return sellerCountBySupport[normalize(supportName)] || 0;
+    }
+
     function showAlert(elementId, message, type = "success") {
       const el = $(elementId);
       if (!el) return;
@@ -859,14 +986,31 @@
       app.classList.toggle("hidden", isLoading);
     }
 
+    function todayIsoDate() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
     async function fetchSupports() {
       const { data, error } = await supabaseClient
-        .from(TABLE_NAME)
+        .from(SUPPORTS_TABLE_NAME)
         .select("*");
 
       if (error) {
         console.error("Erro Supabase:", error);
-        throw new Error(`Erro ao acessar a tabela ${TABLE_NAME}: ${error.message}`);
+        throw new Error(`Erro ao acessar a tabela ${SUPPORTS_TABLE_NAME}: ${error.message}`);
+      }
+
+      return data || [];
+    }
+
+    async function fetchSellers() {
+      const { data, error } = await supabaseClient
+        .from(SELLERS_TABLE_NAME)
+        .select("*");
+
+      if (error) {
+        console.error("Erro Supabase sellers:", error);
+        throw new Error(`Erro ao acessar a tabela ${SELLERS_TABLE_NAME}: ${error.message}`);
       }
 
       return data || [];
@@ -878,9 +1022,7 @@
         error: sessionError
       } = await supabaseClient.auth.getSession();
 
-      if (sessionError) {
-        throw sessionError;
-      }
+      if (sessionError) throw sessionError;
 
       if (!session?.user) {
         window.location.href = LOGIN_PAGE;
@@ -893,11 +1035,6 @@
       const loggedEmail = normalizeEmail(currentUser.email);
       const loggedUserId = currentUser.id;
 
-      /*
-        A validação de acesso agora vem da tabela profiles.
-        A tabela suportes_sellerpro fica somente para a tela de suportes:
-        listar, criar, editar e excluir.
-      */
       const { data: profileRows, error } = await supabaseClient
         .from(PROFILES_TABLE_NAME)
         .select("*")
@@ -917,10 +1054,6 @@
 
               <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
                 Erro: <b>${escapeHtml(error.message)}</b>
-              </p>
-
-              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-                Verifique se a tabela <b>${PROFILES_TABLE_NAME}</b> existe e se as policies de RLS permitem a leitura do perfil logado.
               </p>
 
               <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
@@ -947,13 +1080,6 @@
         );
       });
 
-      console.log("Validação de acesso pela tabela profiles:", {
-        userIdLogado: loggedUserId,
-        emailLogado: loggedEmail,
-        registrosRetornados: profiles.length,
-        profileEncontrado: currentProfile || null
-      });
-
       if (!currentProfile) {
         document.body.innerHTML = `
           <div class="loader">
@@ -970,11 +1096,6 @@
                 Registros retornados: <b>${profiles.length}</b>
               </p>
 
-              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-                O painel precisa encontrar esse usuário em <b>${PROFILES_TABLE_NAME}</b>.
-                Depois disso, a gestão de suportes usa a tabela <b>${TABLE_NAME}</b>.
-              </p>
-
               <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
                 Voltar para login
               </button>
@@ -988,31 +1109,38 @@
       return true;
     }
 
-    async function loadSupports() {
+    async function loadAllData() {
       supportTableBody.innerHTML = `
         <tr>
-          <td colspan="5">Carregando suportes...</td>
+          <td colspan="6">Carregando dados...</td>
         </tr>
       `;
 
       try {
-        const rows = await fetchSupports();
+        const [supportRows, sellerRows] = await Promise.all([
+          fetchSupports(),
+          fetchSellers()
+        ]);
 
-        supports = rows.sort((a, b) => {
-          const nameA = normalize(a.nome);
-          const nameB = normalize(b.nome);
+        supports = supportRows.sort((a, b) => {
+          const nameA = normalize(getSupportName(a));
+          const nameB = normalize(getSupportName(b));
           return nameA.localeCompare(nameB);
         });
 
+        sellers = sellerRows || [];
+
+        buildSellerCountBySupport();
         renderStats();
+        renderSupportSelect();
         renderTable();
 
       } catch (error) {
-        console.error("Erro ao carregar suportes:", error);
+        console.error("Erro ao carregar dados:", error);
 
         supportTableBody.innerHTML = `
           <tr>
-            <td colspan="5">
+            <td colspan="6">
               Erro ao carregar dados: ${escapeHtml(error.message)}
             </td>
           </tr>
@@ -1020,6 +1148,44 @@
 
         showAlert("#tableAlert", error.message, "error");
       }
+    }
+
+    function buildSellerCountBySupport() {
+      sellerCountBySupport = {};
+
+      sellers.forEach(seller => {
+        const supportName = getSellerSupportValue(seller);
+        const key = normalize(supportName);
+
+        if (!key) return;
+
+        sellerCountBySupport[key] = (sellerCountBySupport[key] || 0) + 1;
+      });
+    }
+
+    function getActiveSupports() {
+      return supports.filter(item => {
+        return isActiveStatus(item.status) && !isLeaderCargo(item.cargo);
+      });
+    }
+
+    function getLeastLoadedSupport() {
+      const activeSupports = getActiveSupports();
+
+      if (!activeSupports.length) return null;
+
+      return activeSupports
+        .map(support => ({
+          ...support,
+          sellerCount: getSupportCount(getSupportName(support))
+        }))
+        .sort((a, b) => {
+          if (a.sellerCount !== b.sellerCount) {
+            return a.sellerCount - b.sellerCount;
+          }
+
+          return normalize(getSupportName(a)).localeCompare(normalize(getSupportName(b)));
+        })[0];
     }
 
     function renderStats() {
@@ -1033,20 +1199,61 @@
         return isLeaderCargo(item.cargo);
       }).length;
 
+      const leastLoaded = getLeastLoadedSupport();
+
       $("#totalCount").textContent = total;
       $("#activeCount").textContent = active;
       $("#leaderCount").textContent = leaders;
+      $("#sellerCount").textContent = sellers.length;
+      $("#leastLoadedSupport").textContent = leastLoaded
+        ? `${getSupportName(leastLoaded)} (${leastLoaded.sellerCount})`
+        : "-";
+
+      const preview = $("#autoSupportPreview");
+
+      if (preview) {
+        preview.textContent = leastLoaded
+          ? `Automático no momento: ${getSupportName(leastLoaded)} com ${leastLoaded.sellerCount} seller(s).`
+          : "Nenhum suporte ativo disponível para distribuição automática.";
+      }
+    }
+
+    function renderSupportSelect() {
+      const select = $("#sellerSupportSelect");
+      const currentValue = select.value || "__auto__";
+
+      const activeSupports = getActiveSupports();
+
+      select.innerHTML = `
+        <option value="__auto__">Automático: suporte com menos sellers</option>
+        ${activeSupports.map(item => {
+          const name = getSupportName(item);
+          const count = getSupportCount(name);
+
+          return `
+            <option value="${escapeHtml(name)}">
+              ${escapeHtml(name)} - ${count} seller(s)
+            </option>
+          `;
+        }).join("")}
+      `;
+
+      const hasCurrentOption = [...select.options].some(option => option.value === currentValue);
+      select.value = hasCurrentOption ? currentValue : "__auto__";
     }
 
     function renderTable() {
       const term = normalize(searchInput.value);
 
       const filtered = supports.filter(item => {
+        const count = getSupportCount(getSupportName(item));
+
         const searchable = [
-          item.nome,
+          getSupportName(item),
           item.email,
           item.cargo,
-          item.status
+          item.status,
+          count
         ].map(normalize).join(" ");
 
         return searchable.includes(term);
@@ -1055,7 +1262,7 @@
       if (!filtered.length) {
         supportTableBody.innerHTML = `
           <tr>
-            <td colspan="5">Nenhum suporte encontrado.</td>
+            <td colspan="6">Nenhum suporte encontrado.</td>
           </tr>
         `;
         return;
@@ -1063,9 +1270,10 @@
 
       supportTableBody.innerHTML = filtered.map(item => {
         const id = escapeHtml(item.id);
-        const nome = escapeHtml(item.nome || "-");
+        const nome = escapeHtml(getSupportName(item) || "-");
         const email = escapeHtml(item.email || "-");
         const cargo = escapeHtml(item.cargo || "suporte");
+        const count = getSupportCount(getSupportName(item));
 
         const statusValue = normalizeKey(item.status) === "inativo" ? "inativo" : "ativo";
         const leaderClass = isLeaderCargo(item.cargo) ? " lider" : "";
@@ -1084,6 +1292,7 @@
                 ${statusValue}
               </span>
             </td>
+            <td><b>${count}</b></td>
             <td>
               <div class="row-actions">
                 <button class="icon-btn" onclick="editSupport('${id}')">
@@ -1099,7 +1308,7 @@
       }).join("");
     }
 
-    function getFormPayload() {
+    function getSupportFormPayload() {
       return {
         nome: $("#nome").value.trim(),
         email: $("#email").value.trim().toLowerCase(),
@@ -1108,11 +1317,45 @@
       };
     }
 
+    function getSellerFormPayload() {
+      const manualSupportValue = $("#sellerSupportSelect").value;
+      const leastLoadedSupport = getLeastLoadedSupport();
+
+      let selectedSupportName = "";
+
+      if (manualSupportValue === "__auto__") {
+        if (!leastLoadedSupport) {
+          throw new Error("Nenhum suporte ativo disponível para receber seller.");
+        }
+
+        selectedSupportName = getSupportName(leastLoadedSupport);
+      } else {
+        selectedSupportName = manualSupportValue;
+      }
+
+      return {
+        nome: $("#sellerNome").value.trim(),
+        email: $("#sellerEmail").value.trim().toLowerCase() || null,
+        telefone: $("#sellerTelefone").value.trim() || null,
+        mcid: $("#sellerMcid").value.trim() || null,
+        status: $("#sellerStatus").value,
+        situacao: "ativo",
+        data_inicio: todayIsoDate(),
+        [SELLER_SUPPORT_FIELD]: selectedSupportName
+      };
+    }
+
     function clearForm() {
       supportForm.reset();
       $("#supportId").value = "";
       $("#formTitle").textContent = "Novo suporte";
       $("#saveBtn").textContent = "Salvar";
+    }
+
+    function clearSellerForm() {
+      sellerForm.reset();
+      $("#sellerSupportSelect").value = "__auto__";
+      renderStats();
     }
 
     window.editSupport = function(id) {
@@ -1135,6 +1378,9 @@
       $("#formTitle").textContent = "Editar suporte";
       $("#saveBtn").textContent = "Atualizar";
 
+      $("#supportFormPanel").classList.remove("is-collapsed");
+      updateCollapseButtonLabel("supportFormPanel");
+
       window.scrollTo({
         top: document.querySelector(".grid").offsetTop - 90,
         behavior: "smooth"
@@ -1150,7 +1396,7 @@
       }
 
       const { error } = await supabaseClient
-        .from(TABLE_NAME)
+        .from(SUPPORTS_TABLE_NAME)
         .delete()
         .eq("id", id);
 
@@ -1162,7 +1408,7 @@
 
       showAlert("#tableAlert", "Suporte excluído com sucesso.", "success");
 
-      await loadSupports();
+      await loadAllData();
       clearForm();
     };
 
@@ -1180,7 +1426,7 @@
         return;
       }
 
-      const payload = getFormPayload();
+      const payload = getSupportFormPayload();
 
       saveBtn.disabled = true;
       saveBtn.textContent = id ? "Atualizando..." : "Salvando...";
@@ -1189,12 +1435,12 @@
 
       if (id) {
         response = await supabaseClient
-          .from(TABLE_NAME)
+          .from(SUPPORTS_TABLE_NAME)
           .update(payload)
           .eq("id", id);
       } else {
         response = await supabaseClient
-          .from(TABLE_NAME)
+          .from(SUPPORTS_TABLE_NAME)
           .insert(payload);
       }
 
@@ -1202,14 +1448,8 @@
       saveBtn.textContent = id ? "Atualizar" : "Salvar";
 
       if (response.error) {
-        console.error("Erro ao salvar:", response.error);
-
-        showAlert(
-          "#formAlert",
-          `Erro ao salvar: ${response.error.message}`,
-          "error"
-        );
-
+        console.error("Erro ao salvar suporte:", response.error);
+        showAlert("#formAlert", `Erro ao salvar: ${response.error.message}`, "error");
         return;
       }
 
@@ -1220,13 +1460,90 @@
       );
 
       clearForm();
-      await loadSupports();
+      await loadAllData();
+    });
+
+    sellerForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const saveSellerBtn = $("#saveSellerBtn");
+      const sellerName = $("#sellerNome").value.trim();
+
+      if (!sellerName) {
+        showAlert("#sellerFormAlert", "Nome do seller é obrigatório.", "warning");
+        return;
+      }
+
+      let payload;
+
+      try {
+        payload = getSellerFormPayload();
+      } catch (error) {
+        showAlert("#sellerFormAlert", error.message, "error");
+        return;
+      }
+
+      saveSellerBtn.disabled = true;
+      saveSellerBtn.textContent = "Adicionando...";
+
+      const { error } = await supabaseClient
+        .from(SELLERS_TABLE_NAME)
+        .insert(payload);
+
+      saveSellerBtn.disabled = false;
+      saveSellerBtn.textContent = "Adicionar seller";
+
+      if (error) {
+        console.error("Erro ao criar seller:", error);
+
+        showAlert(
+          "#sellerFormAlert",
+          `Erro ao adicionar seller: ${error.message}`,
+          "error"
+        );
+
+        return;
+      }
+
+      showAlert(
+        "#sellerFormAlert",
+        `Seller adicionado com sucesso para ${payload[SELLER_SUPPORT_FIELD]}.`,
+        "success"
+      );
+
+      clearSellerForm();
+      await loadAllData();
+    });
+
+    function updateCollapseButtonLabel(panelId) {
+      const panel = document.getElementById(panelId);
+      const button = document.querySelector(`[data-collapse-target="${panelId}"]`);
+
+      if (!panel || !button) return;
+
+      button.textContent = panel.classList.contains("is-collapsed")
+        ? "Expandir"
+        : "Minimizar";
+    }
+
+    $$(".collapse-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        const targetId = button.dataset.collapseTarget;
+        const panel = document.getElementById(targetId);
+
+        if (!panel) return;
+
+        panel.classList.toggle("is-collapsed");
+        updateCollapseButtonLabel(targetId);
+      });
     });
 
     $("#clearBtn").addEventListener("click", clearForm);
 
+    $("#clearSellerBtn").addEventListener("click", clearSellerForm);
+
     $("#refreshBtn").addEventListener("click", async () => {
-      await loadSupports();
+      await loadAllData();
     });
 
     $("#clearSearchBtn").addEventListener("click", () => {
@@ -1248,7 +1565,7 @@
         if (!allowed) return;
 
         setLoadingState(false);
-        await loadSupports();
+        await loadAllData();
 
       } catch (error) {
         console.error("Erro ao abrir painel:", error);
