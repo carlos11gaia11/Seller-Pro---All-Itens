@@ -503,7 +503,7 @@
     }
 
     .loader-box {
-      width: min(520px, 100%);
+      width: min(560px, 100%);
       border: 1px solid var(--line);
       background: rgba(12,12,12,.82);
       backdrop-filter: blur(18px);
@@ -650,7 +650,7 @@
               <span class="dot"></span>
               <div>
                 <b>Editar cadastro</b>
-                <small>Alterar nome, e-mail, role e status.</small>
+                <small>Alterar nome, e-mail, cargo e status.</small>
               </div>
             </div>
 
@@ -692,7 +692,7 @@
             </div>
 
             <div class="field">
-              <label for="cargo">Role / Perfil</label>
+              <label for="cargo">Cargo / Perfil</label>
               <select id="cargo" class="select">
                 <option value="suporte">Suporte</option>
                 <option value="lider_suporte">Líder suporte</option>
@@ -728,7 +728,7 @@
           <div id="tableAlert" class="alert"></div>
 
           <div class="toolbar">
-            <input id="searchInput" class="input searchbox" type="search" placeholder="Buscar por nome, e-mail ou role..." />
+            <input id="searchInput" class="input searchbox" type="search" placeholder="Buscar por nome, e-mail, ou cargo..." />
             <button class="btn secondary" id="clearSearchBtn">Limpar busca</button>
           </div>
 
@@ -738,7 +738,7 @@
                 <tr>
                   <th>Nome</th>
                   <th>E-mail</th>
-                  <th>Role</th>
+                  <th>Cargo</th>
                   <th>Status</th>
                   <th>Ações</th>
                 </tr>
@@ -746,7 +746,7 @@
 
               <tbody id="supportTableBody">
                 <tr>
-                  <td colspan="6">Carregando...</td>
+                  <td colspan="5">Carregando...</td>
                 </tr>
               </tbody>
             </table>
@@ -779,7 +779,6 @@
 
     let supports = [];
     let currentUser = null;
-    let detectedColumns = {};
 
     const LEADER_VALUES = [
       "lider_suporte",
@@ -791,79 +790,24 @@
       "administrador"
     ];
 
-    const COLUMN_OPTIONS = {
-      id: [
-        "id",
-        "uuid",
-        "codigo",
-        "código"
-      ],
-      nome: [
-        "nome",
-        "Nome",
-        "name",
-        "Name",
-        "suporte",
-        "Suporte",
-        "nome_suporte"
-      ],
-      email: [
-        "email",
-        "Email",
-        "e_mail",
-        "E-mail",
-        "e-mail",
-        "email_suporte",
-        "usuario",
-        "usuário",
-        "login"
-      ],
-      cargo: [
-        "role",
-        "Role",
-        "cargo",
-        "Cargo",
-        "perfil",
-        "Perfil",
-        "tipo",
-        "Tipo",
-        "funcao",
-        "função",
-        "Função",
-        "role",
-        "Role"
-      ],
-      status: [
-        "status",
-        "Status",
-        "situacao",
-        "situação",
-        "Situação",
-        "ativo",
-        "Ativo"
-      ],
-      createdAt: [
-        "created_at",
-        "criado_em",
-        "data_criacao",
-        "data_criação"
-      ]
-    };
-
-    const FALLBACK_COLUMNS = {
-      id: "id",
-      nome: "nome",
-      email: "email",
-      cargo: "role",
-      status: "status"
-    };
-
     function normalize(value) {
       return String(value || "")
         .trim()
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function normalizeKey(value) {
+      return normalize(value)
+        .replace(/-/g, "_")
+        .replace(/\s+/g, "_");
+    }
+
+    function normalizeEmail(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase();
     }
 
     function escapeHtml(value) {
@@ -875,14 +819,25 @@
         .replaceAll("'", "&#039;");
     }
 
-    function isLeaderValue(value) {
-      const normalized = normalize(value)
-        .replace(/-/g, "_")
-        .replace(/\s+/g, "_");
+    function isLeaderCargo(value) {
+      const cargo = normalizeKey(value);
 
       return LEADER_VALUES
-        .map(item => normalize(item).replace(/-/g, "_").replace(/\s+/g, "_"))
-        .includes(normalized);
+        .map(item => normalizeKey(item))
+        .includes(cargo);
+    }
+
+    function isActiveStatus(value) {
+      const status = normalizeKey(value);
+
+      return (
+        status === "" ||
+        status === "ativo" ||
+        status === "active" ||
+        status === "sim" ||
+        status === "true" ||
+        status === "1"
+      );
     }
 
     function showAlert(elementId, message, type = "success") {
@@ -903,54 +858,6 @@
       app.classList.toggle("hidden", isLoading);
     }
 
-    function detectColumns(rows) {
-      detectedColumns = { ...FALLBACK_COLUMNS };
-
-      const keys = new Set();
-
-      rows.forEach(row => {
-        Object.keys(row || {}).forEach(key => keys.add(key));
-      });
-
-      Object.entries(COLUMN_OPTIONS).forEach(([type, options]) => {
-        const found = options.find(option => keys.has(option));
-
-        if (found) {
-          detectedColumns[type] = found;
-        }
-      });
-
-      console.log("Colunas detectadas:", detectedColumns);
-    }
-
-    function getColumn(type) {
-      return detectedColumns[type] || FALLBACK_COLUMNS[type] || type;
-    }
-
-    function hasColumn(row, columnName) {
-      return row && Object.prototype.hasOwnProperty.call(row, columnName);
-    }
-
-    function getValue(row, type) {
-      if (!row) return "";
-
-      const detectedColumn = getColumn(type);
-
-      if (hasColumn(row, detectedColumn)) {
-        return row[detectedColumn];
-      }
-
-      const options = COLUMN_OPTIONS[type] || [];
-
-      for (const option of options) {
-        if (hasColumn(row, option)) {
-          return row[option];
-        }
-      }
-
-      return "";
-    }
-
     async function fetchSupports() {
       const { data, error } = await supabaseClient
         .from(TABLE_NAME)
@@ -961,10 +868,7 @@
         throw new Error(`Erro ao acessar a tabela ${TABLE_NAME}: ${error.message}`);
       }
 
-      const rows = data || [];
-      detectColumns(rows);
-
-      return rows;
+      return data || [];
     }
 
     async function checkLeaderAccess() {
@@ -985,40 +889,30 @@
       currentUser = session.user;
       userEmail.textContent = currentUser.email || "Usuário conectado";
 
-      const loggedEmail = String(currentUser.email || "").trim().toLowerCase();
+      const loggedEmail = normalizeEmail(currentUser.email);
 
-      if (!loggedEmail) {
-        throw new Error("Não foi possível identificar o e-mail do usuário logado.");
-      }
-
-      const { data: suporte, error } = await supabaseClient
+      const { data: rows, error } = await supabaseClient
         .from(TABLE_NAME)
-        .select("*")
-        .eq("email", loggedEmail)
-        .maybeSingle();
+        .select("*");
 
       if (error) {
         console.error("Erro ao validar acesso na tabela suportes_sellerpro:", error);
-        throw new Error(`Erro ao validar acesso na tabela ${TABLE_NAME}: ${error.message}`);
-      }
 
-      if (!suporte) {
         document.body.innerHTML = `
           <div class="loader">
             <div class="loader-box">
-              <h2 style="color: var(--orange); margin-top: 0;">Acesso negado</h2>
+              <h2 style="color: var(--danger); margin-top: 0;">Erro ao validar acesso</h2>
 
               <p style="color: var(--muted); line-height: 1.6;">
-                Seu usuário está logado, mas o e-mail não foi encontrado na tabela <b>${TABLE_NAME}</b>.
+                Não foi possível consultar a tabela <b>${TABLE_NAME}</b>.
               </p>
 
               <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-                E-mail logado: <b>${escapeHtml(loggedEmail)}</b>
+                Erro: <b>${escapeHtml(error.message)}</b>
               </p>
 
               <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-                Cadastre esse e-mail na tabela <b>${TABLE_NAME}</b> com <b>role</b> como
-                <b>lider_suporte</b> ou <b>admin</b> e <b>status</b> como <b>ativo</b>.
+                Se a tabela existe, verifique as policies de RLS no Supabase.
               </p>
 
               <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
@@ -1031,24 +925,64 @@
         return false;
       }
 
-      const roleValue = suporte.role ?? suporte.cargo ?? suporte.perfil ?? suporte.tipo ?? suporte.funcao ?? "";
-      const statusValue = suporte.status ?? suporte.situacao ?? suporte.situação ?? "ativo";
+      const registros = rows || [];
 
-      const role = normalize(roleValue)
-        .replace(/-/g, "_")
-        .replace(/\s+/g, "_");
+      const currentSupport = registros.find(row => {
+        const rowEmail = normalizeEmail(row.email);
+        return rowEmail === loggedEmail;
+      });
 
-      const status = normalize(statusValue);
+      console.log("Validação de acesso:", {
+        emailLogado: loggedEmail,
+        registrosRetornados: registros.length,
+        usuarioEncontrado: currentSupport || null
+      });
 
-      const allowedRoles = [
-        "lider_suporte",
-        "lider",
-        "admin",
-        "administrador"
-      ];
+      if (!currentSupport) {
+        document.body.innerHTML = `
+          <div class="loader">
+            <div class="loader-box">
+              <h2 style="color: var(--orange); margin-top: 0;">Acesso negado</h2>
 
-      const isLeader = allowedRoles.includes(role);
-      const isActive = !status || status === "ativo" || status === "active";
+              <p style="color: var(--muted); line-height: 1.6;">
+                Seu e-mail está logado, mas não foi encontrado na tabela <b>${TABLE_NAME}</b>.
+              </p>
+
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                E-mail logado: <b>${escapeHtml(loggedEmail)}</b><br>
+                Registros retornados: <b>${registros.length}</b>
+              </p>
+
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                Se existem registros no Supabase e aqui aparece 0, o problema provavelmente é RLS.
+              </p>
+
+              <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
+                Voltar para login
+              </button>
+            </div>
+          </div>
+        `;
+
+        return false;
+      }
+
+      const cargo = currentSupport.cargo || "";
+      const status = currentSupport.status || "";
+
+      const isLeader = isLeaderCargo(cargo);
+      const isActive = isActiveStatus(status);
+
+      console.log("Resultado validação líder:", {
+        emailLogado: loggedEmail,
+        emailTabela: currentSupport.email,
+        cargoOriginal: cargo,
+        cargoNormalizado: normalizeKey(cargo),
+        statusOriginal: status,
+        statusNormalizado: normalizeKey(status),
+        isLeader,
+        isActive
+      });
 
       if (isLeader && isActive) {
         return true;
@@ -1064,14 +998,16 @@
             </p>
 
             <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-              E-mail encontrado: <b>${escapeHtml(loggedEmail)}</b><br>
-              Role atual: <b>${escapeHtml(roleValue || "-")}</b><br>
-              Status atual: <b>${escapeHtml(statusValue || "-")}</b>
+              E-mail logado: <b>${escapeHtml(loggedEmail)}</b><br>
+              E-mail na tabela: <b>${escapeHtml(currentSupport.email || "-")}</b><br>
+              Cargo encontrado: <b>${escapeHtml(cargo || "-")}</b><br>
+              Status encontrado: <b>${escapeHtml(status || "-")}</b>
             </p>
 
             <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
-              Para liberar o acesso, use <b>role = lider_suporte</b> ou <b>role = admin</b>
-              e <b>status = ativo</b> na tabela <b>${TABLE_NAME}</b>.
+              Para liberar o acesso, esse e-mail precisa estar na tabela <b>${TABLE_NAME}</b>
+              com <b>cargo = lider_suporte</b> ou <b>cargo = admin</b>,
+              e <b>status = ativo</b>.
             </p>
 
             <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
@@ -1087,7 +1023,7 @@
     async function loadSupports() {
       supportTableBody.innerHTML = `
         <tr>
-          <td colspan="6">Carregando suportes...</td>
+          <td colspan="5">Carregando suportes...</td>
         </tr>
       `;
 
@@ -1095,8 +1031,8 @@
         const rows = await fetchSupports();
 
         supports = rows.sort((a, b) => {
-          const nameA = normalize(getValue(a, "nome"));
-          const nameB = normalize(getValue(b, "nome"));
+          const nameA = normalize(a.nome);
+          const nameB = normalize(b.nome);
           return nameA.localeCompare(nameB);
         });
 
@@ -1108,7 +1044,7 @@
 
         supportTableBody.innerHTML = `
           <tr>
-            <td colspan="6">
+            <td colspan="5">
               Erro ao carregar dados: ${escapeHtml(error.message)}
             </td>
           </tr>
@@ -1122,12 +1058,11 @@
       const total = supports.length;
 
       const active = supports.filter(item => {
-        const status = normalize(getValue(item, "status"));
-        return status !== "inativo";
+        return isActiveStatus(item.status);
       }).length;
 
       const leaders = supports.filter(item => {
-        return isLeaderValue(getValue(item, "cargo"));
+        return isLeaderCargo(item.cargo);
       }).length;
 
       $("#totalCount").textContent = total;
@@ -1140,10 +1075,10 @@
 
       const filtered = supports.filter(item => {
         const searchable = [
-          getValue(item, "nome"),
-          getValue(item, "email"),
-          getValue(item, "cargo"),
-          getValue(item, "status")
+          item.nome,
+          item.email,
+          item.cargo,
+          item.status
         ].map(normalize).join(" ");
 
         return searchable.includes(term);
@@ -1152,22 +1087,20 @@
       if (!filtered.length) {
         supportTableBody.innerHTML = `
           <tr>
-            <td colspan="6">Nenhum suporte encontrado.</td>
+            <td colspan="5">Nenhum suporte encontrado.</td>
           </tr>
         `;
         return;
       }
 
       supportTableBody.innerHTML = filtered.map(item => {
-        const id = escapeHtml(getValue(item, "id"));
-        const nome = escapeHtml(getValue(item, "nome") || "-");
-        const email = escapeHtml(getValue(item, "email") || "-");
-        const cargo = escapeHtml(getValue(item, "cargo") || "suporte");
+        const id = escapeHtml(item.id);
+        const nome = escapeHtml(item.nome || "-");
+        const email = escapeHtml(item.email || "-");
+        const cargo = escapeHtml(item.cargo || "suporte");
 
-        const statusRaw = getValue(item, "status");
-        const statusValue = normalize(statusRaw) === "inativo" ? "inativo" : "ativo";
-
-        const leaderClass = isLeaderValue(getValue(item, "cargo")) ? " lider" : "";
+        const statusValue = normalizeKey(item.status) === "inativo" ? "inativo" : "ativo";
+        const leaderClass = isLeaderCargo(item.cargo) ? " lider" : "";
 
         return `
           <tr>
@@ -1199,19 +1132,12 @@
     }
 
     function getFormPayload() {
-      const payload = {};
-
-      const nomeColumn = getColumn("nome");
-      const emailColumn = getColumn("email");
-      const cargoColumn = getColumn("cargo");
-      const statusColumn = getColumn("status");
-
-      payload[nomeColumn] = $("#nome").value.trim();
-      payload[emailColumn] = $("#email").value.trim().toLowerCase();
-      payload[cargoColumn] = $("#cargo").value;
-      payload[statusColumn] = $("#status").value;
-
-      return payload;
+      return {
+        nome: $("#nome").value.trim(),
+        email: $("#email").value.trim().toLowerCase(),
+        cargo: $("#cargo").value,
+        status: $("#status").value
+      };
     }
 
     function clearForm() {
@@ -1222,21 +1148,19 @@
     }
 
     window.editSupport = function(id) {
-      const item = supports.find(s => String(getValue(s, "id")) === String(id));
+      const item = supports.find(s => String(s.id) === String(id));
 
       if (!item) return;
 
-      $("#supportId").value = getValue(item, "id");
-      $("#nome").value = getValue(item, "nome") || "";
-      $("#email").value = getValue(item, "email") || "";
+      $("#supportId").value = item.id;
+      $("#nome").value = item.nome || "";
+      $("#email").value = item.email || "";
 
-      const cargo = getValue(item, "cargo") || "suporte";
-
-      $("#cargo").value = ["suporte", "lider_suporte", "admin"].includes(cargo)
-        ? cargo
+      $("#cargo").value = ["suporte", "lider_suporte", "admin"].includes(item.cargo)
+        ? item.cargo
         : "suporte";
 
-      $("#status").value = normalize(getValue(item, "status")) === "inativo"
+      $("#status").value = normalizeKey(item.status) === "inativo"
         ? "inativo"
         : "ativo";
 
@@ -1250,19 +1174,17 @@
     };
 
     window.deleteSupport = async function(id) {
-      const item = supports.find(s => String(getValue(s, "id")) === String(id));
-      const name = getValue(item, "nome") || "este suporte";
+      const item = supports.find(s => String(s.id) === String(id));
+      const name = item?.nome || "este suporte";
 
       if (!confirm(`Deseja realmente excluir ${name}?`)) {
         return;
       }
 
-      const idColumn = getColumn("id");
-
       const { error } = await supabaseClient
         .from(TABLE_NAME)
         .delete()
-        .eq(idColumn, id);
+        .eq("id", id);
 
       if (error) {
         console.error("Erro ao excluir:", error);
@@ -1301,7 +1223,7 @@
         response = await supabaseClient
           .from(TABLE_NAME)
           .update(payload)
-          .eq(getColumn("id"), id);
+          .eq("id", id);
       } else {
         response = await supabaseClient
           .from(TABLE_NAME)
@@ -1316,7 +1238,7 @@
 
         showAlert(
           "#formAlert",
-          `Erro ao salvar: ${response.error.message}. Confira se as colunas existem na tabela.`,
+          `Erro ao salvar: ${response.error.message}`,
           "error"
         );
 
