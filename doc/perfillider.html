@@ -3,18 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Painel Líder | Seller Pro</title>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
       --bg: #070707;
-      --bg-2: #101010;
       --card: rgba(20, 20, 20, 0.86);
-      --card-2: rgba(31, 31, 31, 0.9);
       --orange: #ff7a00;
       --orange-2: #ff9d2e;
-      --orange-dark: #b94d00;
       --text: #f7f7f7;
       --muted: #aaa;
       --line: rgba(255, 122, 0, 0.18);
@@ -25,7 +24,9 @@
       --radius: 22px;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -129,7 +130,9 @@
       white-space: nowrap;
     }
 
-    button, input, select {
+    button,
+    input,
+    select {
       font: inherit;
     }
 
@@ -334,7 +337,8 @@
       font-weight: 700;
     }
 
-    .input, .select {
+    .input,
+    .select {
       width: 100%;
       border: 1px solid rgba(255,255,255,.1);
       background: rgba(255,255,255,.055);
@@ -349,7 +353,8 @@
       color: #111;
     }
 
-    .input:focus, .select:focus {
+    .input:focus,
+    .select:focus {
       border-color: rgba(255,122,0,.65);
       box-shadow: 0 0 0 4px rgba(255,122,0,.12);
       background: rgba(255,255,255,.075);
@@ -389,7 +394,8 @@
       min-width: 760px;
     }
 
-    th, td {
+    th,
+    td {
       padding: 14px 14px;
       text-align: left;
       border-bottom: 1px solid rgba(255,255,255,.07);
@@ -497,7 +503,7 @@
     }
 
     .loader-box {
-      width: min(520px, 100%);
+      width: min(560px, 100%);
       border: 1px solid var(--line);
       background: rgba(12,12,12,.82);
       backdrop-filter: blur(18px);
@@ -518,7 +524,9 @@
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     .hidden {
@@ -526,7 +534,8 @@
     }
 
     @media (max-width: 980px) {
-      .hero, .grid {
+      .hero,
+      .grid {
         grid-template-columns: 1fr;
       }
 
@@ -598,6 +607,7 @@
       <div class="panel">
         <div class="panel-inner">
           <h2 class="headline">Gestão de <span>suportes</span> Seller Pro</h2>
+
           <p class="subtext">
             Área administrativa para líderes criarem, editarem, ativarem e organizarem os suportes cadastrados.
           </p>
@@ -640,7 +650,7 @@
               <span class="dot"></span>
               <div>
                 <b>Editar cadastro</b>
-                <small>Alterar nome, e-mail, telefone, cargo e status.</small>
+                <small>Alterar nome, e-mail, cargo e status.</small>
               </div>
             </div>
 
@@ -682,11 +692,6 @@
             </div>
 
             <div class="field">
-              <label for="telefone">Telefone</label>
-              <input id="telefone" class="input" type="text" placeholder="(00) 00000-0000" />
-            </div>
-
-            <div class="field">
               <label for="cargo">Cargo / Perfil</label>
               <select id="cargo" class="select">
                 <option value="suporte">Suporte</option>
@@ -723,7 +728,7 @@
           <div id="tableAlert" class="alert"></div>
 
           <div class="toolbar">
-            <input id="searchInput" class="input searchbox" type="search" placeholder="Buscar por nome, e-mail, telefone ou cargo..." />
+            <input id="searchInput" class="input searchbox" type="search" placeholder="Buscar por nome, e-mail, ou cargo..." />
             <button class="btn secondary" id="clearSearchBtn">Limpar busca</button>
           </div>
 
@@ -733,7 +738,6 @@
                 <tr>
                   <th>Nome</th>
                   <th>E-mail</th>
-                  <th>Telefone</th>
                   <th>Cargo</th>
                   <th>Status</th>
                   <th>Ações</th>
@@ -742,7 +746,7 @@
 
               <tbody id="supportTableBody">
                 <tr>
-                  <td colspan="6">Carregando...</td>
+                  <td colspan="5">Carregando...</td>
                 </tr>
               </tbody>
             </table>
@@ -758,26 +762,6 @@
 
     const LOGIN_PAGE = "login.html";
     const TABLE_NAME = "suportes_sellerpro";
-
-    const COLUMNS = {
-      id: "id",
-      nome: "nome",
-      email: "email",
-      telefone: "telefone",
-      cargo: "cargo",
-      status: "status",
-      createdAt: "created_at"
-    };
-
-    const ALLOWED_LEADER_VALUES = [
-      "lider_suporte",
-      "lider suporte",
-      "líder suporte",
-      "lider",
-      "líder",
-      "admin",
-      "administrador"
-    ];
 
     const supabaseClient = window.supabase.createClient(
       SUPABASE_URL,
@@ -796,6 +780,16 @@
     let supports = [];
     let currentUser = null;
 
+    const LEADER_VALUES = [
+      "lider_suporte",
+      "lider suporte",
+      "líder suporte",
+      "lider",
+      "líder",
+      "admin",
+      "administrador"
+    ];
+
     function normalize(value) {
       return String(value || "")
         .trim()
@@ -804,12 +798,46 @@
         .replace(/[\u0300-\u036f]/g, "");
     }
 
-    function isLeaderValue(value) {
-      const normalized = normalize(value).replace(/-/g, "_").replace(/\s+/g, "_");
+    function normalizeKey(value) {
+      return normalize(value)
+        .replace(/-/g, "_")
+        .replace(/\s+/g, "_");
+    }
 
-      return ALLOWED_LEADER_VALUES
-        .map(v => normalize(v).replace(/-/g, "_").replace(/\s+/g, "_"))
-        .includes(normalized);
+    function normalizeEmail(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase();
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function isLeaderCargo(value) {
+      const cargo = normalizeKey(value);
+
+      return LEADER_VALUES
+        .map(item => normalizeKey(item))
+        .includes(cargo);
+    }
+
+    function isActiveStatus(value) {
+      const status = normalizeKey(value);
+
+      return (
+        status === "" ||
+        status === "ativo" ||
+        status === "active" ||
+        status === "sim" ||
+        status === "true" ||
+        status === "1"
+      );
     }
 
     function showAlert(elementId, message, type = "success") {
@@ -822,7 +850,7 @@
       setTimeout(() => {
         el.className = "alert";
         el.textContent = "";
-      }, 4500);
+      }, 6000);
     }
 
     function setLoadingState(isLoading) {
@@ -830,13 +858,17 @@
       app.classList.toggle("hidden", isLoading);
     }
 
-    function escapeHtml(value) {
-      return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    async function fetchSupports() {
+      const { data, error } = await supabaseClient
+        .from(TABLE_NAME)
+        .select("*");
+
+      if (error) {
+        console.error("Erro Supabase:", error);
+        throw new Error(`Erro ao acessar a tabela ${TABLE_NAME}: ${error.message}`);
+      }
+
+      return data || [];
     }
 
     async function checkLeaderAccess() {
@@ -857,37 +889,102 @@
       currentUser = session.user;
       userEmail.textContent = currentUser.email || "Usuário conectado";
 
-      const metadata = currentUser.user_metadata || {};
+      const loggedEmail = normalizeEmail(currentUser.email);
 
-      const metadataRole =
-        metadata.role ||
-        metadata.cargo ||
-        metadata.perfil ||
-        metadata.tipo ||
-        metadata.funcao;
-
-      if (isLeaderValue(metadataRole)) {
-        return true;
-      }
-
-      const { data, error } = await supabaseClient
+      const { data: rows, error } = await supabaseClient
         .from(TABLE_NAME)
-        .select("id, nome, email, telefone, cargo, status")
-        .eq("email", currentUser.email)
-        .maybeSingle();
+        .select("*");
 
       if (error) {
-        console.error("Erro ao validar acesso:", error);
+        console.error("Erro ao validar acesso na tabela suportes_sellerpro:", error);
 
-        throw new Error(
-          `Erro ao validar acesso na tabela ${TABLE_NAME}: ${error.message}`
-        );
+        document.body.innerHTML = `
+          <div class="loader">
+            <div class="loader-box">
+              <h2 style="color: var(--danger); margin-top: 0;">Erro ao validar acesso</h2>
+
+              <p style="color: var(--muted); line-height: 1.6;">
+                Não foi possível consultar a tabela <b>${TABLE_NAME}</b>.
+              </p>
+
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                Erro: <b>${escapeHtml(error.message)}</b>
+              </p>
+
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                Se a tabela existe, verifique as policies de RLS no Supabase.
+              </p>
+
+              <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
+                Voltar para login
+              </button>
+            </div>
+          </div>
+        `;
+
+        return false;
       }
 
-      const tableRole = data?.cargo;
-      const tableStatus = data?.status;
+      const registros = rows || [];
 
-      if (isLeaderValue(tableRole) && normalize(tableStatus) !== "inativo") {
+      const currentSupport = registros.find(row => {
+        const rowEmail = normalizeEmail(row.email);
+        return rowEmail === loggedEmail;
+      });
+
+      console.log("Validação de acesso:", {
+        emailLogado: loggedEmail,
+        registrosRetornados: registros.length,
+        usuarioEncontrado: currentSupport || null
+      });
+
+      if (!currentSupport) {
+        document.body.innerHTML = `
+          <div class="loader">
+            <div class="loader-box">
+              <h2 style="color: var(--orange); margin-top: 0;">Acesso negado</h2>
+
+              <p style="color: var(--muted); line-height: 1.6;">
+                Seu e-mail está logado, mas não foi encontrado na tabela <b>${TABLE_NAME}</b>.
+              </p>
+
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                E-mail logado: <b>${escapeHtml(loggedEmail)}</b><br>
+                Registros retornados: <b>${registros.length}</b>
+              </p>
+
+              <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+                Se existem registros no Supabase e aqui aparece 0, o problema provavelmente é RLS.
+              </p>
+
+              <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
+                Voltar para login
+              </button>
+            </div>
+          </div>
+        `;
+
+        return false;
+      }
+
+      const cargo = currentSupport.cargo || "";
+      const status = currentSupport.status || "";
+
+      const isLeader = isLeaderCargo(cargo);
+      const isActive = isActiveStatus(status);
+
+      console.log("Resultado validação líder:", {
+        emailLogado: loggedEmail,
+        emailTabela: currentSupport.email,
+        cargoOriginal: cargo,
+        cargoNormalizado: normalizeKey(cargo),
+        statusOriginal: status,
+        statusNormalizado: normalizeKey(status),
+        isLeader,
+        isActive
+      });
+
+      if (isLeader && isActive) {
         return true;
       }
 
@@ -895,9 +992,24 @@
         <div class="loader">
           <div class="loader-box">
             <h2 style="color: var(--orange); margin-top: 0;">Acesso negado</h2>
+
             <p style="color: var(--muted); line-height: 1.6;">
               Seu usuário está logado, mas não foi identificado como <b>líder suporte</b>.
             </p>
+
+            <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+              E-mail logado: <b>${escapeHtml(loggedEmail)}</b><br>
+              E-mail na tabela: <b>${escapeHtml(currentSupport.email || "-")}</b><br>
+              Cargo encontrado: <b>${escapeHtml(cargo || "-")}</b><br>
+              Status encontrado: <b>${escapeHtml(status || "-")}</b>
+            </p>
+
+            <p style="color: var(--muted); line-height: 1.6; font-size: 13px;">
+              Para liberar o acesso, esse e-mail precisa estar na tabela <b>${TABLE_NAME}</b>
+              com <b>cargo = lider_suporte</b> ou <b>cargo = admin</b>,
+              e <b>status = ativo</b>.
+            </p>
+
             <button class="btn" onclick="window.location.href='${LOGIN_PAGE}'">
               Voltar para login
             </button>
@@ -911,49 +1023,46 @@
     async function loadSupports() {
       supportTableBody.innerHTML = `
         <tr>
-          <td colspan="6">Carregando suportes...</td>
+          <td colspan="5">Carregando suportes...</td>
         </tr>
       `;
 
-      const { data, error } = await supabaseClient
-        .from(TABLE_NAME)
-        .select("id, nome, email, telefone, cargo, status, created_at")
-        .order("nome", { ascending: true });
+      try {
+        const rows = await fetchSupports();
 
-      if (error) {
+        supports = rows.sort((a, b) => {
+          const nameA = normalize(a.nome);
+          const nameB = normalize(b.nome);
+          return nameA.localeCompare(nameB);
+        });
+
+        renderStats();
+        renderTable();
+
+      } catch (error) {
         console.error("Erro ao carregar suportes:", error);
 
         supportTableBody.innerHTML = `
           <tr>
-            <td colspan="6">
+            <td colspan="5">
               Erro ao carregar dados: ${escapeHtml(error.message)}
             </td>
           </tr>
         `;
 
-        showAlert(
-          "#tableAlert",
-          `Erro ao carregar suportes: ${error.message}`,
-          "error"
-        );
-
-        return;
+        showAlert("#tableAlert", error.message, "error");
       }
-
-      supports = data || [];
-      renderStats();
-      renderTable();
     }
 
     function renderStats() {
       const total = supports.length;
 
       const active = supports.filter(item => {
-        return normalize(item.status) !== "inativo";
+        return isActiveStatus(item.status);
       }).length;
 
       const leaders = supports.filter(item => {
-        return isLeaderValue(item.cargo);
+        return isLeaderCargo(item.cargo);
       }).length;
 
       $("#totalCount").textContent = total;
@@ -968,12 +1077,9 @@
         const searchable = [
           item.nome,
           item.email,
-          item.telefone,
           item.cargo,
           item.status
-        ]
-          .map(normalize)
-          .join(" ");
+        ].map(normalize).join(" ");
 
         return searchable.includes(term);
       });
@@ -981,7 +1087,7 @@
       if (!filtered.length) {
         supportTableBody.innerHTML = `
           <tr>
-            <td colspan="6">Nenhum suporte encontrado.</td>
+            <td colspan="5">Nenhum suporte encontrado.</td>
           </tr>
         `;
         return;
@@ -989,19 +1095,17 @@
 
       supportTableBody.innerHTML = filtered.map(item => {
         const id = escapeHtml(item.id);
-        const nome = escapeHtml(item.nome);
-        const email = escapeHtml(item.email);
-        const telefone = escapeHtml(item.telefone || "-");
+        const nome = escapeHtml(item.nome || "-");
+        const email = escapeHtml(item.email || "-");
         const cargo = escapeHtml(item.cargo || "suporte");
 
-        const statusValue = normalize(item.status) === "inativo" ? "inativo" : "ativo";
-        const leaderClass = isLeaderValue(item.cargo) ? " lider" : "";
+        const statusValue = normalizeKey(item.status) === "inativo" ? "inativo" : "ativo";
+        const leaderClass = isLeaderCargo(item.cargo) ? " lider" : "";
 
         return `
           <tr>
-            <td><b>${nome || "-"}</b></td>
-            <td>${email || "-"}</td>
-            <td>${telefone}</td>
+            <td><b>${nome}</b></td>
+            <td>${email}</td>
             <td>
               <span class="status${leaderClass}">
                 ${cargo}
@@ -1031,7 +1135,6 @@
       return {
         nome: $("#nome").value.trim(),
         email: $("#email").value.trim().toLowerCase(),
-        telefone: $("#telefone").value.trim(),
         cargo: $("#cargo").value,
         status: $("#status").value
       };
@@ -1052,9 +1155,14 @@
       $("#supportId").value = item.id;
       $("#nome").value = item.nome || "";
       $("#email").value = item.email || "";
-      $("#telefone").value = item.telefone || "";
-      $("#cargo").value = item.cargo || "suporte";
-      $("#status").value = normalize(item.status) === "inativo" ? "inativo" : "ativo";
+
+      $("#cargo").value = ["suporte", "lider_suporte", "admin"].includes(item.cargo)
+        ? item.cargo
+        : "suporte";
+
+      $("#status").value = normalizeKey(item.status) === "inativo"
+        ? "inativo"
+        : "ativo";
 
       $("#formTitle").textContent = "Editar suporte";
       $("#saveBtn").textContent = "Atualizar";
@@ -1094,13 +1202,17 @@
       event.preventDefault();
 
       const id = $("#supportId").value;
-      const payload = getFormPayload();
       const saveBtn = $("#saveBtn");
 
-      if (!payload.nome || !payload.email) {
+      const nomeValue = $("#nome").value.trim();
+      const emailValue = $("#email").value.trim().toLowerCase();
+
+      if (!nomeValue || !emailValue) {
         showAlert("#formAlert", "Nome e e-mail são obrigatórios.", "warning");
         return;
       }
+
+      const payload = getFormPayload();
 
       saveBtn.disabled = true;
       saveBtn.textContent = id ? "Atualizando..." : "Salvando...";
@@ -1123,7 +1235,13 @@
 
       if (response.error) {
         console.error("Erro ao salvar:", response.error);
-        showAlert("#formAlert", `Erro ao salvar: ${response.error.message}`, "error");
+
+        showAlert(
+          "#formAlert",
+          `Erro ao salvar: ${response.error.message}`,
+          "error"
+        );
+
         return;
       }
 
