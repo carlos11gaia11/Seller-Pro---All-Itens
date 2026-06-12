@@ -650,7 +650,7 @@
               <span class="dot"></span>
               <div>
                 <b>Editar cadastro</b>
-                <small>Alterar nome, e-mail, telefone, cargo e status.</small>
+                <small>Alterar nome, e-mail, cargo e status.</small>
               </div>
             </div>
 
@@ -692,11 +692,6 @@
             </div>
 
             <div class="field">
-              <label for="telefone">Telefone</label>
-              <input id="telefone" class="input" type="text" placeholder="(00) 00000-0000" />
-            </div>
-
-            <div class="field">
               <label for="cargo">Cargo / Perfil</label>
               <select id="cargo" class="select">
                 <option value="suporte">Suporte</option>
@@ -733,7 +728,7 @@
           <div id="tableAlert" class="alert"></div>
 
           <div class="toolbar">
-            <input id="searchInput" class="input searchbox" type="search" placeholder="Buscar por nome, e-mail, telefone ou cargo..." />
+            <input id="searchInput" class="input searchbox" type="search" placeholder="Buscar por nome, e-mail, ou cargo..." />
             <button class="btn secondary" id="clearSearchBtn">Limpar busca</button>
           </div>
 
@@ -743,7 +738,6 @@
                 <tr>
                   <th>Nome</th>
                   <th>E-mail</th>
-                  <th>Telefone</th>
                   <th>Cargo</th>
                   <th>Status</th>
                   <th>Ações</th>
@@ -824,16 +818,6 @@
         "usuário",
         "login"
       ],
-      telefone: [
-        "telefone",
-        "Telefone",
-        "phone",
-        "Phone",
-        "celular",
-        "Celular",
-        "whatsapp",
-        "WhatsApp"
-      ],
       cargo: [
         "cargo",
         "Cargo",
@@ -868,7 +852,6 @@
       id: "id",
       nome: "nome",
       email: "email",
-      telefone: "telefone",
       cargo: "cargo",
       status: "status"
     };
@@ -1111,7 +1094,6 @@
         const searchable = [
           getValue(item, "nome"),
           getValue(item, "email"),
-          getValue(item, "telefone"),
           getValue(item, "cargo"),
           getValue(item, "status")
         ].map(normalize).join(" ");
@@ -1132,7 +1114,6 @@
         const id = escapeHtml(getValue(item, "id"));
         const nome = escapeHtml(getValue(item, "nome") || "-");
         const email = escapeHtml(getValue(item, "email") || "-");
-        const telefone = escapeHtml(getValue(item, "telefone") || "-");
         const cargo = escapeHtml(getValue(item, "cargo") || "suporte");
 
         const statusRaw = getValue(item, "status");
@@ -1144,7 +1125,6 @@
           <tr>
             <td><b>${nome}</b></td>
             <td>${email}</td>
-            <td>${telefone}</td>
             <td>
               <span class="status${leaderClass}">
                 ${cargo}
@@ -1175,13 +1155,11 @@
 
       const nomeColumn = getColumn("nome");
       const emailColumn = getColumn("email");
-      const telefoneColumn = getColumn("telefone");
       const cargoColumn = getColumn("cargo");
       const statusColumn = getColumn("status");
 
       payload[nomeColumn] = $("#nome").value.trim();
       payload[emailColumn] = $("#email").value.trim().toLowerCase();
-      payload[telefoneColumn] = $("#telefone").value.trim();
       payload[cargoColumn] = $("#cargo").value;
       payload[statusColumn] = $("#status").value;
 
@@ -1203,7 +1181,6 @@
       $("#supportId").value = getValue(item, "id");
       $("#nome").value = getValue(item, "nome") || "";
       $("#email").value = getValue(item, "email") || "";
-      $("#telefone").value = getValue(item, "telefone") || "";
 
       const cargo = getValue(item, "cargo") || "suporte";
 
