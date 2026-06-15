@@ -201,7 +201,7 @@
       </form>
 
       <h3 id="modalTitle" class="text-2xl font-extrabold text-zinc-950 mb-1">Adicionar Seller</h3>
-      <p class="text-zinc-500 mb-6">Preencha os dados abaixo. A validade será calculada automaticamente.</p>
+      <p class="text-zinc-500 mb-6">Preencha os dados abaixo. A situação será usada exatamente conforme a coluna do Supabase.</p>
 
       <form id="sellerForm" onsubmit="saveSeller(event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input type="hidden" id="sellerId" />
@@ -215,6 +215,15 @@
           <div class="label"><span class="label-text font-semibold">Status</span></div>
           <select id="status" class="select select-bordered rounded-2xl" required>
             <option value="Ativou">Ativou</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+        </label>
+
+        <label class="form-control">
+          <div class="label"><span class="label-text font-semibold">Situação</span></div>
+          <select id="situacao" class="select select-bordered rounded-2xl" required>
+            <option value="Ativo">Ativo</option>
+            <option value="Expirado">Expirado</option>
             <option value="Cancelado">Cancelado</option>
           </select>
         </label>
@@ -381,29 +390,32 @@
       return toIsoDate(validadeCalculada);
     }
 
+    function normalizeSituation(value, status = '') {
+      const statusNormalizado = normalizeStatus(status);
+      if (statusNormalizado === 'Cancelado') return 'Cancelado';
+
+      const v = normalizeText(value);
+      if (v.includes('EXPIR')) return 'Expirado';
+      if (v.includes('CANCEL')) return 'Cancelado';
+      if (v.includes('ATIV')) return 'Ativo';
+
+      return 'Ativo';
+    }
+
     function realSituation(seller) {
-      const status = normalizeStatus(seller?.status);
-      if (status === 'Cancelado') return 'Cancelado';
-
-      const validadeDate = parseDateFlexible(effectiveValidity(seller));
-      if (!validadeDate) {
-        return normalizeText(seller?.situacao).includes('EXPIR') ? 'Expirado' : 'Ativo';
-      }
-
-      validadeDate.setHours(0, 0, 0, 0);
-      return validadeDate < todayAtMidnight() ? 'Expirado' : 'Ativo';
+      return normalizeSituation(seller?.situacao, seller?.status);
     }
 
     function isActiveSeller(seller) {
-      return normalizeStatus(seller?.status) === 'Ativou' && realSituation(seller) === 'Ativo';
+      return realSituation(seller) === 'Ativo';
     }
 
     function isExpiredSeller(seller) {
-      return normalizeStatus(seller?.status) === 'Ativou' && realSituation(seller) === 'Expirado';
+      return realSituation(seller) === 'Expirado';
     }
 
     function isCanceledSeller(seller) {
-      return normalizeStatus(seller?.status) === 'Cancelado';
+      return realSituation(seller) === 'Cancelado';
     }
 
     let sellers = [];
@@ -483,8 +495,8 @@
       return toIsoDate(date);
     }
 
-    function calcSituation(validade, status = 'Ativou', dataInicio = '') {
-      return realSituation({ validade, status, data_inicio: dataInicio });
+    function calcSituation(situacao, status = 'Ativou') {
+      return normalizeSituation(situacao, status);
     }
 
     function formatDate(dateString) {
@@ -577,24 +589,9 @@
     }
 
     async function updateExpiredSellersIfNeeded() {
-      const updates = sellers
-        .map(s => {
-          const validadeCalculada = effectiveValidity(s);
-          const situacaoCalculada = realSituation({ ...s, validade: validadeCalculada });
-
-          const payload = {};
-          if (validadeCalculada && s.validade !== validadeCalculada) payload.validade = validadeCalculada;
-          if (s.situacao !== situacaoCalculada) payload.situacao = situacaoCalculada;
-
-          return Object.keys(payload).length ? { seller: s, payload } : null;
-        })
-        .filter(Boolean);
-
-      for (const item of updates) {
-        await safeUpdateSeller(item.seller, item.payload);
-        const local = sellers.find(s => s.__localKey === item.seller.__localKey);
-        if (local) Object.assign(local, item.payload);
-      }
+      // A situação vem da coluna `situacao` no Supabase.
+      // Não recalcula por data para não sobrescrever sellers marcados manualmente como Expirado.
+      return;
     }
 
     function applyFilters() {
@@ -766,7 +763,8 @@
       if (seller) {
         document.getElementById('sellerId').value = seller.__localKey || rowKey(seller);
         document.getElementById('mcid').value = seller.mcid || '';
-        document.getElementById('status').value = seller.status || 'Ativou';
+        document.getElementById('status').value = normalizeStatus(seller.status) || 'Ativou';
+        document.getElementById('situacao').value = realSituation(seller);
         document.getElementById('nome').value = seller.nome || '';
         document.getElementById('email').value = seller.email || '';
         document.getElementById('telefone').value = seller.telefone || '';
@@ -775,6 +773,7 @@
         document.getElementById('validadePreview').value = formatDate(effectiveValidity(seller));
       } else {
         document.getElementById('status').value = 'Ativou';
+        document.getElementById('situacao').value = 'Ativo';
         document.getElementById('suporte').value = supports[0] || '';
         document.getElementById('data_inicio').value = new Date().toISOString().slice(0, 10);
         previewValidity();
@@ -790,6 +789,7 @@
       const dataInicio = document.getElementById('data_inicio').value;
       const validade = addOneYear(dataInicio);
       const status = document.getElementById('status').value;
+      const situacao = document.getElementById('situacao').value;
 
       const payload = {
         mcid: document.getElementById('mcid').value.trim(),
@@ -800,7 +800,7 @@
         suporte: normalizeSupport(document.getElementById('suporte').value),
         data_inicio: dataInicio,
         validade,
-        situacao: calcSituation(validade, status, dataInicio)
+        situacao: calcSituation(situacao, status)
       };
 
       const originalSeller = id ? findSellerByLocalKey(id) : null;
