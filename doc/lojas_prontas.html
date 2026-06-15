@@ -1,1140 +1,672 @@
-<!doctype html>
-<html lang="pt-BR" data-theme="dark">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Painel de Lojas Prontas | Seller Pro</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Inter', 'ui-sans-serif', 'system-ui'] },
-          boxShadow: { soft: '0 18px 60px rgba(0, 0, 0, .35)' }
-        }
-      }
-    }
-  </script>
-  <style>
-    :root { --brand:#f97316; --ink:#0f172a; --panel: rgba(15,23,42,.78); --line: rgba(148,163,184,.18); }
-    html, body { min-height: 100%; background:
-      radial-gradient(circle at top left, rgba(249,115,22,.28), transparent 30%),
-      radial-gradient(circle at 75% 8%, rgba(59,130,246,.18), transparent 26%),
-      linear-gradient(135deg,#020617 0%,#0f172a 42%,#111827 100%);
-      background-attachment: fixed;
-    }
-    .glass { background: var(--panel); backdrop-filter: blur(18px); border: 1px solid var(--line); box-shadow: 0 22px 70px rgba(0,0,0,.32); }
-    .hero-card { background: linear-gradient(135deg, rgba(249,115,22,.19), rgba(15,23,42,.88) 46%, rgba(2,6,23,.86)); border: 1px solid rgba(251,146,60,.26); }
-    .metric-card { background: linear-gradient(145deg, rgba(30,41,59,.95), rgba(15,23,42,.82)); border: 1px solid rgba(148,163,184,.18); }
-    .table-compact :where(th,td) { padding: .58rem .65rem; font-size: .82rem; border-color: rgba(148,163,184,.12); }
-    .sticky-head th { position: sticky; top: 0; z-index: 10; background: rgba(15,23,42,.98); color: #fed7aa; box-shadow: inset 0 -1px 0 rgba(251,146,60,.32); }
-    tbody tr { border-color: rgba(148,163,184,.10); }
-    tbody tr:hover { background: rgba(249,115,22,.075); }
-    .truncate-cell { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .tab-active-custom { background: linear-gradient(135deg,#f97316,#ea580c) !important; color: #fff !important; border-color: transparent !important; box-shadow: 0 8px 22px rgba(249,115,22,.26); }
-    .support-dot { width: .65rem; height: .65rem; border-radius: 999px; display:inline-block; box-shadow:0 0 0 3px rgba(255,255,255,.08); }
-    .drawer-side { z-index: 40; }
-    .loading-line { height: 3px; background: linear-gradient(90deg,#f97316,#facc15,#38bdf8,#f97316); background-size: 200% 100%; animation: slide 1.1s infinite linear; }
-    .input, .select, .modal-box { background: rgba(15,23,42,.97) !important; color: #e2e8f0 !important; border-color: rgba(148,163,184,.25) !important; }
-    .input:focus, .select:focus { outline: 2px solid rgba(249,115,22,.35) !important; border-color: rgba(249,115,22,.75) !important; }
-    .dark-card { background: linear-gradient(145deg, rgba(15,23,42,.96), rgba(2,6,23,.88)); border: 1px solid rgba(148,163,184,.15); }
-    .muted-panel { background: rgba(2,6,23,.45); border: 1px solid rgba(148,163,184,.14); }
-    .soft-pill { background: rgba(15,23,42,.75); border: 1px solid rgba(148,163,184,.18); color: #e2e8f0; }
-    .table :where(tbody tr:nth-child(even)) { background: rgba(15,23,42,.28); }
-    .input::placeholder { color: #64748b; }
-    .label-text, .text-slate-500 { color: #94a3b8 !important; }
-    .text-slate-600 { color: #cbd5e1 !important; }
-    .text-slate-950, .text-slate-900 { color: #f8fafc !important; }
-    .badge { border: 0; }
-    .btn-outline { border-color: rgba(251,146,60,.45); color: #fed7aa; }
-    .btn-outline:hover { background:#f97316; color:#fff; border-color:#f97316; }
-    .btn-ghost-dark { background: rgba(15,23,42,.55); border: 1px solid rgba(148,163,184,.18); color:#e2e8f0; }
-    .btn-ghost-dark:hover { background: rgba(30,41,59,.95); }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Loja Pronta</title>
 
-    .panel-head { display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:1rem; border-bottom:1px solid rgba(251,146,60,.18); }
-    .panel-body { padding:1rem; }
-    .panel-collapsed .panel-body { display:none; }
-    .panel-toggle { min-height:2rem; height:2rem; padding:0 .75rem; border-radius:999px; }
-    .status-card { position:relative; overflow:hidden; background:linear-gradient(145deg, rgba(30,41,59,.96), rgba(15,23,42,.86)); border:1px solid rgba(148,163,184,.16); }
-    .status-card::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at top right, rgba(249,115,22,.18), transparent 38%); pointer-events:none; }
-    .status-content { position:relative; z-index:1; }
-    .tiny-label { font-size:.66rem; line-height:1rem; letter-spacing:.06em; text-transform:uppercase; font-weight:900; color:#94a3b8; }
-    .count-chip { background:rgba(2,6,23,.44); border:1px solid rgba(148,163,184,.14); border-radius:1rem; padding:.6rem .75rem; }
-    .status-grid { display:grid; grid-template-columns:repeat(1,minmax(0,1fr)); gap:.75rem; }
-    @media (min-width:640px){ .status-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
-    @media (min-width:1024px){ .status-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
-    @media (min-width:1280px){ .status-grid{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
-    @keyframes slide { from { background-position: 0 0; } to { background-position: 200% 0; } }
-    @media (max-width: 900px) { .table-compact :where(th,td) { padding: .5rem; font-size: .75rem; } .truncate-cell { max-width: 120px; } }
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      margin-bottom: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    select,
+    input {
+      background: #1e293b;
+      color: #e5e7eb;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px 12px;
+      min-width: 220px;
+      outline: none;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .summary-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .summary-card h3 {
+      margin: 0;
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 32px;
+      margin-top: 8px;
+      color: #fff;
+    }
+
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .support-card {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .support-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .support-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .support-total {
+      background: #2563eb;
+      color: #fff;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .status-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 9px 10px;
+      background: #1e293b;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+
+    .status-name {
+      color: #cbd5e1;
+    }
+
+    .status-count {
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .table-wrapper {
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 16px 18px;
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .table-header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      text-align: left;
+      border-bottom: 1px solid #1f2937;
+      font-size: 14px;
+    }
+
+    th {
+      background: #1e293b;
+      color: #cbd5e1;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    td {
+      color: #e5e7eb;
+    }
+
+    tr:hover td {
+      background: #172033;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #334155;
+      color: #fff;
+    }
+
+    .empty {
+      padding: 32px;
+      text-align: center;
+      color: #94a3b8;
+    }
+
+    .loading {
+      color: #fbbf24;
+    }
+
+    .error {
+      background: #7f1d1d;
+      color: #fecaca;
+      padding: 14px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      display: none;
+    }
+
+    .scroll {
+      overflow-x: auto;
+    }
   </style>
 </head>
-<body class="text-slate-100 font-sans">
-  <div id="loadingBar" class="loading-line hidden fixed top-0 left-0 right-0 z-50"></div>
 
-  <main class="max-w-[1500px] mx-auto p-3 sm:p-5 space-y-4">
-    <section class="glass hero-card rounded-3xl shadow-soft p-4 sm:p-6 overflow-hidden relative">
-      <div class="absolute -right-16 -top-16 w-44 h-44 bg-orange-500 rounded-full blur-3xl opacity-30"></div>
-      <div class="absolute right-28 -bottom-24 w-60 h-60 bg-sky-500 rounded-full blur-3xl opacity-20"></div>
-      <div class="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/15 text-orange-200 border border-orange-400/20 text-xs font-bold mb-3">
-            <span>📋</span> Painel integrado ao Supabase
-          </div>
-          <h1 class="text-2xl sm:text-4xl font-black tracking-tight text-slate-950">Lojas Prontas</h1>
-          <p class="text-sm sm:text-base text-slate-600 mt-1">Controle por mês, suporte responsável, conclusão e prazo do preenchimento do formulário.</p>
-          <p id="loadInfo" class="text-xs text-slate-500 mt-2">Carregando dados...</p>
-        </div>
-        <div class="flex flex-wrap gap-2">
-          <button class="btn bg-orange-500 hover:bg-orange-600 text-white border-0" onclick="openLojaModal()">+ Nova loja</button>
-          <button class="btn btn-outline" onclick="refreshAll()">Atualizar</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="panelResumo" class="glass rounded-3xl shadow-soft overflow-hidden">
-      <div class="panel-head">
-        <div>
-          <h2 class="font-black text-lg">Contagem por situação</h2>
-          <p id="statusCardsInfo" class="text-xs text-slate-500">Total do mês selecionado e total geral.</p>
-        </div>
-        <button class="btn btn-sm btn-ghost-dark panel-toggle" onclick="togglePanel('panelResumo', this)">Minimizar</button>
-      </div>
-      <div class="panel-body">
-        <div id="statusCards" class="status-grid"></div>
-      </div>
-    </section>
-
-    <section id="panelFiltros" class="glass rounded-3xl shadow-soft overflow-hidden">
-      <div class="panel-head">
-        <div>
-          <h2 class="font-black text-lg">Abas, filtros e suportes</h2>
-          <p id="supportStatusInfo" class="text-xs text-slate-500">Resumo da aba selecionada por suporte.</p>
-        </div>
-        <button class="btn btn-sm btn-ghost-dark panel-toggle" onclick="togglePanel('panelFiltros', this)">Minimizar</button>
-      </div>
-      <div class="panel-body space-y-4">
-        <div class="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-3">
-          <div class="flex-1">
-            <p class="text-xs text-slate-500 font-bold uppercase mb-2">Planilhas por mês detectado</p>
-            <div id="mesTabs" class="flex gap-2 overflow-x-auto pb-1"></div>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 min-w-full xl:min-w-[760px]">
-            <label class="form-control"><span class="label-text text-xs font-bold">Buscar</span><input id="searchInput" class="input input-bordered input-sm" placeholder="MCID, seller, suporte..." oninput="render()" /></label>
-            <label class="form-control"><span class="label-text text-xs font-bold">Suporte</span><select id="filterSuporte" class="select select-bordered select-sm" onchange="render()"><option value="">Todos</option></select></label>
-            <label class="form-control"><span class="label-text text-xs font-bold">Situação</span><select id="filterSituacao" class="select select-bordered select-sm" onchange="render()"><option value="">Todas</option></select></label>
-            <label class="form-control"><span class="label-text text-xs font-bold">Prazo</span><select id="filterPrazo" class="select select-bordered select-sm" onchange="render()"><option value="">Todos</option><option value="verde">Verde até 10 dias</option><option value="amarelo">Amarelo 11 a 15 dias</option><option value="vermelho">Vermelho 16+ dias</option></select></label>
-          </div>
-        </div>
-        <div id="supportCounters" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
-      </div>
-    </section>
-
-    <section id="panelTabela" class="glass rounded-3xl shadow-soft overflow-hidden">
-      <div class="panel-head">
-        <div>
-          <h2 id="tableTitle" class="font-black text-lg">Tabela da aba selecionada</h2>
-          <p id="visibleInfo" class="text-xs text-slate-500">Exibindo 0 loja(s).</p>
-        </div>
-        <div class="flex gap-2 text-xs items-center flex-wrap justify-end">
-          <span class="badge badge-success text-white">≤ 10 dias</span>
-          <span class="badge badge-warning">11 a 15 dias</span>
-          <span class="badge badge-error text-white">16+ dias</span>
-          <button class="btn btn-sm btn-ghost-dark panel-toggle" onclick="togglePanel('panelTabela', this)">Minimizar</button>
-        </div>
-      </div>
-      <div class="panel-body p-0">
-        <div class="overflow-auto max-h-[66vh]">
-        <table class="table table-compact w-full min-w-[1120px]">
-          <thead class="sticky-head">
-            <tr>
-              <th><button onclick="setSort('mcid')" class="font-black">MCID <span id="sort-mcid">↕</span></button></th>
-              <th><button onclick="setSort('seller')" class="font-black">Seller <span id="sort-seller">↕</span></button></th>
-              <th><button onclick="setSort('mes_categoria')" class="font-black">Mês detectado <span id="sort-mes_categoria">↕</span></button></th>
-              <th><button onclick="setSort('data_formulario')" class="font-black">Preenchimento do formulário <span id="sort-data_formulario">↕</span></button></th>
-              <th><button onclick="setSort('suporte_nome')" class="font-black">Suporte responsável <span id="sort-suporte_nome">↕</span></button></th>
-              <th><button onclick="setSort('situacao')" class="font-black">Situação <span id="sort-situacao">↕</span></button></th>
-              <th><button onclick="setSort('dia_conclusao')" class="font-black">Dia de conclusão <span id="sort-dia_conclusao">↕</span></button></th>
-              <th><button onclick="setSort('dias')" class="font-black">Dias do formulário <span id="sort-dias">↕</span></button></th>
-              <th class="text-right">Ações</th>
-            </tr>
-          </thead>
-          <tbody id="lojasBody"></tbody>
-        </table>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <dialog id="lojaModal" class="modal">
-    <div class="modal-box max-w-3xl rounded-3xl">
-      <h3 id="lojaModalTitle" class="font-black text-2xl mb-4">Nova loja pronta</h3>
-      <form id="lojaForm" class="grid grid-cols-1 md:grid-cols-2 gap-3" onsubmit="saveLoja(event)">
-        <input type="hidden" id="lojaId" />
-        <label class="form-control"><span class="label-text font-bold">MCID</span><input id="mcid" class="input input-bordered" placeholder="Ex: A123..." /></label>
-        <label class="form-control"><span class="label-text font-bold">Seller</span><input id="seller" class="input input-bordered" required placeholder="Nome do seller" /></label>
-        <label class="form-control"><span class="label-text font-bold">Status do formulário</span><select id="formStatus" class="select select-bordered" onchange="toggleFormulario()"><option value="preenchido">Formulário preenchido</option><option value="nao_preenchido">Formulário ainda não preenchido</option></select></label>
-        <label class="form-control"><span class="label-text font-bold">Preenchimento de formulário</span><input id="dataFormulario" type="date" class="input input-bordered" /></label>
-        <label class="form-control"><span class="label-text font-bold">Suporte responsável</span><select id="suporteSelect" class="select select-bordered" required></select></label>
-        <label class="form-control"><span class="label-text font-bold">Situação</span><select id="situacao" class="select select-bordered" onchange="toggleConclusao()"></select></label>
-        <label class="form-control"><span class="label-text font-bold">Dia de conclusão</span><input id="diaConclusao" type="date" class="input input-bordered" /></label>
-        <label class="form-control md:col-span-2"><span class="label-text font-bold">Mês da loja / aba</span><select id="mesSelect" class="select select-bordered"></select></label>
-        <div class="md:col-span-2 flex justify-end gap-2 mt-2">
-          <button type="button" class="btn" onclick="lojaModal.close()">Cancelar</button>
-          <button class="btn bg-orange-500 hover:bg-orange-600 border-0 text-white">Salvar loja</button>
-        </div>
-      </form>
+<body>
+  <div class="topbar">
+    <div>
+      <h1>Painel Loja Pronta</h1>
+      <div class="subtitle">Visualização geral por mês, suporte e situação</div>
     </div>
-    <form method="dialog" class="modal-backdrop"><button>fechar</button></form>
-  </dialog>
 
-  <dialog id="mesModal" class="modal">
-    <div class="modal-box rounded-3xl">
-      <h3 class="font-black text-2xl mb-4">Criar nova aba/mês</h3>
-      <form onsubmit="saveMes(event)" class="space-y-3">
-        <label class="form-control"><span class="label-text font-bold">Nome da aba</span><input id="novoMesNome" class="input input-bordered" placeholder="Ex: Março, Abril, Maio..." required /></label>
-        <div class="flex justify-end gap-2"><button type="button" class="btn" onclick="mesModal.close()">Cancelar</button><button class="btn btn-neutral">Criar aba</button></div>
-      </form>
+    <div class="filters">
+      <select id="monthFilter">
+        <option value="">Todos os meses</option>
+      </select>
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Buscar loja, suporte ou status..."
+      />
     </div>
-    <form method="dialog" class="modal-backdrop"><button>fechar</button></form>
-  </dialog>
+  </div>
 
-  <div id="toastBox" class="toast toast-top toast-end z-50"></div>
+  <div id="errorBox" class="error"></div>
+
+  <section class="summary">
+    <div class="summary-card">
+      <h3>Total de lojas</h3>
+      <strong id="totalStores">0</strong>
+    </div>
+
+    <div class="summary-card">
+      <h3>Total de suportes</h3>
+      <strong id="totalSupports">0</strong>
+    </div>
+
+    <div class="summary-card">
+      <h3>Total de situações</h3>
+      <strong id="totalStatuses">0</strong>
+    </div>
+  </section>
+
+  <section id="supportCards" class="support-grid"></section>
+
+  <section class="table-wrapper">
+    <div class="table-header">
+      <h2>Lojas</h2>
+      <span id="tableCount">0 registros</span>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Loja</th>
+            <th>MCID</th>
+            <th>E-mail</th>
+            <th>Telefone</th>
+            <th>Suporte</th>
+            <th>Situação</th>
+            <th>Mês</th>
+            <th>Data de criação</th>
+          </tr>
+        </thead>
+
+        <tbody id="storesTable">
+          <tr>
+            <td colspan="8" class="empty loading">Carregando dados...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
   <script>
-    const SUPABASE_URL = 'https://owgvzmeewzpmzgcdwbfq.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr';
-    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_URL = "COLE_AQUI_SUA_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "COLE_AQUI_SUA_SUPABASE_ANON_KEY";
 
-    /*
-      NOVA BASE DE DADOS:
-      - Lê: sp_columns, sp_projects, sp_reminders, sp_tasks
-      - Exibe na tabela: MCID, Seller, Suporte responsável e Situação real do fluxo
-      - Salva/edita no Supabase usando sp_projects como tabela principal.
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      Se no seu Supabase o registro principal estiver em sp_tasks, altere:
-      CONFIG.saveTable = 'sp_tasks'
-      CONFIG.primaryDisplayTable = 'auto'
-    */
-    const CONFIG = {
-      primaryDisplayTable: 'auto',
-      saveTable: 'sp_tasks',
-      tables: {
-        columns: 'sp_columns',
-        projects: 'sp_projects',
-        reminders: 'sp_reminders',
-        tasks: 'sp_tasks',
-        suportes: 'suportes_sellerpro'
-      },
-      fieldNames: {
-        id: ['id', 'uuid'],
-        mcid: ['mcid', 'MCID', 'm_cid', 'codigo_mcid', 'merchant_customer_id'],
-        // Evita usar title/titulo/name/nome como Seller, porque nessas tabelas eles podem ser mês, coluna ou etapa.
-        seller: ['seller', 'Seller', 'seller_nome', 'nome_seller', 'seller_name', 'cliente', 'client', 'nome_cliente', 'razao_social', 'razão_social', 'empresa', 'nome_empresa', 'loja_nome', 'nome_loja', 'store_name', 'card_seller', 'seller_display'],
-        suporte: ['suporte', 'suporte_nome', 'suporte_responsavel', 'suporte_responsável', 'responsavel', 'responsável', 'responsible', 'responsible_name', 'assignee', 'assignee_name', 'assigned_to', 'support', 'support_name', 'owner', 'owner_name'],
-        situacao: ['situacao', 'situação', 'status', 'stage', 'etapa', 'column_name'],
-        dataFormulario: ['data_formulario', 'preenchimento_formulario', 'preenchimento_de_formulario', 'data_preenchimento_formulario', 'form_date', 'formulario_preenchido_em', 'preenchido_em'],
-        diaConclusao: ['dia_conclusao', 'data_conclusao', 'completed_at', 'concluido_em', 'finished_at'],
-        mes: ['mes_categoria', 'mes', 'mês', 'categoria', 'aba', 'month', 'month_name', 'nome_mes', 'mes_nome', 'project_name', 'board_name', 'workspace_name']
-      },
-      suporteFields: {
-        id: ['id', 'uuid', 'user_id', 'usuario_id', 'suporte_id', 'profile_id'],
-        nome: ['nome', 'name', 'full_name', 'display_name', 'suporte', 'responsavel', 'responsável', 'consultor'],
-        email: ['email', 'mail', 'user_email'],
-        cor: ['cor', 'color', 'hex', 'color_hex']
-      }
-    };
+    let allRows = [];
+    let allStatuses = [];
+    let allSupports = [];
+    let allProjects = [];
 
-    const DEFAULT_SUPPORTS = [];
-    const SUPPORT_COLORS = ['#f97316','#0f172a','#2563eb','#16a34a','#9333ea','#db2777','#0891b2','#ca8a04','#ef4444','#64748b'];
+    const monthFilter = document.getElementById("monthFilter");
+    const searchInput = document.getElementById("searchInput");
+    const storesTable = document.getElementById("storesTable");
+    const supportCards = document.getElementById("supportCards");
+    const totalStores = document.getElementById("totalStores");
+    const totalSupports = document.getElementById("totalSupports");
+    const totalStatuses = document.getElementById("totalStatuses");
+    const tableCount = document.getElementById("tableCount");
+    const errorBox = document.getElementById("errorBox");
 
-    const SITUACOES = [
-      'Aguardando CNPJ',
-      'Call de briefing',
-      'Call de onboarding',
-      'Cancelados',
-      'Chamadas especiais',
-      'Configuração do faturador',
-      'Congelados',
-      'Criação de conta',
-      'Criação de grupo',
-      'Criação de anúncio',
-      'Envio ao FBA',
-      'Loja entregue',
-      'Preenchimento de formulário',
-      'Venda finalizada'
-    ];
-
-    const MESES_NOMES = [
-      'JANEIRO','FEVEREIRO','MARCO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'
-    ];
-
-
-    const MESES_PT = [
-      'Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
-    ];
-
-    const MESES_MAP = [
-      { keys: ['JANEIRO'], label: 'Janeiro', index: 1 },
-      { keys: ['FEVEREIRO'], label: 'Fevereiro', index: 2 },
-      { keys: ['MARCO','MARÇO'], label: 'Março', index: 3 },
-      { keys: ['ABRIL'], label: 'Abril', index: 4 },
-      { keys: ['MAIO'], label: 'Maio', index: 5 },
-      { keys: ['JUNHO'], label: 'Junho', index: 6 },
-      { keys: ['JULHO'], label: 'Julho', index: 7 },
-      { keys: ['AGOSTO'], label: 'Agosto', index: 8 },
-      { keys: ['SETEMBRO'], label: 'Setembro', index: 9 },
-      { keys: ['OUTUBRO'], label: 'Outubro', index: 10 },
-      { keys: ['NOVEMBRO'], label: 'Novembro', index: 11 },
-      { keys: ['DEZEMBRO'], label: 'Dezembro', index: 12 }
-    ];
-
-    let lojas = [], todasLojas = [], suportes = [], meses = [], activeMes = 'Geral', totalBanco = 0;
-    let spData = { columns: [], projects: [], reminders: [], tasks: [], suportes: [] };
-    let sortState = { key: 'seller', dir: 'asc' };
-
-    const $ = (id) => document.getElementById(id);
-    const normalize = (v) => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ').toUpperCase();
-    const todayISO = () => new Date().toISOString().slice(0,10);
-    const parseDate = (v) => {
-      if (!v) return null;
-      const s = String(v).slice(0,10);
-      return /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s + 'T00:00:00') : null;
-    };
-    const formatDate = (v) => parseDate(v) ? parseDate(v).toLocaleDateString('pt-BR') : '-';
-    const uid = () => crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
-
-    function normalizeSituacao(v) {
-      const n = normalize(v);
-      if (!n) return 'Preenchimento de formulário';
-
-      const match = SITUACOES.find(s => normalize(s) === n);
-      if (match) return match;
-
-      const aliases = {
-        'AGUARDANDO': 'Aguardando CNPJ',
-        'AGUARDANDO CNPJ': 'Aguardando CNPJ',
-        'CALL BRIEFING': 'Call de briefing',
-        'BRIEFING': 'Call de briefing',
-        'CALL DE BRIEFING': 'Call de briefing',
-        'ONBOARDING': 'Call de onboarding',
-        'CALL ONBOARDING': 'Call de onboarding',
-        'CALL DE ONBOARDING': 'Call de onboarding',
-        'CANCELADO': 'Cancelados',
-        'CANCELADA': 'Cancelados',
-        'CANCELADOS': 'Cancelados',
-        'CANCELADAS': 'Cancelados',
-        'CONGELADO': 'Congelados',
-        'CONGELADA': 'Congelados',
-        'CONGELADOS': 'Congelados',
-        'CHAMADO ESPECIAL': 'Chamadas especiais',
-        'CHAMADOS ESPECIAIS': 'Chamadas especiais',
-        'CHAMADAS ESPECIAIS': 'Chamadas especiais',
-        'FATURADOR': 'Configuração do faturador',
-        'CONFIGURACAO DE FATURADOR': 'Configuração do faturador',
-        'CONFIGURACAO DO FATURADOR': 'Configuração do faturador',
-        'CONFIGURAÇÃO DE FATURADOR': 'Configuração do faturador',
-        'CONFIGURAÇÃO DO FATURADOR': 'Configuração do faturador',
-        'GRUPO': 'Criação de grupo',
-        'CRIACAO DE GRUPO': 'Criação de grupo',
-        'CRIAÇÃO DE GRUPO': 'Criação de grupo',
-        'CONTA': 'Criação de conta',
-        'CRIACAO DE CONTA': 'Criação de conta',
-        'CRIAÇÃO DE CONTA': 'Criação de conta',
-        'ANUNCIO': 'Criação de anúncio',
-        'ANÚNCIO': 'Criação de anúncio',
-        'CRIACAO DE ANUNCIO': 'Criação de anúncio',
-        'CRIACAO DE ANÚNCIO': 'Criação de anúncio',
-        'CRIAÇÃO DE ANUNCIO': 'Criação de anúncio',
-        'CRIAÇÃO DE ANÚNCIO': 'Criação de anúncio',
-        'FBA': 'Envio ao FBA',
-        'ENVIO FBA': 'Envio ao FBA',
-        'ENVIO AO FBA': 'Envio ao FBA',
-        'CONCLUIDO': 'Loja entregue',
-        'CONCLUIDA': 'Loja entregue',
-        'LOJA ENTREGUE': 'Loja entregue',
-        'ENTREGUE': 'Loja entregue',
-        'PENDENTE': 'Preenchimento de formulário',
-        'FORMULARIO': 'Preenchimento de formulário',
-        'FORMULÁRIO': 'Preenchimento de formulário',
-        'PREENCHIMENTO DE FORMULARIO': 'Preenchimento de formulário',
-        'PREENCHIMENTO DE FORMULÁRIO': 'Preenchimento de formulário',
-        'VENDA FINALIZADA': 'Venda finalizada',
-        'FINALIZADO': 'Venda finalizada',
-        'FINALIZADA': 'Venda finalizada'
-      };
-      if (aliases[n]) return aliases[n];
-
-      return String(v || '').trim();
+    function showError(message) {
+      errorBox.style.display = "block";
+      errorBox.textContent = message;
     }
 
-    function isSituacaoFinalizada(v) {
-      const n = normalize(normalizeSituacao(v));
-      return n === 'LOJA ENTREGUE' || n === 'VENDA FINALIZADA' || n === 'CANCELADOS';
+    function clearError() {
+      errorBox.style.display = "none";
+      errorBox.textContent = "";
     }
 
-    function isCongelado(v) {
-      return normalize(normalizeSituacao(v)) === 'CONGELADOS';
+    function safe(value) {
+      return value ?? "-";
     }
 
-    function toast(msg, type='info') {
-      const color = type === 'error' ? 'alert-error' : type === 'success' ? 'alert-success' : type === 'warning' ? 'alert-warning' : 'alert-info';
-      const el = document.createElement('div');
-      el.className = `alert ${color} text-white shadow-lg max-w-sm`;
-      el.innerHTML = `<span>${escapeHtml(msg)}</span>`;
-      $('toastBox').appendChild(el);
-      setTimeout(() => el.remove(), 4500);
+    function normalizeText(value) {
+      return String(value ?? "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
     }
 
-    function showLoading(show) { $('loadingBar').classList.toggle('hidden', !show); }
+    function getStatusName(task) {
+      const statusId = task.status ?? task.Status ?? task.column_id ?? task.columnId;
 
-    async function fetchAllRows(table, select='*', orderCol=null) {
-      const pageSize = 1000;
-      let from = 0, all = [], count = 0;
-      while (true) {
-        let q = client.from(table).select(select, { count: from === 0 ? 'exact' : undefined }).range(from, from + pageSize - 1);
-        if (orderCol) q = q.order(orderCol, { ascending: true });
-        const { data, error, count: exact } = await q;
-        if (error) throw new Error(`${table}: ${error.message}`);
-        if (from === 0 && typeof exact === 'number') count = exact;
-        all.push(...(data || []));
-        if (!data || data.length < pageSize) break;
-        from += pageSize;
-      }
-      return { rows: all, count: count || all.length };
+      const found = allStatuses.find((item) => {
+        return String(item.id) === String(statusId);
+      });
+
+      return (
+        found?.name ||
+        found?.title ||
+        found?.situacao ||
+        task.status ||
+        task.Status ||
+        "-"
+      );
     }
 
-    function tryJson(v) {
-      if (!v || typeof v !== 'string') return v;
-      try { return JSON.parse(v); } catch { return v; }
+    function getProjectName(task) {
+      const projectId = task.project_id ?? task.projectId;
+
+      const found = allProjects.find((item) => {
+        return String(item.id) === String(projectId);
+      });
+
+      return (
+        found?.name ||
+        found?.title ||
+        found?.month ||
+        found?.mes ||
+        found?.mês ||
+        "-"
+      );
     }
 
-    function flatObject(obj, prefix='') {
-      const out = {};
-      if (!obj || typeof obj !== 'object') return out;
-      for (const [k, raw] of Object.entries(obj)) {
-        const v = tryJson(raw);
-        const key = prefix ? `${prefix}.${k}` : k;
-        if (v && typeof v === 'object' && !Array.isArray(v) && !(v instanceof Date)) {
-          Object.assign(out, flatObject(v, key));
-        } else {
-          out[key] = v;
-          out[k] = v;
-        }
-      }
-      return out;
-    }
+    function getSupportName(task) {
+      const owner = task.owner ?? task.suporte ?? task.support_id ?? task.owner_id;
 
-    function pick(obj, keys, fallback='') {
-      const flat = flatObject(obj);
-      for (const key of keys) {
-        if (flat[key] !== undefined && flat[key] !== null && String(flat[key]).trim() !== '') return flat[key];
-      }
-      const wanted = keys.map(normalize);
-      for (const [k, v] of Object.entries(flat)) {
-        const nk = normalize(k.split('.').pop());
-        if (wanted.includes(nk) && v !== undefined && v !== null && String(v).trim() !== '') return v;
-      }
-      return fallback;
-    }
-
-
-    function isBadSellerValue(v) {
-      const n = normalize(v);
-      if (!n) return true;
-      if (MESES_NOMES.includes(n)) return true;
-      if (SITUACOES.some(s => normalize(s) === n)) return true;
-      if (['GERAL','BACKLOG','TODO','TO DO','DONE','KANBAN','PROJETO','PROJECT','TASK','TAREFA'].includes(n)) return true;
-      if ((spData.columns || []).some(c => normalize(getColumnName(c)) === n)) return true;
-      if ((spData.projects || []).some(p => normalize(p.mes || p.month || p.categoria || p.aba || p.project_name || p.board_name) === n)) return true;
-      return false;
-    }
-
-    function findByKeyTokens(obj, includeTokens, excludeTokens=[]) {
-      const flat = flatObject(obj);
-      for (const [k, v] of Object.entries(flat)) {
-        const key = normalize(k.split('.').pop());
-        const fullKey = normalize(k);
-        const val = v !== undefined && v !== null ? String(v).trim() : '';
-        if (!val) continue;
-        const hasInclude = includeTokens.some(t => key.includes(normalize(t)) || fullKey.includes(normalize(t)));
-        const hasExclude = excludeTokens.some(t => key.includes(normalize(t)) || fullKey.includes(normalize(t)));
-        if (hasInclude && !hasExclude) return val;
-      }
-      return '';
-    }
-
-    function extractSeller(obj, sourceTable='') {
-      let seller = pick(obj, CONFIG.fieldNames.seller, '');
-
-      if (!seller || isBadSellerValue(seller)) {
-        seller = findByKeyTokens(
-          obj,
-          ['seller', 'cliente', 'client', 'empresa', 'razao', 'razão', 'loja', 'store'],
-          ['mes', 'mês', 'month', 'categoria', 'aba', 'column', 'coluna', 'status', 'situacao', 'situação', 'etapa', 'stage']
+      const found = allSupports.find((item) => {
+        return (
+          String(item.id) === String(owner) ||
+          String(item.nome) === String(owner) ||
+          String(item.name) === String(owner)
         );
+      });
+
+      return (
+        found?.nome ||
+        found?.name ||
+        found?.suporte ||
+        task.owner ||
+        task.suporte ||
+        "-"
+      );
+    }
+
+    function getStoreName(task) {
+      return (
+        task.nome_loja ||
+        task.loja ||
+        task.store_name ||
+        task.title ||
+        task.name ||
+        task.seller ||
+        task.nome ||
+        "-"
+      );
+    }
+
+    function getMCID(task) {
+      return task.mcid || task.MCID || task.id_mcid || "-";
+    }
+
+    function getEmail(task) {
+      return task.email || task.e_mail || task.mail || "-";
+    }
+
+    function getPhone(task) {
+      return task.telefone || task.phone || task.whatsapp || "-";
+    }
+
+    function getCreatedAt(task) {
+      const dateValue =
+        task.created_at ||
+        task.data_criacao ||
+        task.createdAt ||
+        task.inserted_at;
+
+      if (!dateValue) return "-";
+
+      const date = new Date(dateValue);
+
+      if (isNaN(date.getTime())) return dateValue;
+
+      return date.toLocaleDateString("pt-BR");
+    }
+
+    function buildRows(tasks) {
+      return tasks.map((task) => ({
+        raw: task,
+        id: task.id,
+        loja: getStoreName(task),
+        mcid: getMCID(task),
+        email: getEmail(task),
+        telefone: getPhone(task),
+        suporte: getSupportName(task),
+        situacao: getStatusName(task),
+        mes: getProjectName(task),
+        created_at: getCreatedAt(task),
+      }));
+    }
+
+    function populateMonthFilter(rows) {
+      const selectedValue = monthFilter.value;
+
+      const months = [...new Set(rows.map((row) => row.mes).filter(Boolean))]
+        .filter((item) => item !== "-")
+        .sort();
+
+      monthFilter.innerHTML = `<option value="">Todos os meses</option>`;
+
+      months.forEach((month) => {
+        const option = document.createElement("option");
+        option.value = month;
+        option.textContent = month;
+        monthFilter.appendChild(option);
+      });
+
+      monthFilter.value = selectedValue;
+    }
+
+    function getFilteredRows() {
+      const selectedMonth = monthFilter.value;
+      const searchTerm = normalizeText(searchInput.value);
+
+      return allRows.filter((row) => {
+        const matchMonth = !selectedMonth || row.mes === selectedMonth;
+
+        const searchable = normalizeText(`
+          ${row.loja}
+          ${row.mcid}
+          ${row.email}
+          ${row.telefone}
+          ${row.suporte}
+          ${row.situacao}
+          ${row.mes}
+        `);
+
+        const matchSearch = !searchTerm || searchable.includes(searchTerm);
+
+        return matchMonth && matchSearch;
+      });
+    }
+
+    function renderSummary(rows) {
+      totalStores.textContent = rows.length;
+
+      const supports = new Set(rows.map((row) => row.suporte).filter((item) => item !== "-"));
+      const statuses = new Set(rows.map((row) => row.situacao).filter((item) => item !== "-"));
+
+      totalSupports.textContent = supports.size;
+      totalStatuses.textContent = statuses.size;
+    }
+
+    function renderSupportCards(rows) {
+      supportCards.innerHTML = "";
+
+      if (!rows.length) {
+        supportCards.innerHTML = `
+          <div class="support-card">
+            <div class="empty">Nenhum dado encontrado.</div>
+          </div>
+        `;
+        return;
       }
 
-      // No Ares, a loja normalmente é o card/tarefa. Então em sp_tasks o título pode ser o seller.
-      // Em sp_projects o título costuma ser mês/projeto, por isso NÃO usamos title/name como fallback lá.
-      if ((!seller || isBadSellerValue(seller)) && ['sp_tasks', 'sp_reminders'].includes(sourceTable)) {
-        seller = pick(obj, ['task_title', 'card_title', 'title', 'titulo', 'name', 'nome', 'summary', 'descricao', 'description'], '');
-      }
+      const grouped = {};
 
-      return isBadSellerValue(seller) ? '' : String(seller || '').trim();
-    }
-
-    function normalizeSuporteRow(row, i) {
-      const id = String(pick(row, CONFIG.suporteFields.id, '') || '').trim();
-      const nome = String(pick(row, CONFIG.suporteFields.nome, '') || '').trim();
-      const email = String(pick(row, CONFIG.suporteFields.email, '') || '').trim();
-      const cor = String(pick(row, CONFIG.suporteFields.cor, '') || SUPPORT_COLORS[i % SUPPORT_COLORS.length]).trim();
-
-      const fallbackNome = nome || email || id;
-      if (!fallbackNome) return null;
-
-      return {
-        id: id || email || fallbackNome,
-        nome: fallbackNome,
-        email,
-        cor,
-        raw: row,
-        aliases: [id, nome, email, row?.nome, row?.name, row?.suporte, row?.responsavel, row?.responsável]
-          .filter(Boolean)
-          .map(normalize)
-      };
-    }
-
-    function loadSuportesFromSellerPro() {
-      suportes = (spData.suportes || [])
-        .map((row, i) => normalizeSuporteRow(row, i))
-        .filter(Boolean);
-    }
-
-    function matchSuporte(value) {
-      if (!value) return null;
-      const parsed = tryJson(value);
-      let raw = value;
-
-      if (parsed && typeof parsed === 'object') {
-        raw = pick(parsed, [
-          ...CONFIG.suporteFields.id,
-          ...CONFIG.suporteFields.nome,
-          ...CONFIG.suporteFields.email
-        ], '');
-      }
-
-      const n = normalize(raw);
-      if (!n) return null;
-
-      return suportes.find(s =>
-        s.aliases.includes(n) ||
-        normalize(s.id) === n ||
-        normalize(s.nome) === n ||
-        normalize(s.email) === n
-      ) || suportes.find(s =>
-        (s.email && n.includes(normalize(s.email))) ||
-        (s.nome && n.includes(normalize(s.nome)))
-      ) || null;
-    }
-
-    function getSuporteDisplay(value) {
-      const match = matchSuporte(value);
-      if (match) return match.nome;
-
-      const parsed = tryJson(value);
-      if (parsed && typeof parsed === 'object') {
-        const possible = pick(parsed, ['nome', 'name', 'full_name', 'display_name', 'suporte', 'responsavel', 'responsável', 'email'], '');
-        return String(possible || '').trim();
-      }
-
-      return String(value || '').trim();
-    }
-
-    function extractSuporte(obj) {
-      let suporte = pick(obj, CONFIG.fieldNames.suporte, '');
-      if (!suporte) {
-        suporte = findByKeyTokens(obj, ['suporte', 'responsavel', 'responsável', 'assignee', 'assigned', 'owner', 'support'], []);
-      }
-      return getSuporteDisplay(suporte);
-    }
-
-    function monthLabelFromText(value) {
-      if (value === undefined || value === null) return '';
-      const raw = String(value).trim();
-      if (!raw) return '';
-
-      const n = normalize(raw);
-      if (!n || SITUACOES.some(s => normalize(s) === n)) return '';
-
-      for (const mes of MESES_MAP) {
-        if (mes.keys.some(k => n.includes(k))) {
-          const yearMatch = n.match(/\b(20\d{2}|19\d{2})\b/);
-          return yearMatch ? `${mes.label}/${yearMatch[1]}` : mes.label;
+      rows.forEach((row) => {
+        if (!grouped[row.suporte]) {
+          grouped[row.suporte] = {
+            total: 0,
+            statuses: {},
+          };
         }
-      }
 
-      const numeric = n.match(/(?:^|\D)(0?[1-9]|1[0-2])(?:[\/\-])(20\d{2}|19\d{2})(?:\D|$)/);
-      if (numeric) {
-        const monthIndex = Number(numeric[1]);
-        return `${MESES_PT[monthIndex - 1]}/${numeric[2]}`;
-      }
+        grouped[row.suporte].total += 1;
 
-      return '';
-    }
+        if (!grouped[row.suporte].statuses[row.situacao]) {
+          grouped[row.suporte].statuses[row.situacao] = 0;
+        }
 
-    function mesSortValue(nome) {
-      const n = normalize(nome);
-      if (!n || n === 'GERAL' || n === 'SEM MES') return 999999;
-      const yearMatch = n.match(/\b(20\d{2}|19\d{2})\b/);
-      const year = yearMatch ? Number(yearMatch[1]) : 9999;
-      const mes = MESES_MAP.find(m => m.keys.some(k => n.includes(k)));
-      const month = mes ? mes.index : 99;
-      return year * 100 + month;
-    }
-
-    function getProjectName(project) {
-      if (!project) return '';
-      return pick(project, ['mes_categoria','mes','mês','categoria','aba','month','month_name','nome_mes','mes_nome','project_name','board_name','workspace_name','title','titulo','name','nome'], '');
-    }
-
-    function extractMesFromSources(row, project=null, column=null, sourceTable='') {
-      const orderedCandidates = [];
-
-      // 1) Primeiro tenta o projeto/board, porque no Kanban o mês costuma estar nele.
-      orderedCandidates.push(getProjectName(project));
-
-      // 2) Depois tenta campos explícitos da própria loja/card.
-      orderedCandidates.push(pick(row, CONFIG.fieldNames.mes, ''));
-
-      // 3) Depois tenta textos comuns em objetos aninhados.
-      const flatProject = flatObject(project || {});
-      const flatRow = flatObject(row || {});
-      for (const [key, value] of Object.entries(flatProject)) {
-        const nk = normalize(key);
-        if (nk.includes('MES') || nk.includes('MONTH') || nk.includes('CATEGORIA') || nk.includes('ABA') || nk.includes('PROJECT') || nk.includes('BOARD')) orderedCandidates.push(value);
-      }
-      for (const [key, value] of Object.entries(flatRow)) {
-        const nk = normalize(key);
-        if (nk.includes('MES') || nk.includes('MONTH') || nk.includes('CATEGORIA') || nk.includes('ABA') || nk.includes('PROJECT') || nk.includes('BOARD')) orderedCandidates.push(value);
-      }
-
-      // 4) Por último, faz uma varredura geral procurando nome de mês em qualquer campo textual.
-      for (const value of Object.values(flatRow)) orderedCandidates.push(value);
-      for (const value of Object.values(flatProject)) orderedCandidates.push(value);
-
-      for (const candidate of orderedCandidates) {
-        const label = monthLabelFromText(candidate);
-        if (label) return label;
-      }
-
-      // Fallback apenas para evitar perder registro sem texto de mês.
-      // O mês principal continua vindo dos campos da própria loja/projeto.
-      const dateCandidate = pick(row, [...CONFIG.fieldNames.dataFormulario, ...CONFIG.fieldNames.diaConclusao], '');
-      const dt = parseDate(dateCandidate);
-      if (dt) return MESES_PT[dt.getMonth()] + '/' + dt.getFullYear();
-
-      return 'Sem mês';
-    }
-
-    function extractMes(obj) {
-      const mes = pick(obj, CONFIG.fieldNames.mes, '');
-      return monthLabelFromText(mes) || 'Sem mês';
-    }
-
-    function findProjectFor(row) {
-      const projectId = row.project_id || row.sp_project_id || row.project || row.board_id || row.board || row.workspace_id;
-      if (!projectId) return null;
-      return spData.projects.find(p => String(p.id) === String(projectId) || String(p.project_id) === String(projectId)) || null;
-    }
-
-    function findColumnFor(row, project=null) {
-      const columnId = row.column_id || row.sp_column_id || row.status_id || row.stage_id || row.list_id || row.column || row.coluna_id || project?.column_id || project?.sp_column_id;
-      if (!columnId) return null;
-      return spData.columns.find(c => String(c.id) === String(columnId) || String(c.column_id) === String(columnId)) || null;
-    }
-
-    function getColumnName(col) {
-      return col ? (col.name || col.nome || col.title || col.titulo || col.status || col.situacao || '') : '';
-    }
-
-    function buildLoja(row, sourceTable) {
-      const project = ['sp_tasks', 'sp_reminders'].includes(sourceTable) ? findProjectFor(row) : row;
-      const column = findColumnFor(row, project);
-      const merged = {
-        ...(project || {}),
-        ...row,
-        column_name: getColumnName(column)
-      };
-
-      const id = pick(merged, CONFIG.fieldNames.id, row.id || uid());
-      const mcid = pick(merged, CONFIG.fieldNames.mcid, '');
-      const seller = extractSeller(merged, sourceTable);
-      const suporte = extractSuporte(merged);
-      // Em Kanban, a etapa mais confiável costuma ser a coluna atual em sp_columns.
-      const situacaoBase = getColumnName(column) || pick(merged, CONFIG.fieldNames.situacao, '');
-      const dataFormulario = pick(merged, CONFIG.fieldNames.dataFormulario, '');
-      const diaConclusao = pick(merged, CONFIG.fieldNames.diaConclusao, '');
-      const mes = extractMesFromSources(row, project, column, sourceTable);
-
-      return {
-        ...merged,
-        id,
-        _sourceTable: sourceTable,
-        _rawId: row.id || id,
-        mcid: String(mcid || '').trim(),
-        seller: String(seller || '').trim(),
-        data_formulario: dataFormulario ? String(dataFormulario).slice(0,10) : '',
-        suporte_nome: String(suporte || '').trim(),
-        situacao: normalizeSituacao(situacaoBase),
-        dia_conclusao: diaConclusao ? String(diaConclusao).slice(0,10) : '',
-        mes_categoria: String(mes || 'Geral').trim()
-      };
-    }
-
-    function rowHasUsefulData(l) {
-      // Não considerar a situação padrão como dado útil, senão projetos/mês viram loja.
-      return !!(l.mcid || l.seller || l.suporte_nome);
-    }
-
-    async function loadSpData() {
-      const [columns, projects, reminders, tasks, suportesResp] = await Promise.all([
-        fetchAllRows(CONFIG.tables.columns).catch(err => ({ rows: [], count: 0, error: err })),
-        fetchAllRows(CONFIG.tables.projects).catch(err => ({ rows: [], count: 0, error: err })),
-        fetchAllRows(CONFIG.tables.reminders).catch(err => ({ rows: [], count: 0, error: err })),
-        fetchAllRows(CONFIG.tables.tasks).catch(err => ({ rows: [], count: 0, error: err })),
-        fetchAllRows(CONFIG.tables.suportes).catch(err => ({ rows: [], count: 0, error: err }))
-      ]);
-
-      spData = {
-        columns: columns.rows || [],
-        projects: projects.rows || [],
-        reminders: reminders.rows || [],
-        tasks: tasks.rows || [],
-        suportes: suportesResp.rows || []
-      };
-
-      loadSuportesFromSellerPro();
-
-      const errors = [columns, projects, reminders, tasks, suportesResp].filter(x => x.error).map(x => x.error.message);
-      if (errors.length) toast('Algumas tabelas não carregaram: ' + errors.join(' | '), 'warning');
-    }
-
-    async function loadLojas() {
-      await loadSpData();
-
-      const taskRows = spData.tasks.map(r => buildLoja(r, 'sp_tasks')).filter(rowHasUsefulData);
-      const reminderRows = spData.reminders.map(r => buildLoja(r, 'sp_reminders')).filter(rowHasUsefulData);
-      const projectRows = spData.projects.map(r => buildLoja(r, 'sp_projects')).filter(rowHasUsefulData);
-
-      if (CONFIG.primaryDisplayTable === 'sp_projects') todasLojas = projectRows.length ? projectRows : taskRows;
-      else if (CONFIG.primaryDisplayTable === 'sp_reminders') todasLojas = reminderRows.length ? reminderRows : taskRows;
-      else if (CONFIG.primaryDisplayTable === 'sp_tasks') todasLojas = taskRows.length ? taskRows : projectRows;
-      else todasLojas = taskRows.length ? taskRows : (reminderRows.length ? reminderRows : projectRows);
-
-      totalBanco = todasLojas.length;
-
-      const supportNames = [...new Set(todasLojas.map(l => l.suporte_nome || 'Sem suporte').filter(Boolean))];
-      const extras = supportNames
-        .filter(nome => !suportes.some(s => normalize(s.nome) === normalize(nome) || normalize(s.id) === normalize(nome) || normalize(s.email) === normalize(nome)))
-        .map((nome, i) => ({ id: nome, nome, email: '', cor: SUPPORT_COLORS[(suportes.length + i) % SUPPORT_COLORS.length], aliases: [normalize(nome)], origem: 'lojas' }));
-      suportes = [...suportes, ...extras];
-
-      const mesNames = [...new Set(todasLojas.map(l => l.mes_categoria || 'Sem mês').filter(Boolean))]
-        .sort((a,b) => mesSortValue(a) - mesSortValue(b) || String(a).localeCompare(String(b), 'pt-BR'));
-
-      meses = (mesNames.length ? mesNames : ['Sem mês']).map((nome, i) => ({ id: normalize(nome), nome, ordem: i }));
-      if (!meses.some(m => normalize(m.nome) === normalize(activeMes))) activeMes = meses[0]?.nome || 'Sem mês';
-
-      lojas = todasLojas.filter(l => normalize(l.mes_categoria || 'Sem mês') === normalize(activeMes));
-
-      console.log('[Ares/Supabase] Linhas carregadas:', {
-        sp_columns: spData.columns.length,
-        sp_projects: spData.projects.length,
-        sp_tasks: spData.tasks.length,
-        sp_reminders: spData.reminders.length,
-        suportes_sellerpro: spData.suportes.length,
-        lojas_total: todasLojas.length,
-        lojas_mes_ativo: lojas.length,
-        mes_ativo: activeMes,
-        meses_detectados: meses.map(m => m.nome),
-        exemplo_task: spData.tasks[0] || null,
-        exemplo_loja: todasLojas[0] || null
+        grouped[row.suporte].statuses[row.situacao] += 1;
       });
 
-      renderSupportOptions();
-      renderMesOptions();
+      Object.entries(grouped)
+        .sort((a, b) => b[1].total - a[1].total)
+        .forEach(([supportName, data]) => {
+          const card = document.createElement("div");
+          card.className = "support-card";
+
+          const statusRows = Object.entries(data.statuses)
+            .sort((a, b) => b[1] - a[1])
+            .map(([status, count]) => {
+              return `
+                <div class="status-row">
+                  <span class="status-name">${status}</span>
+                  <span class="status-count">${count}</span>
+                </div>
+              `;
+            })
+            .join("");
+
+          card.innerHTML = `
+            <div class="support-header">
+              <div class="support-name">${supportName}</div>
+              <div class="support-total">${data.total} lojas</div>
+            </div>
+
+            <div class="status-list">
+              ${statusRows}
+            </div>
+          `;
+
+          supportCards.appendChild(card);
+        });
     }
 
-    async function refreshAll() {
-      showLoading(true);
-      try {
-        await loadLojas();
-        render();
-      } catch (err) {
-        toast('Erro ao carregar dados: ' + err.message, 'error');
-      } finally {
-        showLoading(false);
+    function renderTable(rows) {
+      tableCount.textContent = `${rows.length} registros`;
+
+      if (!rows.length) {
+        storesTable.innerHTML = `
+          <tr>
+            <td colspan="8" class="empty">Nenhuma loja encontrada.</td>
+          </tr>
+        `;
+        return;
       }
-    }
 
-    function renderSupportOptions() {
-      const options = suportes.map(s => `<option value="${escapeHtml(s.nome)}">${escapeHtml(s.nome)}</option>`).join('');
-      $('suporteSelect').innerHTML = options || '<option value="">Sem suporte identificado</option>';
-      $('filterSuporte').innerHTML = `<option value="">Todos</option>${options}`;
-
-      const situacoesBanco = [...new Set(lojas.map(l => normalizeSituacao(l.situacao)).filter(Boolean))];
-      const situacoes = [...SITUACOES, ...situacoesBanco.filter(s => !SITUACOES.some(base => normalize(base) === normalize(s)))];
-      const situacaoOptions = situacoes.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
-      $('situacao').innerHTML = situacaoOptions;
-      $('filterSituacao').innerHTML = `<option value="">Todas</option>${situacaoOptions}`;
-    }
-
-    function renderMesOptions() {
-      $('mesSelect').innerHTML = meses.map(m => `<option value="${escapeHtml(m.nome)}">${escapeHtml(m.nome)}</option>`).join('');
-      $('mesTabs').innerHTML = meses.map(m => {
-        const qtd = todasLojas.filter(l => normalize(l.mes_categoria || 'Sem mês') === normalize(m.nome)).length;
-        return `<button class="btn btn-sm rounded-full ${normalize(activeMes) === normalize(m.nome) ? 'tab-active-custom' : 'btn-ghost-dark'}" onclick="setMes('${escapeAttr(m.nome)}')">
-          ${escapeHtml(m.nome)} <span class="badge badge-sm ml-1">${qtd}</span>
-        </button>`;
-      }).join('');
-    }
-
-    function setMes(mes) {
-      activeMes = mes;
-      lojas = todasLojas.filter(l => normalize(l.mes_categoria || 'Sem mês') === normalize(activeMes));
-      renderMesOptions();
-      render();
-    }
-
-    function daysInfo(loja) {
-      const start = parseDate(loja.data_formulario);
-      if (!start) return { dias: null, cor: 'cinza', label: 'Formulário não preenchido' };
-      const end = loja.dia_conclusao ? parseDate(loja.dia_conclusao) : parseDate(todayISO());
-      const dias = Math.max(0, Math.floor((end - start) / 86400000));
-      const cor = dias <= 10 ? 'verde' : dias <= 15 ? 'amarelo' : 'vermelho';
-      return { dias, cor, label: `${dias} dia${dias === 1 ? '' : 's'}` };
-    }
-
-    function statusBadge(loja) {
-      const status = normalizeSituacao(loja.situacao);
-      const n = normalize(status);
-      if (n === 'LOJA ENTREGUE') return '<span class="badge badge-success text-white">Loja entregue</span>';
-      if (n === 'VENDA FINALIZADA') return '<span class="badge bg-emerald-500/20 text-emerald-200 border border-emerald-400/25">Venda finalizada</span>';
-      if (n === 'CANCELADOS') return '<span class="badge bg-red-500/20 text-red-200 border border-red-400/25">Cancelados</span>';
-      if (n === 'AGUARDANDO CNPJ') return '<span class="badge bg-sky-500/20 text-sky-200 border border-sky-400/25">Aguardando CNPJ</span>';
-      if (n === 'CONGELADOS') return '<span class="badge bg-violet-500/20 text-violet-200 border border-violet-400/25">Congelados</span>';
-      return `<span class="badge bg-orange-500/20 text-orange-200 border border-orange-400/25">${escapeHtml(status || 'Preenchimento de formulário')}</span>`;
-    }
-
-    function daysBadge(loja) {
-      const info = daysInfo(loja);
-      if (info.dias === null) return '<span class="badge soft-pill">Formulário não preenchido</span>';
-      const cls = info.cor === 'verde' ? 'badge-success text-white' : info.cor === 'amarelo' ? 'badge-warning' : 'badge-error text-white';
-      const stopped = loja.dia_conclusao ? ' • parado' : '';
-      return `<span class="badge ${cls}">${info.label}${stopped}</span>`;
-    }
-
-    function filteredLojas() {
-      const term = normalize($('searchInput').value);
-      const suporte = normalize($('filterSuporte').value);
-      const situacao = normalize($('filterSituacao').value);
-      const prazo = $('filterPrazo').value;
-      return lojas.filter(l => {
-        const inSearch = !term || normalize([l.mcid,l.seller,l.mes_categoria,l.suporte_nome,l.situacao].join(' ')).includes(term);
-        const inSuporte = !suporte || normalize(l.suporte_nome || 'Sem suporte') === suporte;
-        const inSituacao = !situacao || normalize(l.situacao) === situacao;
-        const inPrazo = !prazo || daysInfo(l).cor === prazo;
-        return inSearch && inSuporte && inSituacao && inPrazo;
-      }).sort(sorter);
-    }
-
-    function sorter(a,b) {
-      const dir = sortState.dir === 'asc' ? 1 : -1;
-      let av, bv;
-      if (sortState.key === 'dias') { av = daysInfo(a).dias ?? -1; bv = daysInfo(b).dias ?? -1; }
-      else { av = a[sortState.key] || ''; bv = b[sortState.key] || ''; }
-      if (sortState.key.includes('data') || sortState.key.includes('dia')) { av = av || '0000-00-00'; bv = bv || '0000-00-00'; }
-      if (typeof av === 'number') return (av - bv) * dir;
-      return String(av).localeCompare(String(bv), 'pt-BR', { numeric:true, sensitivity:'base' }) * dir;
-    }
-
-    function setSort(key) {
-      sortState = { key, dir: sortState.key === key && sortState.dir === 'asc' ? 'desc' : 'asc' };
-      render();
-    }
-
-    function renderSortIndicators() {
-      ['mcid','seller','mes_categoria','data_formulario','suporte_nome','situacao','dia_conclusao','dias'].forEach(k => {
-        const el = $('sort-' + k);
-        if (el) el.textContent = sortState.key === k ? (sortState.dir === 'asc' ? '▲' : '▼') : '↕';
-      });
-    }
-
-    function getSituacoesAtivas(base) {
-      const fromData = [...new Set(base.map(l => normalizeSituacao(l.situacao)).filter(Boolean))];
-      return [...SITUACOES, ...fromData.filter(s => !SITUACOES.some(baseStatus => normalize(baseStatus) === normalize(s)))]
-        .filter(s => base.some(l => normalize(normalizeSituacao(l.situacao)) === normalize(s)));
-    }
-
-    function countByStatus(base, supportName, statusName) {
-      return base.filter(l =>
-        normalize(l.suporte_nome || 'Sem suporte') === normalize(supportName) &&
-        normalize(normalizeSituacao(l.situacao)) === normalize(statusName)
-      ).length;
-    }
-
-    function statusTextColor(status) {
-      const n = normalize(status);
-      if (n === 'LOJA ENTREGUE' || n === 'VENDA FINALIZADA') return 'text-emerald-200';
-      if (n === 'AGUARDANDO CNPJ') return 'text-sky-200';
-      if (n === 'CONGELADOS') return 'text-violet-200';
-      if (n === 'CANCELADOS') return 'text-red-200';
-      if (n.includes('FBA')) return 'text-amber-200';
-      return 'text-orange-200';
-    }
-
-    function renderStatusCards(scope) {
-      const baseTotal = todasLojas.length ? todasLojas : scope;
-      const statuses = SITUACOES;
-      const totalMes = scope.length;
-      const totalGeral = baseTotal.length;
-
-      $('statusCardsInfo').textContent = `Planilha ativa: ${activeMes}. Total mês: ${totalMes}. Total geral: ${totalGeral}.`;
-      $('statusCards').innerHTML = statuses.map(status => {
-        const qtdMes = scope.filter(l => normalize(normalizeSituacao(l.situacao)) === normalize(status)).length;
-        const qtdGeral = baseTotal.filter(l => normalize(normalizeSituacao(l.situacao)) === normalize(status)).length;
-        const perc = totalMes ? Math.round((qtdMes / totalMes) * 100) : 0;
-        return `<div class="status-card rounded-2xl p-4 shadow-sm">
-          <div class="status-content space-y-3">
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <p class="tiny-label">Situação</p>
-                <h3 class="font-black text-sm ${statusTextColor(status)} leading-tight">${escapeHtml(status)}</h3>
-              </div>
-              <span class="badge soft-pill">${perc}%</span>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div class="count-chip">
-                <p class="tiny-label">Total mês</p>
-                <strong class="text-3xl font-black text-slate-100">${qtdMes}</strong>
-              </div>
-              <div class="count-chip">
-                <p class="tiny-label">Total geral</p>
-                <strong class="text-3xl font-black text-slate-100">${qtdGeral}</strong>
-              </div>
-            </div>
-          </div>
-        </div>`;
-      }).join('');
-    }
-
-    function renderCounters(scope) {
-      const baseTotal = todasLojas.length ? todasLojas : lojas;
-      renderStatusCards(scope);
-
-      const supportsWithData = suportes.filter(s => {
-        const mesCount = scope.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
-        const geralCount = baseTotal.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
-        return mesCount > 0 || geralCount > 0;
-      });
-
-      $('supportCounters').innerHTML = supportsWithData.length ? supportsWithData.map(s => {
-        const arrMes = scope.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome));
-        const arrTotal = baseTotal.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome));
-        const statusLines = SITUACOES.map(st => {
-          const qtd = arrMes.filter(l => normalize(normalizeSituacao(l.situacao)) === normalize(st)).length;
-          if (!qtd) return '';
-          return `<div class="flex items-center justify-between gap-2 rounded-xl muted-panel px-3 py-2">
-            <span class="text-xs ${statusTextColor(st)} font-bold truncate">${escapeHtml(st)}</span>
-            <b class="text-sm text-slate-100">${qtd}</b>
-          </div>`;
-        }).filter(Boolean).join('') || '<div class="rounded-xl muted-panel px-3 py-2 text-xs text-slate-500">Sem lojas nesta planilha.</div>';
-
-        return `<div class="rounded-2xl dark-card p-4 shadow-sm">
-          <div class="flex items-start justify-between gap-2">
-            <div class="font-black text-sm truncate text-slate-100"><span class="support-dot" style="background:${s.cor}"></span> ${escapeHtml(s.nome)}</div>
-          </div>
-          <div class="grid grid-cols-2 gap-2 mt-3">
-            <div class="count-chip">
-              <p class="tiny-label">Total mês</p>
-              <strong class="text-2xl font-black text-orange-200">${arrMes.length}</strong>
-            </div>
-            <div class="count-chip">
-              <p class="tiny-label">Total geral</p>
-              <strong class="text-2xl font-black text-slate-100">${arrTotal.length}</strong>
-            </div>
-          </div>
-          <div class="mt-3 grid grid-cols-1 gap-2">${statusLines}</div>
-        </div>`;
-      }).join('') : `<div class="rounded-2xl muted-panel p-4 text-sm text-slate-500">Nenhum suporte com loja encontrada.</div>`;
-
-      $('supportStatusInfo').textContent = `Planilha ativa: ${activeMes}. Total mês: ${scope.length}. Total geral: ${baseTotal.length}.`;
-    }
-
-    function togglePanel(panelId, btn) {
-      const panel = $(panelId);
-      if (!panel) return;
-      panel.classList.toggle('panel-collapsed');
-      const collapsed = panel.classList.contains('panel-collapsed');
-      if (btn) btn.textContent = collapsed ? 'Expandir' : 'Minimizar';
+      storesTable.innerHTML = rows
+        .map((row) => {
+          return `
+            <tr>
+              <td>${safe(row.loja)}</td>
+              <td>${safe(row.mcid)}</td>
+              <td>${safe(row.email)}</td>
+              <td>${safe(row.telefone)}</td>
+              <td>${safe(row.suporte)}</td>
+              <td><span class="badge">${safe(row.situacao)}</span></td>
+              <td>${safe(row.mes)}</td>
+              <td>${safe(row.created_at)}</td>
+            </tr>
+          `;
+        })
+        .join("");
     }
 
     function render() {
-      renderMesOptions();
-      const mesScope = lojas;
-      const list = filteredLojas();
-      renderCounters(mesScope);
-      renderSortIndicators();
-      $('loadInfo').textContent = `Aba ativa: ${activeMes || '-'}. Renderizando ${lojas.length} loja(s) desta aba. Total geral carregado: ${totalBanco}.`;
-      $('tableTitle').textContent = `Tabela de ${activeMes || 'Sem mês'}`;
-      $('visibleInfo').textContent = `Exibindo ${list.length} de ${mesScope.length} registro(s) da planilha ${activeMes || 'Sem mês'} após filtros.`;
+      const rows = getFilteredRows();
 
-      $('lojasBody').innerHTML = list.length ? list.map(l => `
-        <tr class="hover:bg-orange-500/10">
-          <td class="font-bold">${escapeHtml(l.mcid || '-')}</td>
-          <td class="truncate-cell" title="${escapeAttr(l.seller)}">${escapeHtml(l.seller || '-')}</td>
-          <td><span class="badge soft-pill">${escapeHtml(l.mes_categoria || 'Sem mês')}</span></td>
-          <td>${formatDate(l.data_formulario)}</td>
-          <td>${supportPill(l.suporte_nome)}</td>
-          <td>${statusBadge(l)}</td>
-          <td>${formatDate(l.dia_conclusao)}</td>
-          <td>${daysBadge(l)}</td>
-          <td class="text-right whitespace-nowrap">
-            <button class="btn btn-xs btn-outline" onclick="openLojaModal('${escapeAttr(l.id)}')">Editar</button>
-            <button class="btn btn-xs btn-error text-white" onclick="deleteLoja('${escapeAttr(l.id)}')">Excluir</button>
-          </td>
+      renderSummary(rows);
+      renderSupportCards(rows);
+      renderTable(rows);
+    }
+
+    async function loadData() {
+      clearError();
+
+      storesTable.innerHTML = `
+        <tr>
+          <td colspan="8" class="empty loading">Carregando dados...</td>
         </tr>
-      `).join('') : `<tr><td colspan="9" class="text-center py-10 text-slate-500">Nenhum registro encontrado.</td></tr>`;
-    }
-
-    function supportPill(nome) {
-      const s = suportes.find(x => normalize(x.nome) === normalize(nome));
-      return `<span class="inline-flex items-center gap-2 rounded-full px-2 py-1 soft-pill"><span class="support-dot" style="background:${s?.cor || '#64748b'}"></span>${escapeHtml(nome || '-')}</span>`;
-    }
-
-    function openLojaModal(id='') {
-      const l = lojas.find(x => String(x.id) === String(id)) || todasLojas.find(x => String(x.id) === String(id));
-      $('lojaModalTitle').textContent = l ? 'Editar loja pronta' : 'Nova loja pronta';
-      $('lojaId').value = l?.id || '';
-      $('mcid').value = l?.mcid || '';
-      $('seller').value = l?.seller || '';
-      $('dataFormulario').value = l?.data_formulario || '';
-      $('formStatus').value = l?.data_formulario ? 'preenchido' : 'nao_preenchido';
-      $('suporteSelect').value = l?.suporte_nome || suportes[0]?.nome || '';
-      $('situacao').value = normalizeSituacao(l?.situacao || (l?.data_formulario ? 'Preenchimento de formulário' : 'Aguardando CNPJ'));
-      $('diaConclusao').value = l?.dia_conclusao || '';
-      $('mesSelect').value = l?.mes_categoria || activeMes || meses[0]?.nome || 'Geral';
-      toggleFormulario();
-      toggleConclusao();
-      lojaModal.showModal();
-    }
-
-    function toggleFormulario() {
-      const naoPreenchido = $('formStatus').value === 'nao_preenchido';
-      $('dataFormulario').disabled = naoPreenchido;
-      if (naoPreenchido) {
-        $('dataFormulario').value = '';
-        if ($('situacao').value === 'Preenchimento de formulário') $('situacao').value = 'Aguardando CNPJ';
-      } else if (!$('dataFormulario').value) {
-        $('dataFormulario').value = todayISO();
-        if ($('situacao').value === 'Aguardando CNPJ') $('situacao').value = 'Preenchimento de formulário';
-      }
-    }
-
-    function toggleConclusao() {
-      const concluido = isSituacaoFinalizada($('situacao').value);
-      if (concluido && !$('diaConclusao').value) $('diaConclusao').value = todayISO();
-      if (!concluido) $('diaConclusao').value = '';
-    }
-
-    function applyMesToPayload(payload, existing, mesValue) {
-      const flatExisting = flatObject(existing || {});
-      const mesField = CONFIG.fieldNames.mes.find(field => Object.prototype.hasOwnProperty.call(flatExisting, field));
-      if (mesField) payload[mesField] = mesValue;
-      else if (!existing) payload.mes_categoria = mesValue;
-      return payload;
-    }
-
-    async function saveLoja(ev) {
-      ev.preventDefault();
-      showLoading(true);
-
-      const id = $('lojaId').value;
-      const existing = lojas.find(l => String(l.id) === String(id)) || todasLojas.find(l => String(l.id) === String(id));
-
-      const payload = applyMesToPayload({
-        mcid: $('mcid').value.trim(),
-        seller: $('seller').value.trim(),
-        suporte: $('suporteSelect').value,
-        situacao: $('situacao').value,
-        data_formulario: $('formStatus').value === 'nao_preenchido' || !$('dataFormulario').value ? null : $('dataFormulario').value,
-        dia_conclusao: isSituacaoFinalizada($('situacao').value) ? ($('diaConclusao').value || todayISO()) : null
-      }, existing, $('mesSelect').value);
+      `;
 
       try {
-        let res;
-        if (existing && existing._rawId) {
-          res = await client.from(existing._sourceTable || CONFIG.saveTable).update(payload).eq('id', existing._rawId);
-        } else {
-          res = await client.from(CONFIG.saveTable).insert([{ id: uid(), ...payload }]);
-        }
+        const [
+          tasksResponse,
+          projectsResponse,
+          columnsResponse,
+          supportsResponse,
+        ] = await Promise.all([
+          supabaseClient.from("sp_tasks").select("*"),
+          supabaseClient.from("sp_projects").select("*"),
+          supabaseClient.from("sp_columns").select("*"),
+          supabaseClient.from("suortes_sellerpro").select("*"),
+        ]);
 
-        if (res.error) throw res.error;
-        lojaModal.close();
-        toast('Registro salvo no Supabase.', 'success');
-        await refreshAll();
-      } catch (err) {
-        toast('Erro ao salvar: ' + err.message, 'error');
-      } finally {
-        showLoading(false);
+        if (tasksResponse.error) throw tasksResponse.error;
+        if (projectsResponse.error) throw projectsResponse.error;
+        if (columnsResponse.error) throw columnsResponse.error;
+        if (supportsResponse.error) throw supportsResponse.error;
+
+        allProjects = projectsResponse.data || [];
+        allStatuses = columnsResponse.data || [];
+        allSupports = supportsResponse.data || [];
+
+        allRows = buildRows(tasksResponse.data || []);
+
+        populateMonthFilter(allRows);
+        render();
+
+      } catch (error) {
+        console.error(error);
+
+        showError(
+          "Erro ao carregar dados do Supabase: " + 
+          (error.message || "verifique as tabelas, colunas e permissões RLS.")
+        );
+
+        storesTable.innerHTML = `
+          <tr>
+            <td colspan="8" class="empty">Erro ao carregar dados.</td>
+          </tr>
+        `;
       }
     }
 
-    async function deleteLoja(id) {
-      if (!confirm('Deseja excluir este registro?')) return;
-      showLoading(true);
-      try {
-        const existing = lojas.find(l => String(l.id) === String(id)) || todasLojas.find(l => String(l.id) === String(id));
-        const table = existing?._sourceTable || CONFIG.saveTable;
-        const rawId = existing?._rawId || id;
-        const { error } = await client.from(table).delete().eq('id', rawId);
-        if (error) throw error;
-        toast('Registro excluído.', 'success');
-        await refreshAll();
-      } catch (err) {
-        toast('Erro ao excluir: ' + err.message, 'error');
-      } finally {
-        showLoading(false);
-      }
-    }
+    monthFilter.addEventListener("change", render);
+    searchInput.addEventListener("input", render);
 
-    function openMesModal() { $('novoMesNome').value = ''; mesModal.showModal(); }
-
-    async function saveMes(ev) {
-      ev.preventDefault();
-      const nome = $('novoMesNome').value.trim();
-      if (!nome) return;
-      meses.push({ id: normalize(nome), nome, ordem: meses.length });
-      activeMes = nome;
-      mesModal.close();
-      toast('Aba criada na tela. Ela será salva nos registros quando você cadastrar uma loja nessa aba.', 'success');
-      render();
-    }
-
-    function setupRealtime() {
-      const ch = client.channel('sp-realtime-lojas-prontas');
-      Object.values(CONFIG.tables).forEach(table => {
-        ch.on('postgres_changes', { event: '*', schema: 'public', table }, refreshAll);
-      });
-      ch.subscribe();
-    }
-
-    function escapeHtml(str) { return String(str ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
-    function escapeAttr(str) { return escapeHtml(str).replace(/`/g,'&#96;'); }
-
-    document.addEventListener('DOMContentLoaded', async () => { await refreshAll(); setupRealtime(); });
+    loadData();
   </script>
 </body>
 </html>
