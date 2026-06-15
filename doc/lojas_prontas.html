@@ -195,7 +195,8 @@
         columns: 'sp_columns',
         projects: 'sp_projects',
         reminders: 'sp_reminders',
-        tasks: 'sp_tasks'
+        tasks: 'sp_tasks',
+        suportes: 'suportes_sellerpro'
       },
       fieldNames: {
         id: ['id', 'uuid'],
@@ -207,10 +208,16 @@
         dataFormulario: ['data_formulario', 'preenchimento_formulario', 'preenchimento_de_formulario', 'formulario', 'form_date', 'created_at'],
         diaConclusao: ['dia_conclusao', 'data_conclusao', 'completed_at', 'concluido_em', 'finished_at'],
         mes: ['mes_categoria', 'mes', 'mês', 'categoria', 'aba', 'month']
+      },
+      suporteFields: {
+        id: ['id', 'uuid', 'user_id', 'usuario_id', 'suporte_id', 'profile_id'],
+        nome: ['nome', 'name', 'full_name', 'display_name', 'suporte', 'responsavel', 'responsável', 'consultor'],
+        email: ['email', 'mail', 'user_email'],
+        cor: ['cor', 'color', 'hex', 'color_hex']
       }
     };
 
-    const DEFAULT_SUPPORTS = ['CARLOS','DANIELA','FELIPE','GABRIEL','JOSE','MELISSA','POLYANNA','SILAS'];
+    const DEFAULT_SUPPORTS = [];
     const SUPPORT_COLORS = ['#f97316','#0f172a','#2563eb','#16a34a','#9333ea','#db2777','#0891b2','#ca8a04','#ef4444','#64748b'];
 
     const SITUACOES = [
@@ -234,7 +241,7 @@
     ];
 
     let lojas = [], suportes = [], meses = [], activeMes = 'Geral', totalBanco = 0;
-    let spData = { columns: [], projects: [], reminders: [], tasks: [] };
+    let spData = { columns: [], projects: [], reminders: [], tasks: [], suportes: [] };
     let sortState = { key: 'seller', dir: 'asc' };
 
     const $ = (id) => document.getElementById(id);
@@ -411,17 +418,79 @@
       return String(seller || '').trim();
     }
 
+    function normalizeSuporteRow(row, i) {
+      const id = String(pick(row, CONFIG.suporteFields.id, '') || '').trim();
+      const nome = String(pick(row, CONFIG.suporteFields.nome, '') || '').trim();
+      const email = String(pick(row, CONFIG.suporteFields.email, '') || '').trim();
+      const cor = String(pick(row, CONFIG.suporteFields.cor, '') || SUPPORT_COLORS[i % SUPPORT_COLORS.length]).trim();
+
+      const fallbackNome = nome || email || id;
+      if (!fallbackNome) return null;
+
+      return {
+        id: id || email || fallbackNome,
+        nome: fallbackNome,
+        email,
+        cor,
+        raw: row,
+        aliases: [id, nome, email, row?.nome, row?.name, row?.suporte, row?.responsavel, row?.responsável]
+          .filter(Boolean)
+          .map(normalize)
+      };
+    }
+
+    function loadSuportesFromSellerPro() {
+      suportes = (spData.suportes || [])
+        .map((row, i) => normalizeSuporteRow(row, i))
+        .filter(Boolean);
+    }
+
+    function matchSuporte(value) {
+      if (!value) return null;
+      const parsed = tryJson(value);
+      let raw = value;
+
+      if (parsed && typeof parsed === 'object') {
+        raw = pick(parsed, [
+          ...CONFIG.suporteFields.id,
+          ...CONFIG.suporteFields.nome,
+          ...CONFIG.suporteFields.email
+        ], '');
+      }
+
+      const n = normalize(raw);
+      if (!n) return null;
+
+      return suportes.find(s =>
+        s.aliases.includes(n) ||
+        normalize(s.id) === n ||
+        normalize(s.nome) === n ||
+        normalize(s.email) === n
+      ) || suportes.find(s =>
+        (s.email && n.includes(normalize(s.email))) ||
+        (s.nome && n.includes(normalize(s.nome)))
+      ) || null;
+    }
+
+    function getSuporteDisplay(value) {
+      const match = matchSuporte(value);
+      if (match) return match.nome;
+
+      const parsed = tryJson(value);
+      if (parsed && typeof parsed === 'object') {
+        const possible = pick(parsed, ['nome', 'name', 'full_name', 'display_name', 'suporte', 'responsavel', 'responsável', 'email'], '');
+        return String(possible || '').trim();
+      }
+
+      return String(value || '').trim();
+    }
+
     function extractSuporte(obj) {
       let suporte = pick(obj, CONFIG.fieldNames.suporte, '');
       if (!suporte) {
-        suporte = findByKeyTokens(obj, ['suporte', 'responsavel', 'responsável', 'assignee', 'assigned', 'owner', 'support'], ['id', 'uuid', 'email']);
+        suporte = findByKeyTokens(obj, ['suporte', 'responsavel', 'responsável', 'assignee', 'assigned', 'owner', 'support'], []);
       }
-      // Se vier objeto/array como texto, tenta achar nome dentro dele.
-      const parsed = tryJson(suporte);
-      if (parsed && typeof parsed === 'object') {
-        suporte = pick(parsed, ['nome', 'name', 'full_name', 'display_name', 'suporte', 'email'], '');
-      }
-      return String(suporte || '').trim();
+      return getSuporteDisplay(suporte);
     }
 
     function extractMes(obj) {
@@ -485,21 +554,25 @@
     }
 
     async function loadSpData() {
-      const [columns, projects, reminders, tasks] = await Promise.all([
+      const [columns, projects, reminders, tasks, suportesResp] = await Promise.all([
         fetchAllRows(CONFIG.tables.columns).catch(err => ({ rows: [], count: 0, error: err })),
         fetchAllRows(CONFIG.tables.projects).catch(err => ({ rows: [], count: 0, error: err })),
         fetchAllRows(CONFIG.tables.reminders).catch(err => ({ rows: [], count: 0, error: err })),
-        fetchAllRows(CONFIG.tables.tasks).catch(err => ({ rows: [], count: 0, error: err }))
+        fetchAllRows(CONFIG.tables.tasks).catch(err => ({ rows: [], count: 0, error: err })),
+        fetchAllRows(CONFIG.tables.suportes).catch(err => ({ rows: [], count: 0, error: err }))
       ]);
 
       spData = {
         columns: columns.rows || [],
         projects: projects.rows || [],
         reminders: reminders.rows || [],
-        tasks: tasks.rows || []
+        tasks: tasks.rows || [],
+        suportes: suportesResp.rows || []
       };
 
-      const errors = [columns, projects, reminders, tasks].filter(x => x.error).map(x => x.error.message);
+      loadSuportesFromSellerPro();
+
+      const errors = [columns, projects, reminders, tasks, suportesResp].filter(x => x.error).map(x => x.error.message);
       if (errors.length) toast('Algumas tabelas não carregaram: ' + errors.join(' | '), 'warning');
     }
 
@@ -517,8 +590,10 @@
       totalBanco = lojas.length;
 
       const supportNames = [...new Set(lojas.map(l => l.suporte_nome).filter(Boolean))];
-      suportes = (supportNames.length ? supportNames : DEFAULT_SUPPORTS)
-        .map((nome, i) => ({ id: nome, nome, cor: SUPPORT_COLORS[i % SUPPORT_COLORS.length] }));
+      const extras = supportNames
+        .filter(nome => !suportes.some(s => normalize(s.nome) === normalize(nome) || normalize(s.id) === normalize(nome) || normalize(s.email) === normalize(nome)))
+        .map((nome, i) => ({ id: nome, nome, email: '', cor: SUPPORT_COLORS[(suportes.length + i) % SUPPORT_COLORS.length], aliases: [normalize(nome)], origem: 'lojas' }));
+      suportes = [...suportes, ...extras];
 
       const mesNames = [...new Set(lojas.map(l => l.mes_categoria || 'Geral').filter(Boolean))];
       meses = (mesNames.length ? mesNames : ['Geral']).map((nome, i) => ({ id: normalize(nome), nome, ordem: i }));
