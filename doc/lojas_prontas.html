@@ -1,536 +1,997 @@
-<script>
-  const SUPABASE_URL = "https://owgvzmeewzpmzgcdwbfq.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr";
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  <title>Painel Loja Pronta</title>
 
-  let allRows = [];
-  let allStatuses = [];
-  let allSupports = [];
-  let allProjects = [];
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  const monthFilter = document.getElementById("monthFilter");
-  const searchInput = document.getElementById("searchInput");
-  const storesTable = document.getElementById("storesTable");
-  const supportCards = document.getElementById("supportCards");
-  const totalStores = document.getElementById("totalStores");
-  const totalSupports = document.getElementById("totalSupports");
-  const tableCount = document.getElementById("tableCount");
-  const supportCountLabel = document.getElementById("supportCountLabel");
-  const errorBox = document.getElementById("errorBox");
-
-  const statusColors = [
-    "#2563eb",
-    "#16a34a",
-    "#f59e0b",
-    "#dc2626",
-    "#7c3aed",
-    "#0891b2",
-    "#ea580c",
-    "#4b5563"
-  ];
-
-  function showError(message) {
-    errorBox.style.display = "block";
-    errorBox.textContent = message;
-  }
-
-  function clearError() {
-    errorBox.style.display = "none";
-    errorBox.textContent = "";
-  }
-
-  function safe(value) {
-    return value || "-";
-  }
-
-  function normalizeText(value) {
-    return String(value || "")
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
-  }
-
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function getStatusColor(statusName) {
-    const normalized = normalizeText(statusName);
-    let hash = 0;
-
-    for (let i = 0; i < normalized.length; i++) {
-      hash = normalized.charCodeAt(i) + ((hash << 5) - hash);
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Inter, Arial, sans-serif;
     }
 
-    return statusColors[Math.abs(hash) % statusColors.length];
-  }
-
-  async function fetchAll(tableName) {
-    const pageSize = 1000;
-    let from = 0;
-    let to = pageSize - 1;
-    let allData = [];
-
-    while (true) {
-      const { data, error } = await supabaseClient
-        .from(tableName)
-        .select("*")
-        .range(from, to);
-
-      if (error) {
-        throw new Error(`Erro na tabela ${tableName}: ${error.message}`);
-      }
-
-      allData = allData.concat(data || []);
-
-      if (!data || data.length < pageSize) {
-        break;
-      }
-
-      from += pageSize;
-      to += pageSize;
+    body {
+      margin: 0;
+      background: #f4f6f8;
+      color: #111827;
     }
 
-    return allData;
-  }
+    .app {
+      padding: 28px;
+      max-width: 1500px;
+      margin: 0 auto;
+    }
 
-  async function fetchSupports() {
-    try {
-      return await fetchAll("suportes_sellerpro");
-    } catch (firstError) {
-      console.warn("Tabela suportes_sellerpro não carregou. Tentando suortes_sellerpro...", firstError);
+    .header {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
 
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .filters {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    select,
+    input {
+      height: 42px;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 14px;
+      outline: none;
+      min-width: 220px;
+    }
+
+    select:focus,
+    input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .overview-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .overview-label {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .overview-value {
+      font-size: 34px;
+      font-weight: 800;
+      color: #111827;
+      line-height: 1;
+    }
+
+    .section-title {
+      margin: 28px 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .muted {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .support-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .support-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .support-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .support-name {
+      font-size: 17px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .support-subtitle {
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .support-total {
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 800;
+      white-space: nowrap;
+      min-width: 48px;
+      text-align: center;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+      display: flex;
+      margin-bottom: 15px;
+    }
+
+    .progress-piece {
+      height: 100%;
+    }
+
+    .status-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: #374151;
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .status-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .status-index {
+      width: 20px;
+      color: #6b7280;
+      font-weight: 800;
+      font-size: 13px;
+      flex: 0 0 auto;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+    }
+
+    .status-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .status-count {
+      font-weight: 800;
+      color: #111827;
+      white-space: nowrap;
+    }
+
+    .status-percent {
+      color: #6b7280;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 4px;
+    }
+
+    .table-card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+      overflow: hidden;
+    }
+
+    .table-top {
+      padding: 18px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .table-top h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+    }
+
+    th {
+      background: #f9fafb;
+      color: #6b7280;
+      text-align: left;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 13px 16px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    td {
+      padding: 15px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    tr:hover td {
+      background: #f9fafb;
+    }
+
+    .store-name {
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #374151;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 36px;
+      color: #6b7280;
+    }
+
+    .error {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+      .app {
+        padding: 18px;
+      }
+
+      .filters {
+        width: 100%;
+      }
+
+      select,
+      input {
+        width: 100%;
+      }
+
+      .support-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <div class="header">
+      <div>
+        <h1>Loja Pronta</h1>
+        <p>Acompanhamento por mês, suporte responsável e situação atual.</p>
+      </div>
+
+      <div class="filters">
+        <select id="monthFilter">
+          <option value="">Todos os meses</option>
+        </select>
+
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Buscar loja, suporte, status..."
+        />
+      </div>
+    </div>
+
+    <div id="errorBox" class="error"></div>
+
+    <section class="overview">
+      <div class="overview-card">
+        <div class="overview-label">Total de lojas</div>
+        <div class="overview-value" id="totalStores">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-label">Suportes com lojas</div>
+        <div class="overview-value" id="totalSupports">0</div>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <h2>Distribuição por suporte</h2>
+      <span class="muted" id="supportCountLabel">0 suportes</span>
+    </div>
+
+    <section id="supportCards" class="support-grid"></section>
+
+    <section class="table-card">
+      <div class="table-top">
+        <h2>Lojas cadastradas</h2>
+        <span class="muted" id="tableCount">0 registros</span>
+      </div>
+
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Loja</th>
+              <th>MCID</th>
+              <th>Suporte</th>
+              <th>Situação</th>
+              <th>Mês</th>
+              <th>E-mail</th>
+              <th>Telefone</th>
+              <th>Criado em</th>
+            </tr>
+          </thead>
+
+          <tbody id="storesTable">
+            <tr>
+              <td colspan="8" class="empty">Carregando dados...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SUPABASE_URL = "https://owgvzmeewzpmzgcdwbfq.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let allRows = [];
+    let allStatuses = [];
+    let allSupports = [];
+    let allProjects = [];
+
+    const monthFilter = document.getElementById("monthFilter");
+    const searchInput = document.getElementById("searchInput");
+    const storesTable = document.getElementById("storesTable");
+    const supportCards = document.getElementById("supportCards");
+    const totalStores = document.getElementById("totalStores");
+    const totalSupports = document.getElementById("totalSupports");
+    const tableCount = document.getElementById("tableCount");
+    const supportCountLabel = document.getElementById("supportCountLabel");
+    const errorBox = document.getElementById("errorBox");
+
+    const statusColors = [
+      "#2563eb",
+      "#16a34a",
+      "#f59e0b",
+      "#dc2626",
+      "#7c3aed",
+      "#0891b2",
+      "#ea580c",
+      "#4b5563"
+    ];
+
+    function showError(message) {
+      errorBox.style.display = "block";
+      errorBox.textContent = message;
+    }
+
+    function clearError() {
+      errorBox.style.display = "none";
+      errorBox.textContent = "";
+    }
+
+    function safe(value) {
+      return value || "-";
+    }
+
+    function normalizeText(value) {
+      return String(value || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function getPossibleValue(obj, keys) {
+      for (const key of keys) {
+        if (
+          obj &&
+          obj[key] !== undefined &&
+          obj[key] !== null &&
+          obj[key] !== ""
+        ) {
+          return obj[key];
+        }
+      }
+
+      return null;
+    }
+
+    function getStatusColor(statusName) {
+      const normalized = normalizeText(statusName);
+
+      let hash = 0;
+
+      for (let i = 0; i < normalized.length; i++) {
+        hash = normalized.charCodeAt(i) + ((hash << 5) - hash);
+      }
+
+      const index = Math.abs(hash) % statusColors.length;
+
+      return statusColors[index];
+    }
+
+    async function fetchAll(tableName) {
+      const pageSize = 1000;
+      let from = 0;
+      let to = pageSize - 1;
+      let allData = [];
+
+      while (true) {
+        const { data, error } = await supabaseClient
+          .from(tableName)
+          .select("*")
+          .range(from, to);
+
+        if (error) {
+          throw new Error(`Erro na tabela ${tableName}: ${error.message}`);
+        }
+
+        allData = allData.concat(data || []);
+
+        if (!data || data.length < pageSize) {
+          break;
+        }
+
+        from += pageSize;
+        to += pageSize;
+      }
+
+      return allData;
+    }
+
+    async function fetchSupports() {
       try {
-        return await fetchAll("suortes_sellerpro");
-      } catch (secondError) {
-        throw new Error(
-          "Erro ao carregar suportes. Verifique se a tabela é suportes_sellerpro ou suortes_sellerpro."
+        return await fetchAll("suportes_sellerpro");
+      } catch (firstError) {
+        console.warn(
+          "Tabela suportes_sellerpro não carregou. Tentando suortes_sellerpro...",
+          firstError
         );
+
+        try {
+          return await fetchAll("suortes_sellerpro");
+        } catch (secondError) {
+          throw new Error(
+            "Erro ao carregar suportes. Verifique se a tabela é suportes_sellerpro ou suortes_sellerpro."
+          );
+        }
       }
     }
-  }
 
-  function getPossibleValue(obj, keys) {
-    for (const key of keys) {
-      if (obj && obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
-        return obj[key];
-      }
-    }
-
-    return null;
-  }
-
-  function getStatusName(task) {
-    const statusValue = getPossibleValue(task, [
-      "Status",
-      "status",
-      "column_id",
-      "columnId",
-      "sp_column_id"
-    ]);
-
-    const found = allStatuses.find((item) => {
-      return (
-        String(item.id) === String(statusValue) ||
-        String(item.name) === String(statusValue) ||
-        String(item.title) === String(statusValue) ||
-        String(item.situacao) === String(statusValue)
-      );
-    });
-
-    return (
-      found?.name ||
-      found?.title ||
-      found?.situacao ||
-      found?.status ||
-      statusValue ||
-      "Sem situação"
-    );
-  }
-
-  function getProjectName(task) {
-    const projectId = getPossibleValue(task, [
-      "project_id",
-      "projectId",
-      "sp_project_id"
-    ]);
-
-    const found = allProjects.find((item) => {
-      return String(item.id) === String(projectId);
-    });
-
-    return (
-      found?.name ||
-      found?.title ||
-      found?.month ||
-      found?.mes ||
-      found?.mês ||
-      projectId ||
-      "Sem mês"
-    );
-  }
-
-  function getSupportName(task) {
-    const owner = getPossibleValue(task, [
-      "owner",
-      "Owner",
-      "suporte",
-      "support_id",
-      "owner_id",
-      "responsavel",
-      "responsável"
-    ]);
-
-    const found = allSupports.find((item) => {
-      return (
-        String(item.id) === String(owner) ||
-        String(item.nome) === String(owner) ||
-        String(item.name) === String(owner) ||
-        String(item.email) === String(owner)
-      );
-    });
-
-    return (
-      found?.nome ||
-      found?.name ||
-      found?.suporte ||
-      found?.email ||
-      owner ||
-      "Sem suporte"
-    );
-  }
-
-  function getStoreName(task) {
-    return getPossibleValue(task, [
-      "nome_loja",
-      "loja",
-      "store_name",
-      "title",
-      "name",
-      "seller",
-      "nome",
-      "cliente"
-    ]) || "Sem nome";
-  }
-
-  function getMCID(task) {
-    return getPossibleValue(task, [
-      "mcid",
-      "MCID",
-      "id_mcid"
-    ]) || "-";
-  }
-
-  function getEmail(task) {
-    return getPossibleValue(task, [
-      "email",
-      "e_mail",
-      "mail",
-      "Email"
-    ]) || "-";
-  }
-
-  function getPhone(task) {
-    return getPossibleValue(task, [
-      "telefone",
-      "phone",
-      "whatsapp",
-      "Telefone"
-    ]) || "-";
-  }
-
-  function getCreatedAt(task) {
-    const dateValue = getPossibleValue(task, [
-      "created_at",
-      "data_criacao",
-      "createdAt",
-      "inserted_at"
-    ]);
-
-    if (!dateValue) return "-";
-
-    const date = new Date(dateValue);
-
-    if (isNaN(date.getTime())) return dateValue;
-
-    return date.toLocaleDateString("pt-BR");
-  }
-
-  function buildRows(tasks) {
-    return tasks.map((task) => ({
-      raw: task,
-      id: task.id,
-      loja: getStoreName(task),
-      mcid: getMCID(task),
-      email: getEmail(task),
-      telefone: getPhone(task),
-      suporte: getSupportName(task),
-      situacao: getStatusName(task),
-      mes: getProjectName(task),
-      created_at: getCreatedAt(task)
-    }));
-  }
-
-  function populateMonthFilter(rows) {
-    const selectedValue = monthFilter.value;
-
-    const months = [...new Set(rows.map((row) => row.mes))]
-      .filter((month) => month && month !== "-" && month !== "Sem mês")
-      .sort();
-
-    monthFilter.innerHTML = `<option value="">Todos os meses</option>`;
-
-    months.forEach((month) => {
-      const option = document.createElement("option");
-      option.value = month;
-      option.textContent = month;
-      monthFilter.appendChild(option);
-    });
-
-    monthFilter.value = selectedValue;
-  }
-
-  function getFilteredRows() {
-    const selectedMonth = monthFilter.value;
-    const searchTerm = normalizeText(searchInput.value);
-
-    return allRows.filter((row) => {
-      const matchMonth = !selectedMonth || row.mes === selectedMonth;
-
-      const searchable = normalizeText(`
-        ${row.loja}
-        ${row.mcid}
-        ${row.email}
-        ${row.telefone}
-        ${row.suporte}
-        ${row.situacao}
-        ${row.mes}
-      `);
-
-      const matchSearch = !searchTerm || searchable.includes(searchTerm);
-
-      return matchMonth && matchSearch;
-    });
-  }
-
-  function renderOverview(rows) {
-    const supports = new Set(
-      rows
-        .map((row) => row.suporte)
-        .filter((support) => support && support !== "-" && support !== "Sem suporte")
-    );
-
-    totalStores.textContent = rows.length;
-    totalSupports.textContent = supports.size;
-    supportCountLabel.textContent = `${supports.size} suportes`;
-  }
-
-  function renderSupportCards(rows) {
-    supportCards.innerHTML = "";
-
-    if (!rows.length) {
-      supportCards.innerHTML = `
-        <div class="support-card">
-          <div class="empty">Nenhum resultado encontrado.</div>
-        </div>
-      `;
-      return;
-    }
-
-    const grouped = {};
-
-    rows.forEach((row) => {
-      if (!grouped[row.suporte]) {
-        grouped[row.suporte] = {
-          total: 0,
-          statuses: {}
-        };
-      }
-
-      grouped[row.suporte].total++;
-
-      if (!grouped[row.suporte].statuses[row.situacao]) {
-        grouped[row.suporte].statuses[row.situacao] = 0;
-      }
-
-      grouped[row.suporte].statuses[row.situacao]++;
-    });
-
-    const sortedSupports = Object.entries(grouped)
-      .sort((a, b) => b[1].total - a[1].total);
-
-    sortedSupports.forEach(([supportName, data]) => {
-      const card = document.createElement("div");
-      card.className = "support-card";
-
-      const statusEntries = Object.entries(data.statuses)
-        .sort((a, b) => b[1] - a[1]);
-
-      const progress = statusEntries
-        .map(([status, count]) => {
-          const percentage = (count / data.total) * 100;
-          const color = getStatusColor(status);
-
-          return `
-            <div
-              class="progress-piece"
-              style="width: ${percentage}%; background: ${color};"
-              title="${escapeHtml(status)}: ${count}"
-            ></div>
-          `;
-        })
-        .join("");
-
-      const statusList = statusEntries
-        .map(([status, count], index) => {
-          const color = getStatusColor(status);
-          const percent = ((count / data.total) * 100).toFixed(0);
-
-          return `
-            <div class="status-item">
-              <div class="status-left">
-                <span style="width: 18px; color: #6b7280; font-weight: 700;">
-                  ${index + 1}.
-                </span>
-                <span class="dot" style="background: ${color};"></span>
-                <span class="status-name">${escapeHtml(status)}</span>
-              </div>
-
-              <span class="status-count">
-                ${count} <span style="color:#6b7280; font-size:12px;">(${percent}%)</span>
-              </span>
-            </div>
-          `;
-        })
-        .join("");
-
-      card.innerHTML = `
-        <div class="support-top">
-          <div>
-            <div class="support-name">${escapeHtml(supportName)}</div>
-            <div style="color:#6b7280; font-size:13px; margin-top:4px;">
-              Responsável por ${data.total} loja${data.total === 1 ? "" : "s"}
-            </div>
-          </div>
-
-          <div class="support-total">${data.total}</div>
-        </div>
-
-        <div class="progress-bar">
-          ${progress}
-        </div>
-
-        <div class="status-list">
-          ${statusList}
-        </div>
-      `;
-
-      supportCards.appendChild(card);
-    });
-  }
-
-  function renderTable(rows) {
-    tableCount.textContent = `${rows.length} registros`;
-
-    if (!rows.length) {
-      storesTable.innerHTML = `
-        <tr>
-          <td colspan="8" class="empty">Nenhuma loja encontrada.</td>
-        </tr>
-      `;
-      return;
-    }
-
-    storesTable.innerHTML = rows
-      .map((row) => {
-        const color = getStatusColor(row.situacao);
-
-        return `
-          <tr>
-            <td>
-              <div class="store-name">${escapeHtml(safe(row.loja))}</div>
-            </td>
-            <td>${escapeHtml(safe(row.mcid))}</td>
-            <td>${escapeHtml(safe(row.suporte))}</td>
-            <td>
-              <span class="badge">
-                <span class="badge-dot" style="background: ${color};"></span>
-                ${escapeHtml(safe(row.situacao))}
-              </span>
-            </td>
-            <td>${escapeHtml(safe(row.mes))}</td>
-            <td>${escapeHtml(safe(row.email))}</td>
-            <td>${escapeHtml(safe(row.telefone))}</td>
-            <td>${escapeHtml(safe(row.created_at))}</td>
-          </tr>
-        `;
-      })
-      .join("");
-  }
-
-  function render() {
-    const rows = getFilteredRows();
-
-    renderOverview(rows);
-    renderSupportCards(rows);
-    renderTable(rows);
-  }
-
-  async function loadData() {
-    clearError();
-
-    storesTable.innerHTML = `
-      <tr>
-        <td colspan="8" class="empty">Carregando dados...</td>
-      </tr>
-    `;
-
-    try {
-      const [tasks, projects, columns, supports] = await Promise.all([
-        fetchAll("sp_tasks"),
-        fetchAll("sp_projects"),
-        fetchAll("sp_columns"),
-        fetchSupports()
+    function getStatusName(task) {
+      const statusValue = getPossibleValue(task, [
+        "Status",
+        "status",
+        "column_id",
+        "columnId",
+        "sp_column_id"
       ]);
 
-      console.log("sp_tasks:", tasks);
-      console.log("sp_projects:", projects);
-      console.log("sp_columns:", columns);
-      console.log("suportes:", supports);
+      const found = allStatuses.find((item) => {
+        return (
+          String(item.id) === String(statusValue) ||
+          String(item.name) === String(statusValue) ||
+          String(item.title) === String(statusValue) ||
+          String(item.situacao) === String(statusValue) ||
+          String(item.status) === String(statusValue)
+        );
+      });
 
-      allProjects = projects || [];
-      allStatuses = columns || [];
-      allSupports = supports || [];
-
-      allRows = buildRows(tasks || []);
-
-      populateMonthFilter(allRows);
-      render();
-
-    } catch (error) {
-      console.error(error);
-
-      showError(
-        error.message ||
-        "Erro ao carregar dados. Verifique tabelas, RLS e chave do Supabase."
+      return (
+        found?.name ||
+        found?.title ||
+        found?.situacao ||
+        found?.status ||
+        statusValue ||
+        "Sem situação"
       );
+    }
+
+    function getProjectName(task) {
+      const projectId = getPossibleValue(task, [
+        "project_id",
+        "projectId",
+        "sp_project_id"
+      ]);
+
+      const found = allProjects.find((item) => {
+        return String(item.id) === String(projectId);
+      });
+
+      return (
+        found?.name ||
+        found?.title ||
+        found?.month ||
+        found?.mes ||
+        found?.mês ||
+        projectId ||
+        "Sem mês"
+      );
+    }
+
+    function getSupportName(task) {
+      const owner = getPossibleValue(task, [
+        "owner",
+        "Owner",
+        "suporte",
+        "support_id",
+        "owner_id",
+        "responsavel",
+        "responsável"
+      ]);
+
+      const found = allSupports.find((item) => {
+        return (
+          String(item.id) === String(owner) ||
+          String(item.nome) === String(owner) ||
+          String(item.name) === String(owner) ||
+          String(item.suporte) === String(owner) ||
+          String(item.email) === String(owner)
+        );
+      });
+
+      return (
+        found?.nome ||
+        found?.name ||
+        found?.suporte ||
+        found?.email ||
+        owner ||
+        "Sem suporte"
+      );
+    }
+
+    function getStoreName(task) {
+      return (
+        getPossibleValue(task, [
+          "nome_loja",
+          "loja",
+          "store_name",
+          "title",
+          "name",
+          "seller",
+          "nome",
+          "cliente"
+        ]) || "Sem nome"
+      );
+    }
+
+    function getMCID(task) {
+      return (
+        getPossibleValue(task, [
+          "mcid",
+          "MCID",
+          "id_mcid"
+        ]) || "-"
+      );
+    }
+
+    function getEmail(task) {
+      return (
+        getPossibleValue(task, [
+          "email",
+          "e_mail",
+          "mail",
+          "Email"
+        ]) || "-"
+      );
+    }
+
+    function getPhone(task) {
+      return (
+        getPossibleValue(task, [
+          "telefone",
+          "phone",
+          "whatsapp",
+          "Telefone"
+        ]) || "-"
+      );
+    }
+
+    function getCreatedAt(task) {
+      const dateValue = getPossibleValue(task, [
+        "created_at",
+        "data_criacao",
+        "createdAt",
+        "inserted_at"
+      ]);
+
+      if (!dateValue) return "-";
+
+      const date = new Date(dateValue);
+
+      if (isNaN(date.getTime())) {
+        return dateValue;
+      }
+
+      return date.toLocaleDateString("pt-BR");
+    }
+
+    function buildRows(tasks) {
+      return tasks.map((task) => ({
+        raw: task,
+        id: task.id,
+        loja: getStoreName(task),
+        mcid: getMCID(task),
+        email: getEmail(task),
+        telefone: getPhone(task),
+        suporte: getSupportName(task),
+        situacao: getStatusName(task),
+        mes: getProjectName(task),
+        created_at: getCreatedAt(task)
+      }));
+    }
+
+    function populateMonthFilter(rows) {
+      const selectedValue = monthFilter.value;
+
+      const months = [...new Set(rows.map((row) => row.mes))]
+        .filter((month) => month && month !== "-" && month !== "Sem mês")
+        .sort();
+
+      monthFilter.innerHTML = `<option value="">Todos os meses</option>`;
+
+      months.forEach((month) => {
+        const option = document.createElement("option");
+        option.value = month;
+        option.textContent = month;
+        monthFilter.appendChild(option);
+      });
+
+      monthFilter.value = selectedValue;
+    }
+
+    function getFilteredRows() {
+      const selectedMonth = monthFilter.value;
+      const searchTerm = normalizeText(searchInput.value);
+
+      return allRows.filter((row) => {
+        const matchMonth = !selectedMonth || row.mes === selectedMonth;
+
+        const searchable = normalizeText(`
+          ${row.loja}
+          ${row.mcid}
+          ${row.email}
+          ${row.telefone}
+          ${row.suporte}
+          ${row.situacao}
+          ${row.mes}
+        `);
+
+        const matchSearch = !searchTerm || searchable.includes(searchTerm);
+
+        return matchMonth && matchSearch;
+      });
+    }
+
+    function renderOverview(rows) {
+      const supports = new Set(
+        rows
+          .map((row) => row.suporte)
+          .filter((support) => support && support !== "-" && support !== "Sem suporte")
+      );
+
+      totalStores.textContent = rows.length;
+      totalSupports.textContent = supports.size;
+      supportCountLabel.textContent = `${supports.size} suporte${supports.size === 1 ? "" : "s"}`;
+    }
+
+    function renderSupportCards(rows) {
+      supportCards.innerHTML = "";
+
+      if (!rows.length) {
+        supportCards.innerHTML = `
+          <div class="support-card">
+            <div class="empty">Nenhum resultado encontrado.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const grouped = {};
+
+      rows.forEach((row) => {
+        if (!grouped[row.suporte]) {
+          grouped[row.suporte] = {
+            total: 0,
+            statuses: {}
+          };
+        }
+
+        grouped[row.suporte].total += 1;
+
+        if (!grouped[row.suporte].statuses[row.situacao]) {
+          grouped[row.suporte].statuses[row.situacao] = 0;
+        }
+
+        grouped[row.suporte].statuses[row.situacao] += 1;
+      });
+
+      const sortedSupports = Object.entries(grouped)
+        .sort((a, b) => b[1].total - a[1].total);
+
+      sortedSupports.forEach(([supportName, data]) => {
+        const card = document.createElement("div");
+        card.className = "support-card";
+
+        const statusEntries = Object.entries(data.statuses)
+          .sort((a, b) => b[1] - a[1]);
+
+        const progress = statusEntries
+          .map(([status, count]) => {
+            const percentage = (count / data.total) * 100;
+            const color = getStatusColor(status);
+
+            return `
+              <div
+                class="progress-piece"
+                style="width: ${percentage}%; background: ${color};"
+                title="${escapeHtml(status)}: ${count}"
+              ></div>
+            `;
+          })
+          .join("");
+
+        const statusList = statusEntries
+          .map(([status, count], index) => {
+            const color = getStatusColor(status);
+            const percent = ((count / data.total) * 100).toFixed(0);
+
+            return `
+              <div class="status-item">
+                <div class="status-left">
+                  <span class="status-index">${index + 1}.</span>
+                  <span class="dot" style="background: ${color};"></span>
+                  <span class="status-name">${escapeHtml(status)}</span>
+                </div>
+
+                <span class="status-count">
+                  ${count}
+                  <span class="status-percent">${percent}%</span>
+                </span>
+              </div>
+            `;
+          })
+          .join("");
+
+        card.innerHTML = `
+          <div class="support-top">
+            <div>
+              <div class="support-name">${escapeHtml(supportName)}</div>
+              <div class="support-subtitle">
+                Responsável por ${data.total} loja${data.total === 1 ? "" : "s"}
+              </div>
+            </div>
+
+            <div class="support-total">${data.total}</div>
+          </div>
+
+          <div class="progress-bar">
+            ${progress}
+          </div>
+
+          <div class="status-list">
+            ${statusList}
+          </div>
+        `;
+
+        supportCards.appendChild(card);
+      });
+    }
+
+    function renderTable(rows) {
+      tableCount.textContent = `${rows.length} registro${rows.length === 1 ? "" : "s"}`;
+
+      if (!rows.length) {
+        storesTable.innerHTML = `
+          <tr>
+            <td colspan="8" class="empty">Nenhuma loja encontrada.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      storesTable.innerHTML = rows
+        .map((row) => {
+          const color = getStatusColor(row.situacao);
+
+          return `
+            <tr>
+              <td>
+                <div class="store-name">${escapeHtml(safe(row.loja))}</div>
+              </td>
+              <td>${escapeHtml(safe(row.mcid))}</td>
+              <td>${escapeHtml(safe(row.suporte))}</td>
+              <td>
+                <span class="badge">
+                  <span class="badge-dot" style="background: ${color};"></span>
+                  ${escapeHtml(safe(row.situacao))}
+                </span>
+              </td>
+              <td>${escapeHtml(safe(row.mes))}</td>
+              <td>${escapeHtml(safe(row.email))}</td>
+              <td>${escapeHtml(safe(row.telefone))}</td>
+              <td>${escapeHtml(safe(row.created_at))}</td>
+            </tr>
+          `;
+        })
+        .join("");
+    }
+
+    function render() {
+      const rows = getFilteredRows();
+
+      renderOverview(rows);
+      renderSupportCards(rows);
+      renderTable(rows);
+    }
+
+    async function loadData() {
+      clearError();
 
       storesTable.innerHTML = `
         <tr>
-          <td colspan="8" class="empty">Erro ao carregar dados.</td>
+          <td colspan="8" class="empty">Carregando dados...</td>
         </tr>
       `;
+
+      try {
+        const [tasks, projects, columns, supports] = await Promise.all([
+          fetchAll("sp_tasks"),
+          fetchAll("sp_projects"),
+          fetchAll("sp_columns"),
+          fetchSupports()
+        ]);
+
+        console.log("sp_tasks:", tasks);
+        console.log("sp_projects:", projects);
+        console.log("sp_columns:", columns);
+        console.log("suportes:", supports);
+
+        allProjects = projects || [];
+        allStatuses = columns || [];
+        allSupports = supports || [];
+
+        allRows = buildRows(tasks || []);
+
+        populateMonthFilter(allRows);
+        render();
+
+      } catch (error) {
+        console.error(error);
+
+        showError(
+          error.message ||
+          "Erro ao carregar dados. Verifique tabelas, RLS e chave do Supabase."
+        );
+
+        storesTable.innerHTML = `
+          <tr>
+            <td colspan="8" class="empty">Erro ao carregar dados.</td>
+          </tr>
+        `;
+      }
     }
-  }
 
-  monthFilter.addEventListener("change", render);
-  searchInput.addEventListener("input", render);
+    monthFilter.addEventListener("change", render);
+    searchInput.addEventListener("input", render);
 
-  loadData();
-</script>
+    loadData();
+  </script>
+</body>
+</html>
