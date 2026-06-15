@@ -178,32 +178,69 @@
     const SUPABASE_KEY = 'sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr';
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    /*
+      NOVA BASE DE DADOS:
+      - Lê: sp_columns, sp_projects, sp_reminders, sp_tasks
+      - Exibe na tabela: MCID, Seller, Suporte e Situação
+      - Salva/edita no Supabase usando sp_projects como tabela principal.
+
+      Se no seu Supabase o registro principal estiver em sp_tasks, altere:
+      CONFIG.saveTable = 'sp_tasks'
+      CONFIG.primaryDisplayTable = 'sp_tasks'
+    */
+    const CONFIG = {
+      primaryDisplayTable: 'sp_projects',
+      saveTable: 'sp_projects',
+      tables: {
+        columns: 'sp_columns',
+        projects: 'sp_projects',
+        reminders: 'sp_reminders',
+        tasks: 'sp_tasks'
+      },
+      fieldNames: {
+        id: ['id', 'uuid', 'project_id', 'task_id'],
+        mcid: ['mcid', 'MCID', 'm_cid'],
+        seller: ['seller', 'Seller', 'nome', 'name', 'title', 'titulo'],
+        suporte: ['suporte', 'suporte_nome', 'suporte_responsavel', 'responsavel', 'responsável', 'support', 'owner'],
+        situacao: ['situacao', 'situação', 'status', 'stage', 'etapa'],
+        dataFormulario: ['data_formulario', 'preenchimento_formulario', 'formulario', 'created_at'],
+        diaConclusao: ['dia_conclusao', 'data_conclusao', 'completed_at', 'concluido_em'],
+        mes: ['mes_categoria', 'mes', 'mês', 'categoria', 'aba']
+      }
+    };
+
     const DEFAULT_SUPPORTS = ['CARLOS','DANIELA','FELIPE','GABRIEL','JOSE','MELISSA','POLYANNA','SILAS'];
-    const DEFAULT_MESES = ['Janeiro','Fevereiro'];
     const SUPPORT_COLORS = ['#f97316','#0f172a','#2563eb','#16a34a','#9333ea','#db2777','#0891b2','#ca8a04','#ef4444','#64748b'];
 
-    let lojas = [], suportes = [], meses = [], activeMes = '', totalBanco = 0;
-    let sortState = { key: 'data_formulario', dir: 'desc' };
+    let lojas = [], suportes = [], meses = [], activeMes = 'Geral', totalBanco = 0;
+    let spData = { columns: [], projects: [], reminders: [], tasks: [] };
+    let sortState = { key: 'seller', dir: 'asc' };
 
     const $ = (id) => document.getElementById(id);
     const normalize = (v) => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ').toUpperCase();
+    const todayISO = () => new Date().toISOString().slice(0,10);
+    const parseDate = (v) => {
+      if (!v) return null;
+      const s = String(v).slice(0,10);
+      return /^\d{4}-\d{2}-\d{2}$/.test(s) ? new Date(s + 'T00:00:00') : null;
+    };
+    const formatDate = (v) => parseDate(v) ? parseDate(v).toLocaleDateString('pt-BR') : '-';
+    const uid = () => crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
+
     function normalizeSituacao(v) {
       const n = normalize(v);
-      if (n === 'CONCLUIDO' || n === 'CONCLUIDA') return 'Concluido';
-      if (n === 'AGUARDANDO SELLER' || n === 'AGUARDANDO' || n === 'FORMULARIO NAO PREENCHIDO') return 'Aguardando seller';
-      if (n === 'CONGELADO' || n === 'CONGELADA') return 'Congelado';
+      if (['CONCLUIDO','CONCLUIDA','DONE','FINALIZADO','FINALIZADA'].includes(n)) return 'Concluido';
+      if (n.includes('AGUARDANDO') || n.includes('NAO PREENCHIDO')) return 'Aguardando seller';
+      if (['CONGELADO','CONGELADA','PAUSADO','PAUSADA','FROZEN'].includes(n)) return 'Congelado';
+      if (n) return v;
       return 'Pendente';
     }
-    const todayISO = () => new Date().toISOString().slice(0,10);
-    const parseDate = (v) => v ? new Date(v + 'T00:00:00') : null;
-    const formatDate = (v) => v ? parseDate(v).toLocaleDateString('pt-BR') : '-';
-    const uid = () => crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
 
     function toast(msg, type='info') {
       const color = type === 'error' ? 'alert-error' : type === 'success' ? 'alert-success' : type === 'warning' ? 'alert-warning' : 'alert-info';
       const el = document.createElement('div');
       el.className = `alert ${color} text-white shadow-lg max-w-sm`;
-      el.innerHTML = `<span>${msg}</span>`;
+      el.innerHTML = `<span>${escapeHtml(msg)}</span>`;
       $('toastBox').appendChild(el);
       setTimeout(() => el.remove(), 4500);
     }
@@ -217,7 +254,7 @@
         let q = client.from(table).select(select, { count: from === 0 ? 'exact' : undefined }).range(from, from + pageSize - 1);
         if (orderCol) q = q.order(orderCol, { ascending: true });
         const { data, error, count: exact } = await q;
-        if (error) throw error;
+        if (error) throw new Error(`${table}: ${error.message}`);
         if (from === 0 && typeof exact === 'number') count = exact;
         all.push(...(data || []));
         if (!data || data.length < pageSize) break;
@@ -226,60 +263,140 @@
       return { rows: all, count: count || all.length };
     }
 
-    async function loadSuportes() {
-      try {
-        const { rows } = await fetchAllRows('suportes');
-        suportes = rows.map((s, i) => ({
-          id: s.id || s.ID || s.nome || s.name || s.suporte || uid(),
-          nome: s.nome || s.name || s.suporte || s.Suporte || s.NOME || '',
-          cor: s.cor || s.color || SUPPORT_COLORS[i % SUPPORT_COLORS.length]
-        })).filter(s => s.nome);
-        if (!suportes.length) throw new Error('Tabela suportes vazia');
-      } catch (err) {
-        suportes = DEFAULT_SUPPORTS.map((nome, i) => ({ id: nome, nome, cor: SUPPORT_COLORS[i % SUPPORT_COLORS.length] }));
-      }
-      renderSupportOptions();
+    function tryJson(v) {
+      if (!v || typeof v !== 'string') return v;
+      try { return JSON.parse(v); } catch { return v; }
     }
 
-    async function loadMeses() {
-      try {
-        const { rows } = await fetchAllRows('lojas_prontas_meses');
-        meses = rows.map((m, i) => ({ id: m.id || m.nome || uid(), nome: m.nome || m.mes || m.categoria || '', ordem: m.ordem ?? i })).filter(m => m.nome).sort((a,b)=>(a.ordem??0)-(b.ordem??0));
-        if (!meses.length) throw new Error('Tabela de meses vazia');
-      } catch (err) {
-        meses = DEFAULT_MESES.map((nome, i) => ({ id: normalize(nome), nome, ordem: i }));
+    function flatObject(obj, prefix='') {
+      const out = {};
+      if (!obj || typeof obj !== 'object') return out;
+      for (const [k, raw] of Object.entries(obj)) {
+        const v = tryJson(raw);
+        const key = prefix ? `${prefix}.${k}` : k;
+        if (v && typeof v === 'object' && !Array.isArray(v) && !(v instanceof Date)) {
+          Object.assign(out, flatObject(v, key));
+        } else {
+          out[key] = v;
+          out[k] = v;
+        }
       }
-      if (!activeMes && meses.length) activeMes = meses[0].nome;
-      renderMesOptions();
+      return out;
+    }
+
+    function pick(obj, keys, fallback='') {
+      const flat = flatObject(obj);
+      for (const key of keys) {
+        if (flat[key] !== undefined && flat[key] !== null && String(flat[key]).trim() !== '') return flat[key];
+      }
+      const wanted = keys.map(normalize);
+      for (const [k, v] of Object.entries(flat)) {
+        const nk = normalize(k.split('.').pop());
+        if (wanted.includes(nk) && v !== undefined && v !== null && String(v).trim() !== '') return v;
+      }
+      return fallback;
+    }
+
+    function findProjectFor(row) {
+      const projectId = row.project_id || row.sp_project_id || row.project || row.board_id;
+      if (!projectId) return null;
+      return spData.projects.find(p => String(p.id) === String(projectId) || String(p.project_id) === String(projectId)) || null;
+    }
+
+    function findColumnFor(row, project=null) {
+      const columnId = row.column_id || row.sp_column_id || row.status_id || row.stage_id || project?.column_id || project?.sp_column_id;
+      if (!columnId) return null;
+      return spData.columns.find(c => String(c.id) === String(columnId) || String(c.column_id) === String(columnId)) || null;
+    }
+
+    function getColumnName(col) {
+      return col ? (col.name || col.nome || col.title || col.titulo || col.status || col.situacao || '') : '';
+    }
+
+    function buildLoja(row, sourceTable) {
+      const project = sourceTable === 'sp_tasks' ? findProjectFor(row) : row;
+      const column = findColumnFor(row, project);
+      const merged = {
+        ...(project || {}),
+        ...row,
+        column_name: getColumnName(column)
+      };
+
+      const id = pick(merged, CONFIG.fieldNames.id, row.id || uid());
+      const mcid = pick(merged, CONFIG.fieldNames.mcid, '');
+      const seller = pick(merged, CONFIG.fieldNames.seller, '');
+      const suporte = pick(merged, CONFIG.fieldNames.suporte, '');
+      const situacaoBase = pick(merged, CONFIG.fieldNames.situacao, '') || getColumnName(column);
+      const dataFormulario = pick(merged, CONFIG.fieldNames.dataFormulario, '');
+      const diaConclusao = pick(merged, CONFIG.fieldNames.diaConclusao, '');
+      const mes = pick(merged, CONFIG.fieldNames.mes, '') || 'Geral';
+
+      return {
+        ...merged,
+        id,
+        _sourceTable: sourceTable,
+        _rawId: row.id || id,
+        mcid: String(mcid || '').trim(),
+        seller: String(seller || '').trim(),
+        data_formulario: dataFormulario ? String(dataFormulario).slice(0,10) : '',
+        suporte_nome: String(suporte || '').trim(),
+        situacao: normalizeSituacao(situacaoBase),
+        dia_conclusao: diaConclusao ? String(diaConclusao).slice(0,10) : '',
+        mes_categoria: String(mes || 'Geral').trim()
+      };
+    }
+
+    function rowHasUsefulData(l) {
+      return !!(l.mcid || l.seller || l.suporte_nome || l.situacao);
+    }
+
+    async function loadSpData() {
+      const [columns, projects, reminders, tasks] = await Promise.all([
+        fetchAllRows(CONFIG.tables.columns).catch(err => ({ rows: [], count: 0, error: err })),
+        fetchAllRows(CONFIG.tables.projects).catch(err => ({ rows: [], count: 0, error: err })),
+        fetchAllRows(CONFIG.tables.reminders).catch(err => ({ rows: [], count: 0, error: err })),
+        fetchAllRows(CONFIG.tables.tasks).catch(err => ({ rows: [], count: 0, error: err }))
+      ]);
+
+      spData = {
+        columns: columns.rows || [],
+        projects: projects.rows || [],
+        reminders: reminders.rows || [],
+        tasks: tasks.rows || []
+      };
+
+      const errors = [columns, projects, reminders, tasks].filter(x => x.error).map(x => x.error.message);
+      if (errors.length) toast('Algumas tabelas não carregaram: ' + errors.join(' | '), 'warning');
     }
 
     async function loadLojas() {
-      const { rows, count } = await fetchAllRows('lojas_prontas');
-      totalBanco = count;
-      lojas = rows.map(row => normalizeLoja(row));
-    }
+      await loadSpData();
 
-    function normalizeLoja(row) {
-      const suporteNome = row.suporte_nome || row.suporte || row['Suporte responsavél'] || row['Suporte responsável'] || row.suporte_responsavel || '';
-      const mes = row.mes || row.categoria || row.mes_categoria || row.aba || activeMes || 'Janeiro';
-      return {
-        ...row,
-        id: row.id || row.ID || row.uuid || row.mcid || row.MCID || uid(),
-        mcid: row.mcid || row.MCID || '',
-        seller: row.seller || row.nome || row.Seller || '',
-        data_formulario: row.data_formulario || row.preenchimento_formulario || row['preenchimento de formulario'] || row.formulario || '',
-        suporte_nome: suporteNome,
-        situacao: normalizeSituacao(row.situacao),
-        dia_conclusao: row.dia_conclusao || row.data_conclusao || row.conclusao || '',
-        mes_categoria: mes
-      };
+      const projectRows = spData.projects.map(r => buildLoja(r, 'sp_projects')).filter(rowHasUsefulData);
+      const taskRows = spData.tasks.map(r => buildLoja(r, 'sp_tasks')).filter(rowHasUsefulData);
+
+      // Preferência: usa sp_projects como fonte principal. Se não houver dados úteis ali, usa sp_tasks.
+      lojas = CONFIG.primaryDisplayTable === 'sp_tasks'
+        ? (taskRows.length ? taskRows : projectRows)
+        : (projectRows.length ? projectRows : taskRows);
+
+      totalBanco = lojas.length;
+
+      const supportNames = [...new Set(lojas.map(l => l.suporte_nome).filter(Boolean))];
+      suportes = (supportNames.length ? supportNames : DEFAULT_SUPPORTS)
+        .map((nome, i) => ({ id: nome, nome, cor: SUPPORT_COLORS[i % SUPPORT_COLORS.length] }));
+
+      const mesNames = [...new Set(lojas.map(l => l.mes_categoria || 'Geral').filter(Boolean))];
+      meses = (mesNames.length ? mesNames : ['Geral']).map((nome, i) => ({ id: normalize(nome), nome, ordem: i }));
+      if (!meses.some(m => normalize(m.nome) === normalize(activeMes))) activeMes = meses[0]?.nome || 'Geral';
+
+      renderSupportOptions();
+      renderMesOptions();
     }
 
     async function refreshAll() {
       showLoading(true);
       try {
-        await loadSuportes();
-        await loadMeses();
         await loadLojas();
         render();
       } catch (err) {
@@ -317,10 +434,10 @@
 
     function statusBadge(loja) {
       const status = normalizeSituacao(loja.situacao);
-      if (status === 'Concluido') return '<span class="badge badge-success text-white">Concluído</span>';
-      if (status === 'Aguardando seller') return '<span class="badge bg-sky-500/20 text-sky-200 border border-sky-400/25">Aguardando seller</span>';
-      if (status === 'Congelado') return '<span class="badge bg-violet-500/20 text-violet-200 border border-violet-400/25">Congelado</span>';
-      return '<span class="badge bg-orange-500/20 text-orange-200 border border-orange-400/25">Pendente</span>';
+      if (normalize(status) === 'CONCLUIDO') return '<span class="badge badge-success text-white">Concluído</span>';
+      if (normalize(status) === 'AGUARDANDO SELLER') return '<span class="badge bg-sky-500/20 text-sky-200 border border-sky-400/25">Aguardando seller</span>';
+      if (normalize(status) === 'CONGELADO') return '<span class="badge bg-violet-500/20 text-violet-200 border border-violet-400/25">Congelado</span>';
+      return `<span class="badge bg-orange-500/20 text-orange-200 border border-orange-400/25">${escapeHtml(status || 'Pendente')}</span>`;
     }
 
     function daysBadge(loja) {
@@ -409,8 +526,8 @@
       const list = filteredLojas();
       renderCounters(mesScope);
       renderSortIndicators();
-      $('loadInfo').textContent = `Carregadas ${lojas.length} de ${totalBanco || lojas.length} loja(s) no Supabase. Mês ativo: ${activeMes || '-'}.`;
-      $('visibleInfo').textContent = `Exibindo ${list.length} de ${mesScope.length} loja(s) do mês selecionado após filtros.`;
+      $('loadInfo').textContent = `Carregadas ${lojas.length} linha(s) de ${CONFIG.tables.projects}, ${CONFIG.tables.tasks}, ${CONFIG.tables.columns} e ${CONFIG.tables.reminders}. Aba ativa: ${activeMes || '-'}.`;
+      $('visibleInfo').textContent = `Exibindo ${list.length} de ${mesScope.length} registro(s) após filtros.`;
 
       $('lojasBody').innerHTML = list.length ? list.map(l => `
         <tr class="hover:bg-orange-500/10">
@@ -426,7 +543,7 @@
             <button class="btn btn-xs btn-error text-white" onclick="deleteLoja('${escapeAttr(l.id)}')">Excluir</button>
           </td>
         </tr>
-      `).join('') : `<tr><td colspan="8" class="text-center py-10 text-slate-500">Nenhuma loja encontrada neste mês/filtro.</td></tr>`;
+      `).join('') : `<tr><td colspan="8" class="text-center py-10 text-slate-500">Nenhum registro encontrado.</td></tr>`;
     }
 
     function supportPill(nome) {
@@ -445,7 +562,7 @@
       $('suporteSelect').value = l?.suporte_nome || suportes[0]?.nome || '';
       $('situacao').value = normalizeSituacao(l?.situacao || (l?.data_formulario ? 'Pendente' : 'Aguardando seller'));
       $('diaConclusao').value = l?.dia_conclusao || '';
-      $('mesSelect').value = l?.mes_categoria || activeMes || meses[0]?.nome || '';
+      $('mesSelect').value = l?.mes_categoria || activeMes || meses[0]?.nome || 'Geral';
       toggleFormulario();
       toggleConclusao();
       lojaModal.showModal();
@@ -472,43 +589,55 @@
     async function saveLoja(ev) {
       ev.preventDefault();
       showLoading(true);
+
       const id = $('lojaId').value;
+      const existing = lojas.find(l => String(l.id) === String(id));
+
       const payload = {
         mcid: $('mcid').value.trim(),
         seller: $('seller').value.trim(),
-        data_formulario: $('formStatus').value === 'nao_preenchido' ? null : $('dataFormulario').value,
-        suporte_nome: $('suporteSelect').value,
+        suporte: $('suporteSelect').value,
         situacao: $('situacao').value,
+        data_formulario: $('formStatus').value === 'nao_preenchido' ? null : $('dataFormulario').value,
         dia_conclusao: $('situacao').value === 'Concluido' ? ($('diaConclusao').value || todayISO()) : null,
         mes_categoria: $('mesSelect').value
       };
+
       try {
-        const existing = lojas.find(l => String(l.id) === String(id));
         let res;
-        if (existing && existing.id && !String(existing.id).startsWith('local-')) {
-          res = await client.from('lojas_prontas').update(payload).eq('id', existing.id);
+        if (existing && existing._rawId) {
+          res = await client.from(existing._sourceTable || CONFIG.saveTable).update(payload).eq('id', existing._rawId);
         } else {
-          res = await client.from('lojas_prontas').insert([{ id: uid(), ...payload }]);
+          res = await client.from(CONFIG.saveTable).insert([{ id: uid(), ...payload }]);
         }
+
         if (res.error) throw res.error;
         lojaModal.close();
-        toast('Loja salva com sucesso.', 'success');
+        toast('Registro salvo no Supabase.', 'success');
         await refreshAll();
       } catch (err) {
-        toast('Erro ao salvar loja: ' + err.message, 'error');
-      } finally { showLoading(false); }
+        toast('Erro ao salvar: ' + err.message, 'error');
+      } finally {
+        showLoading(false);
+      }
     }
 
     async function deleteLoja(id) {
-      if (!confirm('Deseja excluir esta loja?')) return;
+      if (!confirm('Deseja excluir este registro?')) return;
       showLoading(true);
       try {
-        const { error } = await client.from('lojas_prontas').delete().eq('id', id);
+        const existing = lojas.find(l => String(l.id) === String(id));
+        const table = existing?._sourceTable || CONFIG.saveTable;
+        const rawId = existing?._rawId || id;
+        const { error } = await client.from(table).delete().eq('id', rawId);
         if (error) throw error;
-        toast('Loja excluída.', 'success');
+        toast('Registro excluído.', 'success');
         await refreshAll();
-      } catch (err) { toast('Erro ao excluir: ' + err.message, 'error'); }
-      finally { showLoading(false); }
+      } catch (err) {
+        toast('Erro ao excluir: ' + err.message, 'error');
+      } finally {
+        showLoading(false);
+      }
     }
 
     function openMesModal() { $('novoMesNome').value = ''; mesModal.showModal(); }
@@ -517,34 +646,23 @@
       ev.preventDefault();
       const nome = $('novoMesNome').value.trim();
       if (!nome) return;
-      showLoading(true);
-      try {
-        const { error } = await client.from('lojas_prontas_meses').insert([{ id: uid(), nome, ordem: meses.length }]);
-        if (error) throw error;
-        activeMes = nome;
-        mesModal.close();
-        toast('Nova aba criada.', 'success');
-        await refreshAll();
-      } catch (err) {
-        // Fallback visual se a tabela de meses ainda não existir.
-        meses.push({ id: normalize(nome), nome, ordem: meses.length });
-        activeMes = nome;
-        mesModal.close();
-        toast('Aba criada apenas na tela. Para salvar no banco, crie a tabela lojas_prontas_meses.', 'warning');
-        render();
-      } finally { showLoading(false); }
+      meses.push({ id: normalize(nome), nome, ordem: meses.length });
+      activeMes = nome;
+      mesModal.close();
+      toast('Aba criada na tela. Ela será salva nos registros quando você cadastrar uma loja nessa aba.', 'success');
+      render();
+    }
+
+    function setupRealtime() {
+      const ch = client.channel('sp-realtime-lojas-prontas');
+      Object.values(CONFIG.tables).forEach(table => {
+        ch.on('postgres_changes', { event: '*', schema: 'public', table }, refreshAll);
+      });
+      ch.subscribe();
     }
 
     function escapeHtml(str) { return String(str ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
     function escapeAttr(str) { return escapeHtml(str).replace(/`/g,'&#96;'); }
-
-    function setupRealtime() {
-      client.channel('lojas-prontas-realtime')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'lojas_prontas' }, refreshAll)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'lojas_prontas_meses' }, refreshAll)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'suportes' }, refreshAll)
-        .subscribe();
-    }
 
     document.addEventListener('DOMContentLoaded', async () => { await refreshAll(); setupRealtime(); });
   </script>
