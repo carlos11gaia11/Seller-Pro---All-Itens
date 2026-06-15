@@ -80,7 +80,7 @@
     </section>
 
     <section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Total de lojas</p><strong id="totalGeral" class="text-3xl font-black text-slate-100">0</strong></div>
+      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Total na aba</p><strong id="totalGeral" class="text-3xl font-black text-slate-100">0</strong></div>
       <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Em andamento</p><strong id="totalPendentes" class="text-3xl font-black text-orange-300">0</strong></div>
       <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Loja entregue</p><strong id="totalConcluidas" class="text-3xl font-black text-emerald-300">0</strong></div>
       <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Aguardando CNPJ</p><strong id="totalAguardando" class="text-3xl font-black text-sky-300">0</strong></div>
@@ -91,7 +91,7 @@
     <section class="glass rounded-3xl shadow-soft p-4 space-y-4">
       <div class="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-3">
         <div class="flex-1">
-          <p class="text-xs text-slate-500 font-bold uppercase mb-2">Abas por categoria/mês</p>
+          <p class="text-xs text-slate-500 font-bold uppercase mb-2">Abas por mês detectado</p>
           <div id="mesTabs" class="flex gap-2 overflow-x-auto pb-1"></div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 min-w-full xl:min-w-[760px]">
@@ -108,7 +108,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
           <div>
             <h3 class="font-black text-base">Contagem exata por suporte e situação</h3>
-            <p id="supportStatusInfo" class="text-xs text-slate-500">Resumo do mês selecionado e total geral.</p>
+            <p id="supportStatusInfo" class="text-xs text-slate-500">Resumo da aba selecionada por situação.</p>
           </div>
         </div>
         <div class="overflow-auto">
@@ -125,7 +125,7 @@
     <section class="glass rounded-3xl shadow-soft overflow-hidden">
       <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-orange-500/20">
         <div>
-          <h2 class="font-black text-lg">Lojas do mês selecionado</h2>
+          <h2 class="font-black text-lg">Lojas da aba selecionada</h2>
           <p id="visibleInfo" class="text-xs text-slate-500">Exibindo 0 loja(s).</p>
         </div>
         <div class="flex gap-2 text-xs items-center flex-wrap">
@@ -167,7 +167,7 @@
         <label class="form-control"><span class="label-text font-bold">Suporte responsável</span><select id="suporteSelect" class="select select-bordered" required></select></label>
         <label class="form-control"><span class="label-text font-bold">Situação</span><select id="situacao" class="select select-bordered" onchange="toggleConclusao()"></select></label>
         <label class="form-control"><span class="label-text font-bold">Dia de conclusão</span><input id="diaConclusao" type="date" class="input input-bordered" /></label>
-        <label class="form-control md:col-span-2"><span class="label-text font-bold">Categoria / mês</span><select id="mesSelect" class="select select-bordered"></select></label>
+        <label class="form-control md:col-span-2"><span class="label-text font-bold">Mês da loja / aba</span><select id="mesSelect" class="select select-bordered"></select></label>
         <div class="md:col-span-2 flex justify-end gap-2 mt-2">
           <button type="button" class="btn" onclick="lojaModal.close()">Cancelar</button>
           <button class="btn bg-orange-500 hover:bg-orange-600 border-0 text-white">Salvar loja</button>
@@ -241,13 +241,14 @@
       'Aguardando CNPJ',
       'Call de briefing',
       'Call de onboarding',
-      'Congelados',
+      'Cancelados',
       'Chamadas especiais',
-      'Configuração de faturador',
-      'Criação de grupo',
+      'Configuração do faturador',
+      'Congelados',
       'Criação de conta',
+      'Criação de grupo',
       'Criação de anúncio',
-      'Envio FBA',
+      'Envio ao FBA',
       'Loja entregue',
       'Preenchimento de formulário',
       'Venda finalizada'
@@ -308,15 +309,21 @@
         'ONBOARDING': 'Call de onboarding',
         'CALL ONBOARDING': 'Call de onboarding',
         'CALL DE ONBOARDING': 'Call de onboarding',
+        'CANCELADO': 'Cancelados',
+        'CANCELADA': 'Cancelados',
+        'CANCELADOS': 'Cancelados',
+        'CANCELADAS': 'Cancelados',
         'CONGELADO': 'Congelados',
         'CONGELADA': 'Congelados',
         'CONGELADOS': 'Congelados',
         'CHAMADO ESPECIAL': 'Chamadas especiais',
         'CHAMADOS ESPECIAIS': 'Chamadas especiais',
         'CHAMADAS ESPECIAIS': 'Chamadas especiais',
-        'FATURADOR': 'Configuração de faturador',
-        'CONFIGURACAO DE FATURADOR': 'Configuração de faturador',
-        'CONFIGURAÇÃO DE FATURADOR': 'Configuração de faturador',
+        'FATURADOR': 'Configuração do faturador',
+        'CONFIGURACAO DE FATURADOR': 'Configuração do faturador',
+        'CONFIGURACAO DO FATURADOR': 'Configuração do faturador',
+        'CONFIGURAÇÃO DE FATURADOR': 'Configuração do faturador',
+        'CONFIGURAÇÃO DO FATURADOR': 'Configuração do faturador',
         'GRUPO': 'Criação de grupo',
         'CRIACAO DE GRUPO': 'Criação de grupo',
         'CRIAÇÃO DE GRUPO': 'Criação de grupo',
@@ -326,9 +333,12 @@
         'ANUNCIO': 'Criação de anúncio',
         'ANÚNCIO': 'Criação de anúncio',
         'CRIACAO DE ANUNCIO': 'Criação de anúncio',
+        'CRIACAO DE ANÚNCIO': 'Criação de anúncio',
+        'CRIAÇÃO DE ANUNCIO': 'Criação de anúncio',
         'CRIAÇÃO DE ANÚNCIO': 'Criação de anúncio',
-        'FBA': 'Envio FBA',
-        'ENVIO FBA': 'Envio FBA',
+        'FBA': 'Envio ao FBA',
+        'ENVIO FBA': 'Envio ao FBA',
+        'ENVIO AO FBA': 'Envio ao FBA',
         'CONCLUIDO': 'Loja entregue',
         'CONCLUIDA': 'Loja entregue',
         'LOJA ENTREGUE': 'Loja entregue',
@@ -344,13 +354,12 @@
       };
       if (aliases[n]) return aliases[n];
 
-      // Se vier um texto de coluna novo no banco, mantém o texto real em vez de forçar "Pendente".
       return String(v || '').trim();
     }
 
     function isSituacaoFinalizada(v) {
       const n = normalize(normalizeSituacao(v));
-      return n === 'LOJA ENTREGUE' || n === 'VENDA FINALIZADA';
+      return n === 'LOJA ENTREGUE' || n === 'VENDA FINALIZADA' || n === 'CANCELADOS';
     }
 
     function isCongelado(v) {
@@ -549,12 +558,12 @@
 
       for (const mes of MESES_MAP) {
         if (mes.keys.some(k => n.includes(k))) {
-          const yearMatch = n.match(/(20\d{2}|19\d{2})/);
+          const yearMatch = n.match(/\b(20\d{2}|19\d{2})\b/);
           return yearMatch ? `${mes.label}/${yearMatch[1]}` : mes.label;
         }
       }
 
-      const numeric = n.match(/(?:^|\D)(0?[1-9]|1[0-2])(?:[\/-])(20\d{2}|19\d{2})(?:\D|$)/);
+      const numeric = n.match(/(?:^|\D)(0?[1-9]|1[0-2])(?:[\/\-])(20\d{2}|19\d{2})(?:\D|$)/);
       if (numeric) {
         const monthIndex = Number(numeric[1]);
         return `${MESES_PT[monthIndex - 1]}/${numeric[2]}`;
@@ -566,7 +575,7 @@
     function mesSortValue(nome) {
       const n = normalize(nome);
       if (!n || n === 'GERAL' || n === 'SEM MES') return 999999;
-      const yearMatch = n.match(/(20\d{2}|19\d{2})/);
+      const yearMatch = n.match(/\b(20\d{2}|19\d{2})\b/);
       const year = yearMatch ? Number(yearMatch[1]) : 9999;
       const mes = MESES_MAP.find(m => m.keys.some(k => n.includes(k)));
       const month = mes ? mes.index : 99;
@@ -607,6 +616,12 @@
         const label = monthLabelFromText(candidate);
         if (label) return label;
       }
+
+      // Fallback apenas para evitar perder registro sem texto de mês.
+      // O mês principal continua vindo dos campos da própria loja/projeto.
+      const dateCandidate = pick(row, [...CONFIG.fieldNames.dataFormulario, ...CONFIG.fieldNames.diaConclusao], '');
+      const dt = parseDate(dateCandidate);
+      if (dt) return MESES_PT[dt.getMonth()] + '/' + dt.getFullYear();
 
       return 'Sem mês';
     }
@@ -794,6 +809,7 @@
       const n = normalize(status);
       if (n === 'LOJA ENTREGUE') return '<span class="badge badge-success text-white">Loja entregue</span>';
       if (n === 'VENDA FINALIZADA') return '<span class="badge bg-emerald-500/20 text-emerald-200 border border-emerald-400/25">Venda finalizada</span>';
+      if (n === 'CANCELADOS') return '<span class="badge bg-red-500/20 text-red-200 border border-red-400/25">Cancelados</span>';
       if (n === 'AGUARDANDO CNPJ') return '<span class="badge bg-sky-500/20 text-sky-200 border border-sky-400/25">Aguardando CNPJ</span>';
       if (n === 'CONGELADOS') return '<span class="badge bg-violet-500/20 text-violet-200 border border-violet-400/25">Congelados</span>';
       return `<span class="badge bg-orange-500/20 text-orange-200 border border-orange-400/25">${escapeHtml(status || 'Preenchimento de formulário')}</span>`;
@@ -857,33 +873,29 @@
     }
 
     function renderSupportStatusTable(scope) {
-      const baseTotal = todasLojas.length ? todasLojas : lojas;
-      const statuses = getSituacoesAtivas(baseTotal);
+      const statuses = getSituacoesAtivas(todasLojas.length ? todasLojas : scope);
       const supportsToShow = suportes.filter(s => {
-        const total = baseTotal.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
-        return total > 0;
+        const totalAba = scope.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
+        return totalAba > 0;
       });
 
       $('supportStatusHead').innerHTML = `
         <th>Suporte</th>
-        <th class="text-center">Total geral</th>
-        <th class="text-center">Neste mês</th>
+        <th class="text-center">Total da aba</th>
         ${statuses.map(st => `<th class="text-center">${escapeHtml(st)}</th>`).join('')}
       `;
 
       $('supportStatusBody').innerHTML = supportsToShow.length ? supportsToShow.map(s => {
-        const totalGeral = baseTotal.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
-        const totalMes = scope.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
+        const totalAba = scope.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
         const cells = statuses.map(st => `<td class="text-center font-bold">${countByStatus(scope, s.nome, st)}</td>`).join('');
         return `<tr>
           <td>${supportPill(s.nome)}</td>
-          <td class="text-center font-black text-slate-100">${totalGeral}</td>
-          <td class="text-center font-black text-orange-200">${totalMes}</td>
+          <td class="text-center font-black text-orange-200">${totalAba}</td>
           ${cells}
         </tr>`;
-      }).join('') : `<tr><td colspan="${statuses.length + 3}" class="text-center py-6 text-slate-500">Nenhuma loja encontrada.</td></tr>`;
+      }).join('') : `<tr><td colspan="${statuses.length + 2}" class="text-center py-6 text-slate-500">Nenhuma loja encontrada nesta aba.</td></tr>`;
 
-      $('supportStatusInfo').textContent = `Mês selecionado: ${activeMes}. Total geral: ${baseTotal.length}. Total neste mês: ${scope.length}.`;
+      $('supportStatusInfo').textContent = `Aba selecionada: ${activeMes}. Total na aba: ${scope.length}.`;
     }
 
     function renderCounters(scope) {
@@ -913,11 +925,11 @@
             <div class="font-black text-sm truncate text-slate-100"><span class="support-dot" style="background:${s.cor}"></span> ${escapeHtml(s.nome)}</div>
             <div class="text-right">
               <div class="text-xl font-black text-slate-100">${arrTotal.length}</div>
-              <div class="text-[10px] text-slate-500 font-bold uppercase">Total geral</div>
+              <div class="text-[10px] text-slate-500 font-bold uppercase">Total</div>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
-            <div class="rounded-xl muted-panel text-orange-200 p-2"><b>${arrMes.length}</b><br>Neste mês</div>
+            <div class="rounded-xl muted-panel text-orange-200 p-2"><b>${arrMes.length}</b><br>Na aba</div>
             <div class="rounded-xl muted-panel text-amber-200 p-2"><b>${p}</b><br>Em andamento</div>
             <div class="rounded-xl muted-panel text-emerald-200 p-2"><b>${c}</b><br>Loja entregue</div>
             <div class="rounded-xl muted-panel text-sky-200 p-2"><b>${a}</b><br>Aguardando CNPJ</div>
@@ -935,8 +947,8 @@
       const list = filteredLojas();
       renderCounters(mesScope);
       renderSortIndicators();
-      $('loadInfo').textContent = `Mês ativo: ${activeMes || '-'}. Renderizando ${lojas.length} loja(s) deste mês. Total geral carregado: ${totalBanco}.`;
-      $('visibleInfo').textContent = `Exibindo ${list.length} de ${mesScope.length} registro(s) após filtros.`;
+      $('loadInfo').textContent = `Aba ativa: ${activeMes || '-'}. Renderizando ${lojas.length} loja(s) desta aba. Total geral carregado: ${totalBanco}.`;
+      $('visibleInfo').textContent = `Exibindo ${list.length} de ${mesScope.length} registro(s) da aba selecionada após filtros.`;
 
       $('lojasBody').innerHTML = list.length ? list.map(l => `
         <tr class="hover:bg-orange-500/10">
@@ -996,6 +1008,14 @@
       if (!concluido) $('diaConclusao').value = '';
     }
 
+    function applyMesToPayload(payload, existing, mesValue) {
+      const flatExisting = flatObject(existing || {});
+      const mesField = CONFIG.fieldNames.mes.find(field => Object.prototype.hasOwnProperty.call(flatExisting, field));
+      if (mesField) payload[mesField] = mesValue;
+      else if (!existing) payload.mes_categoria = mesValue;
+      return payload;
+    }
+
     async function saveLoja(ev) {
       ev.preventDefault();
       showLoading(true);
@@ -1003,14 +1023,14 @@
       const id = $('lojaId').value;
       const existing = lojas.find(l => String(l.id) === String(id)) || todasLojas.find(l => String(l.id) === String(id));
 
-      const payload = {
+      const payload = applyMesToPayload({
         mcid: $('mcid').value.trim(),
         seller: $('seller').value.trim(),
         suporte: $('suporteSelect').value,
         situacao: $('situacao').value,
         data_formulario: $('formStatus').value === 'nao_preenchido' || !$('dataFormulario').value ? null : $('dataFormulario').value,
         dia_conclusao: isSituacaoFinalizada($('situacao').value) ? ($('diaConclusao').value || todayISO()) : null
-      };
+      }, existing, $('mesSelect').value);
 
       try {
         let res;
