@@ -150,6 +150,7 @@
           <option value="">Todas as situações</option>
           <option value="Ativo">Ativo</option>
           <option value="Expirado">Expirado</option>
+          <option value="Cancelado">Cancelado</option>
         </select>
       </div>
     </section>
@@ -176,6 +177,7 @@
               <th style="width:9%"><button class="sort-btn" onclick="setSort('suporte')">Suporte <span class="sort-icon" data-sort-icon="suporte">↕</span></button></th>
               <th style="width:9%"><button class="sort-btn" onclick="setSort('data_inicio')">Início <span class="sort-icon" data-sort-icon="data_inicio">↕</span></button></th>
               <th style="width:9%"><button class="sort-btn" onclick="setSort('validade')">Validade <span class="sort-icon" data-sort-icon="validade">↕</span></button></th>
+              <th style="width:8%"><button class="sort-btn" onclick="setSort('situacao')">Situação <span class="sort-icon" data-sort-icon="situacao">↕</span></button></th>
               <th style="width:5%" class="text-right">Ações</th>
             </tr>
           </thead>
@@ -353,15 +355,43 @@
       return isNaN(d.getTime()) ? null : d;
     }
 
+    function todayAtMidnight() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return today;
+    }
+
+    function toIsoDate(date) {
+      if (!date || isNaN(date.getTime())) return '';
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function effectiveValidity(seller) {
+      const validadeDate = parseDateFlexible(seller?.validade);
+      if (validadeDate) return toIsoDate(validadeDate);
+
+      const inicioDate = parseDateFlexible(seller?.data_inicio);
+      if (!inicioDate) return '';
+
+      const validadeCalculada = new Date(inicioDate);
+      validadeCalculada.setFullYear(validadeCalculada.getFullYear() + 1);
+      return toIsoDate(validadeCalculada);
+    }
+
     function realSituation(seller) {
       const status = normalizeStatus(seller?.status);
       if (status === 'Cancelado') return 'Cancelado';
-      const validadeDate = parseDateFlexible(seller?.validade);
-      if (!validadeDate) return normalizeText(seller?.situacao).includes('EXPIR') ? 'Expirado' : 'Ativo';
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+
+      const validadeDate = parseDateFlexible(effectiveValidity(seller));
+      if (!validadeDate) {
+        return normalizeText(seller?.situacao).includes('EXPIR') ? 'Expirado' : 'Ativo';
+      }
+
       validadeDate.setHours(0, 0, 0, 0);
-      return validadeDate < today ? 'Expirado' : 'Ativo';
+      return validadeDate < todayAtMidnight() ? 'Expirado' : 'Ativo';
     }
 
     function isActiveSeller(seller) {
@@ -447,14 +477,14 @@
     }
 
     function addOneYear(dateString) {
-      if (!dateString) return '';
-      const date = new Date(dateString + 'T00:00:00');
+      const date = parseDateFlexible(dateString);
+      if (!date) return '';
       date.setFullYear(date.getFullYear() + 1);
-      return date.toISOString().slice(0, 10);
+      return toIsoDate(date);
     }
 
-    function calcSituation(validade, status = 'Ativou') {
-      return realSituation({ validade, status });
+    function calcSituation(validade, status = 'Ativou', dataInicio = '') {
+      return realSituation({ validade, status, data_inicio: dataInicio });
     }
 
     function formatDate(dateString) {
@@ -548,13 +578,22 @@
 
     async function updateExpiredSellersIfNeeded() {
       const updates = sellers
-        .filter(s => s.validade && calcSituation(s.validade, s.status) !== s.situacao)
-        .map(s => ({ ...s, situacao: calcSituation(s.validade, s.status) }));
+        .map(s => {
+          const validadeCalculada = effectiveValidity(s);
+          const situacaoCalculada = realSituation({ ...s, validade: validadeCalculada });
+
+          const payload = {};
+          if (validadeCalculada && s.validade !== validadeCalculada) payload.validade = validadeCalculada;
+          if (s.situacao !== situacaoCalculada) payload.situacao = situacaoCalculada;
+
+          return Object.keys(payload).length ? { seller: s, payload } : null;
+        })
+        .filter(Boolean);
 
       for (const item of updates) {
-        await safeUpdateSeller(item, { situacao: item.situacao });
-        const local = sellers.find(s => s.__localKey === item.__localKey);
-        if (local) local.situacao = item.situacao;
+        await safeUpdateSeller(item.seller, item.payload);
+        const local = sellers.find(s => s.__localKey === item.seller.__localKey);
+        if (local) Object.assign(local, item.payload);
       }
     }
 
@@ -653,7 +692,7 @@
             <td><span class="cell-truncate" title="${s.telefone || '-'}">${s.telefone || '-'}</span></td>
             <td><span class="inline-flex items-center gap-1 min-w-0"><span class="support-dot" style="background:${color}"></span><span class="font-semibold cell-truncate" title="${suporteLabel}">${suporteLabel}</span></span></td>
             <td>${formatDate(s.data_inicio)}</td>
-            <td>${formatDate(s.validade)}</td>
+            <td>${formatDate(effectiveValidity(s))}</td>
             <td><span class="badge ${situationBadge} text-white">${situationValue}</span></td>
             <td class="text-right">
               <div class="compact-actions">
@@ -714,7 +753,7 @@
       alert.classList.toggle('hidden', expired.length === 0);
       list.innerHTML = '';
       expired.slice(0, 12).forEach(s => {
-        list.insertAdjacentHTML('beforeend', `<span class="badge badge-error text-white p-3">${s.nome || s.mcid} · ${formatDate(s.validade)}</span>`);
+        list.insertAdjacentHTML('beforeend', `<span class="badge badge-error text-white p-3">${s.nome || s.mcid} · ${formatDate(effectiveValidity(s))}</span>`);
       });
       if (expired.length > 12) list.insertAdjacentHTML('beforeend', `<span class="badge p-3">+${expired.length - 12} outros</span>`);
     }
@@ -733,7 +772,7 @@
         document.getElementById('telefone').value = seller.telefone || '';
         document.getElementById('suporte').value = supports.includes(supportKey(seller)) ? supportKey(seller) : (supports[0] || '');
         document.getElementById('data_inicio').value = seller.data_inicio || '';
-        document.getElementById('validadePreview').value = seller.validade ? formatDate(seller.validade) : '';
+        document.getElementById('validadePreview').value = formatDate(effectiveValidity(seller));
       } else {
         document.getElementById('status').value = 'Ativou';
         document.getElementById('suporte').value = supports[0] || '';
@@ -761,7 +800,7 @@
         suporte: normalizeSupport(document.getElementById('suporte').value),
         data_inicio: dataInicio,
         validade,
-        situacao: calcSituation(validade, status)
+        situacao: calcSituation(validade, status, dataInicio)
       };
 
       const originalSeller = id ? findSellerByLocalKey(id) : null;
