@@ -49,9 +49,10 @@
     }
 
     .filters {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
       gap: 12px;
-      flex-wrap: wrap;
+      margin-bottom: 22px;
     }
 
     select,
@@ -63,7 +64,7 @@
       padding: 0 14px;
       font-size: 14px;
       outline: none;
-      min-width: 220px;
+      width: 100%;
     }
 
     select:focus,
@@ -268,6 +269,47 @@
       font-weight: 800;
     }
 
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 14px 20px 0;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      border: none;
+      background: #f3f4f6;
+      color: #374151;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-bottom: 14px;
+    }
+
+    .tab-btn.active {
+      background: #2563eb;
+      color: #fff;
+    }
+
+    .tab-btn .counter {
+      opacity: 0.85;
+      margin-left: 4px;
+    }
+
+    .table-tools {
+      padding: 16px 20px;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+    }
+
     .scroll {
       overflow-x: auto;
     }
@@ -275,7 +317,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 980px;
+      min-width: 1040px;
     }
 
     th {
@@ -294,6 +336,7 @@
       border-bottom: 1px solid #f1f5f9;
       font-size: 14px;
       color: #374151;
+      vertical-align: middle;
     }
 
     tr:hover td {
@@ -301,8 +344,14 @@
     }
 
     .store-name {
-      font-weight: 700;
+      font-weight: 800;
       color: #111827;
+    }
+
+    .store-sub {
+      color: #6b7280;
+      font-size: 12px;
+      margin-top: 3px;
     }
 
     .badge {
@@ -322,6 +371,16 @@
       width: 8px;
       height: 8px;
       border-radius: 999px;
+    }
+
+    .finalizado-badge {
+      background: #ecfdf5;
+      color: #047857;
+    }
+
+    .andamento-badge {
+      background: #eff6ff;
+      color: #1d4ed8;
     }
 
     .empty {
@@ -346,15 +405,6 @@
         padding: 18px;
       }
 
-      .filters {
-        width: 100%;
-      }
-
-      select,
-      input {
-        width: 100%;
-      }
-
       .support-grid {
         grid-template-columns: 1fr;
       }
@@ -369,26 +419,44 @@
         <h1>Loja Pronta</h1>
         <p>Acompanhamento por mês, suporte responsável e situação atual.</p>
       </div>
-
-      <div class="filters">
-        <select id="monthFilter">
-          <option value="">Todos os meses</option>
-        </select>
-
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Buscar loja, suporte, status..."
-        />
-      </div>
     </div>
 
     <div id="errorBox" class="error"></div>
+
+    <section class="filters">
+      <select id="monthFilter">
+        <option value="">Todos os meses</option>
+      </select>
+
+      <select id="supportFilter">
+        <option value="">Todos os suportes</option>
+      </select>
+
+      <select id="statusFilter">
+        <option value="">Todas as situações</option>
+      </select>
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Buscar loja, MCID, e-mail ou telefone..."
+      />
+    </section>
 
     <section class="overview">
       <div class="overview-card">
         <div class="overview-label">Total de lojas</div>
         <div class="overview-value" id="totalStores">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-label">Em andamento</div>
+        <div class="overview-value" id="totalInProgress">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-label">Entregues</div>
+        <div class="overview-value" id="totalDelivered">0</div>
       </div>
 
       <div class="overview-card">
@@ -410,24 +478,37 @@
         <span class="muted" id="tableCount">0 registros</span>
       </div>
 
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="andamento">
+          Em andamento <span class="counter" id="tabInProgressCount">0</span>
+        </button>
+
+        <button class="tab-btn" data-tab="entregues">
+          Entregues / Finalizadas <span class="counter" id="tabDeliveredCount">0</span>
+        </button>
+
+        <button class="tab-btn" data-tab="todas">
+          Todas <span class="counter" id="tabAllCount">0</span>
+        </button>
+      </div>
+
       <div class="scroll">
         <table>
           <thead>
             <tr>
               <th>Loja</th>
-              <th>MCID</th>
               <th>Suporte</th>
               <th>Situação</th>
+              <th>Etapa</th>
               <th>Mês</th>
-              <th>E-mail</th>
-              <th>Telefone</th>
+              <th>Contato</th>
               <th>Criado em</th>
             </tr>
           </thead>
 
           <tbody id="storesTable">
             <tr>
-              <td colspan="8" class="empty">Carregando dados...</td>
+              <td colspan="7" class="empty">Carregando dados...</td>
             </tr>
           </tbody>
         </table>
@@ -445,16 +526,43 @@
     let allStatuses = [];
     let allSupports = [];
     let allProjects = [];
+    let currentTab = "andamento";
+
+    const DELIVERED_KEYWORDS = [
+      "entregue",
+      "entregues",
+      "finalizado",
+      "finalizada",
+      "finalizados",
+      "finalizadas",
+      "concluido",
+      "concluida",
+      "concluído",
+      "concluída",
+      "loja pronta",
+      "pronta"
+    ];
 
     const monthFilter = document.getElementById("monthFilter");
+    const supportFilter = document.getElementById("supportFilter");
+    const statusFilter = document.getElementById("statusFilter");
     const searchInput = document.getElementById("searchInput");
+
     const storesTable = document.getElementById("storesTable");
     const supportCards = document.getElementById("supportCards");
+
     const totalStores = document.getElementById("totalStores");
+    const totalInProgress = document.getElementById("totalInProgress");
+    const totalDelivered = document.getElementById("totalDelivered");
     const totalSupports = document.getElementById("totalSupports");
+
     const tableCount = document.getElementById("tableCount");
     const supportCountLabel = document.getElementById("supportCountLabel");
     const errorBox = document.getElementById("errorBox");
+
+    const tabInProgressCount = document.getElementById("tabInProgressCount");
+    const tabDeliveredCount = document.getElementById("tabDeliveredCount");
+    const tabAllCount = document.getElementById("tabAllCount");
 
     const statusColors = [
       "#2563eb",
@@ -512,6 +620,14 @@
       return null;
     }
 
+    function isDeliveredStatus(statusName) {
+      const normalized = normalizeText(statusName);
+
+      return DELIVERED_KEYWORDS.some((word) => {
+        return normalized.includes(normalizeText(word));
+      });
+    }
+
     function getStatusColor(statusName) {
       const normalized = normalizeText(statusName);
 
@@ -521,9 +637,7 @@
         hash = normalized.charCodeAt(i) + ((hash << 5) - hash);
       }
 
-      const index = Math.abs(hash) % statusColors.length;
-
-      return statusColors[index];
+      return statusColors[Math.abs(hash) % statusColors.length];
     }
 
     async function fetchAll(tableName) {
@@ -723,28 +837,46 @@
     }
 
     function buildRows(tasks) {
-      return tasks.map((task) => ({
-        raw: task,
-        id: task.id,
-        loja: getStoreName(task),
-        mcid: getMCID(task),
-        email: getEmail(task),
-        telefone: getPhone(task),
-        suporte: getSupportName(task),
-        situacao: getStatusName(task),
-        mes: getProjectName(task),
-        created_at: getCreatedAt(task)
-      }));
+      return tasks.map((task) => {
+        const situacao = getStatusName(task);
+        const entregue = isDeliveredStatus(situacao);
+
+        return {
+          raw: task,
+          id: task.id,
+          loja: getStoreName(task),
+          mcid: getMCID(task),
+          email: getEmail(task),
+          telefone: getPhone(task),
+          suporte: getSupportName(task),
+          situacao,
+          mes: getProjectName(task),
+          created_at: getCreatedAt(task),
+          entregue
+        };
+      });
     }
 
-    function populateMonthFilter(rows) {
-      const selectedValue = monthFilter.value;
+    function populateFilters(rows) {
+      const selectedMonth = monthFilter.value;
+      const selectedSupport = supportFilter.value;
+      const selectedStatus = statusFilter.value;
 
       const months = [...new Set(rows.map((row) => row.mes))]
         .filter((month) => month && month !== "-" && month !== "Sem mês")
         .sort();
 
+      const supports = [...new Set(rows.map((row) => row.suporte))]
+        .filter((support) => support && support !== "-" && support !== "Sem suporte")
+        .sort();
+
+      const statuses = [...new Set(rows.map((row) => row.situacao))]
+        .filter((status) => status && status !== "-" && status !== "Sem situação")
+        .sort();
+
       monthFilter.innerHTML = `<option value="">Todos os meses</option>`;
+      supportFilter.innerHTML = `<option value="">Todos os suportes</option>`;
+      statusFilter.innerHTML = `<option value="">Todas as situações</option>`;
 
       months.forEach((month) => {
         const option = document.createElement("option");
@@ -753,15 +885,35 @@
         monthFilter.appendChild(option);
       });
 
-      monthFilter.value = selectedValue;
+      supports.forEach((support) => {
+        const option = document.createElement("option");
+        option.value = support;
+        option.textContent = support;
+        supportFilter.appendChild(option);
+      });
+
+      statuses.forEach((status) => {
+        const option = document.createElement("option");
+        option.value = status;
+        option.textContent = status;
+        statusFilter.appendChild(option);
+      });
+
+      monthFilter.value = selectedMonth;
+      supportFilter.value = selectedSupport;
+      statusFilter.value = selectedStatus;
     }
 
-    function getFilteredRows() {
+    function getRowsAfterFiltersWithoutTab() {
       const selectedMonth = monthFilter.value;
+      const selectedSupport = supportFilter.value;
+      const selectedStatus = statusFilter.value;
       const searchTerm = normalizeText(searchInput.value);
 
       return allRows.filter((row) => {
         const matchMonth = !selectedMonth || row.mes === selectedMonth;
+        const matchSupport = !selectedSupport || row.suporte === selectedSupport;
+        const matchStatus = !selectedStatus || row.situacao === selectedStatus;
 
         const searchable = normalizeText(`
           ${row.loja}
@@ -775,26 +927,57 @@
 
         const matchSearch = !searchTerm || searchable.includes(searchTerm);
 
-        return matchMonth && matchSearch;
+        return matchMonth && matchSupport && matchStatus && matchSearch;
       });
     }
 
-    function renderOverview(rows) {
+    function getRowsForCurrentTab(rows) {
+      if (currentTab === "entregues") {
+        return rows.filter((row) => row.entregue);
+      }
+
+      if (currentTab === "andamento") {
+        return rows.filter((row) => !row.entregue);
+      }
+
+      return rows;
+    }
+
+    function renderOverview(rowsWithoutTab) {
       const supports = new Set(
-        rows
+        rowsWithoutTab
           .map((row) => row.suporte)
           .filter((support) => support && support !== "-" && support !== "Sem suporte")
       );
 
-      totalStores.textContent = rows.length;
+      const delivered = rowsWithoutTab.filter((row) => row.entregue).length;
+      const inProgress = rowsWithoutTab.filter((row) => !row.entregue).length;
+
+      totalStores.textContent = rowsWithoutTab.length;
+      totalInProgress.textContent = inProgress;
+      totalDelivered.textContent = delivered;
       totalSupports.textContent = supports.size;
+
       supportCountLabel.textContent = `${supports.size} suporte${supports.size === 1 ? "" : "s"}`;
     }
 
-    function renderSupportCards(rows) {
+    function renderTabs(rowsWithoutTab) {
+      const delivered = rowsWithoutTab.filter((row) => row.entregue).length;
+      const inProgress = rowsWithoutTab.filter((row) => !row.entregue).length;
+
+      tabInProgressCount.textContent = inProgress;
+      tabDeliveredCount.textContent = delivered;
+      tabAllCount.textContent = rowsWithoutTab.length;
+
+      document.querySelectorAll(".tab-btn").forEach((button) => {
+        button.classList.toggle("active", button.dataset.tab === currentTab);
+      });
+    }
+
+    function renderSupportCards(rowsWithoutTab) {
       supportCards.innerHTML = "";
 
-      if (!rows.length) {
+      if (!rowsWithoutTab.length) {
         supportCards.innerHTML = `
           <div class="support-card">
             <div class="empty">Nenhum resultado encontrado.</div>
@@ -805,15 +988,23 @@
 
       const grouped = {};
 
-      rows.forEach((row) => {
+      rowsWithoutTab.forEach((row) => {
         if (!grouped[row.suporte]) {
           grouped[row.suporte] = {
             total: 0,
+            delivered: 0,
+            inProgress: 0,
             statuses: {}
           };
         }
 
         grouped[row.suporte].total += 1;
+
+        if (row.entregue) {
+          grouped[row.suporte].delivered += 1;
+        } else {
+          grouped[row.suporte].inProgress += 1;
+        }
 
         if (!grouped[row.suporte].statuses[row.situacao]) {
           grouped[row.suporte].statuses[row.situacao] = 0;
@@ -874,7 +1065,7 @@
             <div>
               <div class="support-name">${escapeHtml(supportName)}</div>
               <div class="support-subtitle">
-                Responsável por ${data.total} loja${data.total === 1 ? "" : "s"}
+                ${data.inProgress} em andamento · ${data.delivered} entregues
               </div>
             </div>
 
@@ -900,7 +1091,7 @@
       if (!rows.length) {
         storesTable.innerHTML = `
           <tr>
-            <td colspan="8" class="empty">Nenhuma loja encontrada.</td>
+            <td colspan="7" class="empty">Nenhuma loja encontrada nessa aba.</td>
           </tr>
         `;
         return;
@@ -914,18 +1105,31 @@
             <tr>
               <td>
                 <div class="store-name">${escapeHtml(safe(row.loja))}</div>
+                <div class="store-sub">MCID: ${escapeHtml(safe(row.mcid))}</div>
               </td>
-              <td>${escapeHtml(safe(row.mcid))}</td>
+
               <td>${escapeHtml(safe(row.suporte))}</td>
+
               <td>
                 <span class="badge">
                   <span class="badge-dot" style="background: ${color};"></span>
                   ${escapeHtml(safe(row.situacao))}
                 </span>
               </td>
+
+              <td>
+                <span class="badge ${row.entregue ? "finalizado-badge" : "andamento-badge"}">
+                  ${row.entregue ? "Entregue" : "Em andamento"}
+                </span>
+              </td>
+
               <td>${escapeHtml(safe(row.mes))}</td>
-              <td>${escapeHtml(safe(row.email))}</td>
-              <td>${escapeHtml(safe(row.telefone))}</td>
+
+              <td>
+                <div>${escapeHtml(safe(row.email))}</div>
+                <div class="store-sub">${escapeHtml(safe(row.telefone))}</div>
+              </td>
+
               <td>${escapeHtml(safe(row.created_at))}</td>
             </tr>
           `;
@@ -934,11 +1138,13 @@
     }
 
     function render() {
-      const rows = getFilteredRows();
+      const rowsWithoutTab = getRowsAfterFiltersWithoutTab();
+      const rowsForTable = getRowsForCurrentTab(rowsWithoutTab);
 
-      renderOverview(rows);
-      renderSupportCards(rows);
-      renderTable(rows);
+      renderOverview(rowsWithoutTab);
+      renderTabs(rowsWithoutTab);
+      renderSupportCards(rowsWithoutTab);
+      renderTable(rowsForTable);
     }
 
     async function loadData() {
@@ -946,7 +1152,7 @@
 
       storesTable.innerHTML = `
         <tr>
-          <td colspan="8" class="empty">Carregando dados...</td>
+          <td colspan="7" class="empty">Carregando dados...</td>
         </tr>
       `;
 
@@ -969,7 +1175,7 @@
 
         allRows = buildRows(tasks || []);
 
-        populateMonthFilter(allRows);
+        populateFilters(allRows);
         render();
 
       } catch (error) {
@@ -982,14 +1188,23 @@
 
         storesTable.innerHTML = `
           <tr>
-            <td colspan="8" class="empty">Erro ao carregar dados.</td>
+            <td colspan="7" class="empty">Erro ao carregar dados.</td>
           </tr>
         `;
       }
     }
 
     monthFilter.addEventListener("change", render);
+    supportFilter.addEventListener("change", render);
+    statusFilter.addEventListener("change", render);
     searchInput.addEventListener("input", render);
+
+    document.querySelectorAll(".tab-btn").forEach((button) => {
+      button.addEventListener("click", () => {
+        currentTab = button.dataset.tab;
+        render();
+      });
+    });
 
     loadData();
   </script>
