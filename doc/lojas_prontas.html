@@ -10,33 +10,41 @@
   <style>
     * {
       box-sizing: border-box;
-      font-family: Arial, sans-serif;
+      font-family: Inter, Arial, sans-serif;
     }
 
     body {
       margin: 0;
-      background: #0f172a;
-      color: #e5e7eb;
-      padding: 24px;
+      background: #f4f6f8;
+      color: #111827;
     }
 
-    h1 {
-      margin: 0 0 6px;
-      font-size: 28px;
+    .app {
+      padding: 28px;
+      max-width: 1500px;
+      margin: 0 auto;
     }
 
-    .subtitle {
-      color: #94a3b8;
-      margin-bottom: 24px;
-    }
-
-    .topbar {
+    .header {
       display: flex;
       justify-content: space-between;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: wrap;
+      gap: 20px;
+      align-items: flex-start;
       margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      color: #6b7280;
+      font-size: 14px;
     }
 
     .filters {
@@ -47,58 +55,86 @@
 
     select,
     input {
-      background: #1e293b;
-      color: #e5e7eb;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 10px 12px;
-      min-width: 220px;
+      height: 42px;
+      border: 1px solid #d1d5db;
+      background: #fff;
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 14px;
       outline: none;
+      min-width: 220px;
     }
 
-    .summary {
+    select:focus,
+    input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .overview {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
 
-    .summary-card {
-      background: #111827;
-      border: 1px solid #1f2937;
-      border-radius: 14px;
-      padding: 18px;
+    .overview-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
     }
 
-    .summary-card h3 {
-      margin: 0;
-      color: #94a3b8;
+    .overview-label {
+      color: #6b7280;
       font-size: 14px;
-      font-weight: 500;
+      margin-bottom: 8px;
     }
 
-    .summary-card strong {
-      display: block;
-      font-size: 32px;
-      margin-top: 8px;
-      color: #fff;
+    .overview-value {
+      font-size: 34px;
+      font-weight: 800;
+      color: #111827;
+      line-height: 1;
+    }
+
+    .section-title {
+      margin: 28px 0 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .muted {
+      color: #6b7280;
+      font-size: 14px;
     }
 
     .support-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
       gap: 16px;
       margin-bottom: 28px;
     }
 
     .support-card {
-      background: #111827;
-      border: 1px solid #1f2937;
-      border-radius: 14px;
+      background: #fff;
+      border-radius: 16px;
       padding: 18px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
     }
 
-    .support-header {
+    .support-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -107,18 +143,33 @@
     }
 
     .support-name {
-      font-size: 18px;
-      font-weight: 700;
-      color: #fff;
+      font-size: 17px;
+      font-weight: 800;
+      color: #111827;
     }
 
     .support-total {
-      background: #2563eb;
-      color: #fff;
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 7px 11px;
       border-radius: 999px;
-      padding: 6px 10px;
       font-size: 13px;
+      font-weight: 700;
       white-space: nowrap;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+      display: flex;
+      margin-bottom: 14px;
+    }
+
+    .progress-piece {
+      height: 100%;
     }
 
     .status-list {
@@ -127,182 +178,226 @@
       gap: 8px;
     }
 
-    .status-row {
+    .status-item {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       gap: 12px;
-      padding: 9px 10px;
-      background: #1e293b;
-      border-radius: 8px;
-      border: 1px solid #334155;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .status-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      flex: 0 0 auto;
     }
 
     .status-name {
-      color: #cbd5e1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .status-count {
-      font-weight: 700;
-      color: #fff;
+      font-weight: 800;
+      color: #111827;
     }
 
-    .table-wrapper {
-      background: #111827;
-      border: 1px solid #1f2937;
-      border-radius: 14px;
+    .table-card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e5e7eb;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
       overflow: hidden;
     }
 
-    .table-header {
-      padding: 16px 18px;
-      border-bottom: 1px solid #1f2937;
+    .table-top {
+      padding: 18px 20px;
+      border-bottom: 1px solid #e5e7eb;
       display: flex;
       justify-content: space-between;
       gap: 12px;
+      align-items: center;
       flex-wrap: wrap;
     }
 
-    .table-header h2 {
+    .table-top h2 {
       margin: 0;
       font-size: 20px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 900px;
-    }
-
-    th,
-    td {
-      padding: 13px 14px;
-      text-align: left;
-      border-bottom: 1px solid #1f2937;
-      font-size: 14px;
-    }
-
-    th {
-      background: #1e293b;
-      color: #cbd5e1;
-      font-weight: 600;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-
-    td {
-      color: #e5e7eb;
-    }
-
-    tr:hover td {
-      background: #172033;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 5px 9px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      background: #334155;
-      color: #fff;
-    }
-
-    .empty {
-      padding: 32px;
-      text-align: center;
-      color: #94a3b8;
-    }
-
-    .loading {
-      color: #fbbf24;
-    }
-
-    .error {
-      background: #7f1d1d;
-      color: #fecaca;
-      padding: 14px;
-      border-radius: 10px;
-      margin-bottom: 18px;
-      display: none;
+      font-weight: 800;
     }
 
     .scroll {
       overflow-x: auto;
     }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 950px;
+    }
+
+    th {
+      background: #f9fafb;
+      color: #6b7280;
+      text-align: left;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 13px 16px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    td {
+      padding: 15px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    tr:hover td {
+      background: #f9fafb;
+    }
+
+    .store-name {
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #374151;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 36px;
+      color: #6b7280;
+    }
+
+    .error {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 14px 16px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+      .app {
+        padding: 18px;
+      }
+
+      .filters {
+        width: 100%;
+      }
+
+      select,
+      input {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <div class="topbar">
-    <div>
-      <h1>Painel Loja Pronta</h1>
-      <div class="subtitle">Visualização geral por mês, suporte e situação</div>
+  <main class="app">
+    <div class="header">
+      <div>
+        <h1>Loja Pronta</h1>
+        <p>Acompanhamento por mês, suporte responsável e situação atual.</p>
+      </div>
+
+      <div class="filters">
+        <select id="monthFilter">
+          <option value="">Todos os meses</option>
+        </select>
+
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Buscar loja, suporte, status..."
+        />
+      </div>
     </div>
 
-    <div class="filters">
-      <select id="monthFilter">
-        <option value="">Todos os meses</option>
-      </select>
+    <div id="errorBox" class="error"></div>
 
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Buscar loja, suporte ou status..."
-      />
-    </div>
-  </div>
+    <section class="overview">
+      <div class="overview-card">
+        <div class="overview-label">Total de lojas</div>
+        <div class="overview-value" id="totalStores">0</div>
+      </div>
 
-  <div id="errorBox" class="error"></div>
+      <div class="overview-card">
+        <div class="overview-label">Suportes com lojas</div>
+        <div class="overview-value" id="totalSupports">0</div>
+      </div>
+    </section>
 
-  <section class="summary">
-    <div class="summary-card">
-      <h3>Total de lojas</h3>
-      <strong id="totalStores">0</strong>
+    <div class="section-title">
+      <h2>Distribuição por suporte</h2>
+      <span class="muted" id="supportCountLabel">0 suportes</span>
     </div>
 
-    <div class="summary-card">
-      <h3>Total de suportes</h3>
-      <strong id="totalSupports">0</strong>
-    </div>
+    <section id="supportCards" class="support-grid"></section>
 
-    <div class="summary-card">
-      <h3>Total de situações</h3>
-      <strong id="totalStatuses">0</strong>
-    </div>
-  </section>
+    <section class="table-card">
+      <div class="table-top">
+        <h2>Lojas cadastradas</h2>
+        <span class="muted" id="tableCount">0 registros</span>
+      </div>
 
-  <section id="supportCards" class="support-grid"></section>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Loja</th>
+              <th>MCID</th>
+              <th>Suporte</th>
+              <th>Situação</th>
+              <th>Mês</th>
+              <th>E-mail</th>
+              <th>Telefone</th>
+              <th>Criado em</th>
+            </tr>
+          </thead>
 
-  <section class="table-wrapper">
-    <div class="table-header">
-      <h2>Lojas</h2>
-      <span id="tableCount">0 registros</span>
-    </div>
-
-    <div class="scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>Loja</th>
-            <th>MCID</th>
-            <th>E-mail</th>
-            <th>Telefone</th>
-            <th>Suporte</th>
-            <th>Situação</th>
-            <th>Mês</th>
-            <th>Data de criação</th>
-          </tr>
-        </thead>
-
-        <tbody id="storesTable">
-          <tr>
-            <td colspan="8" class="empty loading">Carregando dados...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+          <tbody id="storesTable">
+            <tr>
+              <td colspan="8" class="empty">Carregando dados...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 
   <script>
     const SUPABASE_URL = "COLE_AQUI_SUA_SUPABASE_URL";
@@ -321,9 +416,20 @@
     const supportCards = document.getElementById("supportCards");
     const totalStores = document.getElementById("totalStores");
     const totalSupports = document.getElementById("totalSupports");
-    const totalStatuses = document.getElementById("totalStatuses");
     const tableCount = document.getElementById("tableCount");
+    const supportCountLabel = document.getElementById("supportCountLabel");
     const errorBox = document.getElementById("errorBox");
+
+    const statusColors = [
+      "#2563eb",
+      "#16a34a",
+      "#f59e0b",
+      "#dc2626",
+      "#7c3aed",
+      "#0891b2",
+      "#ea580c",
+      "#4b5563"
+    ];
 
     function showError(message) {
       errorBox.style.display = "block";
@@ -336,18 +442,36 @@
     }
 
     function safe(value) {
-      return value ?? "-";
+      return value || "-";
     }
 
     function normalizeText(value) {
-      return String(value ?? "")
+      return String(value || "")
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
     }
 
+    function getStatusColor(statusName) {
+      const normalized = normalizeText(statusName);
+
+      let hash = 0;
+
+      for (let i = 0; i < normalized.length; i++) {
+        hash = normalized.charCodeAt(i) + ((hash << 5) - hash);
+      }
+
+      const index = Math.abs(hash) % statusColors.length;
+
+      return statusColors[index];
+    }
+
     function getStatusName(task) {
-      const statusId = task.status ?? task.Status ?? task.column_id ?? task.columnId;
+      const statusId =
+        task.Status ??
+        task.status ??
+        task.column_id ??
+        task.columnId;
 
       const found = allStatuses.find((item) => {
         return String(item.id) === String(statusId);
@@ -357,14 +481,17 @@
         found?.name ||
         found?.title ||
         found?.situacao ||
-        task.status ||
+        found?.status ||
         task.Status ||
+        task.status ||
         "-"
       );
     }
 
     function getProjectName(task) {
-      const projectId = task.project_id ?? task.projectId;
+      const projectId =
+        task.project_id ??
+        task.projectId;
 
       const found = allProjects.find((item) => {
         return String(item.id) === String(projectId);
@@ -381,13 +508,18 @@
     }
 
     function getSupportName(task) {
-      const owner = task.owner ?? task.suporte ?? task.support_id ?? task.owner_id;
+      const owner =
+        task.owner ??
+        task.suporte ??
+        task.support_id ??
+        task.owner_id;
 
       const found = allSupports.find((item) => {
         return (
           String(item.id) === String(owner) ||
           String(item.nome) === String(owner) ||
-          String(item.name) === String(owner)
+          String(item.name) === String(owner) ||
+          String(item.email) === String(owner)
         );
       });
 
@@ -453,15 +585,15 @@
         suporte: getSupportName(task),
         situacao: getStatusName(task),
         mes: getProjectName(task),
-        created_at: getCreatedAt(task),
+        created_at: getCreatedAt(task)
       }));
     }
 
     function populateMonthFilter(rows) {
       const selectedValue = monthFilter.value;
 
-      const months = [...new Set(rows.map((row) => row.mes).filter(Boolean))]
-        .filter((item) => item !== "-")
+      const months = [...new Set(rows.map((row) => row.mes))]
+        .filter((month) => month && month !== "-")
         .sort();
 
       monthFilter.innerHTML = `<option value="">Todos os meses</option>`;
@@ -499,14 +631,16 @@
       });
     }
 
-    function renderSummary(rows) {
+    function renderOverview(rows) {
+      const supports = new Set(
+        rows
+          .map((row) => row.suporte)
+          .filter((support) => support && support !== "-")
+      );
+
       totalStores.textContent = rows.length;
-
-      const supports = new Set(rows.map((row) => row.suporte).filter((item) => item !== "-"));
-      const statuses = new Set(rows.map((row) => row.situacao).filter((item) => item !== "-"));
-
       totalSupports.textContent = supports.size;
-      totalStatuses.textContent = statuses.size;
+      supportCountLabel.textContent = `${supports.size} suportes`;
     }
 
     function renderSupportCards(rows) {
@@ -515,7 +649,7 @@
       if (!rows.length) {
         supportCards.innerHTML = `
           <div class="support-card">
-            <div class="empty">Nenhum dado encontrado.</div>
+            <div class="empty">Nenhum resultado encontrado.</div>
           </div>
         `;
         return;
@@ -527,50 +661,77 @@
         if (!grouped[row.suporte]) {
           grouped[row.suporte] = {
             total: 0,
-            statuses: {},
+            statuses: {}
           };
         }
 
-        grouped[row.suporte].total += 1;
+        grouped[row.suporte].total++;
 
         if (!grouped[row.suporte].statuses[row.situacao]) {
           grouped[row.suporte].statuses[row.situacao] = 0;
         }
 
-        grouped[row.suporte].statuses[row.situacao] += 1;
+        grouped[row.suporte].statuses[row.situacao]++;
       });
 
-      Object.entries(grouped)
-        .sort((a, b) => b[1].total - a[1].total)
-        .forEach(([supportName, data]) => {
-          const card = document.createElement("div");
-          card.className = "support-card";
+      const sortedSupports = Object.entries(grouped)
+        .sort((a, b) => b[1].total - a[1].total);
 
-          const statusRows = Object.entries(data.statuses)
-            .sort((a, b) => b[1] - a[1])
-            .map(([status, count]) => {
-              return `
-                <div class="status-row">
+      sortedSupports.forEach(([supportName, data]) => {
+        const card = document.createElement("div");
+        card.className = "support-card";
+
+        const statusEntries = Object.entries(data.statuses)
+          .sort((a, b) => b[1] - a[1]);
+
+        const progress = statusEntries
+          .map(([status, count]) => {
+            const percentage = (count / data.total) * 100;
+            const color = getStatusColor(status);
+
+            return `
+              <div
+                class="progress-piece"
+                style="width: ${percentage}%; background: ${color};"
+                title="${status}: ${count}"
+              ></div>
+            `;
+          })
+          .join("");
+
+        const statusList = statusEntries
+          .map(([status, count]) => {
+            const color = getStatusColor(status);
+
+            return `
+              <div class="status-item">
+                <div class="status-left">
+                  <span class="dot" style="background: ${color};"></span>
                   <span class="status-name">${status}</span>
-                  <span class="status-count">${count}</span>
                 </div>
-              `;
-            })
-            .join("");
+                <span class="status-count">${count}</span>
+              </div>
+            `;
+          })
+          .join("");
 
-          card.innerHTML = `
-            <div class="support-header">
-              <div class="support-name">${supportName}</div>
-              <div class="support-total">${data.total} lojas</div>
-            </div>
+        card.innerHTML = `
+          <div class="support-top">
+            <div class="support-name">${supportName}</div>
+            <div class="support-total">${data.total} lojas</div>
+          </div>
 
-            <div class="status-list">
-              ${statusRows}
-            </div>
-          `;
+          <div class="progress-bar">
+            ${progress}
+          </div>
 
-          supportCards.appendChild(card);
-        });
+          <div class="status-list">
+            ${statusList}
+          </div>
+        `;
+
+        supportCards.appendChild(card);
+      });
     }
 
     function renderTable(rows) {
@@ -587,15 +748,24 @@
 
       storesTable.innerHTML = rows
         .map((row) => {
+          const color = getStatusColor(row.situacao);
+
           return `
             <tr>
-              <td>${safe(row.loja)}</td>
+              <td>
+                <div class="store-name">${safe(row.loja)}</div>
+              </td>
               <td>${safe(row.mcid)}</td>
+              <td>${safe(row.suporte)}</td>
+              <td>
+                <span class="badge">
+                  <span class="badge-dot" style="background: ${color};"></span>
+                  ${safe(row.situacao)}
+                </span>
+              </td>
+              <td>${safe(row.mes)}</td>
               <td>${safe(row.email)}</td>
               <td>${safe(row.telefone)}</td>
-              <td>${safe(row.suporte)}</td>
-              <td><span class="badge">${safe(row.situacao)}</span></td>
-              <td>${safe(row.mes)}</td>
               <td>${safe(row.created_at)}</td>
             </tr>
           `;
@@ -606,7 +776,7 @@
     function render() {
       const rows = getFilteredRows();
 
-      renderSummary(rows);
+      renderOverview(rows);
       renderSupportCards(rows);
       renderTable(rows);
     }
@@ -616,7 +786,7 @@
 
       storesTable.innerHTML = `
         <tr>
-          <td colspan="8" class="empty loading">Carregando dados...</td>
+          <td colspan="8" class="empty">Carregando dados...</td>
         </tr>
       `;
 
@@ -625,12 +795,12 @@
           tasksResponse,
           projectsResponse,
           columnsResponse,
-          supportsResponse,
+          supportsResponse
         ] = await Promise.all([
           supabaseClient.from("sp_tasks").select("*"),
           supabaseClient.from("sp_projects").select("*"),
           supabaseClient.from("sp_columns").select("*"),
-          supabaseClient.from("suortes_sellerpro").select("*"),
+          supabaseClient.from("suortes_sellerpro").select("*")
         ]);
 
         if (tasksResponse.error) throw tasksResponse.error;
@@ -651,8 +821,8 @@
         console.error(error);
 
         showError(
-          "Erro ao carregar dados do Supabase: " + 
-          (error.message || "verifique as tabelas, colunas e permissões RLS.")
+          "Erro ao carregar dados do Supabase: " +
+          (error.message || "verifique o nome das tabelas, colunas e permissões RLS.")
         );
 
         storesTable.innerHTML = `
