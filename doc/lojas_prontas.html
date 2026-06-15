@@ -205,7 +205,7 @@
         seller: ['seller', 'Seller', 'seller_nome', 'nome_seller', 'seller_name', 'cliente', 'client', 'nome_cliente', 'razao_social', 'razão_social', 'empresa', 'nome_empresa', 'loja_nome', 'nome_loja', 'store_name'],
         suporte: ['suporte', 'suporte_nome', 'suporte_responsavel', 'suporte_responsável', 'responsavel', 'responsável', 'responsible', 'responsible_name', 'assignee', 'assignee_name', 'assigned_to', 'support', 'support_name', 'owner', 'owner_name'],
         situacao: ['situacao', 'situação', 'status', 'stage', 'etapa', 'column_name'],
-        dataFormulario: ['data_formulario', 'preenchimento_formulario', 'preenchimento_de_formulario', 'formulario', 'form_date', 'created_at'],
+        dataFormulario: ['data_formulario', 'preenchimento_formulario', 'preenchimento_de_formulario', 'data_preenchimento_formulario', 'form_date', 'formulario_preenchido_em', 'preenchido_em'],
         diaConclusao: ['dia_conclusao', 'data_conclusao', 'completed_at', 'concluido_em', 'finished_at'],
         mes: ['mes_categoria', 'mes', 'mês', 'categoria', 'aba', 'month']
       },
@@ -408,14 +408,14 @@
     function extractSeller(obj) {
       let seller = pick(obj, CONFIG.fieldNames.seller, '');
       if (!seller || isBadSellerValue(seller)) {
-        seller = findByKeyTokens(obj, ['seller', 'cliente', 'client', 'empresa', 'razao', 'razão', 'loja', 'store'], ['mes', 'month', 'categoria', 'column', 'status', 'situacao', 'situação', 'etapa']);
+        seller = findByKeyTokens(
+          obj,
+          ['seller', 'cliente', 'client', 'empresa', 'razao', 'razão', 'loja', 'store'],
+          ['mes', 'mês', 'month', 'categoria', 'aba', 'column', 'coluna', 'status', 'situacao', 'situação', 'etapa', 'stage', 'title', 'titulo', 'name', 'nome']
+        );
       }
-      // Último fallback: usa title/name apenas se não parecer mês, etapa ou coluna.
-      if (!seller || isBadSellerValue(seller)) {
-        const fallback = pick(obj, ['title', 'titulo', 'name', 'nome'], '');
-        seller = isBadSellerValue(fallback) ? '' : fallback;
-      }
-      return String(seller || '').trim();
+      // Não usar title/titulo/name/nome como fallback: nesses dados eles estão vindo como mês/aba/coluna.
+      return isBadSellerValue(seller) ? '' : String(seller || '').trim();
     }
 
     function normalizeSuporteRow(row, i) {
@@ -791,8 +791,8 @@
       if (naoPreenchido) {
         $('dataFormulario').value = '';
         if ($('situacao').value === 'Preenchimento de formulário') $('situacao').value = 'Aguardando CNPJ';
-      } else if (!$('dataFormulario').value) {
-        $('dataFormulario').value = todayISO();
+      } else {
+        // Não preenche data automaticamente. A data só deve aparecer quando o usuário informar.
         if ($('situacao').value === 'Aguardando CNPJ') $('situacao').value = 'Preenchimento de formulário';
       }
     }
@@ -815,7 +815,7 @@
         seller: $('seller').value.trim(),
         suporte: $('suporteSelect').value,
         situacao: $('situacao').value,
-        data_formulario: $('formStatus').value === 'nao_preenchido' ? null : $('dataFormulario').value,
+        data_formulario: $('formStatus').value === 'nao_preenchido' || !$('dataFormulario').value ? null : $('dataFormulario').value,
         dia_conclusao: isSituacaoFinalizada($('situacao').value) ? ($('diaConclusao').value || todayISO()) : null,
         mes_categoria: $('mesSelect').value
       };
