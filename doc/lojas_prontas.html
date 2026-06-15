@@ -186,11 +186,11 @@
 
       Se no seu Supabase o registro principal estiver em sp_tasks, altere:
       CONFIG.saveTable = 'sp_tasks'
-      CONFIG.primaryDisplayTable = 'sp_tasks'
+      CONFIG.primaryDisplayTable = 'auto'
     */
     const CONFIG = {
-      primaryDisplayTable: 'sp_projects',
-      saveTable: 'sp_projects',
+      primaryDisplayTable: 'auto',
+      saveTable: 'sp_tasks',
       tables: {
         columns: 'sp_columns',
         projects: 'sp_projects',
@@ -202,12 +202,12 @@
         id: ['id', 'uuid'],
         mcid: ['mcid', 'MCID', 'm_cid', 'codigo_mcid', 'merchant_customer_id'],
         // Evita usar title/titulo/name/nome como Seller, porque nessas tabelas eles podem ser mês, coluna ou etapa.
-        seller: ['seller', 'Seller', 'seller_nome', 'nome_seller', 'seller_name', 'cliente', 'client', 'nome_cliente', 'razao_social', 'razão_social', 'empresa', 'nome_empresa', 'loja_nome', 'nome_loja', 'store_name'],
+        seller: ['seller', 'Seller', 'seller_nome', 'nome_seller', 'seller_name', 'cliente', 'client', 'nome_cliente', 'razao_social', 'razão_social', 'empresa', 'nome_empresa', 'loja_nome', 'nome_loja', 'store_name', 'card_seller', 'seller_display'],
         suporte: ['suporte', 'suporte_nome', 'suporte_responsavel', 'suporte_responsável', 'responsavel', 'responsável', 'responsible', 'responsible_name', 'assignee', 'assignee_name', 'assigned_to', 'support', 'support_name', 'owner', 'owner_name'],
         situacao: ['situacao', 'situação', 'status', 'stage', 'etapa', 'column_name'],
         dataFormulario: ['data_formulario', 'preenchimento_formulario', 'preenchimento_de_formulario', 'data_preenchimento_formulario', 'form_date', 'formulario_preenchido_em', 'preenchido_em'],
         diaConclusao: ['dia_conclusao', 'data_conclusao', 'completed_at', 'concluido_em', 'finished_at'],
-        mes: ['mes_categoria', 'mes', 'mês', 'categoria', 'aba', 'month']
+        mes: ['mes_categoria', 'mes', 'mês', 'categoria', 'aba', 'month', 'project_name', 'board_name']
       },
       suporteFields: {
         id: ['id', 'uuid', 'user_id', 'usuario_id', 'suporte_id', 'profile_id'],
@@ -388,6 +388,8 @@
       if (MESES_NOMES.includes(n)) return true;
       if (SITUACOES.some(s => normalize(s) === n)) return true;
       if (['GERAL','BACKLOG','TODO','TO DO','DONE','KANBAN','PROJETO','PROJECT','TASK','TAREFA'].includes(n)) return true;
+      if ((spData.columns || []).some(c => normalize(getColumnName(c)) === n)) return true;
+      if ((spData.projects || []).some(p => normalize(p.mes || p.month || p.categoria || p.aba || p.project_name || p.board_name) === n)) return true;
       return false;
     }
 
@@ -405,16 +407,23 @@
       return '';
     }
 
-    function extractSeller(obj) {
+    function extractSeller(obj, sourceTable='') {
       let seller = pick(obj, CONFIG.fieldNames.seller, '');
+
       if (!seller || isBadSellerValue(seller)) {
         seller = findByKeyTokens(
           obj,
           ['seller', 'cliente', 'client', 'empresa', 'razao', 'razão', 'loja', 'store'],
-          ['mes', 'mês', 'month', 'categoria', 'aba', 'column', 'coluna', 'status', 'situacao', 'situação', 'etapa', 'stage', 'title', 'titulo', 'name', 'nome']
+          ['mes', 'mês', 'month', 'categoria', 'aba', 'column', 'coluna', 'status', 'situacao', 'situação', 'etapa', 'stage']
         );
       }
-      // Não usar title/titulo/name/nome como fallback: nesses dados eles estão vindo como mês/aba/coluna.
+
+      // No Ares, a loja normalmente é o card/tarefa. Então em sp_tasks o título pode ser o seller.
+      // Em sp_projects o título costuma ser mês/projeto, por isso NÃO usamos title/name como fallback lá.
+      if ((!seller || isBadSellerValue(seller)) && ['sp_tasks', 'sp_reminders'].includes(sourceTable)) {
+        seller = pick(obj, ['task_title', 'card_title', 'title', 'titulo', 'name', 'nome', 'summary', 'descricao', 'description'], '');
+      }
+
       return isBadSellerValue(seller) ? '' : String(seller || '').trim();
     }
 
@@ -500,13 +509,13 @@
     }
 
     function findProjectFor(row) {
-      const projectId = row.project_id || row.sp_project_id || row.project || row.board_id;
+      const projectId = row.project_id || row.sp_project_id || row.project || row.board_id || row.board || row.workspace_id;
       if (!projectId) return null;
       return spData.projects.find(p => String(p.id) === String(projectId) || String(p.project_id) === String(projectId)) || null;
     }
 
     function findColumnFor(row, project=null) {
-      const columnId = row.column_id || row.sp_column_id || row.status_id || row.stage_id || project?.column_id || project?.sp_column_id;
+      const columnId = row.column_id || row.sp_column_id || row.status_id || row.stage_id || row.list_id || row.column || row.coluna_id || project?.column_id || project?.sp_column_id;
       if (!columnId) return null;
       return spData.columns.find(c => String(c.id) === String(columnId) || String(c.column_id) === String(columnId)) || null;
     }
@@ -516,7 +525,7 @@
     }
 
     function buildLoja(row, sourceTable) {
-      const project = sourceTable === 'sp_tasks' ? findProjectFor(row) : row;
+      const project = ['sp_tasks', 'sp_reminders'].includes(sourceTable) ? findProjectFor(row) : row;
       const column = findColumnFor(row, project);
       const merged = {
         ...(project || {}),
@@ -526,7 +535,7 @@
 
       const id = pick(merged, CONFIG.fieldNames.id, row.id || uid());
       const mcid = pick(merged, CONFIG.fieldNames.mcid, '');
-      const seller = extractSeller(merged);
+      const seller = extractSeller(merged, sourceTable);
       const suporte = extractSuporte(merged);
       // Em Kanban, a etapa mais confiável costuma ser a coluna atual em sp_columns.
       const situacaoBase = getColumnName(column) || pick(merged, CONFIG.fieldNames.situacao, '');
@@ -550,7 +559,8 @@
     }
 
     function rowHasUsefulData(l) {
-      return !!(l.mcid || l.seller || l.suporte_nome || l.situacao);
+      // Não considerar a situação padrão como dado útil, senão projetos/mês viram loja.
+      return !!(l.mcid || l.seller || l.suporte_nome);
     }
 
     async function loadSpData() {
@@ -579,15 +589,27 @@
     async function loadLojas() {
       await loadSpData();
 
-      const projectRows = spData.projects.map(r => buildLoja(r, 'sp_projects')).filter(rowHasUsefulData);
       const taskRows = spData.tasks.map(r => buildLoja(r, 'sp_tasks')).filter(rowHasUsefulData);
+      const reminderRows = spData.reminders.map(r => buildLoja(r, 'sp_reminders')).filter(rowHasUsefulData);
+      const projectRows = spData.projects.map(r => buildLoja(r, 'sp_projects')).filter(rowHasUsefulData);
 
-      // Preferência: usa sp_projects como fonte principal. Se não houver dados úteis ali, usa sp_tasks.
-      lojas = CONFIG.primaryDisplayTable === 'sp_tasks'
-        ? (taskRows.length ? taskRows : projectRows)
-        : (projectRows.length ? projectRows : taskRows);
+      // Ares geralmente guarda as lojas como cards/tarefas. Por isso sp_tasks é a base principal.
+      if (CONFIG.primaryDisplayTable === 'sp_projects') lojas = projectRows.length ? projectRows : taskRows;
+      else if (CONFIG.primaryDisplayTable === 'sp_reminders') lojas = reminderRows.length ? reminderRows : taskRows;
+      else if (CONFIG.primaryDisplayTable === 'sp_tasks') lojas = taskRows.length ? taskRows : projectRows;
+      else lojas = taskRows.length ? taskRows : (reminderRows.length ? reminderRows : projectRows);
 
       totalBanco = lojas.length;
+      console.log('[Ares/Supabase] Linhas carregadas:', {
+        sp_columns: spData.columns.length,
+        sp_projects: spData.projects.length,
+        sp_tasks: spData.tasks.length,
+        sp_reminders: spData.reminders.length,
+        suportes_sellerpro: spData.suportes.length,
+        lojas_montadas: lojas.length,
+        exemplo_task: spData.tasks[0] || null,
+        exemplo_loja: lojas[0] || null
+      });
 
       const supportNames = [...new Set(lojas.map(l => l.suporte_nome).filter(Boolean))];
       const extras = supportNames
@@ -791,8 +813,8 @@
       if (naoPreenchido) {
         $('dataFormulario').value = '';
         if ($('situacao').value === 'Preenchimento de formulário') $('situacao').value = 'Aguardando CNPJ';
-      } else {
-        // Não preenche data automaticamente. A data só deve aparecer quando o usuário informar.
+      } else if (!$('dataFormulario').value) {
+        $('dataFormulario').value = todayISO();
         if ($('situacao').value === 'Aguardando CNPJ') $('situacao').value = 'Preenchimento de formulário';
       }
     }
