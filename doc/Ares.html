@@ -1626,6 +1626,92 @@ body[data-theme="light"] {
         grid-template-columns: 1fr;
       }
     }
+
+    .delivery-celebration {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      overflow: hidden;
+      display: none;
+    }
+
+    .delivery-celebration.show {
+      display: block;
+    }
+
+    .delivery-flash {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle, rgba(255, 176, 0, .30), transparent 58%);
+      animation: deliveryFlash .9s ease both;
+    }
+
+    .delivery-message {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(520px, calc(100vw - 40px));
+      padding: 28px;
+      border-radius: 28px;
+      text-align: center;
+      color: var(--text);
+      background:
+        linear-gradient(135deg, rgba(255, 122, 24, .92), rgba(255, 176, 0, .88)),
+        var(--panel-strong);
+      border: 1px solid rgba(255,255,255,.28);
+      box-shadow: 0 35px 120px rgba(0,0,0,.42), 0 0 90px rgba(255,122,24,.32);
+      animation: deliveryPop 1.6s ease both;
+    }
+
+    .delivery-message strong {
+      display: block;
+      font-size: clamp(28px, 5vw, 54px);
+      line-height: 1;
+      margin-bottom: 10px;
+      letter-spacing: -.05em;
+      color: #1d0b00;
+    }
+
+    .delivery-message span {
+      display: block;
+      font-size: 15px;
+      font-weight: 900;
+      color: #2b1200;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      top: -24px;
+      width: 12px;
+      height: 18px;
+      border-radius: 4px;
+      opacity: .95;
+      animation-name: confettiFall;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes deliveryFlash {
+      0% { opacity: 0; transform: scale(.85); }
+      25% { opacity: 1; }
+      100% { opacity: 0; transform: scale(1.2); }
+    }
+
+    @keyframes deliveryPop {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(.72) rotate(-3deg); }
+      18% { opacity: 1; transform: translate(-50%, -50%) scale(1.08) rotate(2deg); }
+      35% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+      80% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+      100% { opacity: 0; transform: translate(-50%, -58%) scale(.94); }
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translate3d(0, -20px, 0) rotate(0deg); }
+      100% { transform: translate3d(var(--confetti-x), 110vh, 0) rotate(760deg); }
+    }
+
   </style>
 </head>
 
@@ -1906,6 +1992,15 @@ body[data-theme="light"] {
     </div>
   </div>
 
+
+  <div class="delivery-celebration" id="deliveryCelebration">
+    <div class="delivery-flash"></div>
+    <div class="delivery-message">
+      <strong>🎉 Loja entregue!</strong>
+      <span>Projeto finalizado com sucesso</span>
+    </div>
+  </div>
+
   <div class="status-toast" id="statusToast"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2016,10 +2111,14 @@ body[data-theme="light"] {
 
     const SOUND_FILES = {
       site: 'sound/som1.mp3',
-      button: 'sound/som2.mp3',
-      drag: 'sound/som2.mp3',
-      drop: 'sound/som2.mp3',
-      image: 'sound/som2.mp3'
+      button: 'sound/som1.mp3',
+      primaryButton: 'sound/som2.mp3',
+      modal: 'sound/som3.mp3',
+      save: 'sound/som4.mp3',
+      drag: 'sound/som5.mp3',
+      drop: 'sound/som5.mp3',
+      image: 'sound/som3.mp3',
+      delivered: 'sound/som_entregue.mp3'
     };
 
     const soundCache = {};
@@ -2076,9 +2175,21 @@ body[data-theme="light"] {
       document.addEventListener('click', event => {
         const clickedButton = event.target.closest('button, .btn, .nav-btn, .mini-btn, .add-project, .project-edit-btn, .attachment-add-btn, .zoom-action-btn');
 
-        if (clickedButton) {
-          playSound('button');
+        if (!clickedButton) return;
+
+        const buttonText = String(clickedButton.textContent || '').toLowerCase();
+
+        if (buttonText.includes('salvar') || buttonText.includes('confirmar')) {
+          playSound('save');
+          return;
         }
+
+        if (clickedButton.classList.contains('btn') && !clickedButton.classList.contains('secondary')) {
+          playSound('primaryButton');
+          return;
+        }
+
+        playSound('button');
       });
     }
 
@@ -3122,6 +3233,7 @@ body[data-theme="light"] {
         button.textContent = 'Confirmar entrega';
       }
 
+      playSound('modal');
       document.getElementById('deliveryModal').classList.add('show');
     }
 
@@ -3134,6 +3246,55 @@ body[data-theme="light"] {
         const input = document.getElementById(id);
         if (input) input.value = '';
       });
+    }
+
+
+    function launchDeliveryCelebration() {
+      const celebration = document.getElementById('deliveryCelebration');
+
+      if (!celebration) return;
+
+      celebration.querySelectorAll('.confetti-piece').forEach(piece => piece.remove());
+
+      const colors = [
+        '#ff7a18',
+        '#ffb000',
+        '#ff3d00',
+        '#ffffff',
+        '#38bdf8',
+        '#22c55e',
+        '#ec4899'
+      ];
+
+      const totalPieces = 140;
+
+      for (let i = 0; i < totalPieces; i++) {
+        const piece = document.createElement('span');
+
+        piece.className = 'confetti-piece';
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDuration = `${2.2 + Math.random() * 1.8}s`;
+        piece.style.animationDelay = `${Math.random() * .35}s`;
+        piece.style.setProperty('--confetti-x', `${(Math.random() - .5) * 420}px`);
+
+        if (Math.random() > .5) {
+          piece.style.borderRadius = '999px';
+          piece.style.width = '10px';
+          piece.style.height = '10px';
+        }
+
+        celebration.appendChild(piece);
+      }
+
+      celebration.classList.add('show');
+      playSound('delivered');
+
+      clearTimeout(launchDeliveryCelebration.timer);
+      launchDeliveryCelebration.timer = setTimeout(() => {
+        celebration.classList.remove('show');
+        celebration.querySelectorAll('.confetti-piece').forEach(piece => piece.remove());
+      }, 4200);
     }
 
     async function confirmDeliveryMove() {
@@ -3214,8 +3375,8 @@ body[data-theme="light"] {
         return;
       }
 
-      playSound('drop');
       closeDeliveryModal();
+      launchDeliveryCelebration();
       showToast('Loja entregue com dados obrigatórios salvos.');
     }
 
