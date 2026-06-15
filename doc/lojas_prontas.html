@@ -82,11 +82,11 @@
 
     <section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
       <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Total de lojas</p><strong id="totalGeral" class="text-3xl font-black text-slate-100">0</strong></div>
-      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Pendentes</p><strong id="totalPendentes" class="text-3xl font-black text-orange-300">0</strong></div>
-      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Concluídas</p><strong id="totalConcluidas" class="text-3xl font-black text-emerald-300">0</strong></div>
-      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Aguardando seller</p><strong id="totalAguardando" class="text-3xl font-black text-sky-300">0</strong></div>
-      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Congeladas</p><strong id="totalCongeladas" class="text-3xl font-black text-violet-300">0</strong></div>
-      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Críticas 16+ dias</p><strong id="totalCriticas" class="text-3xl font-black text-red-300">0</strong></div>
+      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Em andamento</p><strong id="totalPendentes" class="text-3xl font-black text-orange-300">0</strong></div>
+      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Loja entregue</p><strong id="totalConcluidas" class="text-3xl font-black text-emerald-300">0</strong></div>
+      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Aguardando CNPJ</p><strong id="totalAguardando" class="text-3xl font-black text-sky-300">0</strong></div>
+      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Congelados</p><strong id="totalCongeladas" class="text-3xl font-black text-violet-300">0</strong></div>
+      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Venda finalizada</p><strong id="totalCriticas" class="text-3xl font-black text-red-300">0</strong></div>
     </section>
 
     <section class="glass rounded-3xl shadow-soft p-4 space-y-4">
@@ -96,9 +96,9 @@
           <div id="mesTabs" class="flex gap-2 overflow-x-auto pb-1"></div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 min-w-full xl:min-w-[760px]">
-          <label class="form-control"><span class="label-text text-xs font-bold">Buscar</span><input id="searchInput" class="input input-bordered input-sm" placeholder="MCID, seller..." oninput="render()" /></label>
+          <label class="form-control"><span class="label-text text-xs font-bold">Buscar</span><input id="searchInput" class="input input-bordered input-sm" placeholder="MCID, seller, suporte..." oninput="render()" /></label>
           <label class="form-control"><span class="label-text text-xs font-bold">Suporte</span><select id="filterSuporte" class="select select-bordered select-sm" onchange="render()"><option value="">Todos</option></select></label>
-          <label class="form-control"><span class="label-text text-xs font-bold">Situação</span><select id="filterSituacao" class="select select-bordered select-sm" onchange="render()"><option value="">Todas</option><option>Pendente</option><option>Concluido</option><option>Aguardando seller</option><option>Congelado</option></select></label>
+          <label class="form-control"><span class="label-text text-xs font-bold">Situação</span><select id="filterSituacao" class="select select-bordered select-sm" onchange="render()"><option value="">Todas</option></select></label>
           <label class="form-control"><span class="label-text text-xs font-bold">Prazo</span><select id="filterPrazo" class="select select-bordered select-sm" onchange="render()"><option value="">Todos</option><option value="verde">Verde até 10 dias</option><option value="amarelo">Amarelo 11 a 15 dias</option><option value="vermelho">Vermelho 16+ dias</option></select></label>
         </div>
       </div>
@@ -148,7 +148,7 @@
         <label class="form-control"><span class="label-text font-bold">Status do formulário</span><select id="formStatus" class="select select-bordered" onchange="toggleFormulario()"><option value="preenchido">Formulário preenchido</option><option value="nao_preenchido">Formulário ainda não preenchido</option></select></label>
         <label class="form-control"><span class="label-text font-bold">Preenchimento de formulário</span><input id="dataFormulario" type="date" class="input input-bordered" /></label>
         <label class="form-control"><span class="label-text font-bold">Suporte responsável</span><select id="suporteSelect" class="select select-bordered" required></select></label>
-        <label class="form-control"><span class="label-text font-bold">Situação</span><select id="situacao" class="select select-bordered" onchange="toggleConclusao()"><option>Pendente</option><option>Concluido</option><option>Aguardando seller</option><option>Congelado</option></select></label>
+        <label class="form-control"><span class="label-text font-bold">Situação</span><select id="situacao" class="select select-bordered" onchange="toggleConclusao()"></select></label>
         <label class="form-control"><span class="label-text font-bold">Dia de conclusão</span><input id="diaConclusao" type="date" class="input input-bordered" /></label>
         <label class="form-control md:col-span-2"><span class="label-text font-bold">Categoria / mês</span><select id="mesSelect" class="select select-bordered" required></select></label>
         <div class="md:col-span-2 flex justify-end gap-2 mt-2">
@@ -181,7 +181,7 @@
     /*
       NOVA BASE DE DADOS:
       - Lê: sp_columns, sp_projects, sp_reminders, sp_tasks
-      - Exibe na tabela: MCID, Seller, Suporte e Situação
+      - Exibe na tabela: MCID, Seller, Suporte responsável e Situação real do fluxo
       - Salva/edita no Supabase usando sp_projects como tabela principal.
 
       Se no seu Supabase o registro principal estiver em sp_tasks, altere:
@@ -198,19 +198,40 @@
         tasks: 'sp_tasks'
       },
       fieldNames: {
-        id: ['id', 'uuid', 'project_id', 'task_id'],
-        mcid: ['mcid', 'MCID', 'm_cid'],
-        seller: ['seller', 'Seller', 'nome', 'name', 'title', 'titulo'],
-        suporte: ['suporte', 'suporte_nome', 'suporte_responsavel', 'responsavel', 'responsável', 'support', 'owner'],
-        situacao: ['situacao', 'situação', 'status', 'stage', 'etapa'],
-        dataFormulario: ['data_formulario', 'preenchimento_formulario', 'formulario', 'created_at'],
-        diaConclusao: ['dia_conclusao', 'data_conclusao', 'completed_at', 'concluido_em'],
-        mes: ['mes_categoria', 'mes', 'mês', 'categoria', 'aba']
+        id: ['id', 'uuid'],
+        mcid: ['mcid', 'MCID', 'm_cid', 'codigo_mcid', 'merchant_customer_id'],
+        // Evita usar title/titulo/name/nome como Seller, porque nessas tabelas eles podem ser mês, coluna ou etapa.
+        seller: ['seller', 'Seller', 'seller_nome', 'nome_seller', 'seller_name', 'cliente', 'client', 'nome_cliente', 'razao_social', 'razão_social', 'empresa', 'nome_empresa', 'loja_nome', 'nome_loja', 'store_name'],
+        suporte: ['suporte', 'suporte_nome', 'suporte_responsavel', 'suporte_responsável', 'responsavel', 'responsável', 'responsible', 'responsible_name', 'assignee', 'assignee_name', 'assigned_to', 'support', 'support_name', 'owner', 'owner_name'],
+        situacao: ['situacao', 'situação', 'status', 'stage', 'etapa', 'column_name'],
+        dataFormulario: ['data_formulario', 'preenchimento_formulario', 'preenchimento_de_formulario', 'formulario', 'form_date', 'created_at'],
+        diaConclusao: ['dia_conclusao', 'data_conclusao', 'completed_at', 'concluido_em', 'finished_at'],
+        mes: ['mes_categoria', 'mes', 'mês', 'categoria', 'aba', 'month']
       }
     };
 
     const DEFAULT_SUPPORTS = ['CARLOS','DANIELA','FELIPE','GABRIEL','JOSE','MELISSA','POLYANNA','SILAS'];
     const SUPPORT_COLORS = ['#f97316','#0f172a','#2563eb','#16a34a','#9333ea','#db2777','#0891b2','#ca8a04','#ef4444','#64748b'];
+
+    const SITUACOES = [
+      'Aguardando CNPJ',
+      'Call de briefing',
+      'Call de onboarding',
+      'Congelados',
+      'Chamadas especiais',
+      'Configuração de faturador',
+      'Criação de grupo',
+      'Criação de conta',
+      'Criação de anúncio',
+      'Envio FBA',
+      'Loja entregue',
+      'Preenchimento de formulário',
+      'Venda finalizada'
+    ];
+
+    const MESES_NOMES = [
+      'JANEIRO','FEVEREIRO','MARCO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'
+    ];
 
     let lojas = [], suportes = [], meses = [], activeMes = 'Geral', totalBanco = 0;
     let spData = { columns: [], projects: [], reminders: [], tasks: [] };
@@ -229,11 +250,67 @@
 
     function normalizeSituacao(v) {
       const n = normalize(v);
-      if (['CONCLUIDO','CONCLUIDA','DONE','FINALIZADO','FINALIZADA'].includes(n)) return 'Concluido';
-      if (n.includes('AGUARDANDO') || n.includes('NAO PREENCHIDO')) return 'Aguardando seller';
-      if (['CONGELADO','CONGELADA','PAUSADO','PAUSADA','FROZEN'].includes(n)) return 'Congelado';
-      if (n) return v;
-      return 'Pendente';
+      if (!n) return 'Preenchimento de formulário';
+
+      const match = SITUACOES.find(s => normalize(s) === n);
+      if (match) return match;
+
+      const aliases = {
+        'AGUARDANDO': 'Aguardando CNPJ',
+        'AGUARDANDO CNPJ': 'Aguardando CNPJ',
+        'CALL BRIEFING': 'Call de briefing',
+        'BRIEFING': 'Call de briefing',
+        'CALL DE BRIEFING': 'Call de briefing',
+        'ONBOARDING': 'Call de onboarding',
+        'CALL ONBOARDING': 'Call de onboarding',
+        'CALL DE ONBOARDING': 'Call de onboarding',
+        'CONGELADO': 'Congelados',
+        'CONGELADA': 'Congelados',
+        'CONGELADOS': 'Congelados',
+        'CHAMADO ESPECIAL': 'Chamadas especiais',
+        'CHAMADOS ESPECIAIS': 'Chamadas especiais',
+        'CHAMADAS ESPECIAIS': 'Chamadas especiais',
+        'FATURADOR': 'Configuração de faturador',
+        'CONFIGURACAO DE FATURADOR': 'Configuração de faturador',
+        'CONFIGURAÇÃO DE FATURADOR': 'Configuração de faturador',
+        'GRUPO': 'Criação de grupo',
+        'CRIACAO DE GRUPO': 'Criação de grupo',
+        'CRIAÇÃO DE GRUPO': 'Criação de grupo',
+        'CONTA': 'Criação de conta',
+        'CRIACAO DE CONTA': 'Criação de conta',
+        'CRIAÇÃO DE CONTA': 'Criação de conta',
+        'ANUNCIO': 'Criação de anúncio',
+        'ANÚNCIO': 'Criação de anúncio',
+        'CRIACAO DE ANUNCIO': 'Criação de anúncio',
+        'CRIAÇÃO DE ANÚNCIO': 'Criação de anúncio',
+        'FBA': 'Envio FBA',
+        'ENVIO FBA': 'Envio FBA',
+        'CONCLUIDO': 'Loja entregue',
+        'CONCLUIDA': 'Loja entregue',
+        'LOJA ENTREGUE': 'Loja entregue',
+        'ENTREGUE': 'Loja entregue',
+        'PENDENTE': 'Preenchimento de formulário',
+        'FORMULARIO': 'Preenchimento de formulário',
+        'FORMULÁRIO': 'Preenchimento de formulário',
+        'PREENCHIMENTO DE FORMULARIO': 'Preenchimento de formulário',
+        'PREENCHIMENTO DE FORMULÁRIO': 'Preenchimento de formulário',
+        'VENDA FINALIZADA': 'Venda finalizada',
+        'FINALIZADO': 'Venda finalizada',
+        'FINALIZADA': 'Venda finalizada'
+      };
+      if (aliases[n]) return aliases[n];
+
+      // Se vier um texto de coluna novo no banco, mantém o texto real em vez de forçar "Pendente".
+      return String(v || '').trim();
+    }
+
+    function isSituacaoFinalizada(v) {
+      const n = normalize(normalizeSituacao(v));
+      return n === 'LOJA ENTREGUE' || n === 'VENDA FINALIZADA';
+    }
+
+    function isCongelado(v) {
+      return normalize(normalizeSituacao(v)) === 'CONGELADOS';
     }
 
     function toast(msg, type='info') {
@@ -297,6 +374,62 @@
       return fallback;
     }
 
+
+    function isBadSellerValue(v) {
+      const n = normalize(v);
+      if (!n) return true;
+      if (MESES_NOMES.includes(n)) return true;
+      if (SITUACOES.some(s => normalize(s) === n)) return true;
+      if (['GERAL','BACKLOG','TODO','TO DO','DONE','KANBAN','PROJETO','PROJECT','TASK','TAREFA'].includes(n)) return true;
+      return false;
+    }
+
+    function findByKeyTokens(obj, includeTokens, excludeTokens=[]) {
+      const flat = flatObject(obj);
+      for (const [k, v] of Object.entries(flat)) {
+        const key = normalize(k.split('.').pop());
+        const fullKey = normalize(k);
+        const val = v !== undefined && v !== null ? String(v).trim() : '';
+        if (!val) continue;
+        const hasInclude = includeTokens.some(t => key.includes(normalize(t)) || fullKey.includes(normalize(t)));
+        const hasExclude = excludeTokens.some(t => key.includes(normalize(t)) || fullKey.includes(normalize(t)));
+        if (hasInclude && !hasExclude) return val;
+      }
+      return '';
+    }
+
+    function extractSeller(obj) {
+      let seller = pick(obj, CONFIG.fieldNames.seller, '');
+      if (!seller || isBadSellerValue(seller)) {
+        seller = findByKeyTokens(obj, ['seller', 'cliente', 'client', 'empresa', 'razao', 'razão', 'loja', 'store'], ['mes', 'month', 'categoria', 'column', 'status', 'situacao', 'situação', 'etapa']);
+      }
+      // Último fallback: usa title/name apenas se não parecer mês, etapa ou coluna.
+      if (!seller || isBadSellerValue(seller)) {
+        const fallback = pick(obj, ['title', 'titulo', 'name', 'nome'], '');
+        seller = isBadSellerValue(fallback) ? '' : fallback;
+      }
+      return String(seller || '').trim();
+    }
+
+    function extractSuporte(obj) {
+      let suporte = pick(obj, CONFIG.fieldNames.suporte, '');
+      if (!suporte) {
+        suporte = findByKeyTokens(obj, ['suporte', 'responsavel', 'responsável', 'assignee', 'assigned', 'owner', 'support'], ['id', 'uuid', 'email']);
+      }
+      // Se vier objeto/array como texto, tenta achar nome dentro dele.
+      const parsed = tryJson(suporte);
+      if (parsed && typeof parsed === 'object') {
+        suporte = pick(parsed, ['nome', 'name', 'full_name', 'display_name', 'suporte', 'email'], '');
+      }
+      return String(suporte || '').trim();
+    }
+
+    function extractMes(obj) {
+      const mes = pick(obj, CONFIG.fieldNames.mes, '');
+      if (mes && !SITUACOES.some(s => normalize(s) === normalize(mes))) return String(mes).trim();
+      return 'Geral';
+    }
+
     function findProjectFor(row) {
       const projectId = row.project_id || row.sp_project_id || row.project || row.board_id;
       if (!projectId) return null;
@@ -324,12 +457,13 @@
 
       const id = pick(merged, CONFIG.fieldNames.id, row.id || uid());
       const mcid = pick(merged, CONFIG.fieldNames.mcid, '');
-      const seller = pick(merged, CONFIG.fieldNames.seller, '');
-      const suporte = pick(merged, CONFIG.fieldNames.suporte, '');
-      const situacaoBase = pick(merged, CONFIG.fieldNames.situacao, '') || getColumnName(column);
+      const seller = extractSeller(merged);
+      const suporte = extractSuporte(merged);
+      // Em Kanban, a etapa mais confiável costuma ser a coluna atual em sp_columns.
+      const situacaoBase = getColumnName(column) || pick(merged, CONFIG.fieldNames.situacao, '');
       const dataFormulario = pick(merged, CONFIG.fieldNames.dataFormulario, '');
       const diaConclusao = pick(merged, CONFIG.fieldNames.diaConclusao, '');
-      const mes = pick(merged, CONFIG.fieldNames.mes, '') || 'Geral';
+      const mes = extractMes(merged);
 
       return {
         ...merged,
@@ -408,8 +542,14 @@
 
     function renderSupportOptions() {
       const options = suportes.map(s => `<option value="${escapeHtml(s.nome)}">${escapeHtml(s.nome)}</option>`).join('');
-      $('suporteSelect').innerHTML = options;
+      $('suporteSelect').innerHTML = options || '<option value="">Sem suporte identificado</option>';
       $('filterSuporte').innerHTML = `<option value="">Todos</option>${options}`;
+
+      const situacoesBanco = [...new Set(lojas.map(l => normalizeSituacao(l.situacao)).filter(Boolean))];
+      const situacoes = [...SITUACOES, ...situacoesBanco.filter(s => !SITUACOES.some(base => normalize(base) === normalize(s)))];
+      const situacaoOptions = situacoes.map(s => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+      $('situacao').innerHTML = situacaoOptions;
+      $('filterSituacao').innerHTML = `<option value="">Todas</option>${situacaoOptions}`;
     }
 
     function renderMesOptions() {
@@ -434,10 +574,12 @@
 
     function statusBadge(loja) {
       const status = normalizeSituacao(loja.situacao);
-      if (normalize(status) === 'CONCLUIDO') return '<span class="badge badge-success text-white">Concluído</span>';
-      if (normalize(status) === 'AGUARDANDO SELLER') return '<span class="badge bg-sky-500/20 text-sky-200 border border-sky-400/25">Aguardando seller</span>';
-      if (normalize(status) === 'CONGELADO') return '<span class="badge bg-violet-500/20 text-violet-200 border border-violet-400/25">Congelado</span>';
-      return `<span class="badge bg-orange-500/20 text-orange-200 border border-orange-400/25">${escapeHtml(status || 'Pendente')}</span>`;
+      const n = normalize(status);
+      if (n === 'LOJA ENTREGUE') return '<span class="badge badge-success text-white">Loja entregue</span>';
+      if (n === 'VENDA FINALIZADA') return '<span class="badge bg-emerald-500/20 text-emerald-200 border border-emerald-400/25">Venda finalizada</span>';
+      if (n === 'AGUARDANDO CNPJ') return '<span class="badge bg-sky-500/20 text-sky-200 border border-sky-400/25">Aguardando CNPJ</span>';
+      if (n === 'CONGELADOS') return '<span class="badge bg-violet-500/20 text-violet-200 border border-violet-400/25">Congelados</span>';
+      return `<span class="badge bg-orange-500/20 text-orange-200 border border-orange-400/25">${escapeHtml(status || 'Preenchimento de formulário')}</span>`;
     }
 
     function daysBadge(loja) {
@@ -487,11 +629,11 @@
 
     function renderCounters(scope) {
       const total = scope.length;
-      const concluidas = scope.filter(l => normalizeSituacao(l.situacao) === 'Concluido').length;
-      const aguardando = scope.filter(l => normalizeSituacao(l.situacao) === 'Aguardando seller').length;
-      const congeladas = scope.filter(l => normalizeSituacao(l.situacao) === 'Congelado').length;
-      const pendentes = scope.filter(l => normalizeSituacao(l.situacao) !== 'Concluido').length;
-      const criticas = scope.filter(l => normalizeSituacao(l.situacao) !== 'Concluido' && daysInfo(l).cor === 'vermelho').length;
+      const concluidas = scope.filter(l => normalize(normalizeSituacao(l.situacao)) === 'LOJA ENTREGUE').length;
+      const aguardando = scope.filter(l => normalize(normalizeSituacao(l.situacao)) === 'AGUARDANDO CNPJ').length;
+      const congeladas = scope.filter(l => isCongelado(l.situacao)).length;
+      const pendentes = scope.filter(l => !isSituacaoFinalizada(l.situacao)).length;
+      const criticas = scope.filter(l => normalize(normalizeSituacao(l.situacao)) === 'VENDA FINALIZADA').length;
       $('totalGeral').textContent = total;
       $('totalPendentes').textContent = pendentes;
       $('totalConcluidas').textContent = concluidas;
@@ -501,20 +643,20 @@
 
       $('supportCounters').innerHTML = suportes.map(s => {
         const arr = scope.filter(l => normalize(l.suporte_nome) === normalize(s.nome));
-        const p = arr.filter(l => normalizeSituacao(l.situacao) !== 'Concluido').length;
-        const c = arr.filter(l => normalizeSituacao(l.situacao) === 'Concluido').length;
-        const a = arr.filter(l => normalizeSituacao(l.situacao) === 'Aguardando seller').length;
-        const g = arr.filter(l => normalizeSituacao(l.situacao) === 'Congelado').length;
+        const p = arr.filter(l => !isSituacaoFinalizada(l.situacao)).length;
+        const c = arr.filter(l => normalize(normalizeSituacao(l.situacao)) === 'LOJA ENTREGUE').length;
+        const a = arr.filter(l => normalize(normalizeSituacao(l.situacao)) === 'AGUARDANDO CNPJ').length;
+        const g = arr.filter(l => isCongelado(l.situacao)).length;
         return `<div class="rounded-2xl dark-card p-3 shadow-sm">
           <div class="flex items-center justify-between gap-2">
             <div class="font-black text-sm truncate text-slate-100"><span class="support-dot" style="background:${s.cor}"></span> ${escapeHtml(s.nome)}</div>
             <div class="text-xl font-black text-slate-100">${arr.length}</div>
           </div>
           <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
-            <div class="rounded-xl muted-panel text-orange-200 p-2"><b>${p}</b><br>Pendentes</div>
-            <div class="rounded-xl muted-panel text-emerald-200 p-2"><b>${c}</b><br>Concluídas</div>
-            <div class="rounded-xl muted-panel text-sky-200 p-2"><b>${a}</b><br>Aguardando</div>
-            <div class="rounded-xl muted-panel text-violet-200 p-2"><b>${g}</b><br>Congeladas</div>
+            <div class="rounded-xl muted-panel text-orange-200 p-2"><b>${p}</b><br>Em andamento</div>
+            <div class="rounded-xl muted-panel text-emerald-200 p-2"><b>${c}</b><br>Loja entregue</div>
+            <div class="rounded-xl muted-panel text-sky-200 p-2"><b>${a}</b><br>Aguardando CNPJ</div>
+            <div class="rounded-xl muted-panel text-violet-200 p-2"><b>${g}</b><br>Congelados</div>
           </div>
         </div>`;
       }).join('');
@@ -560,7 +702,7 @@
       $('dataFormulario').value = l?.data_formulario || '';
       $('formStatus').value = l?.data_formulario ? 'preenchido' : 'nao_preenchido';
       $('suporteSelect').value = l?.suporte_nome || suportes[0]?.nome || '';
-      $('situacao').value = normalizeSituacao(l?.situacao || (l?.data_formulario ? 'Pendente' : 'Aguardando seller'));
+      $('situacao').value = normalizeSituacao(l?.situacao || (l?.data_formulario ? 'Preenchimento de formulário' : 'Aguardando CNPJ'));
       $('diaConclusao').value = l?.dia_conclusao || '';
       $('mesSelect').value = l?.mes_categoria || activeMes || meses[0]?.nome || 'Geral';
       toggleFormulario();
@@ -573,15 +715,15 @@
       $('dataFormulario').disabled = naoPreenchido;
       if (naoPreenchido) {
         $('dataFormulario').value = '';
-        if ($('situacao').value === 'Pendente') $('situacao').value = 'Aguardando seller';
+        if ($('situacao').value === 'Preenchimento de formulário') $('situacao').value = 'Aguardando CNPJ';
       } else if (!$('dataFormulario').value) {
         $('dataFormulario').value = todayISO();
-        if ($('situacao').value === 'Aguardando seller') $('situacao').value = 'Pendente';
+        if ($('situacao').value === 'Aguardando CNPJ') $('situacao').value = 'Preenchimento de formulário';
       }
     }
 
     function toggleConclusao() {
-      const concluido = $('situacao').value === 'Concluido';
+      const concluido = isSituacaoFinalizada($('situacao').value);
       if (concluido && !$('diaConclusao').value) $('diaConclusao').value = todayISO();
       if (!concluido) $('diaConclusao').value = '';
     }
@@ -599,7 +741,7 @@
         suporte: $('suporteSelect').value,
         situacao: $('situacao').value,
         data_formulario: $('formStatus').value === 'nao_preenchido' ? null : $('dataFormulario').value,
-        dia_conclusao: $('situacao').value === 'Concluido' ? ($('diaConclusao').value || todayISO()) : null,
+        dia_conclusao: isSituacaoFinalizada($('situacao').value) ? ($('diaConclusao').value || todayISO()) : null,
         mes_categoria: $('mesSelect').value
       };
 
