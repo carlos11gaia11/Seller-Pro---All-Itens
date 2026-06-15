@@ -52,6 +52,20 @@
     .btn-outline:hover { background:#f97316; color:#fff; border-color:#f97316; }
     .btn-ghost-dark { background: rgba(15,23,42,.55); border: 1px solid rgba(148,163,184,.18); color:#e2e8f0; }
     .btn-ghost-dark:hover { background: rgba(30,41,59,.95); }
+
+    .panel-head { display:flex; align-items:center; justify-content:space-between; gap:.75rem; padding:1rem; border-bottom:1px solid rgba(251,146,60,.18); }
+    .panel-body { padding:1rem; }
+    .panel-collapsed .panel-body { display:none; }
+    .panel-toggle { min-height:2rem; height:2rem; padding:0 .75rem; border-radius:999px; }
+    .status-card { position:relative; overflow:hidden; background:linear-gradient(145deg, rgba(30,41,59,.96), rgba(15,23,42,.86)); border:1px solid rgba(148,163,184,.16); }
+    .status-card::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at top right, rgba(249,115,22,.18), transparent 38%); pointer-events:none; }
+    .status-content { position:relative; z-index:1; }
+    .tiny-label { font-size:.66rem; line-height:1rem; letter-spacing:.06em; text-transform:uppercase; font-weight:900; color:#94a3b8; }
+    .count-chip { background:rgba(2,6,23,.44); border:1px solid rgba(148,163,184,.14); border-radius:1rem; padding:.6rem .75rem; }
+    .status-grid { display:grid; grid-template-columns:repeat(1,minmax(0,1fr)); gap:.75rem; }
+    @media (min-width:640px){ .status-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media (min-width:1024px){ .status-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+    @media (min-width:1280px){ .status-grid{ grid-template-columns:repeat(4,minmax(0,1fr)); } }
     @keyframes slide { from { background-position: 0 0; } to { background-position: 200% 0; } }
     @media (max-width: 900px) { .table-compact :where(th,td) { padding: .5rem; font-size: .75rem; } .truncate-cell { max-width: 120px; } }
   </style>
@@ -79,62 +93,59 @@
       </div>
     </section>
 
-    <section class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Total na aba</p><strong id="totalGeral" class="text-3xl font-black text-slate-100">0</strong></div>
-      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Em andamento</p><strong id="totalPendentes" class="text-3xl font-black text-orange-300">0</strong></div>
-      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Loja entregue</p><strong id="totalConcluidas" class="text-3xl font-black text-emerald-300">0</strong></div>
-      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Aguardando CNPJ</p><strong id="totalAguardando" class="text-3xl font-black text-sky-300">0</strong></div>
-      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Congelados</p><strong id="totalCongeladas" class="text-3xl font-black text-violet-300">0</strong></div>
-      <div class="glass metric-card rounded-2xl p-4 shadow-sm"><p class="text-xs text-slate-500 font-bold uppercase">Venda finalizada</p><strong id="totalCriticas" class="text-3xl font-black text-red-300">0</strong></div>
+    <section id="panelResumo" class="glass rounded-3xl shadow-soft overflow-hidden">
+      <div class="panel-head">
+        <div>
+          <h2 class="font-black text-lg">Contagem por situação</h2>
+          <p id="statusCardsInfo" class="text-xs text-slate-500">Total do mês selecionado e total geral.</p>
+        </div>
+        <button class="btn btn-sm btn-ghost-dark panel-toggle" onclick="togglePanel('panelResumo', this)">Minimizar</button>
+      </div>
+      <div class="panel-body">
+        <div id="statusCards" class="status-grid"></div>
+      </div>
     </section>
 
-    <section class="glass rounded-3xl shadow-soft p-4 space-y-4">
-      <div class="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-3">
-        <div class="flex-1">
-          <p class="text-xs text-slate-500 font-bold uppercase mb-2">Abas por mês detectado</p>
-          <div id="mesTabs" class="flex gap-2 overflow-x-auto pb-1"></div>
+    <section id="panelFiltros" class="glass rounded-3xl shadow-soft overflow-hidden">
+      <div class="panel-head">
+        <div>
+          <h2 class="font-black text-lg">Abas, filtros e suportes</h2>
+          <p id="supportStatusInfo" class="text-xs text-slate-500">Resumo da aba selecionada por suporte.</p>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 min-w-full xl:min-w-[760px]">
-          <label class="form-control"><span class="label-text text-xs font-bold">Buscar</span><input id="searchInput" class="input input-bordered input-sm" placeholder="MCID, seller, suporte..." oninput="render()" /></label>
-          <label class="form-control"><span class="label-text text-xs font-bold">Suporte</span><select id="filterSuporte" class="select select-bordered select-sm" onchange="render()"><option value="">Todos</option></select></label>
-          <label class="form-control"><span class="label-text text-xs font-bold">Situação</span><select id="filterSituacao" class="select select-bordered select-sm" onchange="render()"><option value="">Todas</option></select></label>
-          <label class="form-control"><span class="label-text text-xs font-bold">Prazo</span><select id="filterPrazo" class="select select-bordered select-sm" onchange="render()"><option value="">Todos</option><option value="verde">Verde até 10 dias</option><option value="amarelo">Amarelo 11 a 15 dias</option><option value="vermelho">Vermelho 16+ dias</option></select></label>
-        </div>
+        <button class="btn btn-sm btn-ghost-dark panel-toggle" onclick="togglePanel('panelFiltros', this)">Minimizar</button>
       </div>
-
-      <div id="supportCounters" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3"></div>
-
-      <div class="dark-card rounded-2xl p-4 overflow-hidden">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-          <div>
-            <h3 class="font-black text-base">Contagem exata por suporte e situação</h3>
-            <p id="supportStatusInfo" class="text-xs text-slate-500">Resumo da aba selecionada por situação.</p>
+      <div class="panel-body space-y-4">
+        <div class="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-3">
+          <div class="flex-1">
+            <p class="text-xs text-slate-500 font-bold uppercase mb-2">Planilhas por mês detectado</p>
+            <div id="mesTabs" class="flex gap-2 overflow-x-auto pb-1"></div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 min-w-full xl:min-w-[760px]">
+            <label class="form-control"><span class="label-text text-xs font-bold">Buscar</span><input id="searchInput" class="input input-bordered input-sm" placeholder="MCID, seller, suporte..." oninput="render()" /></label>
+            <label class="form-control"><span class="label-text text-xs font-bold">Suporte</span><select id="filterSuporte" class="select select-bordered select-sm" onchange="render()"><option value="">Todos</option></select></label>
+            <label class="form-control"><span class="label-text text-xs font-bold">Situação</span><select id="filterSituacao" class="select select-bordered select-sm" onchange="render()"><option value="">Todas</option></select></label>
+            <label class="form-control"><span class="label-text text-xs font-bold">Prazo</span><select id="filterPrazo" class="select select-bordered select-sm" onchange="render()"><option value="">Todos</option><option value="verde">Verde até 10 dias</option><option value="amarelo">Amarelo 11 a 15 dias</option><option value="vermelho">Vermelho 16+ dias</option></select></label>
           </div>
         </div>
-        <div class="overflow-auto">
-          <table class="table table-compact w-full min-w-[980px]">
-            <thead class="sticky-head">
-              <tr id="supportStatusHead"></tr>
-            </thead>
-            <tbody id="supportStatusBody"></tbody>
-          </table>
-        </div>
+        <div id="supportCounters" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
       </div>
     </section>
 
-    <section class="glass rounded-3xl shadow-soft overflow-hidden">
-      <div class="p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-orange-500/20">
+    <section id="panelTabela" class="glass rounded-3xl shadow-soft overflow-hidden">
+      <div class="panel-head">
         <div>
-          <h2 class="font-black text-lg">Lojas da aba selecionada</h2>
+          <h2 id="tableTitle" class="font-black text-lg">Tabela da aba selecionada</h2>
           <p id="visibleInfo" class="text-xs text-slate-500">Exibindo 0 loja(s).</p>
         </div>
-        <div class="flex gap-2 text-xs items-center flex-wrap">
+        <div class="flex gap-2 text-xs items-center flex-wrap justify-end">
           <span class="badge badge-success text-white">≤ 10 dias</span>
           <span class="badge badge-warning">11 a 15 dias</span>
           <span class="badge badge-error text-white">16+ dias</span>
+          <button class="btn btn-sm btn-ghost-dark panel-toggle" onclick="togglePanel('panelTabela', this)">Minimizar</button>
         </div>
       </div>
-      <div class="overflow-auto max-h-[66vh]">
+      <div class="panel-body p-0">
+        <div class="overflow-auto max-h-[66vh]">
         <table class="table table-compact w-full min-w-[1120px]">
           <thead class="sticky-head">
             <tr>
@@ -151,6 +162,7 @@
           </thead>
           <tbody id="lojasBody"></tbody>
         </table>
+        </div>
       </div>
     </section>
   </main>
@@ -781,11 +793,12 @@
 
     function renderMesOptions() {
       $('mesSelect').innerHTML = meses.map(m => `<option value="${escapeHtml(m.nome)}">${escapeHtml(m.nome)}</option>`).join('');
-      $('mesTabs').innerHTML = meses.map(m => `
-        <button class="btn btn-sm rounded-full ${normalize(activeMes) === normalize(m.nome) ? 'tab-active-custom' : 'btn-ghost-dark'}" onclick="setMes('${escapeAttr(m.nome)}')">
-          ${escapeHtml(m.nome)}
-        </button>
-      `).join('');
+      $('mesTabs').innerHTML = meses.map(m => {
+        const qtd = todasLojas.filter(l => normalize(l.mes_categoria || 'Sem mês') === normalize(m.nome)).length;
+        return `<button class="btn btn-sm rounded-full ${normalize(activeMes) === normalize(m.nome) ? 'tab-active-custom' : 'btn-ghost-dark'}" onclick="setMes('${escapeAttr(m.nome)}')">
+          ${escapeHtml(m.nome)} <span class="badge badge-sm ml-1">${qtd}</span>
+        </button>`;
+      }).join('');
     }
 
     function setMes(mes) {
@@ -872,73 +885,100 @@
       ).length;
     }
 
-    function renderSupportStatusTable(scope) {
-      const statuses = getSituacoesAtivas(todasLojas.length ? todasLojas : scope);
-      const supportsToShow = suportes.filter(s => {
-        const totalAba = scope.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
-        return totalAba > 0;
-      });
+    function statusTextColor(status) {
+      const n = normalize(status);
+      if (n === 'LOJA ENTREGUE' || n === 'VENDA FINALIZADA') return 'text-emerald-200';
+      if (n === 'AGUARDANDO CNPJ') return 'text-sky-200';
+      if (n === 'CONGELADOS') return 'text-violet-200';
+      if (n === 'CANCELADOS') return 'text-red-200';
+      if (n.includes('FBA')) return 'text-amber-200';
+      return 'text-orange-200';
+    }
 
-      $('supportStatusHead').innerHTML = `
-        <th>Suporte</th>
-        <th class="text-center">Total da aba</th>
-        ${statuses.map(st => `<th class="text-center">${escapeHtml(st)}</th>`).join('')}
-      `;
+    function renderStatusCards(scope) {
+      const baseTotal = todasLojas.length ? todasLojas : scope;
+      const statuses = SITUACOES;
+      const totalMes = scope.length;
+      const totalGeral = baseTotal.length;
 
-      $('supportStatusBody').innerHTML = supportsToShow.length ? supportsToShow.map(s => {
-        const totalAba = scope.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
-        const cells = statuses.map(st => `<td class="text-center font-bold">${countByStatus(scope, s.nome, st)}</td>`).join('');
-        return `<tr>
-          <td>${supportPill(s.nome)}</td>
-          <td class="text-center font-black text-orange-200">${totalAba}</td>
-          ${cells}
-        </tr>`;
-      }).join('') : `<tr><td colspan="${statuses.length + 2}" class="text-center py-6 text-slate-500">Nenhuma loja encontrada nesta aba.</td></tr>`;
-
-      $('supportStatusInfo').textContent = `Aba selecionada: ${activeMes}. Total na aba: ${scope.length}.`;
+      $('statusCardsInfo').textContent = `Planilha ativa: ${activeMes}. Total mês: ${totalMes}. Total geral: ${totalGeral}.`;
+      $('statusCards').innerHTML = statuses.map(status => {
+        const qtdMes = scope.filter(l => normalize(normalizeSituacao(l.situacao)) === normalize(status)).length;
+        const qtdGeral = baseTotal.filter(l => normalize(normalizeSituacao(l.situacao)) === normalize(status)).length;
+        const perc = totalMes ? Math.round((qtdMes / totalMes) * 100) : 0;
+        return `<div class="status-card rounded-2xl p-4 shadow-sm">
+          <div class="status-content space-y-3">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="tiny-label">Situação</p>
+                <h3 class="font-black text-sm ${statusTextColor(status)} leading-tight">${escapeHtml(status)}</h3>
+              </div>
+              <span class="badge soft-pill">${perc}%</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="count-chip">
+                <p class="tiny-label">Total mês</p>
+                <strong class="text-3xl font-black text-slate-100">${qtdMes}</strong>
+              </div>
+              <div class="count-chip">
+                <p class="tiny-label">Total geral</p>
+                <strong class="text-3xl font-black text-slate-100">${qtdGeral}</strong>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
     }
 
     function renderCounters(scope) {
       const baseTotal = todasLojas.length ? todasLojas : lojas;
-      const total = scope.length;
-      const concluidas = scope.filter(l => normalize(normalizeSituacao(l.situacao)) === 'LOJA ENTREGUE').length;
-      const aguardando = scope.filter(l => normalize(normalizeSituacao(l.situacao)) === 'AGUARDANDO CNPJ').length;
-      const congeladas = scope.filter(l => isCongelado(l.situacao)).length;
-      const pendentes = scope.filter(l => !isSituacaoFinalizada(l.situacao)).length;
-      const criticas = scope.filter(l => normalize(normalizeSituacao(l.situacao)) === 'VENDA FINALIZADA').length;
-      $('totalGeral').textContent = total;
-      $('totalPendentes').textContent = pendentes;
-      $('totalConcluidas').textContent = concluidas;
-      $('totalAguardando').textContent = aguardando;
-      $('totalCongeladas').textContent = congeladas;
-      $('totalCriticas').textContent = criticas;
+      renderStatusCards(scope);
 
-      $('supportCounters').innerHTML = suportes.map(s => {
+      const supportsWithData = suportes.filter(s => {
+        const mesCount = scope.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
+        const geralCount = baseTotal.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
+        return mesCount > 0 || geralCount > 0;
+      });
+
+      $('supportCounters').innerHTML = supportsWithData.length ? supportsWithData.map(s => {
         const arrMes = scope.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome));
         const arrTotal = baseTotal.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome));
-        const p = arrMes.filter(l => !isSituacaoFinalizada(l.situacao)).length;
-        const c = arrMes.filter(l => normalize(normalizeSituacao(l.situacao)) === 'LOJA ENTREGUE').length;
-        const a = arrMes.filter(l => normalize(normalizeSituacao(l.situacao)) === 'AGUARDANDO CNPJ').length;
-        const g = arrMes.filter(l => isCongelado(l.situacao)).length;
-        return `<div class="rounded-2xl dark-card p-3 shadow-sm">
-          <div class="flex items-center justify-between gap-2">
+        const statusLines = SITUACOES.map(st => {
+          const qtd = arrMes.filter(l => normalize(normalizeSituacao(l.situacao)) === normalize(st)).length;
+          if (!qtd) return '';
+          return `<div class="flex items-center justify-between gap-2 rounded-xl muted-panel px-3 py-2">
+            <span class="text-xs ${statusTextColor(st)} font-bold truncate">${escapeHtml(st)}</span>
+            <b class="text-sm text-slate-100">${qtd}</b>
+          </div>`;
+        }).filter(Boolean).join('') || '<div class="rounded-xl muted-panel px-3 py-2 text-xs text-slate-500">Sem lojas nesta planilha.</div>';
+
+        return `<div class="rounded-2xl dark-card p-4 shadow-sm">
+          <div class="flex items-start justify-between gap-2">
             <div class="font-black text-sm truncate text-slate-100"><span class="support-dot" style="background:${s.cor}"></span> ${escapeHtml(s.nome)}</div>
-            <div class="text-right">
-              <div class="text-xl font-black text-slate-100">${arrTotal.length}</div>
-              <div class="text-[10px] text-slate-500 font-bold uppercase">Total</div>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-3">
+            <div class="count-chip">
+              <p class="tiny-label">Total mês</p>
+              <strong class="text-2xl font-black text-orange-200">${arrMes.length}</strong>
+            </div>
+            <div class="count-chip">
+              <p class="tiny-label">Total geral</p>
+              <strong class="text-2xl font-black text-slate-100">${arrTotal.length}</strong>
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
-            <div class="rounded-xl muted-panel text-orange-200 p-2"><b>${arrMes.length}</b><br>Na aba</div>
-            <div class="rounded-xl muted-panel text-amber-200 p-2"><b>${p}</b><br>Em andamento</div>
-            <div class="rounded-xl muted-panel text-emerald-200 p-2"><b>${c}</b><br>Loja entregue</div>
-            <div class="rounded-xl muted-panel text-sky-200 p-2"><b>${a}</b><br>Aguardando CNPJ</div>
-            <div class="rounded-xl muted-panel text-violet-200 p-2"><b>${g}</b><br>Congelados</div>
-          </div>
+          <div class="mt-3 grid grid-cols-1 gap-2">${statusLines}</div>
         </div>`;
-      }).join('');
+      }).join('') : `<div class="rounded-2xl muted-panel p-4 text-sm text-slate-500">Nenhum suporte com loja encontrada.</div>`;
 
-      renderSupportStatusTable(scope);
+      $('supportStatusInfo').textContent = `Planilha ativa: ${activeMes}. Total mês: ${scope.length}. Total geral: ${baseTotal.length}.`;
+    }
+
+    function togglePanel(panelId, btn) {
+      const panel = $(panelId);
+      if (!panel) return;
+      panel.classList.toggle('panel-collapsed');
+      const collapsed = panel.classList.contains('panel-collapsed');
+      if (btn) btn.textContent = collapsed ? 'Expandir' : 'Minimizar';
     }
 
     function render() {
@@ -948,7 +988,8 @@
       renderCounters(mesScope);
       renderSortIndicators();
       $('loadInfo').textContent = `Aba ativa: ${activeMes || '-'}. Renderizando ${lojas.length} loja(s) desta aba. Total geral carregado: ${totalBanco}.`;
-      $('visibleInfo').textContent = `Exibindo ${list.length} de ${mesScope.length} registro(s) da aba selecionada após filtros.`;
+      $('tableTitle').textContent = `Tabela de ${activeMes || 'Sem mês'}`;
+      $('visibleInfo').textContent = `Exibindo ${list.length} de ${mesScope.length} registro(s) da planilha ${activeMes || 'Sem mês'} após filtros.`;
 
       $('lojasBody').innerHTML = list.length ? list.map(l => `
         <tr class="hover:bg-orange-500/10">
