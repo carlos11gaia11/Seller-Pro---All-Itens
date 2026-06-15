@@ -1530,6 +1530,18 @@ body[data-theme="light"] {
       animation: fadeUp .22s ease both;
     }
 
+
+
+    .required-hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 122, 24, .14);
+      border-radius: 14px;
+      background: rgba(255,255,255,.045);
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: .001ms !important;
@@ -1731,6 +1743,11 @@ body[data-theme="light"] {
             <input id="taskOwner" placeholder="Ex.: Felipe Lobão" required />
         </div>
 
+        <div class="field">
+          <label>MCID</label>
+          <input id="taskMcid" placeholder="Ex.: A1B2C3D4" />
+        </div>
+
         <div class="field full">
           <label>Descrição</label>
           <textarea id="taskDescription" placeholder="Explique o que precisa ser feito..."></textarea>
@@ -1773,6 +1790,53 @@ body[data-theme="light"] {
       <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
         <button class="btn secondary" onclick="closeModal()">Cancelar</button>
         <button class="btn" id="saveTaskButton" onclick="saveTask()">Salvar trabalho</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="deliveryModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Finalizar loja entregue</h3>
+        <button class="close" onclick="closeDeliveryModal()">×</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field full">
+          <div class="required-hint">
+            Para mover o card para <strong>Loja entregue</strong>, preencha todos os dados abaixo.
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Data configuração faturador</label>
+          <input id="deliveryBillingDate" type="date" required />
+        </div>
+
+        <div class="field">
+          <label>Data envio</label>
+          <input id="deliveryShipmentDate" type="date" required />
+        </div>
+
+        <div class="field">
+          <label>Data coleta</label>
+          <input id="deliveryPickupDate" type="date" required />
+        </div>
+
+        <div class="field">
+          <label>MCID</label>
+          <input id="deliveryMcid" placeholder="MCID da loja" required />
+        </div>
+
+        <div class="field full">
+          <label>E-mail de criação de conta</label>
+          <input id="deliveryAccountEmail" type="email" placeholder="email@exemplo.com" required />
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
+        <button class="btn secondary" onclick="closeDeliveryModal()">Cancelar</button>
+        <button class="btn" id="confirmDeliveryButton" onclick="confirmDeliveryMove()">Confirmar entrega</button>
       </div>
     </div>
   </div>
@@ -1927,6 +1991,8 @@ body[data-theme="light"] {
 
     let currentEditingTaskId = null;
     let currentTaskAttachments = [];
+    let pendingDeliveryTaskId = null;
+    let pendingDeliveryStatus = null;
 
     function slugify(text) {
       return String(text || '')
@@ -2140,6 +2206,11 @@ body[data-theme="light"] {
         status: task.status,
         name: task.name,
         owner: task.owner || '',
+        mcid: task.mcid || '',
+        billingConfigDate: task.billing_config_date || '',
+        shipmentDate: task.shipment_date || '',
+        pickupDate: task.pickup_date || '',
+        accountCreationEmail: task.account_creation_email || '',
         description: task.description || '',
         updates: Array.isArray(task.updates) ? task.updates : [],
         attachments: Array.isArray(task.attachments) ? task.attachments : []
@@ -2218,6 +2289,8 @@ body[data-theme="light"] {
       return [
         task.name,
         task.owner,
+        task.mcid,
+        task.accountCreationEmail,
         task.status,
         task.description,
         getProjectName(task.project),
@@ -2362,6 +2435,7 @@ body[data-theme="light"] {
 
           <div class="meta">
             <span class="pill location-pill">${escapeHTML(getProjectName(task.project))} • ${escapeHTML(task.status)}</span>
+            ${task.mcid ? `<span class="pill">MCID: ${escapeHTML(task.mcid)}</span>` : ''}
           </div>
 
           <p>${escapeHTML(task.description)}</p>
@@ -2712,6 +2786,7 @@ body[data-theme="light"] {
         document.getElementById('taskProject').value = task.project || state.activeProject;
         document.getElementById('taskStatus').value = task.status || state.columns[0];
         document.getElementById('taskOwner').value = task.owner || '';
+        document.getElementById('taskMcid').value = task.mcid || '';
         document.getElementById('taskDescription').value = task.description || '';
         document.getElementById('taskUpdates').value = (task.updates || []).join('\n');
         currentTaskAttachments = Array.isArray(task.attachments)
@@ -2770,7 +2845,7 @@ body[data-theme="light"] {
     }
 
     function clearForm() {
-      ['taskName', 'taskOwner', 'taskDescription', 'taskUpdates'].forEach(id => {
+      ['taskName', 'taskOwner', 'taskMcid', 'taskDescription', 'taskUpdates'].forEach(id => {
         document.getElementById(id).value = '';
       });
 
@@ -2825,6 +2900,11 @@ body[data-theme="light"] {
         status: document.getElementById('taskStatus').value,
         name,
         owner: document.getElementById('taskOwner').value.trim(),
+        mcid: document.getElementById('taskMcid').value.trim(),
+        billing_config_date: currentEditingTaskId ? (state.tasks.find(t => t.id === currentEditingTaskId)?.billingConfigDate || null) : null,
+        shipment_date: currentEditingTaskId ? (state.tasks.find(t => t.id === currentEditingTaskId)?.shipmentDate || null) : null,
+        pickup_date: currentEditingTaskId ? (state.tasks.find(t => t.id === currentEditingTaskId)?.pickupDate || null) : null,
+        account_creation_email: currentEditingTaskId ? (state.tasks.find(t => t.id === currentEditingTaskId)?.accountCreationEmail || null) : null,
         description: document.getElementById('taskDescription').value.trim(),
         updates,
         attachments: uploadedAttachments
@@ -2865,6 +2945,11 @@ body[data-theme="light"] {
           status: taskData.status,
           name: taskData.name,
           owner: taskData.owner,
+          mcid: taskData.mcid,
+          billingConfigDate: taskData.billing_config_date || '',
+          shipmentDate: taskData.shipment_date || '',
+          pickupDate: taskData.pickup_date || '',
+          accountCreationEmail: taskData.account_creation_email || '',
           description: taskData.description,
           updates,
           attachments: uploadedAttachments
@@ -2892,6 +2977,11 @@ body[data-theme="light"] {
           status: taskData.status,
           name: taskData.name,
           owner: taskData.owner,
+          mcid: taskData.mcid,
+          billingConfigDate: taskData.billing_config_date || '',
+          shipmentDate: taskData.shipment_date || '',
+          pickupDate: taskData.pickup_date || '',
+          accountCreationEmail: taskData.account_creation_email || '',
           description: taskData.description,
           updates,
           attachments: uploadedAttachments
@@ -2985,6 +3075,11 @@ body[data-theme="light"] {
 
       if (!task || task.status === status) return;
 
+      if (status === 'Loja entregue') {
+        openDeliveryModal(taskId, status);
+        return;
+      }
+
       const previousStatus = task.status;
 
       task.status = status;
@@ -3005,6 +3100,123 @@ body[data-theme="light"] {
       }
 
       showToast(`Card movido para: ${status}`);
+    }
+
+    function openDeliveryModal(taskId, status) {
+      const task = state.tasks.find(t => t.id === taskId);
+
+      if (!task) return;
+
+      pendingDeliveryTaskId = taskId;
+      pendingDeliveryStatus = status;
+
+      document.getElementById('deliveryBillingDate').value = task.billingConfigDate || '';
+      document.getElementById('deliveryShipmentDate').value = task.shipmentDate || '';
+      document.getElementById('deliveryPickupDate').value = task.pickupDate || '';
+      document.getElementById('deliveryMcid').value = task.mcid || '';
+      document.getElementById('deliveryAccountEmail').value = task.accountCreationEmail || '';
+
+      const button = document.getElementById('confirmDeliveryButton');
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'Confirmar entrega';
+      }
+
+      document.getElementById('deliveryModal').classList.add('show');
+    }
+
+    function closeDeliveryModal() {
+      document.getElementById('deliveryModal').classList.remove('show');
+      pendingDeliveryTaskId = null;
+      pendingDeliveryStatus = null;
+
+      ['deliveryBillingDate', 'deliveryShipmentDate', 'deliveryPickupDate', 'deliveryMcid', 'deliveryAccountEmail'].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.value = '';
+      });
+    }
+
+    async function confirmDeliveryMove() {
+      const task = state.tasks.find(t => t.id === pendingDeliveryTaskId);
+
+      if (!task || !pendingDeliveryStatus) return;
+
+      const deliveryData = {
+        billing_config_date: document.getElementById('deliveryBillingDate').value,
+        shipment_date: document.getElementById('deliveryShipmentDate').value,
+        pickup_date: document.getElementById('deliveryPickupDate').value,
+        mcid: document.getElementById('deliveryMcid').value.trim(),
+        account_creation_email: document.getElementById('deliveryAccountEmail').value.trim()
+      };
+
+      const missingField = Object.values(deliveryData).some(value => !String(value || '').trim());
+
+      if (missingField) {
+        alert('Preencha todos os campos obrigatórios para entregar a loja.');
+        return;
+      }
+
+      const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(deliveryData.account_creation_email);
+
+      if (!emailIsValid) {
+        alert('Informe um e-mail válido para criação de conta.');
+        return;
+      }
+
+      const previousStatus = task.status;
+      const previousData = {
+        mcid: task.mcid,
+        billingConfigDate: task.billingConfigDate,
+        shipmentDate: task.shipmentDate,
+        pickupDate: task.pickupDate,
+        accountCreationEmail: task.accountCreationEmail
+      };
+
+      const button = document.getElementById('confirmDeliveryButton');
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Salvando...';
+      }
+
+      task.status = pendingDeliveryStatus;
+      task.mcid = deliveryData.mcid;
+      task.billingConfigDate = deliveryData.billing_config_date;
+      task.shipmentDate = deliveryData.shipment_date;
+      task.pickupDate = deliveryData.pickup_date;
+      task.accountCreationEmail = deliveryData.account_creation_email;
+
+      renderBoard();
+
+      const { error } = await supabaseClient
+        .from('sp_tasks')
+        .update({
+          status: pendingDeliveryStatus,
+          ...deliveryData
+        })
+        .eq('id', task.id);
+
+      if (error) {
+        task.status = previousStatus;
+        task.mcid = previousData.mcid;
+        task.billingConfigDate = previousData.billingConfigDate;
+        task.shipmentDate = previousData.shipmentDate;
+        task.pickupDate = previousData.pickupDate;
+        task.accountCreationEmail = previousData.accountCreationEmail;
+        renderBoard();
+
+        if (button) {
+          button.disabled = false;
+          button.textContent = 'Confirmar entrega';
+        }
+
+        showToast('Não consegui entregar a loja no Supabase. Verifique as colunas criadas.');
+        console.error(error);
+        return;
+      }
+
+      playSound('drop');
+      closeDeliveryModal();
+      showToast('Loja entregue com dados obrigatórios salvos.');
     }
 
     function scrollBoard(direction) {
@@ -3092,8 +3304,28 @@ body[data-theme="light"] {
           </div>
 
           <div class="detail-box">
+            <small>MCID</small>
+            <strong>${escapeHTML(task.mcid || 'Não informado')}</strong>
+          </div>
+
+          <div class="detail-box">
             <small>Pasta/Mês</small>
             <strong>${escapeHTML(getProjectName(task.project))}</strong>
+          </div>
+
+          <div class="detail-box">
+            <small>E-mail criação de conta</small>
+            <strong>${escapeHTML(task.accountCreationEmail || 'Não informado')}</strong>
+          </div>
+
+          <div class="detail-box">
+            <small>Data configuração faturador</small>
+            <strong>${escapeHTML(task.billingConfigDate || 'Não informado')}</strong>
+          </div>
+
+          <div class="detail-box">
+            <small>Data envio / coleta</small>
+            <strong>${escapeHTML(task.shipmentDate || 'Não informado')} / ${escapeHTML(task.pickupDate || 'Não informado')}</strong>
           </div>
 
           <div class="detail-box full">
