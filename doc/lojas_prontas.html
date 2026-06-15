@@ -69,7 +69,7 @@
             <span>📋</span> Painel integrado ao Supabase
           </div>
           <h1 class="text-2xl sm:text-4xl font-black tracking-tight text-slate-950">Lojas Prontas</h1>
-          <p class="text-sm sm:text-base text-slate-600 mt-1">Controle por mês detectado em cada loja, suporte responsável, conclusão e prazo do formulário.</p>
+          <p class="text-sm sm:text-base text-slate-600 mt-1">Controle por mês, suporte responsável, conclusão e prazo do preenchimento do formulário.</p>
           <p id="loadInfo" class="text-xs text-slate-500 mt-2">Carregando dados...</p>
         </div>
         <div class="flex flex-wrap gap-2">
@@ -91,7 +91,7 @@
     <section class="glass rounded-3xl shadow-soft p-4 space-y-4">
       <div class="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-3">
         <div class="flex-1">
-          <p class="text-xs text-slate-500 font-bold uppercase mb-2">Abas por mês detectado nas lojas</p>
+          <p class="text-xs text-slate-500 font-bold uppercase mb-2">Abas por categoria/mês</p>
           <div id="mesTabs" class="flex gap-2 overflow-x-auto pb-1"></div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 min-w-full xl:min-w-[760px]">
@@ -103,6 +103,23 @@
       </div>
 
       <div id="supportCounters" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3"></div>
+
+      <div class="dark-card rounded-2xl p-4 overflow-hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+          <div>
+            <h3 class="font-black text-base">Contagem exata por suporte e situação</h3>
+            <p id="supportStatusInfo" class="text-xs text-slate-500">Resumo do mês selecionado e total geral.</p>
+          </div>
+        </div>
+        <div class="overflow-auto">
+          <table class="table table-compact w-full min-w-[980px]">
+            <thead class="sticky-head">
+              <tr id="supportStatusHead"></tr>
+            </thead>
+            <tbody id="supportStatusBody"></tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
     <section class="glass rounded-3xl shadow-soft overflow-hidden">
@@ -123,6 +140,7 @@
             <tr>
               <th><button onclick="setSort('mcid')" class="font-black">MCID <span id="sort-mcid">↕</span></button></th>
               <th><button onclick="setSort('seller')" class="font-black">Seller <span id="sort-seller">↕</span></button></th>
+              <th><button onclick="setSort('mes_categoria')" class="font-black">Mês detectado <span id="sort-mes_categoria">↕</span></button></th>
               <th><button onclick="setSort('data_formulario')" class="font-black">Preenchimento do formulário <span id="sort-data_formulario">↕</span></button></th>
               <th><button onclick="setSort('suporte_nome')" class="font-black">Suporte responsável <span id="sort-suporte_nome">↕</span></button></th>
               <th><button onclick="setSort('situacao')" class="font-black">Situação <span id="sort-situacao">↕</span></button></th>
@@ -149,7 +167,7 @@
         <label class="form-control"><span class="label-text font-bold">Suporte responsável</span><select id="suporteSelect" class="select select-bordered" required></select></label>
         <label class="form-control"><span class="label-text font-bold">Situação</span><select id="situacao" class="select select-bordered" onchange="toggleConclusao()"></select></label>
         <label class="form-control"><span class="label-text font-bold">Dia de conclusão</span><input id="diaConclusao" type="date" class="input input-bordered" /></label>
-        <label class="form-control md:col-span-2 hidden"><span class="label-text font-bold">Mês detectado automaticamente</span><select id="mesSelect" class="select select-bordered"></select></label>
+        <label class="form-control md:col-span-2"><span class="label-text font-bold">Categoria / mês</span><select id="mesSelect" class="select select-bordered"></select></label>
         <div class="md:col-span-2 flex justify-end gap-2 mt-2">
           <button type="button" class="btn" onclick="lojaModal.close()">Cancelar</button>
           <button class="btn bg-orange-500 hover:bg-orange-600 border-0 text-white">Salvar loja</button>
@@ -206,7 +224,7 @@
         situacao: ['situacao', 'situação', 'status', 'stage', 'etapa', 'column_name'],
         dataFormulario: ['data_formulario', 'preenchimento_formulario', 'preenchimento_de_formulario', 'data_preenchimento_formulario', 'form_date', 'formulario_preenchido_em', 'preenchido_em'],
         diaConclusao: ['dia_conclusao', 'data_conclusao', 'completed_at', 'concluido_em', 'finished_at'],
-        mes: ['mes_categoria', 'mes', 'mês', 'categoria', 'aba', 'month', 'project_name', 'board_name']
+        mes: ['mes_categoria', 'mes', 'mês', 'categoria', 'aba', 'month', 'month_name', 'nome_mes', 'mes_nome', 'project_name', 'board_name', 'workspace_name']
       },
       suporteFields: {
         id: ['id', 'uuid', 'user_id', 'usuario_id', 'suporte_id', 'profile_id'],
@@ -239,7 +257,27 @@
       'JANEIRO','FEVEREIRO','MARCO','MARÇO','ABRIL','MAIO','JUNHO','JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'
     ];
 
-    let lojas = [], todasLojas = [], suportes = [], meses = [], activeMes = localStorage.getItem('lojas_prontas_mes') || 'Geral', totalBanco = 0;
+
+    const MESES_PT = [
+      'Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'
+    ];
+
+    const MESES_MAP = [
+      { keys: ['JANEIRO'], label: 'Janeiro', index: 1 },
+      { keys: ['FEVEREIRO'], label: 'Fevereiro', index: 2 },
+      { keys: ['MARCO','MARÇO'], label: 'Março', index: 3 },
+      { keys: ['ABRIL'], label: 'Abril', index: 4 },
+      { keys: ['MAIO'], label: 'Maio', index: 5 },
+      { keys: ['JUNHO'], label: 'Junho', index: 6 },
+      { keys: ['JULHO'], label: 'Julho', index: 7 },
+      { keys: ['AGOSTO'], label: 'Agosto', index: 8 },
+      { keys: ['SETEMBRO'], label: 'Setembro', index: 9 },
+      { keys: ['OUTUBRO'], label: 'Outubro', index: 10 },
+      { keys: ['NOVEMBRO'], label: 'Novembro', index: 11 },
+      { keys: ['DEZEMBRO'], label: 'Dezembro', index: 12 }
+    ];
+
+    let lojas = [], todasLojas = [], suportes = [], meses = [], activeMes = 'Geral', totalBanco = 0;
     let spData = { columns: [], projects: [], reminders: [], tasks: [], suportes: [] };
     let sortState = { key: 'seller', dir: 'asc' };
 
@@ -253,35 +291,6 @@
     };
     const formatDate = (v) => parseDate(v) ? parseDate(v).toLocaleDateString('pt-BR') : '-';
     const uid = () => crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
-
-    function mesSortValue(nome) {
-      const n = normalize(nome);
-      const ordem = {
-        JANEIRO: 1, FEVEREIRO: 2, MARCO: 3, MARÇO: 3, ABRIL: 4, MAIO: 5, JUNHO: 6,
-        JULHO: 7, AGOSTO: 8, SETEMBRO: 9, OUTUBRO: 10, NOVEMBRO: 11, DEZEMBRO: 12
-      };
-
-      const anoMatch = String(nome || '').match(/(20\d{2}|19\d{2})/);
-      const ano = anoMatch ? Number(anoMatch[1]) : 0;
-      const mesKey = Object.keys(ordem).find(m => n.includes(m));
-      const mes = mesKey ? ordem[mesKey] : 0;
-
-      return ano * 100 + mes;
-    }
-
-    function isTextoMesValido(valor) {
-      const n = normalize(valor);
-      if (!n) return false;
-      if (SITUACOES.some(s => normalize(s) === n)) return false;
-      if (['GERAL','BACKLOG','TODO','TO DO','DONE','KANBAN','PROJETO','PROJECT','TASK','TAREFA'].includes(n)) return false;
-      return MESES_NOMES.some(m => n.includes(m)) || /(20\d{2}|19\d{2})/.test(String(valor));
-    }
-
-    function normalizeMesLabel(valor) {
-      const original = String(valor || '').trim();
-      if (!original) return 'Geral';
-      return original;
-    }
 
     function normalizeSituacao(v) {
       const n = normalize(v);
@@ -530,65 +539,81 @@
       return getSuporteDisplay(suporte);
     }
 
-    function extractMes(obj) {
-      const flat = flatObject(obj);
+    function monthLabelFromText(value) {
+      if (value === undefined || value === null) return '';
+      const raw = String(value).trim();
+      if (!raw) return '';
 
-      const camposPossiveis = [
-        ...CONFIG.fieldNames.mes,
-        'mes_loja',
-        'mes_da_loja',
-        'mes_referencia',
-        'referencia_mes',
-        'month_label',
-        'month_name',
-        'card_month',
-        'loja_mes',
-        'project.title',
-        'project.name',
-        'board.title',
-        'board.name',
-        'workspace_name'
-      ];
+      const n = normalize(raw);
+      if (!n || SITUACOES.some(s => normalize(s) === n)) return '';
 
-      let mes = pick(obj, camposPossiveis, '');
-
-      if (!isTextoMesValido(mes)) {
-        mes = '';
-
-        for (const [key, value] of Object.entries(flat)) {
-          const keyNormalizada = normalize(key);
-          const valueNormalizado = normalize(value);
-
-          const pareceCampoDeMes =
-            keyNormalizada.includes('MES') ||
-            keyNormalizada.includes('MONTH') ||
-            keyNormalizada.includes('CATEGORIA') ||
-            keyNormalizada.includes('ABA') ||
-            keyNormalizada.includes('BOARD_NAME') ||
-            keyNormalizada.includes('PROJECT_NAME');
-
-          const campoBloqueado =
-            keyNormalizada.endsWith('ID') ||
-            keyNormalizada.includes('_ID') ||
-            keyNormalizada.includes('UUID') ||
-            keyNormalizada.includes('COLUMN') ||
-            keyNormalizada.includes('COLUNA') ||
-            keyNormalizada.includes('STATUS') ||
-            keyNormalizada.includes('SITUACAO') ||
-            keyNormalizada.includes('SITUAÇÃO') ||
-            keyNormalizada.includes('ETAPA') ||
-            keyNormalizada.includes('STAGE');
-
-          if (pareceCampoDeMes && !campoBloqueado && isTextoMesValido(valueNormalizado || value)) {
-            mes = value;
-            break;
-          }
+      for (const mes of MESES_MAP) {
+        if (mes.keys.some(k => n.includes(k))) {
+          const yearMatch = n.match(/(20\d{2}|19\d{2})/);
+          return yearMatch ? `${mes.label}/${yearMatch[1]}` : mes.label;
         }
       }
 
-      if (!isTextoMesValido(mes)) return 'Geral';
+      const numeric = n.match(/(?:^|\D)(0?[1-9]|1[0-2])(?:[\/-])(20\d{2}|19\d{2})(?:\D|$)/);
+      if (numeric) {
+        const monthIndex = Number(numeric[1]);
+        return `${MESES_PT[monthIndex - 1]}/${numeric[2]}`;
+      }
 
-      return normalizeMesLabel(mes);
+      return '';
+    }
+
+    function mesSortValue(nome) {
+      const n = normalize(nome);
+      if (!n || n === 'GERAL' || n === 'SEM MES') return 999999;
+      const yearMatch = n.match(/(20\d{2}|19\d{2})/);
+      const year = yearMatch ? Number(yearMatch[1]) : 9999;
+      const mes = MESES_MAP.find(m => m.keys.some(k => n.includes(k)));
+      const month = mes ? mes.index : 99;
+      return year * 100 + month;
+    }
+
+    function getProjectName(project) {
+      if (!project) return '';
+      return pick(project, ['mes_categoria','mes','mês','categoria','aba','month','month_name','nome_mes','mes_nome','project_name','board_name','workspace_name','title','titulo','name','nome'], '');
+    }
+
+    function extractMesFromSources(row, project=null, column=null, sourceTable='') {
+      const orderedCandidates = [];
+
+      // 1) Primeiro tenta o projeto/board, porque no Kanban o mês costuma estar nele.
+      orderedCandidates.push(getProjectName(project));
+
+      // 2) Depois tenta campos explícitos da própria loja/card.
+      orderedCandidates.push(pick(row, CONFIG.fieldNames.mes, ''));
+
+      // 3) Depois tenta textos comuns em objetos aninhados.
+      const flatProject = flatObject(project || {});
+      const flatRow = flatObject(row || {});
+      for (const [key, value] of Object.entries(flatProject)) {
+        const nk = normalize(key);
+        if (nk.includes('MES') || nk.includes('MONTH') || nk.includes('CATEGORIA') || nk.includes('ABA') || nk.includes('PROJECT') || nk.includes('BOARD')) orderedCandidates.push(value);
+      }
+      for (const [key, value] of Object.entries(flatRow)) {
+        const nk = normalize(key);
+        if (nk.includes('MES') || nk.includes('MONTH') || nk.includes('CATEGORIA') || nk.includes('ABA') || nk.includes('PROJECT') || nk.includes('BOARD')) orderedCandidates.push(value);
+      }
+
+      // 4) Por último, faz uma varredura geral procurando nome de mês em qualquer campo textual.
+      for (const value of Object.values(flatRow)) orderedCandidates.push(value);
+      for (const value of Object.values(flatProject)) orderedCandidates.push(value);
+
+      for (const candidate of orderedCandidates) {
+        const label = monthLabelFromText(candidate);
+        if (label) return label;
+      }
+
+      return 'Sem mês';
+    }
+
+    function extractMes(obj) {
+      const mes = pick(obj, CONFIG.fieldNames.mes, '');
+      return monthLabelFromText(mes) || 'Sem mês';
     }
 
     function findProjectFor(row) {
@@ -624,7 +649,7 @@
       const situacaoBase = getColumnName(column) || pick(merged, CONFIG.fieldNames.situacao, '');
       const dataFormulario = pick(merged, CONFIG.fieldNames.dataFormulario, '');
       const diaConclusao = pick(merged, CONFIG.fieldNames.diaConclusao, '');
-      const mes = extractMes(merged);
+      const mes = extractMesFromSources(row, project, column, sourceTable);
 
       return {
         ...merged,
@@ -676,7 +701,6 @@
       const reminderRows = spData.reminders.map(r => buildLoja(r, 'sp_reminders')).filter(rowHasUsefulData);
       const projectRows = spData.projects.map(r => buildLoja(r, 'sp_projects')).filter(rowHasUsefulData);
 
-      // Ares geralmente guarda as lojas como cards/tarefas. Por isso sp_tasks continua sendo a base principal.
       if (CONFIG.primaryDisplayTable === 'sp_projects') todasLojas = projectRows.length ? projectRows : taskRows;
       else if (CONFIG.primaryDisplayTable === 'sp_reminders') todasLojas = reminderRows.length ? reminderRows : taskRows;
       else if (CONFIG.primaryDisplayTable === 'sp_tasks') todasLojas = taskRows.length ? taskRows : projectRows;
@@ -684,38 +708,19 @@
 
       totalBanco = todasLojas.length;
 
-      const mesNames = [...new Set(
-        todasLojas
-          .map(l => l.mes_categoria || 'Geral')
-          .filter(Boolean)
-      )].sort((a, b) => {
-        const bv = mesSortValue(b);
-        const av = mesSortValue(a);
-        if (bv !== av) return bv - av;
-        return String(a).localeCompare(String(b), 'pt-BR', { numeric: true, sensitivity: 'base' });
-      });
-
-      meses = mesNames.length
-        ? mesNames.map((nome, i) => ({ id: normalize(nome), nome, ordem: i }))
-        : [{ id: 'GERAL', nome: 'Geral', ordem: 0 }];
-
-      if (!meses.some(m => normalize(m.nome) === normalize(activeMes))) {
-        activeMes = meses[0]?.nome || 'Geral';
-        localStorage.setItem('lojas_prontas_mes', activeMes);
-      }
-
-      lojas = todasLojas.filter(l => normalize(l.mes_categoria || 'Geral') === normalize(activeMes));
-
-      const supportNames = [...new Set(
-        todasLojas
-          .map(l => l.suporte_nome)
-          .filter(Boolean)
-      )];
-
+      const supportNames = [...new Set(todasLojas.map(l => l.suporte_nome || 'Sem suporte').filter(Boolean))];
       const extras = supportNames
         .filter(nome => !suportes.some(s => normalize(s.nome) === normalize(nome) || normalize(s.id) === normalize(nome) || normalize(s.email) === normalize(nome)))
         .map((nome, i) => ({ id: nome, nome, email: '', cor: SUPPORT_COLORS[(suportes.length + i) % SUPPORT_COLORS.length], aliases: [normalize(nome)], origem: 'lojas' }));
       suportes = [...suportes, ...extras];
+
+      const mesNames = [...new Set(todasLojas.map(l => l.mes_categoria || 'Sem mês').filter(Boolean))]
+        .sort((a,b) => mesSortValue(a) - mesSortValue(b) || String(a).localeCompare(String(b), 'pt-BR'));
+
+      meses = (mesNames.length ? mesNames : ['Sem mês']).map((nome, i) => ({ id: normalize(nome), nome, ordem: i }));
+      if (!meses.some(m => normalize(m.nome) === normalize(activeMes))) activeMes = meses[0]?.nome || 'Sem mês';
+
+      lojas = todasLojas.filter(l => normalize(l.mes_categoria || 'Sem mês') === normalize(activeMes));
 
       console.log('[Ares/Supabase] Linhas carregadas:', {
         sp_columns: spData.columns.length,
@@ -724,9 +729,11 @@
         sp_reminders: spData.reminders.length,
         suportes_sellerpro: spData.suportes.length,
         lojas_total: todasLojas.length,
+        lojas_mes_ativo: lojas.length,
         mes_ativo: activeMes,
-        lojas_renderizadas: lojas.length,
-        exemplo_loja: lojas[0] || todasLojas[0] || null
+        meses_detectados: meses.map(m => m.nome),
+        exemplo_task: spData.tasks[0] || null,
+        exemplo_loja: todasLojas[0] || null
       });
 
       renderSupportOptions();
@@ -768,8 +775,7 @@
 
     function setMes(mes) {
       activeMes = mes;
-      localStorage.setItem('lojas_prontas_mes', activeMes);
-      lojas = todasLojas.filter(l => normalize(l.mes_categoria || 'Geral') === normalize(activeMes));
+      lojas = todasLojas.filter(l => normalize(l.mes_categoria || 'Sem mês') === normalize(activeMes));
       renderMesOptions();
       render();
     }
@@ -807,8 +813,8 @@
       const situacao = normalize($('filterSituacao').value);
       const prazo = $('filterPrazo').value;
       return lojas.filter(l => {
-        const inSearch = !term || normalize([l.mcid,l.seller,l.suporte_nome,l.situacao,l.mes_categoria].join(' ')).includes(term);
-        const inSuporte = !suporte || normalize(l.suporte_nome) === suporte;
+        const inSearch = !term || normalize([l.mcid,l.seller,l.mes_categoria,l.suporte_nome,l.situacao].join(' ')).includes(term);
+        const inSuporte = !suporte || normalize(l.suporte_nome || 'Sem suporte') === suporte;
         const inSituacao = !situacao || normalize(l.situacao) === situacao;
         const inPrazo = !prazo || daysInfo(l).cor === prazo;
         return inSearch && inSuporte && inSituacao && inPrazo;
@@ -831,13 +837,57 @@
     }
 
     function renderSortIndicators() {
-      ['mcid','seller','data_formulario','suporte_nome','situacao','dia_conclusao','dias'].forEach(k => {
+      ['mcid','seller','mes_categoria','data_formulario','suporte_nome','situacao','dia_conclusao','dias'].forEach(k => {
         const el = $('sort-' + k);
         if (el) el.textContent = sortState.key === k ? (sortState.dir === 'asc' ? '▲' : '▼') : '↕';
       });
     }
 
+    function getSituacoesAtivas(base) {
+      const fromData = [...new Set(base.map(l => normalizeSituacao(l.situacao)).filter(Boolean))];
+      return [...SITUACOES, ...fromData.filter(s => !SITUACOES.some(baseStatus => normalize(baseStatus) === normalize(s)))]
+        .filter(s => base.some(l => normalize(normalizeSituacao(l.situacao)) === normalize(s)));
+    }
+
+    function countByStatus(base, supportName, statusName) {
+      return base.filter(l =>
+        normalize(l.suporte_nome || 'Sem suporte') === normalize(supportName) &&
+        normalize(normalizeSituacao(l.situacao)) === normalize(statusName)
+      ).length;
+    }
+
+    function renderSupportStatusTable(scope) {
+      const baseTotal = todasLojas.length ? todasLojas : lojas;
+      const statuses = getSituacoesAtivas(baseTotal);
+      const supportsToShow = suportes.filter(s => {
+        const total = baseTotal.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
+        return total > 0;
+      });
+
+      $('supportStatusHead').innerHTML = `
+        <th>Suporte</th>
+        <th class="text-center">Total geral</th>
+        <th class="text-center">Neste mês</th>
+        ${statuses.map(st => `<th class="text-center">${escapeHtml(st)}</th>`).join('')}
+      `;
+
+      $('supportStatusBody').innerHTML = supportsToShow.length ? supportsToShow.map(s => {
+        const totalGeral = baseTotal.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
+        const totalMes = scope.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome)).length;
+        const cells = statuses.map(st => `<td class="text-center font-bold">${countByStatus(scope, s.nome, st)}</td>`).join('');
+        return `<tr>
+          <td>${supportPill(s.nome)}</td>
+          <td class="text-center font-black text-slate-100">${totalGeral}</td>
+          <td class="text-center font-black text-orange-200">${totalMes}</td>
+          ${cells}
+        </tr>`;
+      }).join('') : `<tr><td colspan="${statuses.length + 3}" class="text-center py-6 text-slate-500">Nenhuma loja encontrada.</td></tr>`;
+
+      $('supportStatusInfo').textContent = `Mês selecionado: ${activeMes}. Total geral: ${baseTotal.length}. Total neste mês: ${scope.length}.`;
+    }
+
     function renderCounters(scope) {
+      const baseTotal = todasLojas.length ? todasLojas : lojas;
       const total = scope.length;
       const concluidas = scope.filter(l => normalize(normalizeSituacao(l.situacao)) === 'LOJA ENTREGUE').length;
       const aguardando = scope.filter(l => normalize(normalizeSituacao(l.situacao)) === 'AGUARDANDO CNPJ').length;
@@ -852,8 +902,8 @@
       $('totalCriticas').textContent = criticas;
 
       $('supportCounters').innerHTML = suportes.map(s => {
-        const arrMes = scope.filter(l => normalize(l.suporte_nome) === normalize(s.nome));
-        const arrTotal = todasLojas.filter(l => normalize(l.suporte_nome) === normalize(s.nome));
+        const arrMes = scope.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome));
+        const arrTotal = baseTotal.filter(l => normalize(l.suporte_nome || 'Sem suporte') === normalize(s.nome));
         const p = arrMes.filter(l => !isSituacaoFinalizada(l.situacao)).length;
         const c = arrMes.filter(l => normalize(normalizeSituacao(l.situacao)) === 'LOJA ENTREGUE').length;
         const a = arrMes.filter(l => normalize(normalizeSituacao(l.situacao)) === 'AGUARDANDO CNPJ').length;
@@ -868,12 +918,15 @@
           </div>
           <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
             <div class="rounded-xl muted-panel text-orange-200 p-2"><b>${arrMes.length}</b><br>Neste mês</div>
+            <div class="rounded-xl muted-panel text-amber-200 p-2"><b>${p}</b><br>Em andamento</div>
             <div class="rounded-xl muted-panel text-emerald-200 p-2"><b>${c}</b><br>Loja entregue</div>
             <div class="rounded-xl muted-panel text-sky-200 p-2"><b>${a}</b><br>Aguardando CNPJ</div>
             <div class="rounded-xl muted-panel text-violet-200 p-2"><b>${g}</b><br>Congelados</div>
           </div>
         </div>`;
       }).join('');
+
+      renderSupportStatusTable(scope);
     }
 
     function render() {
@@ -882,13 +935,14 @@
       const list = filteredLojas();
       renderCounters(mesScope);
       renderSortIndicators();
-      $('loadInfo').textContent = `Renderizando somente as lojas de ${activeMes || '-'}. Total no mês: ${lojas.length}. Total geral: ${totalBanco}.`;
+      $('loadInfo').textContent = `Mês ativo: ${activeMes || '-'}. Renderizando ${lojas.length} loja(s) deste mês. Total geral carregado: ${totalBanco}.`;
       $('visibleInfo').textContent = `Exibindo ${list.length} de ${mesScope.length} registro(s) após filtros.`;
 
       $('lojasBody').innerHTML = list.length ? list.map(l => `
         <tr class="hover:bg-orange-500/10">
           <td class="font-bold">${escapeHtml(l.mcid || '-')}</td>
           <td class="truncate-cell" title="${escapeAttr(l.seller)}">${escapeHtml(l.seller || '-')}</td>
+          <td><span class="badge soft-pill">${escapeHtml(l.mes_categoria || 'Sem mês')}</span></td>
           <td>${formatDate(l.data_formulario)}</td>
           <td>${supportPill(l.suporte_nome)}</td>
           <td>${statusBadge(l)}</td>
@@ -899,7 +953,7 @@
             <button class="btn btn-xs btn-error text-white" onclick="deleteLoja('${escapeAttr(l.id)}')">Excluir</button>
           </td>
         </tr>
-      `).join('') : `<tr><td colspan="8" class="text-center py-10 text-slate-500">Nenhum registro encontrado.</td></tr>`;
+      `).join('') : `<tr><td colspan="9" class="text-center py-10 text-slate-500">Nenhum registro encontrado.</td></tr>`;
     }
 
     function supportPill(nome) {
@@ -908,7 +962,7 @@
     }
 
     function openLojaModal(id='') {
-      const l = lojas.find(x => String(x.id) === String(id));
+      const l = lojas.find(x => String(x.id) === String(id)) || todasLojas.find(x => String(x.id) === String(id));
       $('lojaModalTitle').textContent = l ? 'Editar loja pronta' : 'Nova loja pronta';
       $('lojaId').value = l?.id || '';
       $('mcid').value = l?.mcid || '';
@@ -947,7 +1001,7 @@
       showLoading(true);
 
       const id = $('lojaId').value;
-      const existing = lojas.find(l => String(l.id) === String(id));
+      const existing = lojas.find(l => String(l.id) === String(id)) || todasLojas.find(l => String(l.id) === String(id));
 
       const payload = {
         mcid: $('mcid').value.trim(),
@@ -981,7 +1035,7 @@
       if (!confirm('Deseja excluir este registro?')) return;
       showLoading(true);
       try {
-        const existing = lojas.find(l => String(l.id) === String(id));
+        const existing = lojas.find(l => String(l.id) === String(id)) || todasLojas.find(l => String(l.id) === String(id));
         const table = existing?._sourceTable || CONFIG.saveTable;
         const rawId = existing?._rawId || id;
         const { error } = await client.from(table).delete().eq('id', rawId);
