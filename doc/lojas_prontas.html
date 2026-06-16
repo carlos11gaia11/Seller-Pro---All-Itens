@@ -12,16 +12,47 @@
     :root {
       --bg: #eef2ff;
       --card: rgba(255, 255, 255, 0.9);
+      --glass: rgba(255, 255, 255, 0.58);
       --text: #0f172a;
       --muted: #64748b;
       --line: #e2e8f0;
       --primary: #2563eb;
       --primary-dark: #1d4ed8;
+      --accent: #7c3aed;
       --green: #16a34a;
       --green-soft: #ecfdf5;
       --blue-soft: #eff6ff;
       --red-soft: #fef2f2;
+      --orange: #f97316;
       --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --hero-gradient: linear-gradient(135deg, rgba(37, 99, 235, 0.96), rgba(109, 40, 217, 0.92));
+      --body-bg:
+        radial-gradient(circle at top left, #dbeafe 0, transparent 30%),
+        radial-gradient(circle at top right, #e9d5ff 0, transparent 25%),
+        linear-gradient(180deg, #f8fbff 0%, #eef2f7 100%);
+    }
+
+    body.theme-dark {
+      --bg: #050505;
+      --card: rgba(15, 15, 15, 0.88);
+      --glass: rgba(18, 18, 18, 0.72);
+      --text: #fff7ed;
+      --muted: #fed7aa;
+      --line: rgba(249, 115, 22, 0.22);
+      --primary: #f97316;
+      --primary-dark: #c2410c;
+      --accent: #fb923c;
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.13);
+      --blue-soft: rgba(249, 115, 22, 0.14);
+      --red-soft: rgba(127, 29, 29, 0.25);
+      --orange: #fb923c;
+      --shadow: 0 18px 55px rgba(0, 0, 0, 0.38);
+      --hero-gradient: linear-gradient(135deg, #050505, #431407 48%, #f97316 140%);
+      --body-bg:
+        radial-gradient(circle at top left, rgba(249, 115, 22, 0.30) 0, transparent 31%),
+        radial-gradient(circle at top right, rgba(251, 146, 60, 0.18) 0, transparent 26%),
+        linear-gradient(180deg, #030303 0%, #111111 100%);
     }
 
     * {
@@ -32,10 +63,8 @@
     body {
       margin: 0;
       color: var(--text);
-      background:
-        radial-gradient(circle at top left, #dbeafe 0, transparent 30%),
-        radial-gradient(circle at top right, #e9d5ff 0, transparent 25%),
-        linear-gradient(180deg, #f8fbff 0%, #eef2f7 100%);
+      background: var(--body-bg);
+      transition: background 0.35s ease, color 0.25s ease;
       min-height: 100vh;
     }
 
@@ -46,7 +75,7 @@
     }
 
     .hero {
-      background: linear-gradient(135deg, rgba(37, 99, 235, 0.96), rgba(109, 40, 217, 0.92));
+      background: var(--hero-gradient);
       color: #fff;
       border-radius: 28px;
       padding: 28px;
@@ -664,6 +693,212 @@
       color: #0f172a;
     }
 
+
+
+    .theme-toggle {
+      height: 44px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 999px;
+      padding: 0 15px;
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      font-weight: 900;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-2px) scale(1.02);
+      background: rgba(255, 255, 255, 0.23);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16);
+    }
+
+    .theme-toggle:active,
+    .btn:active,
+    .tab-btn:active {
+      transform: scale(0.97);
+    }
+
+    .hero,
+    .panel,
+    .overview-card,
+    .support-card,
+    .table-card {
+      animation: floatIn 0.55s ease both;
+    }
+
+    .overview-card:nth-child(1) { animation-delay: 0.03s; }
+    .overview-card:nth-child(2) { animation-delay: 0.07s; }
+    .overview-card:nth-child(3) { animation-delay: 0.11s; }
+    .overview-card:nth-child(4) { animation-delay: 0.15s; }
+
+    .overview-card,
+    .support-card,
+    .tab-btn,
+    .btn {
+      will-change: transform;
+    }
+
+    .overview-card:hover,
+    .support-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 22px 55px rgba(15, 23, 42, 0.14);
+    }
+
+    body.theme-dark .overview-card:hover,
+    body.theme-dark .support-card:hover {
+      box-shadow: 0 25px 65px rgba(249, 115, 22, 0.16);
+    }
+
+    .overview-value {
+      animation: numberPop 0.45s ease both;
+    }
+
+    .progress-piece {
+      animation: growBar 0.75s ease both;
+      transform-origin: left;
+    }
+
+    .pulse-ring {
+      position: absolute;
+      inset: auto 20px 20px auto;
+      width: 92px;
+      height: 92px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      animation: pulseRing 2.6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    body.theme-dark .field input,
+    body.theme-dark .field select,
+    body.theme-dark .btn-light,
+    body.theme-dark .summary-chip {
+      background: #111111;
+      color: var(--text);
+      border-color: rgba(249, 115, 22, 0.25);
+    }
+
+    body.theme-dark .panel,
+    body.theme-dark .overview-card,
+    body.theme-dark .support-card,
+    body.theme-dark .table-card {
+      border-color: rgba(249, 115, 22, 0.22);
+    }
+
+    body.theme-dark .table-filters,
+    body.theme-dark .table-top,
+    body.theme-dark .tabs,
+    body.theme-dark .table-summary {
+      background: var(--glass);
+      border-color: rgba(249, 115, 22, 0.22);
+    }
+
+    body.theme-dark th {
+      background: #111111;
+      color: #fdba74;
+      border-bottom-color: rgba(249, 115, 22, 0.22);
+    }
+
+    body.theme-dark td {
+      background: rgba(15, 15, 15, 0.62);
+      color: #ffedd5;
+      border-bottom-color: rgba(249, 115, 22, 0.12);
+    }
+
+    body.theme-dark tr:hover td {
+      background: rgba(249, 115, 22, 0.12);
+    }
+
+    body.theme-dark .store-name,
+    body.theme-dark .support-name,
+    body.theme-dark .status-count,
+    body.theme-dark .table-highlight {
+      color: #fff7ed;
+    }
+
+    body.theme-dark .support-avatar,
+    body.theme-dark .overview-icon,
+    body.theme-dark .support-total,
+    body.theme-dark .tab-btn.active,
+    body.theme-dark .btn-primary {
+      background: linear-gradient(135deg, #f97316, #9a3412);
+      color: #fff7ed;
+      box-shadow: 0 12px 30px rgba(249, 115, 22, 0.28);
+    }
+
+    body.theme-dark .tab-btn {
+      background: #18181b;
+      color: #fed7aa;
+    }
+
+    body.theme-dark .badge,
+    body.theme-dark .andamento-badge {
+      background: rgba(249, 115, 22, 0.14);
+      color: #fdba74;
+      border-color: rgba(249, 115, 22, 0.24);
+    }
+
+    body.theme-dark .finalizado-badge,
+    body.theme-dark .mini-green {
+      background: rgba(34, 197, 94, 0.13);
+      color: #86efac;
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+
+    body.theme-dark .mini-blue {
+      background: rgba(249, 115, 22, 0.13);
+      color: #fdba74;
+      border-color: rgba(249, 115, 22, 0.3);
+    }
+
+    body.theme-dark .status-name,
+    body.theme-dark .status-index,
+    body.theme-dark .status-percent,
+    body.theme-dark .store-sub,
+    body.theme-dark .field label {
+      color: #fed7aa;
+    }
+
+    @keyframes floatIn {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.985);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes numberPop {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.92);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes growBar {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    @keyframes pulseRing {
+      0%, 100% {
+        transform: scale(0.88);
+        opacity: 0.28;
+      }
+      50% {
+        transform: scale(1.12);
+        opacity: 0.08;
+      }
+    }
+
     @media (max-width: 900px) {
       .app {
         padding: 18px;
@@ -697,6 +932,7 @@
 <body>
   <main class="app">
     <section class="hero">
+      <div class="pulse-ring"></div>
       <div class="hero-content">
         <div>
           <h1>Painel Loja Pronta</h1>
@@ -708,9 +944,10 @@
         </div>
 
         <div class="hero-badges">
+          <button class="theme-toggle" id="themeToggle" type="button">🌙 Tema escuro</button>
           <div class="hero-badge">Supabase conectado</div>
           <div class="hero-badge">Filtros avançados</div>
-          <div class="hero-badge">Entregues separados</div>
+          <div class="hero-badge">Vendas finalizadas</div>
         </div>
       </div>
     </section>
@@ -803,9 +1040,9 @@
       </div>
 
       <div class="overview-card">
-        <div class="overview-icon">👥</div>
-        <div class="overview-label">Suportes com lojas</div>
-        <div class="overview-value" id="totalSupports">0</div>
+        <div class="overview-icon">💰</div>
+        <div class="overview-label">Vendas Finalizadas</div>
+        <div class="overview-value" id="totalFinalizedSales">0</div>
       </div>
     </section>
 
@@ -961,6 +1198,25 @@
       "concluído",
       "concluída",
       "loja pronta",
+      "pronta",
+      "venda finalizada",
+      "vendas finalizadas"
+    ];
+
+    const FINALIZED_SALE_KEYWORDS = [
+      "venda finalizada",
+      "vendas finalizadas",
+      "venda concluida",
+      "vendas concluidas",
+      "venda concluída",
+      "vendas concluídas",
+      "finalizado",
+      "finalizada",
+      "finalizados",
+      "finalizadas",
+      "entregue",
+      "entregues",
+      "loja pronta",
       "pronta"
     ];
 
@@ -987,7 +1243,8 @@
     const totalStores = document.getElementById("totalStores");
     const totalInProgress = document.getElementById("totalInProgress");
     const totalDelivered = document.getElementById("totalDelivered");
-    const totalSupports = document.getElementById("totalSupports");
+    const totalFinalizedSales = document.getElementById("totalFinalizedSales");
+    const themeToggle = document.getElementById("themeToggle");
 
     const tableCount = document.getElementById("tableCount");
     const supportCountLabel = document.getElementById("supportCountLabel");
@@ -1055,6 +1312,14 @@
       const normalized = normalizeText(statusName);
 
       return DELIVERED_KEYWORDS.some((word) => {
+        return normalized.includes(normalizeText(word));
+      });
+    }
+
+    function isFinalizedSaleStatus(statusName) {
+      const normalized = normalizeText(statusName);
+
+      return FINALIZED_SALE_KEYWORDS.some((word) => {
         return normalized.includes(normalizeText(word));
       });
     }
@@ -1298,6 +1563,7 @@
       return tasks.map((task) => {
         const situacao = getStatusName(task);
         const entregue = isDeliveredStatus(situacao);
+        const vendaFinalizada = isFinalizedSaleStatus(situacao);
 
         return {
           raw: task,
@@ -1311,7 +1577,8 @@
           mes: getProjectName(task),
           created_at: getCreatedAt(task),
           created_ts: getCreatedTimestamp(task),
-          entregue
+          entregue,
+          vendaFinalizada
         };
       });
     }
@@ -1499,11 +1766,12 @@
 
       const delivered = rowsWithoutTab.filter((row) => row.entregue).length;
       const inProgress = rowsWithoutTab.filter((row) => !row.entregue).length;
+      const finalizedSales = rowsWithoutTab.filter((row) => row.vendaFinalizada).length;
 
       totalStores.textContent = rowsWithoutTab.length;
       totalInProgress.textContent = inProgress;
       totalDelivered.textContent = delivered;
-      totalSupports.textContent = supports.size;
+      totalFinalizedSales.textContent = finalizedSales;
       supportCountLabel.textContent = `${supports.size} suporte${supports.size === 1 ? "" : "s"}`;
     }
 
@@ -1789,6 +2057,20 @@
       render();
     }
 
+
+
+    function applyTheme(theme) {
+      const isDark = theme === "dark";
+      document.body.classList.toggle("theme-dark", isDark);
+      themeToggle.textContent = isDark ? "☀️ Tema claro" : "🌙 Tema escuro";
+      localStorage.setItem("painelLojaProntaTheme", theme);
+    }
+
+    function initializeTheme() {
+      const savedTheme = localStorage.getItem("painelLojaProntaTheme") || "light";
+      applyTheme(savedTheme);
+    }
+
     monthFilter.addEventListener("change", render);
     supportFilter.addEventListener("change", render);
     statusFilter.addEventListener("change", render);
@@ -1814,6 +2096,12 @@
       });
     });
 
+    themeToggle.addEventListener("click", () => {
+      const nextTheme = document.body.classList.contains("theme-dark") ? "light" : "dark";
+      applyTheme(nextTheme);
+    });
+
+    initializeTheme();
     loadData();
   </script>
 </body>
