@@ -1214,7 +1214,7 @@
           <select id="stageFilter">
             <option value="">Todas</option>
             <option value="andamento">Em andamento</option>
-            <option value="entregue">Entregues / Finalizadas</option>
+            <option value="entregue">Entregues</option>
           </select>
         </div>
 
@@ -1259,7 +1259,7 @@
 
       <div class="overview-card">
         <div class="overview-icon">💰</div>
-        <div class="overview-label">Vendas Finalizadas</div>
+        <div class="overview-label">Lojas finalizadas</div>
         <div class="overview-value" id="totalFinalizedSales">0</div>
       </div>
     </section>
@@ -1289,7 +1289,7 @@
         </button>
 
         <button class="tab-btn" data-tab="entregues">
-          Entregues / Finalizadas <span id="tabDeliveredCount">0</span>
+          Entregues <span id="tabDeliveredCount">0</span>
         </button>
 
         <button class="tab-btn" data-tab="todas">
@@ -1333,7 +1333,7 @@
           <select id="tableStageFilter">
             <option value="">Todas</option>
             <option value="andamento">Em andamento</option>
-            <option value="entregue">Entregues / Finalizadas</option>
+            <option value="entregue">Entregues</option>
           </select>
         </div>
 
@@ -1576,7 +1576,13 @@
     let allProjects = [];
     let currentTab = "andamento";
 
-    const FINALIZED_SALE_KEYWORDS = [
+    const FINALIZED_KEYWORDS = [
+      "loja finalizada",
+      "lojas finalizadas",
+      "finalizada",
+      "finalizado",
+      "finalizadas",
+      "finalizados",
       "venda finalizada",
       "vendas finalizadas",
       "venda concluida",
@@ -1589,20 +1595,7 @@
       "loja entregue",
       "lojas entregues",
       "entregue",
-      "entregues",
-      "loja pronta",
-      "lojas prontas",
-      "pronta",
-      "concluido",
-      "concluida",
-      "concluídos",
-      "concluídas",
-      "concluído",
-      "concluída",
-      "finalizado",
-      "finalizada",
-      "finalizados",
-      "finalizadas"
+      "entregues"
     ];
 
     const monthFilter = document.getElementById("monthFilter");
@@ -1729,10 +1722,10 @@
       return null;
     }
 
-    function isFinalizedSaleStatus(statusName) {
+    function isFinalizedStatus(statusName) {
       const normalized = normalizeText(statusName);
 
-      return FINALIZED_SALE_KEYWORDS.some((word) => {
+      return FINALIZED_KEYWORDS.some((word) => {
         return normalized.includes(normalizeText(word));
       });
     }
@@ -1740,13 +1733,13 @@
     function isDeliveredStatus(statusName) {
       const normalized = normalizeText(statusName);
 
-      if (isFinalizedSaleStatus(statusName)) {
-        return false;
-      }
-
       return DELIVERED_KEYWORDS.some((word) => {
         return normalized.includes(normalizeText(word));
       });
+    }
+
+    function isInProgressStatus(statusName) {
+      return !isFinalizedStatus(statusName);
     }
 
     function getStatusColor(statusName) {
@@ -1984,7 +1977,8 @@
       return tasks.map((task) => {
         const situacao = getStatusName(task);
         const entregue = isDeliveredStatus(situacao);
-        const vendaFinalizada = isFinalizedSaleStatus(situacao);
+        const finalizada = isFinalizedStatus(situacao);
+        const emAndamento = isInProgressStatus(situacao);
 
         return {
           raw: task,
@@ -1999,7 +1993,8 @@
           created_at: getCreatedAt(task),
           created_ts: getCreatedTimestamp(task),
           entregue,
-          vendaFinalizada
+          finalizada,
+          emAndamento
         };
       });
     }
@@ -2068,7 +2063,7 @@
         let matchStage = true;
 
         if (selectedStage === "andamento") {
-          matchStage = !row.entregue;
+          matchStage = row.emAndamento;
         }
 
         if (selectedStage === "entregue") {
@@ -2097,7 +2092,7 @@
       }
 
       if (currentTab === "andamento") {
-        return rows.filter((row) => !row.entregue);
+        return rows.filter((row) => row.emAndamento);
       }
 
       return rows;
@@ -2118,7 +2113,7 @@
         let matchStage = true;
 
         if (selectedStage === "andamento") {
-          matchStage = !row.entregue;
+          matchStage = row.emAndamento;
         }
 
         if (selectedStage === "entregue") {
@@ -2186,19 +2181,19 @@
       );
 
       const delivered = rowsWithoutTab.filter((row) => row.entregue).length;
-      const inProgress = rowsWithoutTab.filter((row) => !row.entregue).length;
-      const finalizedSales = rowsWithoutTab.filter((row) => row.vendaFinalizada).length;
+      const inProgress = rowsWithoutTab.filter((row) => row.emAndamento).length;
+      const finalizedStores = rowsWithoutTab.filter((row) => row.finalizada).length;
 
       totalStores.textContent = rowsWithoutTab.length;
       totalInProgress.textContent = inProgress;
       totalDelivered.textContent = delivered;
-      totalFinalizedSales.textContent = finalizedSales;
+      totalFinalizedSales.textContent = finalizedStores;
       supportCountLabel.textContent = `${supports.size} suporte${supports.size === 1 ? "" : "s"}`;
     }
 
     function renderTabs(rowsWithoutTab) {
       const delivered = rowsWithoutTab.filter((row) => row.entregue).length;
-      const inProgress = rowsWithoutTab.filter((row) => !row.entregue).length;
+      const inProgress = rowsWithoutTab.filter((row) => row.emAndamento).length;
 
       tabInProgressCount.textContent = inProgress;
       tabDeliveredCount.textContent = delivered;
@@ -2210,7 +2205,7 @@
 
       const labels = {
         andamento: "Em andamento",
-        entregues: "Entregues / Finalizadas",
+        entregues: "Entregues",
         todas: "Todas"
       };
 
@@ -2236,6 +2231,7 @@
           grouped[row.suporte] = {
             total: 0,
             delivered: 0,
+            finalized: 0,
             inProgress: 0,
             statuses: {}
           };
@@ -2245,7 +2241,13 @@
 
         if (row.entregue) {
           grouped[row.suporte].delivered += 1;
-        } else {
+        }
+
+        if (row.finalizada) {
+          grouped[row.suporte].finalized += 1;
+        }
+
+        if (row.emAndamento) {
           grouped[row.suporte].inProgress += 1;
         }
 
@@ -2323,6 +2325,7 @@
           <div class="support-mini-stats">
             <span class="mini-pill mini-blue">${data.inProgress} em andamento</span>
             <span class="mini-pill mini-green">${data.delivered} entregues</span>
+            <span class="mini-pill mini-green">${data.finalized} finalizadas</span>
           </div>
 
           <div class="progress-bar">
@@ -2376,8 +2379,8 @@
               </td>
 
               <td>
-                <span class="badge ${row.entregue ? "finalizado-badge" : "andamento-badge"}">
-                  ${row.entregue ? "Entregue" : "Em andamento"}
+                <span class="badge ${row.finalizada || row.entregue ? "finalizado-badge" : "andamento-badge"}">
+                  ${row.finalizada ? "Finalizada" : row.entregue ? "Entregue" : "Em andamento"}
                 </span>
               </td>
 
