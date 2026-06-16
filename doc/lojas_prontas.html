@@ -1165,7 +1165,7 @@
           <button class="theme-toggle" id="themeToggle" type="button">🌙 Tema escuro</button>
           <div class="hero-badge">Supabase conectado</div>
           <div class="hero-badge">Filtros avançados</div>
-          <div class="hero-badge">Vendas finalizadas</div>
+          <div class="hero-badge">Lojas finalizadas</div>
         </div>
       </div>
     </section>
@@ -1177,7 +1177,7 @@
         <div>
           <h2>Filtros gerais</h2>
           <div class="panel-sub">
-            Esses filtros afetam os cards do topo, os cards de suporte e a base usada pela tabela.
+            Busca, mês e suporte afetam os cards do topo e os cards de suporte. Situação e etapa filtram a tabela.
           </div>
         </div>
       </div>
@@ -1584,11 +1584,7 @@
       "finalizadas",
       "finalizados",
       "venda finalizada",
-      "vendas finalizadas",
-      "venda concluida",
-      "vendas concluidas",
-      "venda concluída",
-      "vendas concluídas"
+      "vendas finalizadas"
     ];
 
     const DELIVERED_KEYWORDS = [
@@ -1597,6 +1593,14 @@
       "entregue",
       "entregues"
     ];
+
+    function hasStatusKeyword(statusName, keywords) {
+      const normalized = normalizeText(statusName);
+
+      return keywords.some((word) => {
+        return normalized.includes(normalizeText(word));
+      });
+    }
 
     const monthFilter = document.getElementById("monthFilter");
     const supportFilter = document.getElementById("supportFilter");
@@ -1723,23 +1727,57 @@
     }
 
     function isFinalizedStatus(statusName) {
-      const normalized = normalizeText(statusName);
-
-      return FINALIZED_KEYWORDS.some((word) => {
-        return normalized.includes(normalizeText(word));
-      });
+      return hasStatusKeyword(statusName, FINALIZED_KEYWORDS);
     }
 
     function isDeliveredStatus(statusName) {
-      const normalized = normalizeText(statusName);
-
-      return DELIVERED_KEYWORDS.some((word) => {
-        return normalized.includes(normalizeText(word));
-      });
+      return hasStatusKeyword(statusName, DELIVERED_KEYWORDS);
     }
 
     function isInProgressStatus(statusName) {
+      // Regra solicitada: em andamento = todas as lojas, menos as finalizadas.
       return !isFinalizedStatus(statusName);
+    }
+
+    function getStatusDisplayName(item) {
+      return (
+        item?.name ||
+        item?.title ||
+        item?.situacao ||
+        item?.status ||
+        item?.nome ||
+        item?.label ||
+        "Sem situação"
+      );
+    }
+
+    function getStatusSortIndex(statusName) {
+      const normalizedStatus = normalizeKey(statusName);
+
+      const indexFromColumns = allStatuses.findIndex((item) => {
+        return normalizeKey(getStatusDisplayName(item)) === normalizedStatus;
+      });
+
+      if (indexFromColumns >= 0) {
+        return indexFromColumns;
+      }
+
+      return 9999;
+    }
+
+    function getOrderedStatuses(rows) {
+      return [...new Set(rows.map((row) => row.situacao))]
+        .filter((status) => status && status !== "-" && status !== "Sem situação")
+        .sort((a, b) => {
+          const indexA = getStatusSortIndex(a);
+          const indexB = getStatusSortIndex(b);
+
+          if (indexA !== indexB) {
+            return indexA - indexB;
+          }
+
+          return a.localeCompare(b, "pt-BR");
+        });
     }
 
     function getStatusColor(statusName) {
@@ -2048,6 +2086,31 @@
       tableStatusFilter.value = selectedTableStatus;
     }
 
+    function getRowsForOverviewAndSupportCards() {
+      const selectedMonth = monthFilter.value;
+      const selectedSupport = supportFilter.value;
+      const searchTerm = normalizeText(searchInput.value);
+
+      return allRows.filter((row) => {
+        const matchMonth = !selectedMonth || row.mes === selectedMonth;
+        const matchSupport = !selectedSupport || row.suporte === selectedSupport;
+
+        const searchable = normalizeText(`
+          ${row.loja}
+          ${row.mcid}
+          ${row.email}
+          ${row.telefone}
+          ${row.suporte}
+          ${row.situacao}
+          ${row.mes}
+        `);
+
+        const matchSearch = !searchTerm || searchable.includes(searchTerm);
+
+        return matchMonth && matchSupport && matchSearch;
+      });
+    }
+
     function getRowsAfterFiltersWithoutTab() {
       const selectedMonth = monthFilter.value;
       const selectedSupport = supportFilter.value;
@@ -2258,14 +2321,18 @@
         grouped[row.suporte].statuses[row.situacao] += 1;
       });
 
+      const orderedStatuses = getOrderedStatuses(rowsWithoutTab);
+
       const sortedSupports = Object.entries(grouped)
-        .sort((a, b) => b[1].total - a[1].total);
+        .sort((a, b) => a[0].localeCompare(b[0], "pt-BR"));
 
       sortedSupports.forEach(([supportName, data]) => {
-        const statusEntries = Object.entries(data.statuses)
-          .sort((a, b) => b[1] - a[1]);
+        const statusEntries = orderedStatuses.map((status) => {
+          return [status, data.statuses[status] || 0];
+        });
 
         const progress = statusEntries
+          .filter(([, count]) => count > 0)
           .map(([status, count]) => {
             const percentage = (count / data.total) * 100;
             const color = getStatusColor(status);
@@ -2399,6 +2466,11 @@
     }
 
     function render() {
+      const rowsForOverviewAndCards = sortRowsByValue(
+        getRowsForOverviewAndSupportCards(),
+        sortFilter.value
+      );
+
       const rowsWithoutTab = sortRowsByValue(
         getRowsAfterFiltersWithoutTab(),
         sortFilter.value
@@ -2408,9 +2480,9 @@
       rowsForTable = getRowsAfterTableFilters(rowsForTable);
       rowsForTable = sortRowsByValue(rowsForTable, tableSortFilter.value);
 
-      renderOverview(rowsWithoutTab);
-      renderTabs(rowsWithoutTab);
-      renderSupportCards(rowsWithoutTab);
+      renderOverview(rowsForOverviewAndCards);
+      renderTabs(rowsForOverviewAndCards);
+      renderSupportCards(rowsForOverviewAndCards);
       renderTable(rowsForTable);
       animateNumbers();
       animateRenderedCards();
