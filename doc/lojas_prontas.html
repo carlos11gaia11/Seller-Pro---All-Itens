@@ -1729,7 +1729,31 @@
     }
 
     function getSupportComparisonValues(item) {
-      return [...new Set(collectComparableValues(item).map((value) => normalizeKey(value)).filter(Boolean))];
+      const possibleSupportFields = [
+        "id",
+        "user_id",
+        "support_id",
+        "owner_id",
+        "email",
+        "nome",
+        "name",
+        "suporte",
+        "support",
+        "responsavel",
+        "responsável",
+        "assignee",
+        "assigned_to"
+      ];
+
+      const values = [];
+
+      possibleSupportFields.forEach((field) => {
+        if (item && item[field] !== undefined && item[field] !== null && item[field] !== "") {
+          collectComparableValues(item[field], values);
+        }
+      });
+
+      return [...new Set(values.map((value) => normalizeKey(value)).filter(Boolean))];
     }
 
     function getTaskSupportValues(task) {
@@ -1960,9 +1984,7 @@
 
         return taskSupportValues.some((taskValue) => {
           return supportValues.some((supportValue) => {
-            return taskValue === supportValue ||
-              (taskValue.length > 2 && supportValue.length > 2 && taskValue.includes(supportValue)) ||
-              (taskValue.length > 2 && supportValue.length > 2 && supportValue.includes(taskValue));
+            return taskValue === supportValue;
           });
         });
       });
