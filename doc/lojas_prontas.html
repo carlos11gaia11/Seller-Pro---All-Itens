@@ -7,6 +7,10 @@
   <title>Painel Loja Pronta</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <style>
     :root {
@@ -899,6 +903,214 @@
       }
     }
 
+
+
+    /* Camada visual com framework/animações */
+    #particles-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .light-orb {
+      position: fixed;
+      width: 360px;
+      height: 360px;
+      border-radius: 999px;
+      filter: blur(42px);
+      opacity: 0.42;
+      pointer-events: none;
+      z-index: -1;
+      mix-blend-mode: screen;
+      animation: orbFloat 9s ease-in-out infinite alternate;
+    }
+
+    .orb-one {
+      left: -120px;
+      top: 120px;
+      background: rgba(37, 99, 235, 0.42);
+    }
+
+    .orb-two {
+      right: -140px;
+      top: 280px;
+      background: rgba(124, 58, 237, 0.38);
+      animation-delay: -2s;
+    }
+
+    .orb-three {
+      left: 38%;
+      bottom: -170px;
+      background: rgba(249, 115, 22, 0.24);
+      animation-delay: -4s;
+    }
+
+    .hero::before,
+    .panel::before,
+    .overview-card::before,
+    .support-card::before,
+    .table-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.72),
+        rgba(255, 255, 255, 0.08),
+        rgba(37, 99, 235, 0.34)
+      );
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0.74;
+    }
+
+    .panel,
+    .overview-card,
+    .support-card,
+    .table-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-shine,
+    .card-shine {
+      position: absolute;
+      inset: -80% auto auto -40%;
+      width: 42%;
+      height: 220%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.24),
+        transparent
+      );
+      transform: rotate(18deg);
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .hero .hero-shine {
+      opacity: 1;
+      animation: shineSweep 5.5s ease-in-out infinite;
+    }
+
+    .overview-card:hover .card-shine,
+    .support-card:hover .card-shine,
+    .table-card:hover .card-shine,
+    .panel:hover .card-shine {
+      animation: quickShine 0.9s ease both;
+    }
+
+    .btn,
+    .tab-btn,
+    .theme-toggle {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .btn::after,
+    .tab-btn::after,
+    .theme-toggle::after {
+      content: "";
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      left: var(--x, 50%);
+      top: var(--y, 50%);
+      transform: translate(-50%, -50%) scale(0);
+      background: radial-gradient(circle, rgba(255,255,255,.52), transparent 62%);
+      border-radius: 999px;
+      opacity: 0;
+      z-index: -1;
+    }
+
+    .btn.ripple::after,
+    .tab-btn.ripple::after,
+    .theme-toggle.ripple::after {
+      animation: rippleGlow 0.65s ease-out;
+    }
+
+    .glow-hover {
+      transition:
+        transform 0.24s ease,
+        box-shadow 0.24s ease,
+        border-color 0.24s ease;
+    }
+
+    .glow-hover:hover {
+      border-color: rgba(37, 99, 235, 0.42);
+      box-shadow:
+        0 22px 60px rgba(37, 99, 235, 0.14),
+        0 0 0 1px rgba(255, 255, 255, 0.18) inset;
+    }
+
+    body.theme-dark .glow-hover:hover {
+      border-color: rgba(249, 115, 22, 0.46);
+      box-shadow:
+        0 24px 68px rgba(249, 115, 22, 0.18),
+        0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+    }
+
+    .animated-count {
+      text-shadow: 0 10px 30px rgba(37, 99, 235, 0.18);
+    }
+
+    body.theme-dark .animated-count {
+      text-shadow: 0 10px 32px rgba(249, 115, 22, 0.26);
+    }
+
+    .sparkle-dot {
+      position: fixed;
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      pointer-events: none;
+      background: #fff;
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.95);
+      z-index: 9999;
+    }
+
+    @keyframes shineSweep {
+      0% { transform: translateX(0) rotate(18deg); opacity: 0; }
+      16% { opacity: 1; }
+      42% { transform: translateX(440%) rotate(18deg); opacity: 0.15; }
+      100% { transform: translateX(440%) rotate(18deg); opacity: 0; }
+    }
+
+    @keyframes quickShine {
+      0% { transform: translateX(0) rotate(18deg); opacity: 0; }
+      15% { opacity: 1; }
+      100% { transform: translateX(420%) rotate(18deg); opacity: 0; }
+    }
+
+    @keyframes rippleGlow {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 0.65; }
+      100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+    }
+
+    @keyframes orbFloat {
+      from { transform: translate3d(0, 0, 0) scale(0.94); }
+      to { transform: translate3d(42px, -34px, 0) scale(1.08); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
     @media (max-width: 900px) {
       .app {
         padding: 18px;
@@ -930,8 +1142,14 @@
 </head>
 
 <body>
+  <div id="particles-bg"></div>
+  <div class="light-orb orb-one"></div>
+  <div class="light-orb orb-two"></div>
+  <div class="light-orb orb-three"></div>
+
   <main class="app">
     <section class="hero">
+      <div class="hero-shine"></div>
       <div class="pulse-ring"></div>
       <div class="hero-content">
         <div>
@@ -1175,6 +1393,178 @@
   </main>
 
   <script>
+
+    function initializeVisualFramework() {
+      if (window.gsap) {
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.from(".hero-content > *", {
+          y: 22,
+          opacity: 0,
+          duration: 0.7,
+          stagger: 0.12,
+          ease: "power3.out"
+        });
+
+        gsap.utils.toArray(".panel, .overview-card, .support-card, .table-card").forEach((element) => {
+          element.classList.add("glow-hover");
+          if (!element.querySelector(".card-shine")) {
+            const shine = document.createElement("span");
+            shine.className = "card-shine";
+            element.appendChild(shine);
+          }
+
+          gsap.from(element, {
+            scrollTrigger: {
+              trigger: element,
+              start: "top 92%"
+            },
+            y: 26,
+            opacity: 0,
+            duration: 0.62,
+            ease: "power3.out"
+          });
+        });
+      }
+
+      if (window.tsParticles) {
+        tsParticles.load("particles-bg", {
+          fpsLimit: 60,
+          fullScreen: { enable: false },
+          particles: {
+            number: { value: 42, density: { enable: true, area: 900 } },
+            color: { value: ["#2563eb", "#7c3aed", "#f97316", "#ffffff"] },
+            opacity: { value: { min: 0.12, max: 0.48 } },
+            size: { value: { min: 1, max: 3.2 } },
+            links: {
+              enable: true,
+              distance: 145,
+              color: "#7c3aed",
+              opacity: 0.15,
+              width: 1
+            },
+            move: {
+              enable: true,
+              speed: 0.55,
+              direction: "none",
+              random: true,
+              straight: false,
+              outModes: { default: "out" }
+            }
+          },
+          interactivity: {
+            events: {
+              onHover: { enable: true, mode: "grab" },
+              onClick: { enable: true, mode: "push" }
+            },
+            modes: {
+              grab: { distance: 150, links: { opacity: 0.28 } },
+              push: { quantity: 3 }
+            }
+          },
+          detectRetina: true
+        });
+      }
+    }
+
+    function animateNumbers() {
+      if (!window.gsap) return;
+
+      [totalStores, totalInProgress, totalDelivered, totalFinalizedSales].forEach((el) => {
+        const value = Number(el.textContent || 0);
+        const obj = { value: 0 };
+        el.classList.add("animated-count");
+
+        gsap.to(obj, {
+          value,
+          duration: 0.55,
+          ease: "power2.out",
+          onUpdate: () => {
+            el.textContent = Math.round(obj.value);
+          }
+        });
+      });
+    }
+
+    function animateRenderedCards() {
+      if (!window.gsap) return;
+
+      gsap.fromTo(
+        ".support-card",
+        { y: 18, opacity: 0, scale: 0.985 },
+        { y: 0, opacity: 1, scale: 1, duration: 0.42, stagger: 0.035, ease: "power2.out" }
+      );
+
+      gsap.fromTo(
+        "#storesTable tr",
+        { y: 10, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.28, stagger: 0.012, ease: "power2.out" }
+      );
+    }
+
+    function createSparkles(x, y) {
+      if (!window.gsap) return;
+
+      for (let i = 0; i < 12; i++) {
+        const dot = document.createElement("span");
+        dot.className = "sparkle-dot";
+        dot.style.left = `${x}px`;
+        dot.style.top = `${y}px`;
+        document.body.appendChild(dot);
+
+        gsap.to(dot, {
+          x: gsap.utils.random(-70, 70),
+          y: gsap.utils.random(-70, 70),
+          scale: gsap.utils.random(0.2, 1.25),
+          opacity: 0,
+          duration: gsap.utils.random(0.45, 0.9),
+          ease: "power2.out",
+          onComplete: () => dot.remove()
+        });
+      }
+    }
+
+    function initializeButtonEffects() {
+      document.addEventListener("pointerdown", (event) => {
+        const target = event.target.closest(".btn, .tab-btn, .theme-toggle");
+        if (!target) return;
+
+        const rect = target.getBoundingClientRect();
+        target.style.setProperty("--x", `${event.clientX - rect.left}px`);
+        target.style.setProperty("--y", `${event.clientY - rect.top}px`);
+        target.classList.remove("ripple");
+        void target.offsetWidth;
+        target.classList.add("ripple");
+
+        createSparkles(event.clientX, event.clientY);
+      });
+    }
+
+    function celebrateDeliveredView() {
+      if (!window.confetti) return;
+
+      confetti({
+        particleCount: 90,
+        spread: 72,
+        origin: { y: 0.72 }
+      });
+
+      setTimeout(() => {
+        confetti({
+          particleCount: 45,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 }
+        });
+        confetti({
+          particleCount: 45,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 }
+        });
+      }, 180);
+    }
+
     const SUPABASE_URL = "https://owgvzmeewzpmzgcdwbfq.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr";
 
@@ -1287,6 +1677,42 @@
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function normalizeKey(value) {
+      return normalizeText(value)
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function formatSupportName(value) {
+      const cleaned = String(value || "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      if (!cleaned || cleaned === "-") return "Sem suporte";
+
+      const hasLetters = /[a-zA-ZÀ-ÿ]/.test(cleaned);
+      const isAllUpper = cleaned === cleaned.toUpperCase();
+      const isAllLower = cleaned === cleaned.toLowerCase();
+
+      if (hasLetters && (isAllUpper || isAllLower)) {
+        return cleaned
+          .toLowerCase()
+          .replace(/(^|\s|[-'])\p{L}/gu, (letter) => letter.toUpperCase());
+      }
+
+      return cleaned;
+    }
+
+    function getSupportComparisonValues(item) {
+      return [
+        item?.id,
+        item?.nome,
+        item?.name,
+        item?.suporte,
+        item?.email
+      ].map((value) => normalizeKey(value));
     }
 
     function escapeHtml(value) {
@@ -1454,17 +1880,13 @@
         "responsável"
       ]);
 
+      const ownerKey = normalizeKey(owner);
+
       const found = allSupports.find((item) => {
-        return (
-          String(item.id) === String(owner) ||
-          String(item.nome) === String(owner) ||
-          String(item.name) === String(owner) ||
-          String(item.suporte) === String(owner) ||
-          String(item.email) === String(owner)
-        );
+        return getSupportComparisonValues(item).includes(ownerKey);
       });
 
-      return (
+      return formatSupportName(
         found?.nome ||
         found?.name ||
         found?.suporte ||
@@ -1883,6 +2305,7 @@
         card.className = "support-card";
 
         card.innerHTML = `
+          <span class="card-shine"></span>
           <div class="support-top">
             <div class="support-head">
               <div class="support-avatar">${escapeHtml(getInitials(supportName))}</div>
@@ -1987,6 +2410,8 @@
       renderTabs(rowsWithoutTab);
       renderSupportCards(rowsWithoutTab);
       renderTable(rowsForTable);
+      animateNumbers();
+      animateRenderedCards();
     }
 
     async function loadData() {
@@ -2093,6 +2518,10 @@
       button.addEventListener("click", () => {
         currentTab = button.dataset.tab;
         render();
+
+        if (currentTab === "entregues") {
+          celebrateDeliveredView();
+        }
       });
     });
 
@@ -2101,6 +2530,8 @@
       applyTheme(nextTheme);
     });
 
+    initializeVisualFramework();
+    initializeButtonEffects();
     initializeTheme();
     loadData();
   </script>
