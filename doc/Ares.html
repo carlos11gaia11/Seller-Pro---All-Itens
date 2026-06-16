@@ -1826,7 +1826,7 @@ body[data-theme="light"] {
 
         <div class="field">
             <label>Responsável</label>
-            <select id="taskOwner" required></select>
+            <input id="taskOwner" placeholder="Ex.: Felipe Lobão" required />
         </div>
 
         <div class="field">
@@ -2045,7 +2045,6 @@ body[data-theme="light"] {
         status: 'Criação de grupo',
         name: 'Nova loja pronta - exemplo de card',
         owner: 'Silas',
-        suportes_sellerpro: 'Silas',
         description: 'Card de exemplo para acompanhar o avanço da loja dentro das etapas do processo.',
         updates: ['Grupo criado e cliente adicionado', 'Aguardando próxima etapa'],
         attachments: []
@@ -2056,7 +2055,6 @@ body[data-theme="light"] {
         status: 'Aguardando CNPJ',
         name: 'Aguardando envio do CNPJ',
         owner: 'Bruna',
-        suportes_sellerpro: 'Bruna',
         description: 'Acompanhar envio dos dados para continuidade da abertura ou atualização da conta.',
         updates: ['Cliente orientado sobre a documentação necessária'],
         attachments: []
@@ -2067,7 +2065,6 @@ body[data-theme="light"] {
         status: 'Congelados',
         name: 'Projeto pausado por falta de retorno',
         owner: 'Henrique',
-        suportes_sellerpro: 'Henrique',
         description: 'Card congelado até o seller retornar com as informações pendentes.',
         updates: ['Tentativa de contato realizada', 'Aguardando retorno do seller'],
         attachments: []
@@ -2109,32 +2106,6 @@ body[data-theme="light"] {
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
-    }
-
-
-    function getTaskSupport(task) {
-      return String(task?.suportes_sellerpro || task?.owner || '').trim();
-    }
-
-    function getOfficialSupports() {
-      return [...new Set(
-        state.tasks
-          .map(task => String(task?.suportes_sellerpro || '').trim())
-          .filter(Boolean)
-      )].sort((a, b) => a.localeCompare(b));
-    }
-
-    function ensureSupportOption(select, supportName) {
-      if (!select || !supportName) return;
-
-      const exists = Array.from(select.options).some(option => option.value === supportName);
-
-      if (!exists) {
-        const option = document.createElement('option');
-        option.value = supportName;
-        option.textContent = supportName;
-        select.appendChild(option);
-      }
     }
 
 
@@ -2345,8 +2316,7 @@ body[data-theme="light"] {
         project: task.project_id,
         status: task.status,
         name: task.name,
-        suportes_sellerpro: task.suportes_sellerpro || '',
-        owner: task.owner || task.suportes_sellerpro || '',
+        owner: task.owner || '',
         mcid: task.mcid || '',
         billingConfigDate: task.billing_config_date || '',
         shipmentDate: task.shipment_date || '',
@@ -2393,13 +2363,13 @@ body[data-theme="light"] {
     function renderFilters() {
       const currentOwner = document.getElementById('ownerFilter')?.value || '';
       const currentStatus = document.getElementById('statusFilter')?.value || '';
-      const currentTaskOwner = document.getElementById('taskOwner')?.value || '';
 
-      const supports = getOfficialSupports();
+      const owners = [...new Set(state.tasks.map(task => task.owner).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b));
 
       document.getElementById('ownerFilter').innerHTML =
         '<option value="">Todos</option>' +
-        supports.map(support => `<option value="${escapeHTML(support)}">${escapeHTML(support)}</option>`).join('');
+        owners.map(owner => `<option value="${escapeHTML(owner)}">${escapeHTML(owner)}</option>`).join('');
 
       document.getElementById('statusFilter').innerHTML =
         '<option value="">Todas</option>' +
@@ -2411,16 +2381,8 @@ body[data-theme="light"] {
       document.getElementById('taskStatus').innerHTML =
         state.columns.map(status => `<option value="${escapeHTML(status)}">${escapeHTML(status)}</option>`).join('');
 
-      document.getElementById('taskOwner').innerHTML =
-        '<option value="">Selecione o suporte oficial</option>' +
-        supports.map(support => `<option value="${escapeHTML(support)}">${escapeHTML(support)}</option>`).join('');
-
-      if (supports.includes(currentOwner)) {
+      if (owners.includes(currentOwner)) {
         document.getElementById('ownerFilter').value = currentOwner;
-      }
-
-      if (supports.includes(currentTaskOwner)) {
-        document.getElementById('taskOwner').value = currentTaskOwner;
       }
 
       if (state.columns.includes(currentStatus)) {
@@ -2437,7 +2399,7 @@ body[data-theme="light"] {
     function getTaskSearchText(task) {
       return [
         task.name,
-        getTaskSupport(task),
+        task.owner,
         task.mcid,
         task.accountCreationEmail,
         task.status,
@@ -2455,7 +2417,7 @@ body[data-theme="light"] {
       return state.tasks.filter(task => {
         const matchProject = task.project === state.activeProject;
         const matchSearch = !search || getTaskSearchText(task).includes(search);
-        const matchOwner = !owner || getTaskSupport(task) === owner;
+        const matchOwner = !owner || task.owner === owner;
         const matchStatus = !status || task.status === status;
 
         return matchProject && matchSearch && matchOwner && matchStatus;
@@ -2472,7 +2434,7 @@ body[data-theme="light"] {
 
       return state.tasks.filter(task => {
         const matchSearch = getTaskSearchText(task).includes(search);
-        const matchOwner = !owner || getTaskSupport(task) === owner;
+        const matchOwner = !owner || task.owner === owner;
         const matchStatus = !status || task.status === status;
 
         return matchSearch && matchOwner && matchStatus;
@@ -2512,7 +2474,7 @@ body[data-theme="light"] {
               <strong>${escapeHTML(task.name)}</strong>
               <small>📁 Mês: ${escapeHTML(getProjectName(task.project))}</small>
               <small>📍 Divisão atual: ${escapeHTML(task.status)}</small>
-              <small>👤 Responsável: ${escapeHTML(getTaskSupport(task) || 'Sem responsável')}</small>
+              <small>👤 Responsável: ${escapeHTML(task.owner || 'Sem responsável')}</small>
             </button>
           `).join('')}
         </div>
@@ -2575,10 +2537,10 @@ body[data-theme="light"] {
           <h3>${escapeHTML(task.name)}</h3>
 
           <div class="owner-highlight">
-            <div class="owner-avatar">${escapeHTML(getInitials(getTaskSupport(task)))}</div>
+            <div class="owner-avatar">${escapeHTML(getInitials(task.owner))}</div>
             <div class="owner-info">
               <small>Responsável</small>
-              <strong>${escapeHTML(getTaskSupport(task) || 'Sem responsável')}</strong>
+              <strong>${escapeHTML(task.owner || 'Sem responsável')}</strong>
             </div>
           </div>
 
@@ -2934,10 +2896,7 @@ body[data-theme="light"] {
         document.getElementById('taskName').value = task.name || '';
         document.getElementById('taskProject').value = task.project || state.activeProject;
         document.getElementById('taskStatus').value = task.status || state.columns[0];
-        const taskOwnerSelect = document.getElementById('taskOwner');
-        const supportName = getTaskSupport(task);
-        ensureSupportOption(taskOwnerSelect, supportName);
-        taskOwnerSelect.value = supportName;
+        document.getElementById('taskOwner').value = task.owner || '';
         document.getElementById('taskMcid').value = task.mcid || '';
         document.getElementById('taskDescription').value = task.description || '';
         document.getElementById('taskUpdates').value = (task.updates || []).join('\n');
@@ -3007,15 +2966,9 @@ body[data-theme="light"] {
 
     async function saveTask() {
       const name = document.getElementById('taskName').value.trim();
-      const supportName = document.getElementById('taskOwner').value.trim();
 
       if (!name) {
         alert('Coloque um nome para identificar o trabalho.');
-        return;
-      }
-
-      if (!supportName) {
-        alert('Selecione um suporte oficial em Responsável.');
         return;
       }
 
@@ -3057,7 +3010,6 @@ body[data-theme="light"] {
         project_id: document.getElementById('taskProject').value,
         status: document.getElementById('taskStatus').value,
         name,
-        suportes_sellerpro: document.getElementById('taskOwner').value.trim(),
         owner: document.getElementById('taskOwner').value.trim(),
         mcid: document.getElementById('taskMcid').value.trim(),
         billing_config_date: currentEditingTaskId ? (state.tasks.find(t => t.id === currentEditingTaskId)?.billingConfigDate || null) : null,
@@ -3103,8 +3055,7 @@ body[data-theme="light"] {
           project: taskData.project_id,
           status: taskData.status,
           name: taskData.name,
-          suportes_sellerpro: taskData.suportes_sellerpro,
-          owner: taskData.suportes_sellerpro,
+          owner: taskData.owner,
           mcid: taskData.mcid,
           billingConfigDate: taskData.billing_config_date || '',
           shipmentDate: taskData.shipment_date || '',
@@ -3136,8 +3087,7 @@ body[data-theme="light"] {
           project: taskData.project_id,
           status: taskData.status,
           name: taskData.name,
-          suportes_sellerpro: taskData.suportes_sellerpro,
-          owner: taskData.suportes_sellerpro,
+          owner: taskData.owner,
           mcid: taskData.mcid,
           billingConfigDate: taskData.billing_config_date || '',
           shipmentDate: taskData.shipment_date || '',
@@ -3506,7 +3456,7 @@ body[data-theme="light"] {
         <div class="detail-grid">
           <div class="detail-box">
             <small>Responsável</small>
-            <strong>${escapeHTML(getTaskSupport(task) || 'Sem responsável')}</strong>
+            <strong>${escapeHTML(task.owner || 'Sem responsável')}</strong>
           </div>
 
           <div class="detail-box">
