@@ -1576,38 +1576,33 @@
     let allProjects = [];
     let currentTab = "andamento";
 
-    const DELIVERED_KEYWORDS = [
-      "entregue",
-      "entregues",
-      "finalizado",
-      "finalizada",
-      "finalizados",
-      "finalizadas",
-      "concluido",
-      "concluida",
-      "concluído",
-      "concluída",
-      "loja pronta",
-      "pronta",
-      "venda finalizada",
-      "vendas finalizadas"
-    ];
-
     const FINALIZED_SALE_KEYWORDS = [
       "venda finalizada",
       "vendas finalizadas",
       "venda concluida",
       "vendas concluidas",
       "venda concluída",
-      "vendas concluídas",
-      "finalizado",
-      "finalizada",
-      "finalizados",
-      "finalizadas",
+      "vendas concluídas"
+    ];
+
+    const DELIVERED_KEYWORDS = [
+      "loja entregue",
+      "lojas entregues",
       "entregue",
       "entregues",
       "loja pronta",
-      "pronta"
+      "lojas prontas",
+      "pronta",
+      "concluido",
+      "concluida",
+      "concluídos",
+      "concluídas",
+      "concluído",
+      "concluída",
+      "finalizado",
+      "finalizada",
+      "finalizados",
+      "finalizadas"
     ];
 
     const monthFilter = document.getElementById("monthFilter");
@@ -1734,18 +1729,22 @@
       return null;
     }
 
-    function isDeliveredStatus(statusName) {
-      const normalized = normalizeText(statusName);
-
-      return DELIVERED_KEYWORDS.some((word) => {
-        return normalized.includes(normalizeText(word));
-      });
-    }
-
     function isFinalizedSaleStatus(statusName) {
       const normalized = normalizeText(statusName);
 
       return FINALIZED_SALE_KEYWORDS.some((word) => {
+        return normalized.includes(normalizeText(word));
+      });
+    }
+
+    function isDeliveredStatus(statusName) {
+      const normalized = normalizeText(statusName);
+
+      if (isFinalizedSaleStatus(statusName)) {
+        return false;
+      }
+
+      return DELIVERED_KEYWORDS.some((word) => {
         return normalized.includes(normalizeText(word));
       });
     }
