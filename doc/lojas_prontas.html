@@ -1697,14 +1697,67 @@
       return cleaned;
     }
 
+    function collectComparableValues(value, output = []) {
+      if (value === undefined || value === null || value === "") {
+        return output;
+      }
+
+      if (Array.isArray(value)) {
+        value.forEach((item) => collectComparableValues(item, output));
+        return output;
+      }
+
+      if (typeof value === "object") {
+        Object.values(value).forEach((item) => collectComparableValues(item, output));
+        return output;
+      }
+
+      const raw = String(value).trim();
+      if (!raw) return output;
+
+      output.push(raw);
+
+      if ((raw.startsWith("{") && raw.endsWith("}")) || (raw.startsWith("[") && raw.endsWith("]"))) {
+        try {
+          collectComparableValues(JSON.parse(raw), output);
+        } catch (error) {
+          // Mantém o valor original quando não for JSON válido.
+        }
+      }
+
+      return output;
+    }
+
     function getSupportComparisonValues(item) {
-      return [
-        item?.id,
-        item?.nome,
-        item?.name,
-        item?.suporte,
-        item?.email
-      ].map((value) => normalizeKey(value));
+      return [...new Set(collectComparableValues(item).map((value) => normalizeKey(value)).filter(Boolean))];
+    }
+
+    function getTaskSupportValues(task) {
+      const possibleSupportFields = [
+        "owner",
+        "Owner",
+        "owners",
+        "Owners",
+        "suporte",
+        "support",
+        "support_id",
+        "owner_id",
+        "responsavel",
+        "responsável",
+        "assignee",
+        "assigned_to",
+        "user_id"
+      ];
+
+      const values = [];
+
+      possibleSupportFields.forEach((field) => {
+        if (task && task[field] !== undefined && task[field] !== null && task[field] !== "") {
+          collectComparableValues(task[field], values);
+        }
+      });
+
+      return [...new Set(values.map((value) => normalizeKey(value)).filter(Boolean))];
     }
 
     function escapeHtml(value) {
@@ -1900,28 +1953,37 @@
     }
 
     function getSupportName(task) {
-      const owner = getPossibleValue(task, [
+      const taskSupportValues = getTaskSupportValues(task);
+
+      const found = allSupports.find((item) => {
+        const supportValues = getSupportComparisonValues(item);
+
+        return taskSupportValues.some((taskValue) => {
+          return supportValues.some((supportValue) => {
+            return taskValue === supportValue ||
+              (taskValue.length > 2 && supportValue.length > 2 && taskValue.includes(supportValue)) ||
+              (taskValue.length > 2 && supportValue.length > 2 && supportValue.includes(taskValue));
+          });
+        });
+      });
+
+      const directOwner = getPossibleValue(task, [
         "owner",
         "Owner",
         "suporte",
-        "support_id",
-        "owner_id",
+        "support",
         "responsavel",
-        "responsável"
+        "responsável",
+        "assignee",
+        "assigned_to"
       ]);
-
-      const ownerKey = normalizeKey(owner);
-
-      const found = allSupports.find((item) => {
-        return getSupportComparisonValues(item).includes(ownerKey);
-      });
 
       return formatSupportName(
         found?.nome ||
         found?.name ||
         found?.suporte ||
         found?.email ||
-        owner ||
+        collectComparableValues(directOwner)[0] ||
         "Sem suporte"
       );
     }
@@ -2321,15 +2383,12 @@
         grouped[row.suporte].statuses[row.situacao] += 1;
       });
 
-      const orderedStatuses = getOrderedStatuses(rowsWithoutTab);
-
       const sortedSupports = Object.entries(grouped)
-        .sort((a, b) => a[0].localeCompare(b[0], "pt-BR"));
+        .sort((a, b) => b[1].total - a[1].total);
 
       sortedSupports.forEach(([supportName, data]) => {
-        const statusEntries = orderedStatuses.map((status) => {
-          return [status, data.statuses[status] || 0];
-        });
+        const statusEntries = Object.entries(data.statuses)
+          .sort((a, b) => b[1] - a[1]);
 
         const progress = statusEntries
           .filter(([, count]) => count > 0)
@@ -2392,7 +2451,6 @@
           <div class="support-mini-stats">
             <span class="mini-pill mini-blue">${data.inProgress} em andamento</span>
             <span class="mini-pill mini-green">${data.delivered} entregues</span>
-            <span class="mini-pill mini-green">${data.finalized} finalizadas</span>
           </div>
 
           <div class="progress-bar">
