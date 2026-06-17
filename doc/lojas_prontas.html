@@ -588,6 +588,23 @@
       font-weight: 900;
     }
 
+
+
+    .table-header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .table-card.is-collapsed .tabs,
+    .table-card.is-collapsed .table-filters,
+    .table-card.is-collapsed .table-summary,
+    .table-card.is-collapsed .scroll {
+      display: none;
+    }
+
+
     .scroll {
       overflow: auto;
     }
@@ -1177,7 +1194,7 @@
         <div>
           <h2>Filtros gerais</h2>
           <div class="panel-sub">
-            Busca, mês e suporte afetam os cards do topo e os cards de suporte. Situação e etapa filtram a tabela.
+            Busca, mês e suporte afetam os cards de suporte e a tabela. Os cards do topo mostram o total geral por etapa.
           </div>
         </div>
       </div>
@@ -1246,23 +1263,88 @@
       </div>
 
       <div class="overview-card">
-        <div class="overview-icon">⏳</div>
-        <div class="overview-label">Em andamento</div>
-        <div class="overview-value" id="totalInProgress">0</div>
+        <div class="overview-icon">💰</div>
+        <div class="overview-label">Venda finalizada</div>
+        <div class="overview-value" id="totalVendaFinalizada">0</div>
       </div>
 
       <div class="overview-card">
         <div class="overview-icon">✅</div>
-        <div class="overview-label">Entregues</div>
-        <div class="overview-value" id="totalDelivered">0</div>
+        <div class="overview-label">Loja entregue</div>
+        <div class="overview-value" id="totalLojaEntregue">0</div>
       </div>
 
       <div class="overview-card">
-        <div class="overview-icon">💰</div>
-        <div class="overview-label">Lojas finalizadas</div>
-        <div class="overview-value" id="totalFinalizedSales">0</div>
+        <div class="overview-icon">🚨</div>
+        <div class="overview-label">Chamados especiais</div>
+        <div class="overview-value" id="totalChamadosEspeciais">0</div>
       </div>
-    </section>
+
+      <div class="overview-card">
+        <div class="overview-icon">🧾</div>
+        <div class="overview-label">Configuração do faturador</div>
+        <div class="overview-value" id="totalConfiguracaoFaturador">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-icon">📦</div>
+        <div class="overview-label">Envio ao FBA</div>
+        <div class="overview-value" id="totalEnvioFba">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-icon">👤</div>
+        <div class="overview-label">Criação de conta</div>
+        <div class="overview-value" id="totalCriacaoConta">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-icon">📝</div>
+        <div class="overview-label">Preenchimento do formulário</div>
+        <div class="overview-value" id="totalPreenchimentoFormulario">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-icon">❌</div>
+        <div class="overview-label">Cancelados</div>
+        <div class="overview-value" id="totalCancelados">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-icon">🧊</div>
+        <div class="overview-label">Congelado</div>
+        <div class="overview-value" id="totalCongelado">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-icon">🏢</div>
+        <div class="overview-label">Aguardando CNPJ</div>
+        <div class="overview-value" id="totalAguardandoCnpj">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-icon">👥</div>
+        <div class="overview-label">Criação de grupo</div>
+        <div class="overview-value" id="totalCriacaoGrupo">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-icon">🎧</div>
+        <div class="overview-label">Call de briefing</div>
+        <div class="overview-value" id="totalCallBriefing">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-icon">🛒</div>
+        <div class="overview-label">Criação de anúncio</div>
+        <div class="overview-value" id="totalCriacaoAnuncio">0</div>
+      </div>
+
+      <div class="overview-card">
+        <div class="overview-icon">🚀</div>
+        <div class="overview-label">Call de onboard</div>
+        <div class="overview-value" id="totalCallOnboard">0</div>
+      </div>
 
     <div class="section-title">
       <h2>Distribuição por suporte</h2>
@@ -1280,7 +1362,10 @@
           </div>
         </div>
 
-        <span class="muted" id="tableCount">0 registros</span>
+        <div class="table-header-actions">
+          <span class="muted" id="tableCount">0 registros</span>
+          <button class="btn btn-light" id="toggleTableButton" type="button">Minimizar tabela</button>
+        </div>
       </div>
 
       <div class="tabs">
@@ -1470,7 +1555,7 @@
     function animateNumbers() {
       if (!window.gsap) return;
 
-      [totalStores, totalInProgress, totalDelivered, totalFinalizedSales].forEach((el) => {
+      document.querySelectorAll(".overview-value").forEach((el) => {
         const value = Number(el.textContent || 0);
         const obj = { value: 0 };
         el.classList.add("animated-count");
@@ -1594,6 +1679,100 @@
       "entregues"
     ];
 
+    const OVERVIEW_STAGE_METRICS = [
+      {
+        elementId: "totalVendaFinalizada",
+        aliases: ["venda finalizada", "vendas finalizadas"]
+      },
+      {
+        elementId: "totalLojaEntregue",
+        aliases: ["loja entregue", "lojas entregues", "entregue", "entregues"]
+      },
+      {
+        elementId: "totalChamadosEspeciais",
+        aliases: ["chamados especiais", "chamado especial"]
+      },
+      {
+        elementId: "totalConfiguracaoFaturador",
+        aliases: ["configuração do faturador", "configuracao do faturador"]
+      },
+      {
+        elementId: "totalEnvioFba",
+        aliases: ["envio ao fba", "envio fba"]
+      },
+      {
+        elementId: "totalCriacaoConta",
+        aliases: ["criação de conta", "criacao de conta", "criar conta"]
+      },
+      {
+        elementId: "totalPreenchimentoFormulario",
+        aliases: ["preenchimento do formulário", "preenchimento do formulario"]
+      },
+      {
+        elementId: "totalCancelados",
+        aliases: ["cancelados", "cancelado", "cancelada", "canceladas"]
+      },
+      {
+        elementId: "totalCongelado",
+        aliases: ["congelado", "congelada", "congelados", "congeladas"]
+      },
+      {
+        elementId: "totalAguardandoCnpj",
+        aliases: ["aguardando cnpj", "aguardando o cnpj"]
+      },
+      {
+        elementId: "totalCriacaoGrupo",
+        aliases: ["criação de grupo", "criacao de grupo", "grupo criado", "criar grupo"]
+      },
+      {
+        elementId: "totalCallBriefing",
+        aliases: ["call de briefing", "call briefing", "briefing", "call de brief", "call de brienf"]
+      },
+      {
+        elementId: "totalCriacaoAnuncio",
+        aliases: [
+          "criação de anúncio",
+          "criacao de anuncio",
+          "criação de anuncio",
+          "criacao de anúncio",
+          "criação do anúncio",
+          "criacao do anuncio",
+          "criação anúncio",
+          "criacao anuncio",
+          "criação de anúncios",
+          "criacao de anuncios",
+          "criação dos anúncios",
+          "criacao dos anuncios",
+          "anúncio criado",
+          "anuncio criado",
+          "anúncios criados",
+          "anuncios criados",
+          "criar anúncio",
+          "criar anuncio",
+          "cadastro de anúncio",
+          "cadastro de anuncio",
+          "cadastro do anúncio",
+          "cadastro do anuncio",
+          "anúncio",
+          "anuncio",
+          "anúncios",
+          "anuncios"
+        ]
+      },
+      {
+        elementId: "totalCallOnboard",
+        aliases: ["call de onboard", "call onboard", "onboard", "onboarding", "call de onboarding"]
+      }
+    ];
+
+    const OVERVIEW_STAGE_ALIAS_MAP = new Map();
+
+    OVERVIEW_STAGE_METRICS.forEach((metric) => {
+      metric.aliases.forEach((alias) => {
+        OVERVIEW_STAGE_ALIAS_MAP.set(normalizeKey(alias), metric.elementId);
+      });
+    });
+
     function hasStatusKeyword(statusName, keywords) {
       const normalized = normalizeText(statusName);
 
@@ -1618,14 +1797,20 @@
     const tableStageFilter = document.getElementById("tableStageFilter");
     const tableSortFilter = document.getElementById("tableSortFilter");
     const clearTableFiltersButton = document.getElementById("clearTableFiltersButton");
+    const toggleTableButton = document.getElementById("toggleTableButton");
+    const tableCard = document.querySelector(".table-card");
 
     const storesTable = document.getElementById("storesTable");
     const supportCards = document.getElementById("supportCards");
 
     const totalStores = document.getElementById("totalStores");
-    const totalInProgress = document.getElementById("totalInProgress");
-    const totalDelivered = document.getElementById("totalDelivered");
-    const totalFinalizedSales = document.getElementById("totalFinalizedSales");
+    const overviewStageElements = Object.fromEntries(
+      OVERVIEW_STAGE_METRICS.map((metric) => [
+        metric.elementId,
+        document.getElementById(metric.elementId)
+      ])
+    );
+    const totalOutrasEtapas = document.getElementById("totalOutrasEtapas");
     const themeToggle = document.getElementById("themeToggle");
 
     const tableCount = document.getElementById("tableCount");
@@ -2320,6 +2505,43 @@
       return sorted;
     }
 
+    function getOverviewStageElementId(statusName) {
+      const normalizedStatus = normalizeKey(statusName);
+
+      if (!normalizedStatus) {
+        return null;
+      }
+
+      const exactMatch = OVERVIEW_STAGE_ALIAS_MAP.get(normalizedStatus);
+
+      if (exactMatch) {
+        return exactMatch;
+      }
+
+      const foundMetric = OVERVIEW_STAGE_METRICS.find((metric) => {
+        return metric.aliases.some((alias) => {
+          const normalizedAlias = normalizeKey(alias);
+
+          if (!normalizedAlias) return false;
+
+          return (
+            normalizedStatus.includes(normalizedAlias) ||
+            normalizedAlias.includes(normalizedStatus)
+          );
+        });
+      });
+
+      return foundMetric?.elementId || null;
+    }
+
+    function countRowsByExactStage(rows, elementId) {
+      return rows.filter((row) => getOverviewStageElementId(row.situacao) === elementId).length;
+    }
+
+    function countRowsWithoutMappedStage(rows) {
+      return rows.filter((row) => !getOverviewStageElementId(row.situacao)).length;
+    }
+
     function renderOverview(rowsWithoutTab) {
       const supports = new Set(
         rowsWithoutTab
@@ -2327,14 +2549,19 @@
           .filter((support) => support && support !== "-" && support !== "Sem suporte")
       );
 
-      const delivered = rowsWithoutTab.filter((row) => row.entregue).length;
-      const inProgress = rowsWithoutTab.filter((row) => row.emAndamento).length;
-      const finalizedStores = rowsWithoutTab.filter((row) => row.finalizada).length;
-
       totalStores.textContent = rowsWithoutTab.length;
-      totalInProgress.textContent = inProgress;
-      totalDelivered.textContent = delivered;
-      totalFinalizedSales.textContent = finalizedStores;
+
+      OVERVIEW_STAGE_METRICS.forEach((metric) => {
+        const element = overviewStageElements[metric.elementId];
+        if (!element) return;
+
+        element.textContent = countRowsByExactStage(rowsWithoutTab, metric.elementId);
+      });
+
+      if (totalOutrasEtapas) {
+        totalOutrasEtapas.textContent = countRowsWithoutMappedStage(rowsWithoutTab);
+      }
+
       supportCountLabel.textContent = `${supports.size} suporte${supports.size === 1 ? "" : "s"}`;
     }
 
@@ -2560,7 +2787,8 @@
       rowsForTable = getRowsAfterTableFilters(rowsForTable);
       rowsForTable = sortRowsByValue(rowsForTable, tableSortFilter.value);
 
-      renderOverview(rowsForOverviewAndCards);
+      // Painel superior: sempre conta todos os processos, sem sofrer alteração pelos filtros.
+      renderOverview(allRows);
       renderTabs(rowsForOverviewAndCards);
       renderSupportCards(rowsForOverviewAndCards);
       renderTable(rowsForTable);
@@ -2636,6 +2864,11 @@
       render();
     }
 
+    function toggleTableVisibility() {
+      const isCollapsed = tableCard.classList.toggle("is-collapsed");
+      toggleTableButton.textContent = isCollapsed ? "Mostrar tabela" : "Minimizar tabela";
+    }
+
 
 
     function applyTheme(theme) {
@@ -2667,6 +2900,7 @@
     refreshButton.addEventListener("click", loadData);
     clearFiltersButton.addEventListener("click", clearGeneralFilters);
     clearTableFiltersButton.addEventListener("click", clearTableFilters);
+    toggleTableButton.addEventListener("click", toggleTableVisibility);
 
     document.querySelectorAll(".tab-btn").forEach((button) => {
       button.addEventListener("click", () => {
