@@ -1346,11 +1346,6 @@
         <div class="overview-value" id="totalCallOnboard">0</div>
       </div>
 
-      <div class="overview-card">
-        <div class="overview-icon">📌</div>
-        <div class="overview-label">Outras etapas</div>
-        <div class="overview-value" id="totalOutrasEtapas">0</div>
-      </div>
     </section>
 
     <div class="section-title">
@@ -1817,7 +1812,6 @@
         document.getElementById(metric.elementId)
       ])
     );
-    const totalOutrasEtapas = document.getElementById("totalOutrasEtapas");
     const themeToggle = document.getElementById("themeToggle");
 
     const tableCount = document.getElementById("tableCount");
@@ -2545,9 +2539,6 @@
       return rows.filter((row) => getOverviewStageElementId(row.situacao) === elementId).length;
     }
 
-    function countRowsWithoutMappedStage(rows) {
-      return rows.filter((row) => !getOverviewStageElementId(row.situacao)).length;
-    }
 
     function renderOverview(rowsWithoutTab) {
       const supports = new Set(
@@ -2565,9 +2556,6 @@
         element.textContent = countRowsByExactStage(rowsWithoutTab, metric.elementId);
       });
 
-      if (totalOutrasEtapas) {
-        totalOutrasEtapas.textContent = countRowsWithoutMappedStage(rowsWithoutTab);
-      }
 
       supportCountLabel.textContent = `${supports.size} suporte${supports.size === 1 ? "" : "s"}`;
     }
