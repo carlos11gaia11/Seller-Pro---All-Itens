@@ -1825,8 +1825,10 @@ body[data-theme="light"] {
         </div>
 
         <div class="field">
-            <label>Responsável</label>
-            <input id="taskOwner" placeholder="Ex.: Felipe Lobão" required />
+          <label>Responsável</label>
+          <select id="taskOwner" required>
+            <option value="">Carregando suportes...</option>
+          </select>
         </div>
 
         <div class="field">
@@ -2077,6 +2079,7 @@ body[data-theme="light"] {
       columns: [],
       tasks: [],
       reminders: [],
+      supports: [],
       loading: true
     };
 
@@ -2106,6 +2109,79 @@ body[data-theme="light"] {
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
+    }
+
+    const SUPPORT_NAME_FIELDS = [
+      'nome',
+      'name',
+      'full_name',
+      'display_name',
+      'suporte',
+      'suporte_nome',
+      'suporte_responsavel',
+      'responsavel',
+      'responsável',
+      'consultor',
+      'suportes_sellerpro',
+      'owner'
+    ];
+
+    const SUPPORT_EMAIL_FIELDS = ['email', 'mail', 'user_email'];
+    const SUPPORT_ID_FIELDS = ['id', 'uuid', 'user_id', 'usuario_id', 'suporte_id', 'profile_id'];
+
+    function getFirstExistingValue(row, fields) {
+      for (const field of fields) {
+        const value = row?.[field];
+
+        if (value !== undefined && value !== null && String(value).trim()) {
+          return String(value).trim();
+        }
+      }
+
+      return '';
+    }
+
+    function normalizeSupport(row) {
+      const name = getFirstExistingValue(row, SUPPORT_NAME_FIELDS);
+      const email = getFirstExistingValue(row, SUPPORT_EMAIL_FIELDS);
+      const id = getFirstExistingValue(row, SUPPORT_ID_FIELDS) || name || email;
+
+      return {
+        id,
+        name: name || email,
+        email
+      };
+    }
+
+    function getOfficialSupportNames() {
+      return [...new Set(
+        (state.supports || [])
+          .map(support => support.name)
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b));
+    }
+
+    function renderTaskOwnerOptions(selectedValue = '') {
+      const taskOwner = document.getElementById('taskOwner');
+      if (!taskOwner) return;
+
+      const supportNames = getOfficialSupportNames();
+      let options = '<option value="">Selecione o suporte responsável</option>';
+
+      if (selectedValue && !supportNames.includes(selectedValue)) {
+        options += `<option value="${escapeHTML(selectedValue)}">${escapeHTML(selectedValue)} — responsável atual</option>`;
+      }
+
+      options += supportNames
+        .map(name => `<option value="${escapeHTML(name)}">${escapeHTML(name)}</option>`)
+        .join('');
+
+      if (!supportNames.length && !selectedValue) {
+        options = '<option value="">Nenhum suporte encontrado na tabela suportes_sellerpro</option>';
+      }
+
+      taskOwner.innerHTML = options;
+      taskOwner.value = selectedValue || '';
     }
 
 
@@ -2238,6 +2314,7 @@ body[data-theme="light"] {
         state.projects = defaultProjects;
         state.columns = defaultColumns.map(c => c.name);
         state.tasks = [];
+        state.supports = [];
       } finally {
         state.loading = false;
         renderFilters();
@@ -2302,6 +2379,24 @@ body[data-theme="light"] {
         console.warn('Tabela de lembretes ainda não configurada.', error);
       }
 
+      let supports = [];
+      try {
+        const { data: supportData, error: supportsError } = await supabaseClient
+          .from('suportes_sellerpro')
+          .select('*');
+
+        if (supportsError) throw supportsError;
+
+        supports = supportData || [];
+      } catch (error) {
+        console.warn('Não foi possível carregar a tabela suportes_sellerpro.', error);
+        showToast('Não consegui carregar a lista de suportes. Verifique a tabela suportes_sellerpro e a política de SELECT.');
+      }
+
+      state.supports = supports
+        .map(normalizeSupport)
+        .filter(support => support.name);
+
       state.projects = projects.map(project => ({
         id: project.id,
         name: project.name,
@@ -2316,7 +2411,7 @@ body[data-theme="light"] {
         project: task.project_id,
         status: task.status,
         name: task.name,
-        owner: task.owner || '',
+        owner: task.owner || task.suporte_responsavel || task.suportes_sellerpro || '',
         mcid: task.mcid || '',
         billingConfigDate: task.billing_config_date || '',
         shipmentDate: task.shipment_date || '',
@@ -2363,9 +2458,12 @@ body[data-theme="light"] {
     function renderFilters() {
       const currentOwner = document.getElementById('ownerFilter')?.value || '';
       const currentStatus = document.getElementById('statusFilter')?.value || '';
+      const currentTaskOwner = document.getElementById('taskOwner')?.value || '';
 
-      const owners = [...new Set(state.tasks.map(task => task.owner).filter(Boolean))]
+      const officialOwners = getOfficialSupportNames();
+      const taskOwners = [...new Set(state.tasks.map(task => task.owner).filter(Boolean))]
         .sort((a, b) => a.localeCompare(b));
+      const owners = officialOwners.length ? officialOwners : taskOwners;
 
       document.getElementById('ownerFilter').innerHTML =
         '<option value="">Todos</option>' +
@@ -2380,6 +2478,8 @@ body[data-theme="light"] {
 
       document.getElementById('taskStatus').innerHTML =
         state.columns.map(status => `<option value="${escapeHTML(status)}">${escapeHTML(status)}</option>`).join('');
+
+      renderTaskOwnerOptions(currentTaskOwner);
 
       if (owners.includes(currentOwner)) {
         document.getElementById('ownerFilter').value = currentOwner;
@@ -2896,7 +2996,7 @@ body[data-theme="light"] {
         document.getElementById('taskName').value = task.name || '';
         document.getElementById('taskProject').value = task.project || state.activeProject;
         document.getElementById('taskStatus').value = task.status || state.columns[0];
-        document.getElementById('taskOwner').value = task.owner || '';
+        renderTaskOwnerOptions(task.owner || '');
         document.getElementById('taskMcid').value = task.mcid || '';
         document.getElementById('taskDescription').value = task.description || '';
         document.getElementById('taskUpdates').value = (task.updates || []).join('\n');
@@ -2905,6 +3005,7 @@ body[data-theme="light"] {
           : [];
       } else {
         clearForm();
+        renderTaskOwnerOptions();
         document.getElementById('taskProject').value = state.activeProject;
         document.getElementById('taskStatus').value = state.columns[0];
         currentTaskAttachments = [];
@@ -2943,6 +3044,7 @@ body[data-theme="light"] {
       }
 
       clearForm();
+      renderTaskOwnerOptions();
       document.getElementById('taskProject').value = state.activeProject;
       document.getElementById('taskStatus').value = columnName;
       currentTaskAttachments = [];
@@ -2966,9 +3068,15 @@ body[data-theme="light"] {
 
     async function saveTask() {
       const name = document.getElementById('taskName').value.trim();
+      const supportName = document.getElementById('taskOwner').value.trim();
 
       if (!name) {
         alert('Coloque um nome para identificar o trabalho.');
+        return;
+      }
+
+      if (!supportName) {
+        alert('Selecione um suporte responsável na lista.');
         return;
       }
 
@@ -3006,11 +3114,22 @@ body[data-theme="light"] {
         return;
       }
 
+      const selectedOwner = document.getElementById('taskOwner').value.trim();
+
+      if (!selectedOwner) {
+        alert('Selecione um suporte responsável na lista.');
+        if (saveButton) {
+          saveButton.disabled = false;
+          saveButton.textContent = currentEditingTaskId ? 'Salvar alterações' : 'Salvar trabalho';
+        }
+        return;
+      }
+
       const taskData = {
         project_id: document.getElementById('taskProject').value,
         status: document.getElementById('taskStatus').value,
         name,
-        owner: document.getElementById('taskOwner').value.trim(),
+        owner: selectedOwner,
         mcid: document.getElementById('taskMcid').value.trim(),
         billing_config_date: currentEditingTaskId ? (state.tasks.find(t => t.id === currentEditingTaskId)?.billingConfigDate || null) : null,
         shipment_date: currentEditingTaskId ? (state.tasks.find(t => t.id === currentEditingTaskId)?.shipmentDate || null) : null,
