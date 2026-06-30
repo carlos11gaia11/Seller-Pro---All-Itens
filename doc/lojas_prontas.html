@@ -1155,10 +1155,247 @@
         font-size: 25px;
       }
     }
+
+
+    /* Refinamento visual: preto com detalhes laranjas */
+    :root {
+      --bg: #050505;
+      --card: rgba(14, 14, 14, 0.92);
+      --glass: rgba(18, 18, 18, 0.82);
+      --text: #fff7ed;
+      --muted: #fdba74;
+      --line: rgba(249, 115, 22, 0.24);
+      --primary: #f97316;
+      --primary-dark: #9a3412;
+      --accent: #fb923c;
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.14);
+      --blue-soft: rgba(249, 115, 22, 0.13);
+      --red-soft: rgba(127, 29, 29, 0.28);
+      --orange: #fb923c;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+      --hero-gradient: linear-gradient(135deg, #050505 0%, #161616 42%, #431407 100%);
+      --body-bg:
+        radial-gradient(circle at 10% 0%, rgba(249, 115, 22, 0.28) 0, transparent 28%),
+        radial-gradient(circle at 92% 18%, rgba(251, 146, 60, 0.16) 0, transparent 24%),
+        linear-gradient(180deg, #030303 0%, #090909 45%, #111111 100%);
+    }
+
+    body {
+      background: var(--body-bg);
+    }
+
+    .app {
+      max-width: 1480px;
+    }
+
+    .hero {
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      box-shadow: 0 28px 90px rgba(249, 115, 22, 0.16), 0 24px 65px rgba(0, 0, 0, 0.45);
+    }
+
+    .hero::after {
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.34), transparent 66%);
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 4vw, 44px);
+    }
+
+    .hero p {
+      color: #ffedd5;
+      font-size: 15px;
+    }
+
+    .hero-badge,
+    .theme-toggle {
+      background: rgba(249, 115, 22, 0.13);
+      border-color: rgba(249, 115, 22, 0.34);
+      color: #fff7ed;
+    }
+
+    .panel,
+    .overview-card,
+    .support-card,
+    .table-card {
+      background: linear-gradient(180deg, rgba(18,18,18,.96), rgba(8,8,8,.94));
+      border: 1px solid rgba(249, 115, 22, 0.22);
+      box-shadow: var(--shadow);
+    }
+
+    .panel::before,
+    .overview-card::before,
+    .support-card::before,
+    .table-card::before,
+    .hero::before {
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.58), rgba(255,255,255,0.08), rgba(249, 115, 22, 0.14));
+    }
+
+    .panel-title-row h2,
+    .section-title h2,
+    .table-top h2 {
+      color: #fff7ed;
+    }
+
+    .panel-sub,
+    .muted,
+    .overview-label,
+    .store-sub,
+    .status-percent {
+      color: #fdba74;
+    }
+
+    .field label {
+      color: #fed7aa;
+    }
+
+    .field input,
+    .field select {
+      background: #0b0b0b;
+      color: #fff7ed;
+      border-color: rgba(249, 115, 22, 0.26);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+    }
+
+    .field input::placeholder {
+      color: rgba(253, 186, 116, 0.58);
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: rgba(249, 115, 22, 0.78);
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.16);
+    }
+
+    .btn-primary,
+    .tab-btn.active,
+    .support-total,
+    .support-avatar,
+    .overview-icon {
+      background: linear-gradient(135deg, #f97316, #9a3412);
+      color: #fff7ed;
+      box-shadow: 0 16px 35px rgba(249, 115, 22, 0.26);
+    }
+
+    .btn-light,
+    .summary-chip,
+    .tab-btn {
+      background: #111111;
+      color: #fed7aa;
+      border: 1px solid rgba(249, 115, 22, 0.25);
+    }
+
+    .btn-light:hover,
+    .tab-btn:hover {
+      background: rgba(249, 115, 22, 0.14);
+      color: #fff7ed;
+    }
+
+    .overview-card::after {
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.18), transparent 68%);
+    }
+
+    .overview-value,
+    .store-name,
+    .support-name,
+    .status-count,
+    .table-highlight {
+      color: #fff7ed;
+    }
+
+    .support-subtitle,
+    .status-name,
+    .status-index {
+      color: #ffedd5;
+    }
+
+    .table-filters,
+    .table-top,
+    .tabs,
+    .table-summary {
+      background: rgba(10, 10, 10, 0.84);
+      border-color: rgba(249, 115, 22, 0.20);
+    }
+
+    th {
+      background: #0d0d0d;
+      color: #fdba74;
+      border-bottom-color: rgba(249, 115, 22, 0.24);
+    }
+
+    td {
+      background: rgba(12, 12, 12, 0.82);
+      color: #ffedd5;
+      border-bottom-color: rgba(249, 115, 22, 0.13);
+    }
+
+    tr:hover td {
+      background: rgba(249, 115, 22, 0.10);
+    }
+
+    .badge,
+    .andamento-badge {
+      background: rgba(249, 115, 22, 0.13);
+      color: #fdba74;
+      border-color: rgba(249, 115, 22, 0.28);
+    }
+
+    .finalizado-badge,
+    .mini-green {
+      background: rgba(34, 197, 94, 0.14);
+      color: #86efac;
+      border-color: rgba(34, 197, 94, 0.32);
+    }
+
+    .mini-blue {
+      background: rgba(249, 115, 22, 0.14);
+      color: #fdba74;
+      border-color: rgba(249, 115, 22, 0.32);
+    }
+
+    .progress-bar {
+      background: #1c1917;
+      border: 1px solid rgba(249, 115, 22, 0.16);
+    }
+
+    .status-item {
+      border-bottom-color: rgba(249, 115, 22, 0.16);
+    }
+
+    .empty {
+      color: #fdba74;
+    }
+
+    .error {
+      background: rgba(127, 29, 29, 0.24);
+      color: #fecaca;
+      border-color: rgba(248, 113, 113, 0.35);
+    }
+
+    .scroll::-webkit-scrollbar,
+    .status-list::-webkit-scrollbar,
+    .tabs::-webkit-scrollbar {
+      height: 10px;
+      width: 10px;
+    }
+
+    .scroll::-webkit-scrollbar-track,
+    .status-list::-webkit-scrollbar-track,
+    .tabs::-webkit-scrollbar-track {
+      background: #0b0b0b;
+    }
+
+    .scroll::-webkit-scrollbar-thumb,
+    .status-list::-webkit-scrollbar-thumb,
+    .tabs::-webkit-scrollbar-thumb {
+      background: #9a3412;
+      border-radius: 999px;
+    }
+
   </style>
 </head>
 
-<body>
+<body class="theme-dark">
   <div id="particles-bg"></div>
   <div class="light-orb orb-one"></div>
   <div class="light-orb orb-two"></div>
@@ -1180,9 +1417,9 @@
 
         <div class="hero-badges">
           <button class="theme-toggle" id="themeToggle" type="button">🌙 Tema escuro</button>
-          <div class="hero-badge">Supabase conectado</div>
-          <div class="hero-badge">Filtros avançados</div>
-          <div class="hero-badge">Lojas finalizadas</div>
+          <div class="hero-badge">Base conectada</div>
+          <div class="hero-badge">Controle por suporte</div>
+          <div class="hero-badge">Acompanhamento ativo</div>
         </div>
       </div>
     </section>
@@ -1661,6 +1898,7 @@
     let allStatuses = [];
     let allSupports = [];
     let allProjects = [];
+    let supportLookup = new Map();
     let currentTab = "andamento";
 
     const FINALIZED_KEYWORDS = [
@@ -1826,14 +2064,14 @@
     const currentTableRows = document.getElementById("currentTableRows");
 
     const statusColors = [
-      "#2563eb",
-      "#16a34a",
-      "#f59e0b",
-      "#dc2626",
-      "#7c3aed",
-      "#0891b2",
+      "#f97316",
+      "#fb923c",
+      "#fdba74",
       "#ea580c",
-      "#4b5563"
+      "#c2410c",
+      "#9a3412",
+      "#f59e0b",
+      "#22c55e"
     ];
 
     function showError(message) {
@@ -1901,7 +2139,25 @@
       const raw = String(value).trim();
       if (!raw) return output;
 
-      output.push(raw);
+      const pushValue = (item) => {
+        const cleaned = String(item || "")
+          .replace(/^['\"]+|['\"]+$/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+
+        if (!cleaned) return;
+
+        output.push(cleaned);
+
+        // Quando vier como texto composto, também compara por partes.
+        cleaned
+          .split(/[;,|]/)
+          .map((part) => part.trim())
+          .filter(Boolean)
+          .forEach((part) => output.push(part));
+      };
+
+      pushValue(raw);
 
       if ((raw.startsWith("{") && raw.endsWith("}")) || (raw.startsWith("[") && raw.endsWith("]"))) {
         try {
@@ -1914,21 +2170,60 @@
       return output;
     }
 
+    function getDisplaySupportName(item) {
+      if (!item) return "Sem suporte";
+
+      const name = getPossibleValue(item, [
+        "nome",
+        "name",
+        "nome_suporte",
+        "suporte",
+        "responsavel",
+        "responsável",
+        "display_name",
+        "full_name",
+        "apelido",
+        "email"
+      ]);
+
+      return formatSupportName(name || "Sem suporte");
+    }
+
     function getSupportComparisonValues(item) {
       const possibleSupportFields = [
         "id",
+        "uuid",
         "user_id",
+        "auth_user_id",
         "support_id",
         "owner_id",
+        "responsavel_id",
+        "responsável_id",
+        "assigned_user_id",
+        "sp_user_id",
+        "sellerpro_id",
         "email",
+        "mail",
+        "e_mail",
         "nome",
         "name",
+        "nome_suporte",
+        "display_name",
+        "full_name",
+        "apelido",
         "suporte",
         "support",
         "responsavel",
         "responsável",
         "assignee",
-        "assigned_to"
+        "assigned_to",
+        "usuario",
+        "user",
+        "member",
+        "members",
+        "telefone",
+        "phone",
+        "whatsapp"
       ];
 
       const values = [];
@@ -1939,6 +2234,9 @@
         }
       });
 
+      // Também aproveita valores de objetos aninhados que podem vir do Supabase.
+      collectComparableValues(item, values);
+
       return [...new Set(values.map((value) => normalizeKey(value)).filter(Boolean))];
     }
 
@@ -1948,15 +2246,36 @@
         "Owner",
         "owners",
         "Owners",
+        "owner_id",
+        "owner_ids",
+        "ownerIds",
         "suporte",
         "support",
         "support_id",
-        "owner_id",
+        "support_ids",
+        "suporte_id",
+        "suporte_ids",
+        "suporte_responsavel",
+        "suporte_responsável",
+        "support_responsavel",
+        "responsavel_suporte",
+        "responsável_suporte",
         "responsavel",
         "responsável",
+        "responsavel_id",
+        "responsável_id",
         "assignee",
+        "assignee_id",
         "assigned_to",
-        "user_id"
+        "assignedTo",
+        "assigned_user_id",
+        "user_id",
+        "usuario",
+        "user",
+        "member",
+        "members",
+        "people",
+        "pessoas"
       ];
 
       const values = [];
@@ -1968,6 +2287,50 @@
       });
 
       return [...new Set(values.map((value) => normalizeKey(value)).filter(Boolean))];
+    }
+
+    function getTaskSupportDisplayValue(task) {
+      const directOwner = getPossibleValue(task, [
+        "suporte",
+        "support",
+        "suporte_responsavel",
+        "suporte_responsável",
+        "support_responsavel",
+        "responsavel_suporte",
+        "responsável_suporte",
+        "responsavel",
+        "responsável",
+        "assignee",
+        "assigned_to",
+        "assignedTo",
+        "owner",
+        "Owner",
+        "user",
+        "usuario",
+        "member"
+      ]);
+
+      const values = collectComparableValues(directOwner);
+      const readable = values.find((value) => /[a-zA-ZÀ-ÿ]/.test(value) && !value.includes("@"));
+      const email = values.find((value) => value.includes("@"));
+
+      return readable || email || values[0] || "Sem suporte";
+    }
+
+    function buildSupportLookup(supports) {
+      const lookup = new Map();
+
+      (supports || []).forEach((support) => {
+        const displayName = getDisplaySupportName(support);
+        const values = getSupportComparisonValues(support);
+
+        values.forEach((value) => {
+          if (!value || value.length < 2) return;
+          if (!lookup.has(value)) lookup.set(value, displayName);
+        });
+      });
+
+      return lookup;
     }
 
     function escapeHtml(value) {
@@ -2165,35 +2528,26 @@
     function getSupportName(task) {
       const taskSupportValues = getTaskSupportValues(task);
 
-      const found = allSupports.find((item) => {
-        const supportValues = getSupportComparisonValues(item);
+      for (const taskValue of taskSupportValues) {
+        if (supportLookup.has(taskValue)) {
+          return supportLookup.get(taskValue);
+        }
+      }
 
-        return taskSupportValues.some((taskValue) => {
-          return supportValues.some((supportValue) => {
-            return taskValue === supportValue;
-          });
-        });
-      });
+      // Segunda tentativa: compara trechos úteis, pois alguns campos vêm com JSON, arrays ou texto composto.
+      for (const taskValue of taskSupportValues) {
+        if (!taskValue || taskValue.length < 4) continue;
 
-      const directOwner = getPossibleValue(task, [
-        "owner",
-        "Owner",
-        "suporte",
-        "support",
-        "responsavel",
-        "responsável",
-        "assignee",
-        "assigned_to"
-      ]);
+        for (const [supportValue, supportName] of supportLookup.entries()) {
+          if (!supportValue || supportValue.length < 4) continue;
 
-      return formatSupportName(
-        found?.nome ||
-        found?.name ||
-        found?.suporte ||
-        found?.email ||
-        collectComparableValues(directOwner)[0] ||
-        "Sem suporte"
-      );
+          if (taskValue.includes(supportValue) || supportValue.includes(taskValue)) {
+            return supportName;
+          }
+        }
+      }
+
+      return formatSupportName(getTaskSupportDisplayValue(task));
     }
 
     function getStoreName(task) {
@@ -2814,6 +3168,7 @@
         allProjects = projects || [];
         allStatuses = columns || [];
         allSupports = supports || [];
+        supportLookup = buildSupportLookup(allSupports);
         allRows = buildRows(tasks || []);
 
         populateFilters(allRows);
@@ -2874,7 +3229,7 @@
     }
 
     function initializeTheme() {
-      const savedTheme = localStorage.getItem("painelLojaProntaTheme") || "light";
+      const savedTheme = localStorage.getItem("painelLojaProntaTheme") || "dark";
       applyTheme(savedTheme);
     }
 
