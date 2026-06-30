@@ -362,6 +362,41 @@
       margin-top: 6px;
     }
 
+    .support-navigator {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      margin-top: 12px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+      border-radius: 16px;
+    }
+
+    .support-nav-label {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .support-nav-label b {
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .arrow-btn {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+      line-height: 1;
+    }
+
     .toolbar {
       display: flex;
       gap: 10px;
@@ -386,7 +421,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 760px;
+      min-width: 900px;
     }
 
     th, td {
@@ -791,6 +826,11 @@
               </div>
 
               <div class="field">
+                <label for="telefone">Telefone</label>
+                <input id="telefone" class="input" type="text" placeholder="(00) 00000-0000" />
+              </div>
+
+              <div class="field">
                 <label for="cargo">Cargo / Perfil</label>
                 <select id="cargo" class="select">
                   <option value="suporte">Suporte</option>
@@ -810,6 +850,14 @@
               <div class="form-actions">
                 <button class="btn" type="submit" id="saveBtn">Salvar</button>
                 <button class="btn secondary" type="button" id="clearBtn">Limpar</button>
+              </div>
+
+              <div class="support-navigator">
+                <button class="btn secondary arrow-btn" type="button" id="prevSupportBtn" title="Suporte anterior">‹</button>
+                <div class="support-nav-label" id="supportNavLabel">
+                  Use as setas para navegar entre os suportes cadastrados.
+                </div>
+                <button class="btn secondary arrow-btn" type="button" id="nextSupportBtn" title="Próximo suporte">›</button>
               </div>
             </form>
           </div>
@@ -840,6 +888,7 @@
                   <tr>
                     <th>Nome</th>
                     <th>E-mail</th>
+                    <th>Telefone</th>
                     <th>Cargo</th>
                     <th>Status</th>
                     <th>Sellers</th>
@@ -849,7 +898,7 @@
 
                 <tbody id="supportTableBody">
                   <tr>
-                    <td colspan="6">Carregando...</td>
+                    <td colspan="7">Carregando...</td>
                   </tr>
                 </tbody>
               </table>
@@ -895,6 +944,7 @@
     let sellers = [];
     let sellerCountBySupport = {};
     let currentUser = null;
+    let selectedSupportIndex = -1;
 
     const LEADER_VALUES = [
       "lider_suporte",
@@ -988,6 +1038,18 @@
 
     function todayIsoDate() {
       return new Date().toISOString().slice(0, 10);
+    }
+
+    function createClientId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (char) => {
+        const random = Math.random() * 16 | 0;
+        const value = char === "x" ? random : (random & 0x3 | 0x8);
+        return value.toString(16);
+      });
     }
 
     async function fetchSupports() {
@@ -1112,7 +1174,7 @@
     async function loadAllData() {
       supportTableBody.innerHTML = `
         <tr>
-          <td colspan="6">Carregando dados...</td>
+          <td colspan="7">Carregando dados...</td>
         </tr>
       `;
 
@@ -1134,13 +1196,14 @@
         renderStats();
         renderSupportSelect();
         renderTable();
+        updateSupportNavigator();
 
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
 
         supportTableBody.innerHTML = `
           <tr>
-            <td colspan="6">
+            <td colspan="7">
               Erro ao carregar dados: ${escapeHtml(error.message)}
             </td>
           </tr>
@@ -1251,6 +1314,7 @@
         const searchable = [
           getSupportName(item),
           item.email,
+          item.telefone,
           item.cargo,
           item.status,
           count
@@ -1262,7 +1326,7 @@
       if (!filtered.length) {
         supportTableBody.innerHTML = `
           <tr>
-            <td colspan="6">Nenhum suporte encontrado.</td>
+            <td colspan="7">Nenhum suporte encontrado.</td>
           </tr>
         `;
         return;
@@ -1272,6 +1336,7 @@
         const id = escapeHtml(item.id);
         const nome = escapeHtml(getSupportName(item) || "-");
         const email = escapeHtml(item.email || "-");
+        const telefone = escapeHtml(item.telefone || "-");
         const cargo = escapeHtml(item.cargo || "suporte");
         const count = getSupportCount(getSupportName(item));
 
@@ -1282,6 +1347,7 @@
           <tr>
             <td><b>${nome}</b></td>
             <td>${email}</td>
+            <td>${telefone}</td>
             <td>
               <span class="status${leaderClass}">
                 ${cargo}
@@ -1312,6 +1378,7 @@
       return {
         nome: $("#nome").value.trim(),
         email: $("#email").value.trim().toLowerCase(),
+        telefone: $("#telefone").value.trim() || null,
         cargo: $("#cargo").value,
         status: $("#status").value
       };
@@ -1347,8 +1414,10 @@
     function clearForm() {
       supportForm.reset();
       $("#supportId").value = "";
+      selectedSupportIndex = -1;
       $("#formTitle").textContent = "Novo suporte";
       $("#saveBtn").textContent = "Salvar";
+      updateSupportNavigator();
     }
 
     function clearSellerForm() {
@@ -1357,14 +1426,13 @@
       renderStats();
     }
 
-    window.editSupport = function(id) {
-      const item = supports.find(s => String(s.id) === String(id));
-
+    function fillSupportForm(item) {
       if (!item) return;
 
       $("#supportId").value = item.id;
       $("#nome").value = item.nome || "";
       $("#email").value = item.email || "";
+      $("#telefone").value = item.telefone || "";
 
       $("#cargo").value = ["suporte", "lider_suporte", "admin"].includes(item.cargo)
         ? item.cargo
@@ -1376,7 +1444,10 @@
 
       $("#formTitle").textContent = "Editar suporte";
       $("#saveBtn").textContent = "Atualizar";
+      updateSupportNavigator();
+    }
 
+    function openSupportFormPanel() {
       $("#supportFormPanel").classList.remove("is-collapsed");
       updateCollapseButtonLabel("supportFormPanel");
 
@@ -1384,6 +1455,62 @@
         top: document.querySelector(".grid").offsetTop - 90,
         behavior: "smooth"
       });
+    }
+
+    function setSelectedSupportByIndex(index, shouldScroll = false) {
+      if (!supports.length) return;
+
+      const total = supports.length;
+      selectedSupportIndex = ((index % total) + total) % total;
+
+      fillSupportForm(supports[selectedSupportIndex]);
+
+      if (shouldScroll) {
+        openSupportFormPanel();
+      }
+    }
+
+    function updateSupportNavigator() {
+      const label = $("#supportNavLabel");
+      const prevButton = $("#prevSupportBtn");
+      const nextButton = $("#nextSupportBtn");
+
+      if (!label || !prevButton || !nextButton) return;
+
+      const hasSupports = supports.length > 0;
+
+      prevButton.disabled = !hasSupports;
+      nextButton.disabled = !hasSupports;
+
+      if (!hasSupports) {
+        label.textContent = "Nenhum suporte cadastrado para navegar.";
+        return;
+      }
+
+      const currentId = $("#supportId").value;
+      const currentIndex = supports.findIndex(item => String(item.id) === String(currentId));
+
+      if (currentIndex >= 0) {
+        selectedSupportIndex = currentIndex;
+        const currentSupport = supports[currentIndex];
+
+        label.innerHTML = `
+          <b>${escapeHtml(getSupportName(currentSupport) || "Suporte sem nome")}</b><br>
+          ${currentIndex + 1} de ${supports.length}
+        `;
+        return;
+      }
+
+      selectedSupportIndex = -1;
+      label.innerHTML = `Use as setas para navegar entre <b>${supports.length}</b> suporte(s).`;
+    }
+
+    window.editSupport = function(id) {
+      const index = supports.findIndex(s => String(s.id) === String(id));
+
+      if (index < 0) return;
+
+      setSelectedSupportByIndex(index, true);
     };
 
     window.deleteSupport = async function(id) {
@@ -1440,7 +1567,10 @@
       } else {
         response = await supabaseClient
           .from(SUPPORTS_TABLE_NAME)
-          .insert(payload);
+          .insert({
+            id: createClientId(),
+            ...payload
+          });
       }
 
       saveBtn.disabled = false;
@@ -1538,6 +1668,16 @@
     });
 
     $("#clearBtn").addEventListener("click", clearForm);
+
+    $("#prevSupportBtn").addEventListener("click", () => {
+      const index = selectedSupportIndex >= 0 ? selectedSupportIndex - 1 : supports.length - 1;
+      setSelectedSupportByIndex(index);
+    });
+
+    $("#nextSupportBtn").addEventListener("click", () => {
+      const index = selectedSupportIndex >= 0 ? selectedSupportIndex + 1 : 0;
+      setSelectedSupportByIndex(index);
+    });
 
     $("#clearSellerBtn").addEventListener("click", clearSellerForm);
 
