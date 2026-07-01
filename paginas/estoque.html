@@ -1286,15 +1286,13 @@
 
       mostrarLoading(true);
 
-      const { error } = await db
-        .from("produtos_estoque")
-        .update({
-          produto: produto,
-          variacao: variacao,
-          codigo: codigo,
-          estoque_atual: estoque
-        })
-        .eq("id", id);
+      const { error } = await db.rpc("editar_produto_estoque", {
+        p_id: id,
+        p_produto: produto,
+        p_variacao: variacao,
+        p_codigo: codigo,
+        p_estoque: estoque
+      });
 
       if (error) {
         mostrarMensagem("Erro ao editar produto: " + error.message, "erro");
