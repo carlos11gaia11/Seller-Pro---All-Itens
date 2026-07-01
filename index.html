@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Login - Seller Pro</title>
+
+  <link rel="icon" type="image/png" href="imagens/icones/icon-nova-era.png">
+
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --orange: #ff7a00;
+      --orange-light: #ffb15c;
+      --orange-dark: #d95f00;
+      --bg: #050505;
+      --card: rgba(16, 16, 24, 0.78);
+      --card-border: rgba(255, 255, 255, 0.10);
+      --text: #ffffff;
+      --muted: #b8bac7;
+      --soft: #7f8290;
+      --danger: #ff4d6d;
+      --danger-bg: rgba(255, 77, 109, 0.12);
+      --success: #20e6a1;
+      --success-bg: rgba(32, 230, 161, 0.12);
+      --shadow: 0 28px 90px rgba(0, 0, 0, 0.58);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 18%, rgba(255, 122, 0, 0.26), transparent 29%),
+        radial-gradient(circle at 85% 10%, rgba(255, 177, 92, 0.16), transparent 30%),
+        radial-gradient(circle at 50% 100%, rgba(255, 122, 0, 0.13), transparent 34%),
+        linear-gradient(135deg, #030303 0%, #0b0b10 50%, #111017 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+      background-size: 54px 54px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 78%);
+      z-index: 0;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, transparent 0%, rgba(255, 122, 0, 0.08) 48%, transparent 64%);
+      transform: translateX(-120%);
+      animation: ambientLight 8.5s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes ambientLight {
+      0%, 18% { transform: translateX(-120%); opacity: 0; }
+      35% { opacity: 1; }
+      65%, 100% { transform: translateX(120%); opacity: 0; }
+    }
+
+    .cursor-glow {
+      position: fixed;
+      width: 430px;
+      height: 430px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 122, 0, 0.16), transparent 66%);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .floating-orb {
+      position: fixed;
+      border-radius: 999px;
+      pointer-events: none;
+      filter: blur(1px);
+      opacity: 0.68;
+      z-index: 1;
+      animation: floatOrb 8s ease-in-out infinite;
+    }
+
+    .orb-one {
+      width: 160px;
+      height: 160px;
+      left: 8%;
+      bottom: 12%;
+      background: radial-gradient(circle, rgba(255, 122, 0, 0.30), transparent 68%);
+    }
+
+    .orb-two {
+      width: 220px;
+      height: 220px;
+      right: 7%;
+      top: 10%;
+      background: radial-gradient(circle, rgba(255, 177, 92, 0.18), transparent 70%);
+      animation-delay: -2.8s;
+    }
+
+    @keyframes floatOrb {
+      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(16px, -22px, 0) scale(1.08); }
+    }
+
+    .login-shell {
+      position: relative;
+      z-index: 3;
+      width: min(100%, 980px);
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: stretch;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 34px;
+      background: rgba(10, 10, 16, 0.58);
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: revealUp 0.8s ease both;
+    }
+
+    @keyframes revealUp {
+      from { opacity: 0; transform: translateY(22px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .brand-panel {
+      position: relative;
+      min-height: 560px;
+      padding: clamp(30px, 5vw, 56px);
+      background:
+        linear-gradient(135deg, rgba(255, 122, 0, 0.24), rgba(8, 8, 12, 0.92) 54%, rgba(255, 122, 0, 0.08)),
+        url("imagens/logos/nova-era.png") center bottom 48px / min(330px, 70%) auto no-repeat;
+      overflow: hidden;
+    }
+
+    .brand-panel::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background: linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.12) 22%, transparent 38%);
+      transform: translateX(-120%);
+      animation: shine 5.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes shine {
+      0%, 28% { transform: translateX(-120%); }
+      58%, 100% { transform: translateX(120%); }
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: var(--orange-light);
+      font-size: 0.82rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(255, 122, 0, 0.28);
+      background: rgba(255, 122, 0, 0.10);
+    }
+
+    .brand-panel h1 {
+      max-width: 500px;
+      margin-top: 28px;
+      font-size: clamp(2.6rem, 6vw, 5.2rem);
+      line-height: 0.92;
+      font-weight: 950;
+      letter-spacing: -0.075em;
+      text-transform: uppercase;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff 0%, var(--orange-light) 38%, var(--orange) 72%, #ffffff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      background-size: 220% auto;
+      animation: textFlow 6s ease-in-out infinite;
+    }
+
+    @keyframes textFlow {
+      0%, 100% { background-position: 0% center; }
+      50% { background-position: 100% center; }
+    }
+
+    .brand-panel p {
+      max-width: 470px;
+      margin-top: 20px;
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 1rem;
+    }
+
+    .feature-list {
+      position: absolute;
+      left: clamp(24px, 5vw, 56px);
+      right: clamp(24px, 5vw, 56px);
+      bottom: 28px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 10px 13px;
+      border-radius: 999px;
+      color: #f6f6f6;
+      background: rgba(255, 255, 255, 0.065);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      backdrop-filter: blur(12px);
+      font-size: 0.88rem;
+    }
+
+    .feature-item i { color: var(--orange-light); }
+
+    .login-panel {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(28px, 5vw, 52px);
+      background: rgba(8, 8, 12, 0.72);
+    }
+
+    .login-card { width: 100%; max-width: 420px; }
+
+    .logo-mark {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 18px;
+      border-radius: 21px;
+      color: #141414;
+      background: linear-gradient(135deg, var(--orange-light), var(--orange));
+      box-shadow: 0 0 40px rgba(255, 122, 0, 0.38);
+      animation: pulseMark 2.8s ease-in-out infinite;
+    }
+
+    @keyframes pulseMark {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 28px rgba(255, 122, 0, 0.34); }
+      50% { transform: scale(1.045); box-shadow: 0 0 48px rgba(255, 122, 0, 0.50); }
+    }
+
+    .login-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 950;
+      letter-spacing: -0.04em;
+    }
+
+    .login-subtitle {
+      margin: 8px auto 30px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.96rem;
+    }
+
+    .input-group { margin-bottom: 16px; }
+
+    .input-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: #f3f3f5;
+      font-weight: 850;
+      font-size: 0.91rem;
+    }
+
+    .input-wrap { position: relative; }
+
+    .input-wrap .field-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--soft);
+      pointer-events: none;
+      transition: 0.22s ease;
+    }
+
+    .input-group input {
+      width: 100%;
+      min-height: 52px;
+      padding: 14px 46px 14px 44px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: 17px;
+      color: #ffffff;
+      font-size: 0.98rem;
+      outline: none;
+      background: rgba(255, 255, 255, 0.055);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    }
+
+    .input-group input::placeholder { color: #777a86; }
+
+    .input-group input:focus {
+      border-color: rgba(255, 122, 0, 0.72);
+      box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.14), 0 12px 34px rgba(255, 122, 0, 0.10);
+      background: rgba(255, 255, 255, 0.075);
+    }
+
+    .input-group input:focus + .field-icon,
+    .input-wrap:focus-within .field-icon { color: var(--orange-light); }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 12px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      transition: 0.22s ease;
+    }
+
+    .toggle-password:hover { color: #111; background: var(--orange-light); }
+
+    .form-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 2px 0 18px;
+      color: var(--soft);
+      font-size: 0.86rem;
+    }
+
+    .secure-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+    }
+
+    .signup-link {
+      color: var(--orange-light);
+      text-decoration: none;
+      font-weight: 800;
+      transition: 0.22s ease;
+    }
+
+    .signup-link:hover {
+      color: #ffffff;
+      text-shadow: 0 0 18px rgba(255, 122, 0, 0.55);
+    }
+
+    .submit-button {
+      position: relative;
+      width: 100%;
+      min-height: 54px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px;
+      border: none;
+      border-radius: 17px;
+      color: #141414;
+      font-size: 1rem;
+      font-weight: 950;
+      cursor: pointer;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--orange-light), var(--orange));
+      box-shadow: 0 18px 44px rgba(255, 122, 0, 0.28);
+      transition: transform 0.24s ease, box-shadow 0.24s ease, filter 0.24s ease;
+    }
+
+    .submit-button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,0.45) 45%, transparent 70%);
+      transform: translateX(-120%);
+      transition: transform 0.55s ease;
+    }
+
+    .submit-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 24px 58px rgba(255, 122, 0, 0.38);
+      filter: brightness(1.04);
+    }
+
+    .submit-button:hover::before { transform: translateX(120%); }
+    .submit-button span, .submit-button i { position: relative; z-index: 1; }
+    .submit-button.loading { pointer-events: none; opacity: 0.78; }
+
+    .mensagem {
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 16px;
+      padding: 13px 14px;
+      border-radius: 16px;
+      font-size: 0.92rem;
+      line-height: 1.35;
+      animation: shake 0.38s ease;
+    }
+
+    .mensagem.erro {
+      color: #ffd9df;
+      background: var(--danger-bg);
+      border: 1px solid rgba(255, 77, 109, 0.26);
+    }
+
+    .mensagem.sucesso {
+      color: #d5ffef;
+      background: var(--success-bg);
+      border: 1px solid rgba(32, 230, 161, 0.26);
+    }
+
+    .mensagem.erro i { color: var(--danger); }
+    .mensagem.sucesso i { color: var(--success); }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-3px); }
+    }
+
+    .rodape {
+      margin-top: 22px;
+      text-align: center;
+      color: var(--soft);
+      font-size: 0.82rem;
+    }
+
+    .rodape strong { color: var(--orange-light); }
+
+    @media (max-width: 860px) {
+      body { overflow-y: auto; }
+      .login-shell { grid-template-columns: 1fr; max-width: 480px; }
+      .brand-panel {
+        min-height: 300px;
+        background:
+          linear-gradient(135deg, rgba(255, 122, 0, 0.22), rgba(8, 8, 12, 0.94)),
+          url("imagens/logos/nova-era.png") right -30px bottom -20px / 220px auto no-repeat;
+      }
+      .brand-panel h1 { font-size: clamp(2.3rem, 12vw, 4rem); }
+      .feature-list { position: static; margin-top: 28px; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 14px; }
+      .login-shell { border-radius: 26px; }
+      .brand-panel, .login-panel { padding: 24px 18px; }
+      .feature-item { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="cursor-glow" id="cursorGlow"></div>
+  <div class="floating-orb orb-one"></div>
+  <div class="floating-orb orb-two"></div>
+
+  <main class="login-shell" aria-label="Login Seller Pro">
+    <section class="brand-panel">
+      <span class="brand-badge">
+        <i class="fa-solid fa-lock"></i>
+        Área restrita
+      </span>
+
+      <h1><span class="gradient-text">Seller Pro</span></h1>
+
+      <p>Acesse o hub interno com planilhas, documentos, treinamentos e materiais essenciais para a rotina do suporte.</p>
+
+      <div class="feature-list" aria-label="Recursos do hub">
+        <div class="feature-item"><i class="fa-solid fa-shield-halved"></i> Acesso interno validado</div>
+        <div class="feature-item"><i class="fa-solid fa-bolt"></i> Navegação rápida para atendimento</div>
+        <div class="feature-item"><i class="fa-solid fa-layer-group"></i> Hub centralizado Seller Pro</div>
+      </div>
+    </section>
+
+    <section class="login-panel">
+      <div class="login-card">
+        <div class="logo-mark"><i class="fa-solid fa-bolt"></i></div>
+
+        <h2 class="login-title">Login</h2>
+        <p class="login-subtitle">Entre com seu e-mail e senha para acessar sua área restrita.</p>
+
+        <form id="loginForm" autocomplete="on">
+          <div class="input-group">
+            <label for="email"><i class="fa-solid fa-envelope"></i> E-mail ou chave de acesso</label>
+            <div class="input-wrap">
+              <input type="text" id="email" placeholder="Digite seu e-mail ou chave temporária" autocomplete="username" required />
+              <i class="fa-solid fa-circle-user field-icon"></i>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="senha"><i class="fa-solid fa-key"></i> Senha</label>
+            <div class="input-wrap">
+              <input type="password" id="senha" placeholder="Digite sua senha" autocomplete="current-password" required />
+              <i class="fa-solid fa-lock field-icon"></i>
+              <button class="toggle-password" type="button" id="toggleSenha" aria-label="Mostrar ou ocultar senha">
+                <i class="fa-solid fa-eye" id="iconeSenha"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <span class="secure-chip"><i class="fa-solid fa-shield-heart"></i> Sessão protegida</span>
+            <a href="paginas/cadastro.html" class="signup-link">Criar conta</a>
+          </div>
+
+          <button class="submit-button" type="submit" id="botaoLogin">
+            <span id="textoBotao">Entrar</span>
+            <i class="fa-solid fa-arrow-right" id="iconeBotao"></i>
+          </button>
+
+          <div class="mensagem" id="mensagemLogin">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span></span>
+          </div>
+        </form>
+
+        <div class="rodape"><strong>Seller Pro</strong> © Área de acesso</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SUPABASE_URL = "https://owgvzmeewzpmzgcdwbfq.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr";
+
+    let supabaseClient = null;
+
+    const form = document.getElementById("loginForm");
+    const emailInput = document.getElementById("email");
+    const senhaInput = document.getElementById("senha");
+    const mensagemLogin = document.getElementById("mensagemLogin");
+    const botaoLogin = document.getElementById("botaoLogin");
+    const textoBotao = document.getElementById("textoBotao");
+    const iconeBotao = document.getElementById("iconeBotao");
+    const toggleSenha = document.getElementById("toggleSenha");
+    const iconeSenha = document.getElementById("iconeSenha");
+    const glow = document.getElementById("cursorGlow");
+
+    function initSupabase() {
+      if (!window.supabase) {
+        exibirMensagem("erro", "Erro: biblioteca do Supabase não carregou. Verifique internet, CDN ou bloqueio do navegador.");
+        botaoLogin.disabled = true;
+        return;
+      }
+
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      });
+    }
+
+    function exibirMensagem(tipo, texto) {
+      const isSuccess = tipo === "sucesso";
+      mensagemLogin.className = `mensagem ${isSuccess ? "sucesso" : "erro"}`;
+      mensagemLogin.style.display = "flex";
+      mensagemLogin.querySelector("i").className = `fa-solid ${isSuccess ? "fa-circle-check" : "fa-circle-exclamation"}`;
+      mensagemLogin.querySelector("span").textContent = texto;
+    }
+
+    function limparMensagem() {
+      mensagemLogin.style.display = "none";
+      mensagemLogin.querySelector("span").textContent = "";
+    }
+
+    function setLoading(isLoading) {
+      botaoLogin.disabled = isLoading;
+      botaoLogin.classList.toggle("loading", isLoading);
+      textoBotao.textContent = isLoading ? "Entrando..." : "Entrar";
+      iconeBotao.className = isLoading ? "fa-solid fa-spinner fa-spin" : "fa-solid fa-arrow-right";
+    }
+
+    function traduzirErroLogin(error) {
+      const msg = String(error?.message || error || "").toLowerCase();
+
+      if (msg.includes("email not confirmed")) {
+        return "Seu e-mail ainda não foi confirmado. Abra o e-mail enviado pelo Supabase e confirme o cadastro antes de entrar.";
+      }
+
+      if (msg.includes("invalid login credentials") || msg.includes("invalid credentials")) {
+        return "E-mail ou senha incorretos. Confira os dados e tente novamente.";
+      }
+
+      if (msg.includes("too many requests") || msg.includes("rate limit")) {
+        return "Muitas tentativas seguidas. Aguarde um pouco e tente novamente.";
+      }
+
+      if (msg.includes("failed to fetch") || msg.includes("network")) {
+        return "Não foi possível conectar ao Supabase. Verifique internet, URL do projeto ou chave pública.";
+      }
+
+      return error?.message ? `Erro ao entrar: ${error.message}` : "Erro ao entrar. Tente novamente.";
+    }
+
+    async function carregarPerfilSeguro(user) {
+      const metadata = user?.user_metadata || {};
+
+      let perfil = {
+        nome: metadata.nome || metadata.nome_completo || user.email,
+        cargo: metadata.cargo || "Usuário",
+        avatar_url: metadata.avatar_url || ""
+      };
+
+      // Tenta buscar a tabela profiles, mas NÃO bloqueia o login caso ela não exista
+      // ou caso o cadastro tenha salvo apenas no user_metadata.
+      try {
+        const { data, error } = await supabaseClient
+          .from("profiles")
+          .select("nome, cargo, avatar_url")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (!error && data) {
+          perfil = {
+            nome: data.nome || perfil.nome,
+            cargo: data.cargo || perfil.cargo,
+            avatar_url: data.avatar_url || perfil.avatar_url
+          };
+        }
+      } catch (e) {
+        console.warn("Profiles não carregado. Usando user_metadata.", e);
+      }
+
+      return perfil;
+    }
+
+    function salvarSessao(user, perfil, acessoTemporario = false) {
+      const dadosSessao = {
+        logado: "sim",
+        autenticado: "sim",
+        tipoUsuario: perfil.cargo || "Usuário",
+        userId: user.id || "chave-temporaria-suporte",
+        emailUsuario: user.email || "",
+        nomeUsuario: perfil.nome || user.email || "Usuário",
+        cargoUsuario: perfil.cargo || "Usuário",
+        avatarUsuario: perfil.avatar_url || "",
+        acessoTemporario: acessoTemporario ? "sim" : "nao"
+      };
+
+      Object.entries(dadosSessao).forEach(([chave, valor]) => {
+        sessionStorage.setItem(chave, valor);
+        localStorage.setItem(chave, valor);
+      });
+    }
+
+    function irParaMenu() {
+      const destino = new URL("paginas/menu.html", window.location.href).href;
+
+      console.log("Redirecionando para:", destino);
+
+      // Salva uma marca extra para qualquer validação do menu.html reconhecer o login.
+      sessionStorage.setItem("redirectLiberado", "sim");
+      localStorage.setItem("redirectLiberado", "sim");
+
+      // Método principal.
+      window.location.href = destino;
+
+      // Fallbacks caso algum navegador/script bloqueie o primeiro redirecionamento.
+      setTimeout(() => {
+        if (!window.location.href.includes("paginas/menu.html")) {
+          window.location.assign(destino);
+        }
+      }, 150);
+
+      setTimeout(() => {
+        if (!window.location.href.includes("paginas/menu.html")) {
+          window.location.replace(destino);
+        }
+      }, 350);
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      limparMensagem();
+
+      const emailOuChave = emailInput.value.trim().toLowerCase();
+      const senha = senhaInput.value; // Não use trim aqui para não alterar a senha digitada.
+
+      if (!emailOuChave) {
+        exibirMensagem("erro", "Digite seu e-mail ou chave de acesso.");
+        emailInput.focus();
+        return;
+      }
+
+      if (!senha) {
+        exibirMensagem("erro", "Digite sua senha.");
+        senhaInput.focus();
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        // ACESSO TEMPORÁRIO / CHAVE MIXA
+        // Depois é só apagar este bloco inteiro quando não precisar mais.
+        if (emailOuChave === "suporte" && senha === "suporte99@") {
+          salvarSessao(
+            { id: "chave-temporaria-suporte", email: "suporte" },
+            { nome: "Suporte", cargo: "Suporte Lider", avatar_url: "" },
+            true
+          );
+          irParaMenu();
+          return;
+        }
+
+        if (!supabaseClient) {
+          throw new Error("Supabase não foi inicializado.");
+        }
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: emailOuChave,
+          password: senha
+        });
+
+        if (error) throw error;
+
+        if (!data?.user || !data?.session) {
+          throw new Error("O Supabase não retornou uma sessão válida.");
+        }
+
+        const perfil = await carregarPerfilSeguro(data.user);
+        salvarSessao(data.user, perfil, false);
+
+        exibirMensagem("sucesso", "Login realizado com sucesso! Abrindo o menu...");
+
+        irParaMenu();
+      } catch (error) {
+        console.error("Erro ao fazer login:", error);
+        exibirMensagem("erro", traduzirErroLogin(error));
+        setLoading(false);
+      }
+    });
+
+    toggleSenha.addEventListener("click", () => {
+      const isPassword = senhaInput.type === "password";
+      senhaInput.type = isPassword ? "text" : "password";
+      iconeSenha.className = isPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye";
+    });
+
+    window.addEventListener("mousemove", (event) => {
+      if (!glow) return;
+      glow.style.opacity = "1";
+      glow.style.left = `${event.clientX}px`;
+      glow.style.top = `${event.clientY}px`;
+    });
+
+    window.addEventListener("mouseleave", () => {
+      if (!glow) return;
+      glow.style.opacity = "0";
+    });
+
+    initSupabase();
+  </script>
+</body>
+</html>
