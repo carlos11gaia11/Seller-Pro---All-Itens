@@ -1392,10 +1392,256 @@
       border-radius: 999px;
     }
 
+
+    /* Visual final suavizado: menos contraste e leitura mais confortável */
+    :root {
+      --bg: #f6f7fb;
+      --card: rgba(255, 255, 255, 0.96);
+      --glass: rgba(255, 255, 255, 0.78);
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: #e5e7eb;
+      --primary: #ea580c;
+      --primary-dark: #c2410c;
+      --accent: #f97316;
+      --green: #16a34a;
+      --green-soft: #ecfdf5;
+      --blue-soft: #eff6ff;
+      --red-soft: #fff1f2;
+      --orange: #f97316;
+      --shadow: 0 14px 38px rgba(15, 23, 42, 0.08);
+      --hero-gradient:
+        linear-gradient(135deg, rgba(255, 247, 237, 0.98), rgba(255, 255, 255, 0.96) 48%, rgba(239, 246, 255, 0.95));
+      --body-bg:
+        radial-gradient(circle at 8% 0%, rgba(249, 115, 22, 0.13) 0, transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(59, 130, 246, 0.10) 0, transparent 26%),
+        linear-gradient(180deg, #f8fafc 0%, #f3f4f6 100%);
+    }
+
+    body {
+      color: var(--text);
+      background: var(--body-bg);
+    }
+
+    body:not(.theme-dark) .hero {
+      color: #1e293b;
+      border: 1px solid rgba(234, 88, 12, 0.16);
+      box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+    }
+
+    body:not(.theme-dark) .hero p {
+      color: #64748b;
+    }
+
+    body:not(.theme-dark) .hero-badge,
+    body:not(.theme-dark) .theme-toggle {
+      background: #ffffff;
+      border-color: #fed7aa;
+      color: #9a3412;
+      box-shadow: 0 8px 20px rgba(234, 88, 12, 0.08);
+    }
+
+    body:not(.theme-dark) .panel,
+    body:not(.theme-dark) .overview-card,
+    body:not(.theme-dark) .support-card,
+    body:not(.theme-dark) .table-card {
+      background: var(--card);
+      border-color: rgba(226, 232, 240, 0.95);
+      box-shadow: var(--shadow);
+    }
+
+    body:not(.theme-dark) .panel::before,
+    body:not(.theme-dark) .overview-card::before,
+    body:not(.theme-dark) .support-card::before,
+    body:not(.theme-dark) .table-card::before,
+    body:not(.theme-dark) .hero::before {
+      opacity: 0.24;
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.22), rgba(255,255,255,0.12), rgba(59, 130, 246, 0.16));
+    }
+
+    body:not(.theme-dark) .panel-title-row h2,
+    body:not(.theme-dark) .section-title h2,
+    body:not(.theme-dark) .table-top h2,
+    body:not(.theme-dark) .overview-value,
+    body:not(.theme-dark) .store-name,
+    body:not(.theme-dark) .support-name,
+    body:not(.theme-dark) .status-count,
+    body:not(.theme-dark) .table-highlight {
+      color: #1e293b;
+    }
+
+    body:not(.theme-dark) .panel-sub,
+    body:not(.theme-dark) .muted,
+    body:not(.theme-dark) .overview-label,
+    body:not(.theme-dark) .store-sub,
+    body:not(.theme-dark) .status-percent,
+    body:not(.theme-dark) .support-subtitle,
+    body:not(.theme-dark) .status-name,
+    body:not(.theme-dark) .status-index,
+    body:not(.theme-dark) .field label {
+      color: #64748b;
+    }
+
+    body:not(.theme-dark) .field input,
+    body:not(.theme-dark) .field select {
+      background: #ffffff;
+      color: #1e293b;
+      border-color: #dbe3ef;
+      box-shadow: none;
+    }
+
+    body:not(.theme-dark) .field input::placeholder {
+      color: #94a3b8;
+    }
+
+    body:not(.theme-dark) .field input:focus,
+    body:not(.theme-dark) .field select:focus {
+      border-color: rgba(234, 88, 12, 0.52);
+      box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.10);
+    }
+
+    body:not(.theme-dark) .btn-primary,
+    body:not(.theme-dark) .tab-btn.active {
+      background: linear-gradient(135deg, #f97316, #c2410c);
+      color: #ffffff;
+      box-shadow: 0 12px 24px rgba(249, 115, 22, 0.18);
+    }
+
+    body:not(.theme-dark) .btn-light,
+    body:not(.theme-dark) .summary-chip,
+    body:not(.theme-dark) .tab-btn {
+      background: #ffffff;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    body:not(.theme-dark) .btn-light:hover,
+    body:not(.theme-dark) .tab-btn:hover {
+      background: #fff7ed;
+      color: #9a3412;
+    }
+
+    body:not(.theme-dark) .overview-icon,
+    body:not(.theme-dark) .support-avatar,
+    body:not(.theme-dark) .support-total {
+      background: #fff7ed;
+      color: #c2410c;
+      box-shadow: none;
+    }
+
+    body:not(.theme-dark) .metric-total .overview-icon {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+
+    body:not(.theme-dark) .metric-finalizadas .overview-icon {
+      background: #ecfdf5;
+      color: #047857;
+    }
+
+    body:not(.theme-dark) .metric-andamento .overview-icon {
+      background: #fff7ed;
+      color: #c2410c;
+    }
+
+    body:not(.theme-dark) .table-filters,
+    body:not(.theme-dark) .table-top,
+    body:not(.theme-dark) .tabs,
+    body:not(.theme-dark) .table-summary {
+      background: rgba(248, 250, 252, 0.84);
+      border-color: #e2e8f0;
+    }
+
+    body:not(.theme-dark) th {
+      background: #f8fafc;
+      color: #64748b;
+      border-bottom-color: #e2e8f0;
+    }
+
+    body:not(.theme-dark) td {
+      background: rgba(255, 255, 255, 0.86);
+      color: #334155;
+      border-bottom-color: #edf2f7;
+    }
+
+    body:not(.theme-dark) tr:hover td {
+      background: #fff7ed;
+    }
+
+    body:not(.theme-dark) .badge,
+    body:not(.theme-dark) .andamento-badge {
+      background: #fff7ed;
+      color: #9a3412;
+      border-color: #fed7aa;
+    }
+
+    body:not(.theme-dark) .finalizado-badge,
+    body:not(.theme-dark) .mini-green {
+      background: #ecfdf5;
+      color: #047857;
+      border-color: #bbf7d0;
+    }
+
+    body:not(.theme-dark) .mini-blue {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
+
+    body:not(.theme-dark) .progress-bar {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+    }
+
+    body:not(.theme-dark) .status-item {
+      border-bottom-color: #e2e8f0;
+    }
+
+    body:not(.theme-dark) .scroll::-webkit-scrollbar,
+    body:not(.theme-dark) .status-list::-webkit-scrollbar,
+    body:not(.theme-dark) .tabs::-webkit-scrollbar {
+      height: 9px;
+      width: 9px;
+    }
+
+    body:not(.theme-dark) .scroll::-webkit-scrollbar-track,
+    body:not(.theme-dark) .status-list::-webkit-scrollbar-track,
+    body:not(.theme-dark) .tabs::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    body:not(.theme-dark) .scroll::-webkit-scrollbar-thumb,
+    body:not(.theme-dark) .status-list::-webkit-scrollbar-thumb,
+    body:not(.theme-dark) .tabs::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+
+    .light-orb {
+      opacity: 0.16;
+      filter: blur(58px);
+    }
+
+    body:not(.theme-dark) .orb-one {
+      background: rgba(249, 115, 22, 0.18);
+    }
+
+    body:not(.theme-dark) .orb-two {
+      background: rgba(59, 130, 246, 0.12);
+    }
+
+    body:not(.theme-dark) .orb-three {
+      background: rgba(34, 197, 94, 0.10);
+    }
+
+    body.theme-dark .light-orb {
+      opacity: 0.20;
+    }
+
   </style>
 </head>
 
-<body class="theme-dark">
+<body>
   <div id="particles-bg"></div>
   <div class="light-orb orb-one"></div>
   <div class="light-orb orb-two"></div>
@@ -1409,9 +1655,8 @@
         <div>
           <h1>Painel Loja Pronta</h1>
           <p>
-            Visualize todas as lojas, acompanhe os suportes responsáveis,
-            filtre por mês, situação, etapa e veja separadamente o que está em andamento
-            e o que já foi entregue.
+            Visualize o total de lojas, acompanhe o que está em andamento e veja
+            as lojas finalizadas pela regra correta: vendas concluídas + cancelamentos.
           </p>
         </div>
 
@@ -1431,7 +1676,7 @@
         <div>
           <h2>Filtros gerais</h2>
           <div class="panel-sub">
-            Busca, mês e suporte afetam os cards de suporte e a tabela. Os cards do topo mostram o total geral por etapa.
+            Os filtros gerais afetam os cards de suporte e a tabela. Os cards do topo mostram o total geral da base.
           </div>
         </div>
       </div>
@@ -1468,7 +1713,7 @@
           <select id="stageFilter">
             <option value="">Todas</option>
             <option value="andamento">Em andamento</option>
-            <option value="entregue">Entregues</option>
+            <option value="finalizada">Finalizadas</option>
           </select>
         </div>
 
@@ -1493,21 +1738,33 @@
     </section>
 
     <section class="overview">
-      <div class="overview-card">
+      <div class="overview-card metric-total">
         <div class="overview-icon">🏬</div>
         <div class="overview-label">Total de lojas</div>
         <div class="overview-value" id="totalStores">0</div>
       </div>
 
+      <div class="overview-card metric-finalizadas">
+        <div class="overview-icon">✅</div>
+        <div class="overview-label">Lojas finalizadas</div>
+        <div class="overview-value" id="totalLojasFinalizadas">0</div>
+      </div>
+
+      <div class="overview-card metric-andamento">
+        <div class="overview-icon">🔄</div>
+        <div class="overview-label">Lojas em andamento</div>
+        <div class="overview-value" id="totalLojasAndamento">0</div>
+      </div>
+
       <div class="overview-card">
         <div class="overview-icon">💰</div>
-        <div class="overview-label">Venda finalizada</div>
+        <div class="overview-label">Vendas finalizadas</div>
         <div class="overview-value" id="totalVendaFinalizada">0</div>
       </div>
 
       <div class="overview-card">
-        <div class="overview-icon">✅</div>
-        <div class="overview-label">Loja entregue</div>
+        <div class="overview-icon">📦</div>
+        <div class="overview-label">Lojas entregues</div>
         <div class="overview-value" id="totalLojaEntregue">0</div>
       </div>
 
@@ -1612,8 +1869,8 @@
           Em andamento <span id="tabInProgressCount">0</span>
         </button>
 
-        <button class="tab-btn" data-tab="entregues">
-          Entregues <span id="tabDeliveredCount">0</span>
+        <button class="tab-btn" data-tab="finalizadas">
+          Finalizadas <span id="tabFinalizedCount">0</span>
         </button>
 
         <button class="tab-btn" data-tab="todas">
@@ -1657,7 +1914,7 @@
           <select id="tableStageFilter">
             <option value="">Todas</option>
             <option value="andamento">Em andamento</option>
-            <option value="entregue">Entregues</option>
+            <option value="finalizada">Finalizadas</option>
           </select>
         </div>
 
@@ -1901,15 +2158,36 @@
     let supportLookup = new Map();
     let currentTab = "andamento";
 
-    const FINALIZED_KEYWORDS = [
-      "loja finalizada",
-      "lojas finalizadas",
+    const SALE_FINALIZED_KEYWORDS = [
+      "venda finalizada",
+      "vendas finalizadas",
+      "venda concluida",
+      "venda concluída",
+      "vendas concluidas",
+      "vendas concluídas",
+      "venda realizada",
+      "vendas realizadas",
+      "com venda",
+      "vendeu"
+    ];
+
+    const GENERIC_FINALIZED_EXACT_KEYWORDS = [
       "finalizada",
       "finalizado",
       "finalizadas",
-      "finalizados",
-      "venda finalizada",
-      "vendas finalizadas"
+      "finalizados"
+    ];
+
+    const CANCELLED_KEYWORDS = [
+      "cancelado",
+      "cancelada",
+      "cancelados",
+      "canceladas",
+      "loja cancelada",
+      "lojas canceladas",
+      "projeto cancelado",
+      "projeto cancelada",
+      "cancelamento"
     ];
 
     const DELIVERED_KEYWORDS = [
@@ -2044,6 +2322,9 @@
     const supportCards = document.getElementById("supportCards");
 
     const totalStores = document.getElementById("totalStores");
+    const totalLojasFinalizadas = document.getElementById("totalLojasFinalizadas");
+    const totalLojasAndamento = document.getElementById("totalLojasAndamento");
+
     const overviewStageElements = Object.fromEntries(
       OVERVIEW_STAGE_METRICS.map((metric) => [
         metric.elementId,
@@ -2057,7 +2338,7 @@
     const errorBox = document.getElementById("errorBox");
 
     const tabInProgressCount = document.getElementById("tabInProgressCount");
-    const tabDeliveredCount = document.getElementById("tabDeliveredCount");
+    const tabFinalizedCount = document.getElementById("tabFinalizedCount");
     const tabAllCount = document.getElementById("tabAllCount");
 
     const currentStageLabel = document.getElementById("currentStageLabel");
@@ -2352,8 +2633,24 @@
       return null;
     }
 
+    function isSaleFinalizedStatus(statusName) {
+      const normalizedStatus = normalizeKey(statusName);
+
+      if (GENERIC_FINALIZED_EXACT_KEYWORDS.includes(normalizedStatus)) {
+        return true;
+      }
+
+      return hasStatusKeyword(statusName, SALE_FINALIZED_KEYWORDS);
+    }
+
+    function isCancelledStatus(statusName) {
+      return hasStatusKeyword(statusName, CANCELLED_KEYWORDS);
+    }
+
     function isFinalizedStatus(statusName) {
-      return hasStatusKeyword(statusName, FINALIZED_KEYWORDS);
+      // Regra central:
+      // Lojas finalizadas = lojas com venda finalizada + lojas canceladas.
+      return isSaleFinalizedStatus(statusName) || isCancelledStatus(statusName);
     }
 
     function isDeliveredStatus(statusName) {
@@ -2361,7 +2658,7 @@
     }
 
     function isInProgressStatus(statusName) {
-      // Regra solicitada: em andamento = todas as lojas, menos as finalizadas.
+      // Lojas em andamento = tudo que não está finalizado e não está cancelado.
       return !isFinalizedStatus(statusName);
     }
 
@@ -2638,6 +2935,8 @@
     function buildRows(tasks) {
       return tasks.map((task) => {
         const situacao = getStatusName(task);
+        const vendaFinalizada = isSaleFinalizedStatus(situacao);
+        const cancelada = isCancelledStatus(situacao);
         const entregue = isDeliveredStatus(situacao);
         const finalizada = isFinalizedStatus(situacao);
         const emAndamento = isInProgressStatus(situacao);
@@ -2654,6 +2953,8 @@
           mes: getProjectName(task),
           created_at: getCreatedAt(task),
           created_ts: getCreatedTimestamp(task),
+          vendaFinalizada,
+          cancelada,
           entregue,
           finalizada,
           emAndamento
@@ -2753,8 +3054,8 @@
           matchStage = row.emAndamento;
         }
 
-        if (selectedStage === "entregue") {
-          matchStage = row.entregue;
+        if (selectedStage === "finalizada" || selectedStage === "entregue") {
+          matchStage = row.finalizada;
         }
 
         const searchable = normalizeText(`
@@ -2774,8 +3075,8 @@
     }
 
     function getRowsForCurrentTab(rows) {
-      if (currentTab === "entregues") {
-        return rows.filter((row) => row.entregue);
+      if (currentTab === "finalizadas" || currentTab === "entregues") {
+        return rows.filter((row) => row.finalizada);
       }
 
       if (currentTab === "andamento") {
@@ -2803,8 +3104,8 @@
           matchStage = row.emAndamento;
         }
 
-        if (selectedStage === "entregue") {
-          matchStage = row.entregue;
+        if (selectedStage === "finalizada" || selectedStage === "entregue") {
+          matchStage = row.finalizada;
         }
 
         const searchable = normalizeText(`
@@ -2901,7 +3202,12 @@
           .filter((support) => support && support !== "-" && support !== "Sem suporte")
       );
 
+      const finalizedStores = rowsWithoutTab.filter((row) => row.finalizada).length;
+      const inProgressStores = rowsWithoutTab.filter((row) => row.emAndamento).length;
+
       totalStores.textContent = rowsWithoutTab.length;
+      totalLojasFinalizadas.textContent = finalizedStores;
+      totalLojasAndamento.textContent = inProgressStores;
 
       OVERVIEW_STAGE_METRICS.forEach((metric) => {
         const element = overviewStageElements[metric.elementId];
@@ -2915,11 +3221,11 @@
     }
 
     function renderTabs(rowsWithoutTab) {
-      const delivered = rowsWithoutTab.filter((row) => row.entregue).length;
+      const finalized = rowsWithoutTab.filter((row) => row.finalizada).length;
       const inProgress = rowsWithoutTab.filter((row) => row.emAndamento).length;
 
       tabInProgressCount.textContent = inProgress;
-      tabDeliveredCount.textContent = delivered;
+      tabFinalizedCount.textContent = finalized;
       tabAllCount.textContent = rowsWithoutTab.length;
 
       document.querySelectorAll(".tab-btn").forEach((button) => {
@@ -2928,7 +3234,8 @@
 
       const labels = {
         andamento: "Em andamento",
-        entregues: "Entregues",
+        finalizadas: "Finalizadas",
+        entregues: "Finalizadas",
         todas: "Todas"
       };
 
@@ -2939,6 +3246,7 @@
       supportCards.innerHTML = "";
 
       if (!rowsWithoutTab.length) {
+        supportCountLabel.textContent = "0 suportes";
         supportCards.innerHTML = `
           <div class="support-card">
             <div class="empty">Nenhum resultado encontrado.</div>
@@ -2953,7 +3261,6 @@
         if (!grouped[row.suporte]) {
           grouped[row.suporte] = {
             total: 0,
-            delivered: 0,
             finalized: 0,
             inProgress: 0,
             statuses: {}
@@ -2961,10 +3268,6 @@
         }
 
         grouped[row.suporte].total += 1;
-
-        if (row.entregue) {
-          grouped[row.suporte].delivered += 1;
-        }
 
         if (row.finalizada) {
           grouped[row.suporte].finalized += 1;
@@ -2983,6 +3286,8 @@
 
       const sortedSupports = Object.entries(grouped)
         .sort((a, b) => b[1].total - a[1].total);
+
+      supportCountLabel.textContent = `${sortedSupports.length} suporte${sortedSupports.length === 1 ? "" : "s"}`;
 
       sortedSupports.forEach(([supportName, data]) => {
         const statusEntries = Object.entries(data.statuses)
@@ -3048,7 +3353,7 @@
 
           <div class="support-mini-stats">
             <span class="mini-pill mini-blue">${data.inProgress} em andamento</span>
-            <span class="mini-pill mini-green">${data.delivered} entregues</span>
+            <span class="mini-pill mini-green">${data.finalized} finalizadas</span>
           </div>
 
           <div class="progress-bar">
@@ -3102,8 +3407,8 @@
               </td>
 
               <td>
-                <span class="badge ${row.finalizada || row.entregue ? "finalizado-badge" : "andamento-badge"}">
-                  ${row.finalizada ? "Finalizada" : row.entregue ? "Entregue" : "Em andamento"}
+                <span class="badge ${row.finalizada ? "finalizado-badge" : "andamento-badge"}">
+                  ${row.cancelada ? "Cancelada" : row.finalizada ? "Finalizada" : "Em andamento"}
                 </span>
               </td>
 
@@ -3122,11 +3427,6 @@
     }
 
     function render() {
-      const rowsForOverviewAndCards = sortRowsByValue(
-        getRowsForOverviewAndSupportCards(),
-        sortFilter.value
-      );
-
       const rowsWithoutTab = sortRowsByValue(
         getRowsAfterFiltersWithoutTab(),
         sortFilter.value
@@ -3138,8 +3438,10 @@
 
       // Painel superior: sempre conta todos os processos, sem sofrer alteração pelos filtros.
       renderOverview(allRows);
-      renderTabs(rowsForOverviewAndCards);
-      renderSupportCards(rowsForOverviewAndCards);
+
+      // Cards de suporte, abas e tabela seguem os filtros gerais.
+      renderTabs(rowsWithoutTab);
+      renderSupportCards(rowsWithoutTab);
       renderTable(rowsForTable);
       animateNumbers();
       animateRenderedCards();
@@ -3225,11 +3527,11 @@
       const isDark = theme === "dark";
       document.body.classList.toggle("theme-dark", isDark);
       themeToggle.textContent = isDark ? "☀️ Tema claro" : "🌙 Tema escuro";
-      localStorage.setItem("painelLojaProntaTheme", theme);
+      localStorage.setItem("painelLojaProntaThemeV2", theme);
     }
 
     function initializeTheme() {
-      const savedTheme = localStorage.getItem("painelLojaProntaTheme") || "dark";
+      const savedTheme = localStorage.getItem("painelLojaProntaThemeV2") || "light";
       applyTheme(savedTheme);
     }
 
@@ -3257,7 +3559,7 @@
         currentTab = button.dataset.tab;
         render();
 
-        if (currentTab === "entregues") {
+        if (currentTab === "finalizadas") {
           celebrateDeliveredView();
         }
       });
