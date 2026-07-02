@@ -845,7 +845,6 @@
       margin-bottom: 16px;
     }
 
-    /* Card específico da SellerPro IA */
     .sellerpro-ia-card {
       position: relative;
       overflow: hidden;
@@ -865,8 +864,11 @@
 
     .sellerpro-ia-card .hero-button {
       width: fit-content;
-      position: relative;
-      z-index: 1;
+    }
+
+    body.theme-light .sellerpro-ia-card {
+      background: linear-gradient(135deg, rgba(255, 122, 0, 0.14), rgba(255, 255, 255, 0.92)) !important;
+      border-color: rgba(255, 122, 0, 0.24) !important;
     }
 
     @media (max-width: 760px) {
@@ -1142,7 +1144,21 @@
       margin-top: 18px;
     }
 
-  
+    .search-empty {
+      display: none;
+      grid-column: 1 / -1;
+      padding: 20px;
+      border-radius: 22px;
+      color: var(--muted);
+      background: rgba(255, 122, 0, 0.08);
+      border: 1px solid rgba(255, 122, 0, 0.20);
+      text-align: center;
+    }
+
+    .search-empty.show {
+      display: block;
+    }
+
     /* Tema claro real: branco, preto e laranja */
     body.theme-light {
       --black: #ffffff;
@@ -1162,8 +1178,7 @@
 
     body.theme-light .topbar,
     body.theme-light .hub-card,
-    body.theme-light .faq-section,
-    body.theme-light .notification-panel,
+        body.theme-light .notification-panel,
     body.theme-light .notification-modal,
     body.theme-light .user-dropdown {
       background: #ffffff;
@@ -1203,16 +1218,10 @@
         linear-gradient(135deg, #ffffff, #fff0e2);
       border-color: rgba(255, 122, 0, 0.24);
     }
-
-    body.theme-light .faq-main-toggle,
     body.theme-light .notification-panel-header,
     body.theme-light .notification-modal-header {
       background: linear-gradient(135deg, rgba(255, 122, 0, 0.12), #ffffff);
       border-color: rgba(17, 17, 17, 0.08);
-    }
-
-    body.theme-light .faq-item {
-      border-top-color: rgba(17, 17, 17, 0.08);
     }
 
     body.theme-light .link-button,
@@ -1320,15 +1329,6 @@
     body.theme-light .info-card {
       background: linear-gradient(135deg, rgba(255, 122, 0, 0.14), rgba(255, 255, 255, 0.86) 42%, rgba(255, 255, 255, 0.92));
       border-color: rgba(255, 122, 0, 0.22);
-    }
-
-    body.theme-light .sellerpro-ia-card {
-      background: linear-gradient(
-        135deg,
-        rgba(255, 122, 0, 0.14),
-        rgba(255, 255, 255, 0.92)
-      ) !important;
-      border-color: rgba(255, 122, 0, 0.24) !important;
     }
 
     body.theme-light .link-button {
@@ -1986,8 +1986,7 @@
 
     body.theme-light .topbar,
     body.theme-light .hub-card,
-    body.theme-light .faq-section,
-    body.theme-light .user-dropdown,
+        body.theme-light .user-dropdown,
     body.theme-light .notification-panel,
     body.theme-light .notification-modal {
       background: #ffffff !important;
@@ -2005,8 +2004,6 @@
     body.theme-light .brand-title,
     body.theme-light .section-title h2,
     body.theme-light .hub-card h3,
-    body.theme-light .faq-item h3,
-    body.theme-light .faq-main-toggle,
     body.theme-light .user-name,
     body.theme-light .notification-item-title {
       color: #111111 !important;
@@ -2016,7 +2013,6 @@
     body.theme-light .hero-copy,
     body.theme-light .section-title p,
     body.theme-light .hub-card p,
-    body.theme-light .faq-item p,
     body.theme-light .info-list li,
     body.theme-light .user-email,
     body.theme-light .notification-item-message {
@@ -2044,8 +2040,6 @@
       color: #111111 !important;
       border-color: rgba(255, 122, 0, 0.50) !important;
     }
-
-    body.theme-light .faq-main-toggle,
     body.theme-light .notification-panel-header,
     body.theme-light .notification-modal-header {
       background: linear-gradient(135deg, rgba(255, 122, 0, 0.12), #ffffff) !important;
@@ -2170,18 +2164,6 @@
 
       .user-menu.open .user-dropdown {
         display: grid;
-      }
-
-      .faq-main-toggle {
-        grid-template-columns: 1fr;
-      }
-
-      .faq-main-toggle small {
-        text-align: left;
-      }
-
-      .faq-chevron {
-        grid-column: 1;
       }
 
       .card-cover {
@@ -2441,6 +2423,7 @@
           <a class="link-button" href="../documentos/pdfs/listing-padrao-seller-pro.pdf" target="_blank" rel="noopener">Listing Padrão Seller Pro <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
           <a class="link-button download" href="../documentos/pdfs/treinamento-fba.pdf" target="_blank" rel="noopener">Treinamento FBA <i class="fa-solid fa-file-excel"></i></a>
         </div>
+        </div>
       </article>
 
       <article class="hub-card" data-aos="fade-up" data-aos-delay="80">
@@ -2488,8 +2471,8 @@
           <a class="link-button" href="./documentos/pdfs/incentivosp.pdf" target="_blank" rel="noopener">Benefícios Exclusivos<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
         </div>
       </article>
+      
     </section>
-
     <section class="section-title" id="sellerproia">
       <h2>SellerPro IA</h2>
       <p>Acesse a inteligência artificial da SellerPro em uma nova aba.</p>
@@ -2516,8 +2499,6 @@
       </a>
     </section>
 
-      
-        
     <footer class="footer">
       <span>Criado pelo Carlos • Hub interno Seller Pro</span>
       <a class="scroll-top" href="#topo">
@@ -3256,8 +3237,6 @@
 
 
     const hubSearch = document.getElementById("hubSearch");
-    const faqSection = document.getElementById("faqSection");
-    const faqToggle = document.getElementById("faqToggle");
     const accessGrid = document.querySelector(".grid");
 
     if (accessGrid && !document.getElementById("searchEmpty")) {
@@ -3285,26 +3264,13 @@
       });
     });
 
-    function alternarFaq(forcarAberto = null) {
-      if (!faqSection || !faqToggle) return;
-      const abrir = forcarAberto === null ? !faqSection.classList.contains("open") : Boolean(forcarAberto);
-      faqSection.classList.toggle("open", abrir);
-      faqToggle.setAttribute("aria-expanded", String(abrir));
-    }
-
-    if (faqToggle) {
-      faqToggle.addEventListener("click", () => alternarFaq());
-    }
-
     function pesquisarNoHub() {
       if (!hubSearch) return;
 
       const termo = normalizarTexto(hubSearch.value);
       const cards = Array.from(document.querySelectorAll(".hub-card"));
-      const faqItems = Array.from(document.querySelectorAll(".faq-item"));
       const empty = document.getElementById("searchEmpty");
       let encontrouCard = false;
-      let encontrouFaq = false;
 
       cards.forEach((card) => {
         const encontrou = !termo || normalizarTexto(card.textContent).includes(termo);
@@ -3316,18 +3282,8 @@
         }
       });
 
-      faqItems.forEach((item) => {
-        const encontrou = !termo || normalizarTexto(item.textContent).includes(termo);
-        item.style.display = encontrou ? "" : "none";
-        if (encontrou) encontrouFaq = true;
-      });
-
-      if (termo) {
-        alternarFaq(encontrouFaq);
-      }
-
       if (empty) {
-        empty.classList.toggle("show", Boolean(termo && !encontrouCard && !encontrouFaq));
+        empty.classList.toggle("show", Boolean(termo && !encontrouCard));
       }
     }
 
