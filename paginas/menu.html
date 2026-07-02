@@ -845,6 +845,37 @@
       margin-bottom: 16px;
     }
 
+    /* Card específico da SellerPro IA */
+    .sellerpro-ia-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .sellerpro-ia-card::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      top: -70px;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 122, 0, 0.24), transparent 70%);
+      pointer-events: none;
+    }
+
+    .sellerpro-ia-card .hero-button {
+      width: fit-content;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 760px) {
+      .sellerpro-ia-card .hero-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
     .info-list {
       display: grid;
       gap: 12px;
@@ -1289,6 +1320,15 @@
     body.theme-light .info-card {
       background: linear-gradient(135deg, rgba(255, 122, 0, 0.14), rgba(255, 255, 255, 0.86) 42%, rgba(255, 255, 255, 0.92));
       border-color: rgba(255, 122, 0, 0.22);
+    }
+
+    body.theme-light .sellerpro-ia-card {
+      background: linear-gradient(
+        135deg,
+        rgba(255, 122, 0, 0.14),
+        rgba(255, 255, 255, 0.92)
+      ) !important;
+      border-color: rgba(255, 122, 0, 0.24) !important;
     }
 
     body.theme-light .link-button {
@@ -2401,7 +2441,6 @@
           <a class="link-button" href="../documentos/pdfs/listing-padrao-seller-pro.pdf" target="_blank" rel="noopener">Listing Padrão Seller Pro <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
           <a class="link-button download" href="../documentos/pdfs/treinamento-fba.pdf" target="_blank" rel="noopener">Treinamento FBA <i class="fa-solid fa-file-excel"></i></a>
         </div>
-        </div>
       </article>
 
       <article class="hub-card" data-aos="fade-up" data-aos-delay="80">
@@ -2449,32 +2488,33 @@
           <a class="link-button" href="./documentos/pdfs/incentivosp.pdf" target="_blank" rel="noopener">Benefícios Exclusivos<i class="fa-solid fa-arrow-up-right-from-square"></i></a>
         </div>
       </article>
-      
+    </section>
+
     <section class="section-title" id="sellerproia">
-  <h2>SellerPro IA</h2>
-  <p>Acesse a inteligência artificial da SellerPro em uma nova aba.</p>
-</section>
+      <h2>SellerPro IA</h2>
+      <p>Acesse a inteligência artificial da SellerPro em uma nova aba.</p>
+    </section>
 
-<section class="info-card" data-aos="fade-up">
-  <h3>
-    <i class="fa-solid fa-robot"></i>
-    SellerPro IA
-  </h3>
+    <section class="info-card sellerpro-ia-card" data-aos="fade-up">
+      <h3>
+        <i class="fa-solid fa-robot"></i>
+        SellerPro IA
+      </h3>
 
-  <p>
-    Clique no botão abaixo para acessar a inteligência artificial da SellerPro.
-  </p>
+      <p>
+        Clique no botão abaixo para acessar a inteligência artificial da SellerPro.
+      </p>
 
-  <a
-    class="hero-button"
-    href="https://ia.sellerprobrasil.com.br/login"
-    target="_blank"
-    rel="noopener noreferrer"
-  >
-    Acessar SellerPro IA
-    <i class="fa-solid fa-arrow-up-right-from-square"></i>
-  </a>
-</section>
+      <a
+        class="hero-button"
+        href="https://ia.sellerprobrasil.com.br/login"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Acessar SellerPro IA
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+      </a>
+    </section>
 
       
         
