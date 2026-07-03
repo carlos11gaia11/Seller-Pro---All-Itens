@@ -2031,7 +2031,7 @@ body[data-theme="light"] {
 
     // Cole aqui o link do Web App gerado no Google Apps Script.
     // Exemplo: https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxx/exec
-    const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyz2_hUWp2Yv3Bq6MWvSkd3FPH6cjx4wQjgOF1fibByPd5OKEujZVB9708gDBBq_o5g/exec';
+    const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxEWk7fFo72If60kM45dTaZZz2oePebQITFCj_BRNOLiqHoE2UcEnadUj2isaLhbotn/exec';
 
     const defaultProjects = [
       { id: '2026-05', name: 'Maio 2026', description: 'Pasta mensal de projetos', position: 1 },
@@ -3321,6 +3321,12 @@ body[data-theme="light"] {
         console.warn('O trabalho foi excluído, mas não consegui marcar a loja entregue como excluída.', deliveredDeleteError);
       }
 
+      try {
+        await enviarExclusaoParaPlanilha(taskId);
+      } catch (sheetDeleteError) {
+        console.warn('O trabalho foi excluído, mas não consegui remover a linha correspondente da planilha.', sheetDeleteError);
+      }
+
       state.tasks = state.tasks.filter(task => task.id !== taskId);
 
       renderFilters();
@@ -3391,6 +3397,8 @@ body[data-theme="light"] {
 
     function montarPayloadEntregaParaPlanilha(task, deliveryData, status) {
       return {
+        acao: 'adicionar',
+        taskId: String(task.id || ''),
         nome: task.name || '',
         email: deliveryData.account_creation_email || '',
         telefone: deliveryData.phone || '',
@@ -3405,13 +3413,11 @@ body[data-theme="light"] {
       };
     }
 
-    async function enviarEntregaParaPlanilha(task, deliveryData, status) {
+    async function enviarPayloadParaPlanilha(payload) {
       if (!googleSheetsEntregaConfigurado()) {
         console.warn('Link do Google Apps Script ainda não configurado em GOOGLE_SHEETS_WEB_APP_URL.');
         return { configured: false, sent: false };
       }
-
-      const payload = montarPayloadEntregaParaPlanilha(task, deliveryData, status);
 
       await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
         method: 'POST',
@@ -3420,6 +3426,18 @@ body[data-theme="light"] {
       });
 
       return { configured: true, sent: true };
+    }
+
+    async function enviarEntregaParaPlanilha(task, deliveryData, status) {
+      const payload = montarPayloadEntregaParaPlanilha(task, deliveryData, status);
+      return await enviarPayloadParaPlanilha(payload);
+    }
+
+    async function enviarExclusaoParaPlanilha(taskId) {
+      return await enviarPayloadParaPlanilha({
+        acao: 'excluir',
+        taskId: String(taskId || '')
+      });
     }
 
     function montarRegistroLojaEntregueSupabase(task, deliveryData, status) {
