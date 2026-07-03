@@ -2398,6 +2398,22 @@ body[data-theme="light"] {
         console.warn('Tabela de lembretes ainda não configurada.', error);
       }
 
+      let deliveredStores = [];
+      try {
+        const { data: deliveredData, error: deliveredError } = await supabaseClient
+          .from('sp_lojas_entregues')
+          .select('*')
+          .is('deleted_at', null);
+
+        if (!deliveredError) deliveredStores = deliveredData || [];
+      } catch (error) {
+        console.warn('Tabela sp_lojas_entregues ainda não configurada ou sem permissão de leitura.', error);
+      }
+
+      const deliveredStoresByTaskId = new Map(
+        (deliveredStores || []).map(store => [String(store.task_id), store])
+      );
+
       let supports = [];
       try {
         const { data: supportData, error: supportsError } = await supabaseClient
@@ -2425,21 +2441,28 @@ body[data-theme="light"] {
 
       state.columns = columns.map(column => column.name);
 
-      state.tasks = (tasks || []).map(task => ({
-        id: task.id,
-        project: task.project_id,
-        status: task.status,
-        name: task.name,
-        owner: task.owner || task.suporte_responsavel || task.suportes_sellerpro || '',
-        mcid: task.mcid || '',
-        billingConfigDate: task.billing_config_date || '',
-        shipmentDate: task.shipment_date || '',
-        pickupDate: task.pickup_date || '',
-        accountCreationEmail: task.account_creation_email || '',
-        description: task.description || '',
-        updates: Array.isArray(task.updates) ? task.updates : [],
-        attachments: Array.isArray(task.attachments) ? task.attachments : []
-      }));
+      state.tasks = (tasks || []).map(task => {
+        const deliveredStore = deliveredStoresByTaskId.get(String(task.id));
+
+        return {
+          id: task.id,
+          project: task.project_id,
+          status: task.status,
+          name: task.name,
+          owner: task.owner || task.suporte_responsavel || task.suportes_sellerpro || '',
+          mcid: task.mcid || deliveredStore?.mcid || '',
+          billingConfigDate: task.billing_config_date || deliveredStore?.data_conf_faturador || '',
+          shipmentDate: task.shipment_date || deliveredStore?.data_primeiro_envio || '',
+          pickupDate: task.pickup_date || deliveredStore?.data_coleta || '',
+          accountCreationEmail: task.account_creation_email || deliveredStore?.email || '',
+          deliveryPhone: deliveredStore?.telefone || '',
+          deliveryProductSent: deliveredStore?.produto_que_enviou || '',
+          deliverySellerContStatus: deliveredStore?.status_seller_cont || '',
+          description: task.description || '',
+          updates: Array.isArray(task.updates) ? task.updates : [],
+          attachments: Array.isArray(task.attachments) ? task.attachments : []
+        };
+      });
 
       state.reminders = (reminders || []).map(reminder => ({
         id: reminder.id,
@@ -3288,6 +3311,16 @@ body[data-theme="light"] {
         return;
       }
 
+      const { error: deliveredDeleteError } = await supabaseClient
+        .from('sp_lojas_entregues')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('task_id', String(taskId))
+        .is('deleted_at', null);
+
+      if (deliveredDeleteError) {
+        console.warn('O trabalho foi excluído, mas não consegui marcar a loja entregue como excluída.', deliveredDeleteError);
+      }
+
       state.tasks = state.tasks.filter(task => task.id !== taskId);
 
       renderFilters();
@@ -3368,7 +3401,7 @@ body[data-theme="light"] {
         dataConfiguracaoFaturador: deliveryData.billing_config_date || '',
         mcid: deliveryData.mcid || '',
         responsavel: task.owner || '',
-        projeto: task.project_id || state.activeProject || ''
+        projeto: task.project || task.project_id || state.activeProject || ''
       };
     }
 
@@ -3387,6 +3420,47 @@ body[data-theme="light"] {
       });
 
       return { configured: true, sent: true };
+    }
+
+    function montarRegistroLojaEntregueSupabase(task, deliveryData, status) {
+      return {
+        task_id: String(task.id),
+        nome: task.name || '',
+        email: deliveryData.account_creation_email || null,
+        telefone: deliveryData.phone || null,
+        produto_que_enviou: deliveryData.product_sent || null,
+        status_seller_cont: deliveryData.seller_cont_status || status || null,
+        data_primeiro_envio: deliveryData.shipment_date || null,
+        data_coleta: deliveryData.pickup_date || null,
+        data_conf_faturador: deliveryData.billing_config_date || null,
+        mcid: deliveryData.mcid || null,
+        responsavel: task.owner || null,
+        projeto_id: task.project || task.project_id || state.activeProject || null,
+        origem: 'ares',
+        enviado_para_planilha: false,
+        enviado_para_planilha_em: null,
+        deleted_at: null
+      };
+    }
+
+    async function salvarLojaEntregueNoSupabase(task, deliveryData, status) {
+      const registro = montarRegistroLojaEntregueSupabase(task, deliveryData, status);
+
+      return await supabaseClient
+        .from('sp_lojas_entregues')
+        .upsert(registro, { onConflict: 'task_id' })
+        .select('id')
+        .single();
+    }
+
+    async function marcarLojaEntregueEnviadaParaPlanilha(taskId) {
+      return await supabaseClient
+        .from('sp_lojas_entregues')
+        .update({
+          enviado_para_planilha: true,
+          enviado_para_planilha_em: new Date().toISOString()
+        })
+        .eq('task_id', String(taskId));
     }
 
     function openDeliveryModal(taskId, status) {
@@ -3595,6 +3669,46 @@ body[data-theme="light"] {
         return;
       }
 
+      if (button) {
+        button.textContent = 'Salvando no banco de lojas entregues...';
+      }
+
+      const { error: deliveryStoreError } = await salvarLojaEntregueNoSupabase(task, deliveryData, deliveredStatus);
+
+      if (deliveryStoreError) {
+        task.status = previousStatus;
+        task.mcid = previousData.mcid;
+        task.billingConfigDate = previousData.billingConfigDate;
+        task.shipmentDate = previousData.shipmentDate;
+        task.pickupDate = previousData.pickupDate;
+        task.accountCreationEmail = previousData.accountCreationEmail;
+        task.deliveryPhone = previousData.deliveryPhone;
+        task.deliveryProductSent = previousData.deliveryProductSent;
+        task.deliverySellerContStatus = previousData.deliverySellerContStatus;
+        renderBoard();
+
+        await supabaseClient
+          .from('sp_tasks')
+          .update({
+            status: previousStatus,
+            mcid: previousData.mcid || null,
+            billing_config_date: previousData.billingConfigDate || null,
+            shipment_date: previousData.shipmentDate || null,
+            pickup_date: previousData.pickupDate || null,
+            account_creation_email: previousData.accountCreationEmail || null
+          })
+          .eq('id', task.id);
+
+        if (button) {
+          button.disabled = false;
+          button.textContent = 'Confirmar entrega';
+        }
+
+        showToast('Não consegui gravar a loja entregue na tabela sp_lojas_entregues. Confira as policies e colunas.');
+        console.error(deliveryStoreError);
+        return;
+      }
+
       let sheetResult = { configured: false, sent: false };
       let sheetError = null;
 
@@ -3604,6 +3718,11 @@ body[data-theme="light"] {
 
       try {
         sheetResult = await enviarEntregaParaPlanilha(task, deliveryData, deliveredStatus);
+
+        if (sheetResult.configured && sheetResult.sent) {
+          const { error: sheetFlagError } = await marcarLojaEntregueEnviadaParaPlanilha(task.id);
+          if (sheetFlagError) console.warn('Não consegui marcar o envio para planilha no Supabase.', sheetFlagError);
+        }
       } catch (error) {
         sheetError = error;
         console.error('Erro ao enviar dados para Google Sheets:', error);
@@ -3613,16 +3732,16 @@ body[data-theme="light"] {
       launchDeliveryCelebration();
 
       if (sheetError) {
-        showToast('Loja entregue salva, mas não consegui enviar os dados para a planilha. Verifique o Apps Script.');
+        showToast('Loja entregue salva no Supabase, mas não consegui enviar os dados para a planilha. Verifique o Apps Script.');
         return;
       }
 
       if (!sheetResult.configured) {
-        showToast('Loja entregue salva. Agora cole o link do Apps Script em GOOGLE_SHEETS_WEB_APP_URL para ativar a planilha.');
+        showToast('Loja entregue salva no Supabase. A planilha não recebeu porque o Apps Script não está configurado.');
         return;
       }
 
-      showToast('Loja entregue salva e enviada para a planilha.');
+      showToast('Loja entregue salva no Supabase e enviada para a planilha.');
     }
     function scrollBoard(direction) {
       const boardElement = document.getElementById('board');
@@ -3724,13 +3843,33 @@ body[data-theme="light"] {
           </div>
 
           <div class="detail-box">
-            <small>3° Data que conf faturador</small>
-            <strong>${escapeHTML(task.billingConfigDate || 'Não informado')}</strong>
+            <small>Telefone</small>
+            <strong>${escapeHTML(task.deliveryPhone || 'Não informado')}</strong>
           </div>
 
           <div class="detail-box">
-            <small>1° Data do 1° envio / 2° Data da coleta</small>
-            <strong>${escapeHTML(task.shipmentDate || 'Não informado')} / ${escapeHTML(task.pickupDate || 'Não informado')}</strong>
+            <small>Produto que enviou</small>
+            <strong>${escapeHTML(task.deliveryProductSent || 'Não informado')}</strong>
+          </div>
+
+          <div class="detail-box">
+            <small>Status Seller Cont</small>
+            <strong>${escapeHTML(task.deliverySellerContStatus || task.status || 'Não informado')}</strong>
+          </div>
+
+          <div class="detail-box">
+            <small>1° Data do 1° envio</small>
+            <strong>${escapeHTML(task.shipmentDate || 'Não informado')}</strong>
+          </div>
+
+          <div class="detail-box">
+            <small>2° Data da coleta</small>
+            <strong>${escapeHTML(task.pickupDate || 'Não informado')}</strong>
+          </div>
+
+          <div class="detail-box">
+            <small>3° Data que conf faturador</small>
+            <strong>${escapeHTML(task.billingConfigDate || 'Não informado')}</strong>
           </div>
 
           <div class="detail-box full">
