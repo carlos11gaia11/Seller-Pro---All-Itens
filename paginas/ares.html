@@ -683,9 +683,9 @@ body[data-theme="light"] {
     }
 
     .card {
-      height: 315px;
-      min-height: 315px;
-      max-height: 315px;
+      height: 430px;
+      min-height: 430px;
+      max-height: 430px;
       background:
         linear-gradient(180deg, rgba(255, 255, 255, .085), rgba(255, 255, 255, .035)),
         var(--card);
@@ -719,6 +719,259 @@ body[data-theme="light"] {
     .card.dragging {
       opacity: .55;
       transform: rotate(2deg) scale(.98);
+    }
+
+    .card.seller-cont-card {
+      height: 430px;
+      min-height: 430px;
+      max-height: 430px;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.22), transparent 24%),
+        linear-gradient(160deg, rgba(14, 165, 233, .42), rgba(37, 99, 235, .30) 50%, rgba(15, 23, 42, .88)),
+        var(--card);
+      border-color: rgba(56, 189, 248, .58);
+      box-shadow: 0 22px 58px rgba(14, 165, 233, .18), inset 0 1px 0 rgba(255,255,255,.16);
+    }
+
+    .card.seller-cont-card::before {
+      background: linear-gradient(90deg, #7dd3fc, #38bdf8, #2563eb, #60a5fa);
+      box-shadow: 0 0 26px rgba(56, 189, 248, .72);
+    }
+
+    .card.seller-cont-card:hover {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.28), transparent 24%),
+        linear-gradient(160deg, rgba(14, 165, 233, .52), rgba(37, 99, 235, .36) 50%, rgba(15, 23, 42, .90)),
+        var(--card-hover);
+      border-color: rgba(125, 211, 252, .74);
+      box-shadow: 0 24px 66px rgba(14, 165, 233, .24), 0 0 42px rgba(56, 189, 248, .16);
+    }
+
+    .seller-cont-checkbox-badge {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 2px 0 8px;
+      padding: 8px 10px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(186, 230, 253, .30);
+      color: #f0f9ff;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+    }
+
+    .seller-cont-checkbox-badge .check-square {
+      width: 22px;
+      height: 22px;
+      min-width: 22px;
+      border-radius: 7px;
+      display: grid;
+      place-items: center;
+      color: #082f49;
+      background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+      border: 1px solid rgba(255,255,255,.42);
+      font-size: 14px;
+      font-weight: 950;
+      box-shadow: 0 8px 22px rgba(14,165,233,.26);
+    }
+
+    .seller-cont-checkbox-badge strong {
+      display: block;
+      font-size: 12px;
+      line-height: 1.1;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .seller-cont-checkbox-badge small {
+      display: block;
+      color: #bae6fd;
+      font-size: 10px;
+      line-height: 1.25;
+      margin-top: 2px;
+    }
+
+    body[data-theme="light"] .card.seller-cont-card {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.88), transparent 24%),
+        linear-gradient(160deg, rgba(186, 230, 253, .96), rgba(147, 197, 253, .86) 54%, rgba(219, 234, 254, .92)),
+        var(--card);
+      border-color: rgba(14, 165, 233, .44);
+      box-shadow: 0 20px 50px rgba(14, 165, 233, .13), inset 0 1px 0 rgba(255,255,255,.70);
+    }
+
+    body[data-theme="light"] .card.seller-cont-card:hover {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.94), transparent 24%),
+        linear-gradient(160deg, rgba(186, 230, 253, 1), rgba(147, 197, 253, .92) 54%, rgba(219, 234, 254, .98)),
+        var(--card-hover);
+    }
+
+    body[data-theme="light"] .seller-cont-checkbox-badge {
+      background: rgba(255,255,255,.58);
+      border-color: rgba(14, 165, 233, .22);
+      color: #0f172a;
+    }
+
+    body[data-theme="light"] .seller-cont-checkbox-badge small {
+      color: #0369a1;
+    }
+
+
+
+    .card.requires-attention-card {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.20), transparent 24%),
+        linear-gradient(160deg, rgba(239, 68, 68, .50), rgba(153, 27, 27, .36) 54%, rgba(30, 5, 5, .90)),
+        var(--card);
+      border-color: rgba(248, 113, 113, .70);
+      box-shadow: 0 24px 66px rgba(239, 68, 68, .22), 0 0 42px rgba(239, 68, 68, .14), inset 0 1px 0 rgba(255,255,255,.14);
+    }
+
+    .card.requires-attention-card::before {
+      background: linear-gradient(90deg, #fecaca, #f87171, #ef4444, #991b1b);
+      box-shadow: 0 0 28px rgba(248, 113, 113, .78);
+    }
+
+    .card.requires-attention-card:hover {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.26), transparent 24%),
+        linear-gradient(160deg, rgba(239, 68, 68, .58), rgba(153, 27, 27, .42) 54%, rgba(30, 5, 5, .92)),
+        var(--card-hover);
+      border-color: rgba(254, 202, 202, .78);
+      box-shadow: 0 28px 76px rgba(239, 68, 68, .30), 0 0 48px rgba(248, 113, 113, .18);
+    }
+
+    .card.sale-finalized-card {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.20), transparent 24%),
+        linear-gradient(160deg, rgba(34, 197, 94, .46), rgba(22, 101, 52, .34) 54%, rgba(5, 28, 13, .90)),
+        var(--card);
+      border-color: rgba(74, 222, 128, .66);
+      box-shadow: 0 24px 66px rgba(34, 197, 94, .20), 0 0 42px rgba(34, 197, 94, .13), inset 0 1px 0 rgba(255,255,255,.14);
+    }
+
+    .card.sale-finalized-card::before {
+      background: linear-gradient(90deg, #bbf7d0, #4ade80, #22c55e, #15803d);
+      box-shadow: 0 0 28px rgba(74, 222, 128, .76);
+    }
+
+    .card.sale-finalized-card:hover {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.26), transparent 24%),
+        linear-gradient(160deg, rgba(34, 197, 94, .54), rgba(22, 101, 52, .40) 54%, rgba(5, 28, 13, .92)),
+        var(--card-hover);
+      border-color: rgba(187, 247, 208, .76);
+      box-shadow: 0 28px 76px rgba(34, 197, 94, .28), 0 0 48px rgba(74, 222, 128, .17);
+    }
+
+    .delivery-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 2px 0 8px;
+      padding: 8px 10px;
+      border-radius: 14px;
+      color: #fff;
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,.20);
+      background: rgba(255,255,255,.10);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
+    }
+
+    .delivery-status-badge .status-square {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      font-weight: 950;
+      background: rgba(255,255,255,.16);
+      border: 1px solid rgba(255,255,255,.28);
+    }
+
+    .delivery-status-badge strong {
+      display: block;
+      font-size: 12px;
+      line-height: 1.1;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .delivery-status-badge small {
+      display: block;
+      color: rgba(255,255,255,.82);
+      font-size: 10px;
+      line-height: 1.25;
+      margin-top: 2px;
+    }
+
+    .delivery-status-badge.attention {
+      background: rgba(239, 68, 68, .20);
+      border-color: rgba(254, 202, 202, .35);
+    }
+
+    .delivery-status-badge.attention .status-square {
+      color: #450a0a;
+      background: linear-gradient(135deg, #fecaca, #f87171);
+    }
+
+    .delivery-status-badge.finalized {
+      background: rgba(34, 197, 94, .18);
+      border-color: rgba(187, 247, 208, .34);
+    }
+
+    .delivery-status-badge.finalized .status-square {
+      color: #052e16;
+      background: linear-gradient(135deg, #bbf7d0, #4ade80);
+    }
+
+    .delivery-control-detail {
+      border-color: rgba(248, 113, 113, .32);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(255,255,255,.13), transparent 24%),
+        linear-gradient(135deg, rgba(239, 68, 68, .18), rgba(255,255,255,.035));
+    }
+
+    .delivery-control-detail.finalized {
+      border-color: rgba(74, 222, 128, .34);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(255,255,255,.13), transparent 24%),
+        linear-gradient(135deg, rgba(34, 197, 94, .18), rgba(255,255,255,.035));
+    }
+
+    body[data-theme="light"] .card.requires-attention-card {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.88), transparent 24%),
+        linear-gradient(160deg, rgba(254, 202, 202, .98), rgba(252, 165, 165, .90) 54%, rgba(254, 226, 226, .96)),
+        var(--card);
+      border-color: rgba(239, 68, 68, .40);
+      box-shadow: 0 22px 56px rgba(239, 68, 68, .13), inset 0 1px 0 rgba(255,255,255,.70);
+    }
+
+    body[data-theme="light"] .card.sale-finalized-card {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255,255,255,.88), transparent 24%),
+        linear-gradient(160deg, rgba(187, 247, 208, .98), rgba(134, 239, 172, .88) 54%, rgba(220, 252, 231, .96)),
+        var(--card);
+      border-color: rgba(34, 197, 94, .40);
+      box-shadow: 0 22px 56px rgba(34, 197, 94, .12), inset 0 1px 0 rgba(255,255,255,.70);
+    }
+
+    body[data-theme="light"] .delivery-status-badge {
+      color: #0f172a;
+      background: rgba(255,255,255,.58);
+      border-color: rgba(15, 23, 42, .10);
+    }
+
+    body[data-theme="light"] .delivery-status-badge small {
+      color: #334155;
     }
 
     .card h3 {
@@ -778,6 +1031,108 @@ body[data-theme="light"] {
       color: var(--text);
       font-size: 15px;
       line-height: 1.15;
+    }
+
+    .seller-cont-preview {
+      margin: 6px 0 9px;
+      padding: 10px;
+      border-radius: 17px;
+      border: 1px solid rgba(56, 189, 248, .38);
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255,255,255,.24), transparent 28%),
+        linear-gradient(135deg, rgba(14, 165, 233, .30), rgba(37, 99, 235, .18));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 14px 32px rgba(14, 165, 233, .12);
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .seller-cont-preview::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: linear-gradient(90deg, #38bdf8, #2563eb, #60a5fa);
+      box-shadow: 0 0 22px rgba(56, 189, 248, .55);
+    }
+
+    .seller-cont-preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .seller-cont-preview-header span {
+      color: #bae6fd;
+      font-size: 10px;
+      font-weight: 950;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .seller-cont-preview-header strong {
+      max-width: 135px;
+      color: #f0f9ff;
+      font-size: 12px;
+      line-height: 1.2;
+      text-align: right;
+      overflow: hidden;
+      display: -webkit-box;
+      line-clamp: 2;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .seller-cont-date-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .seller-cont-date-grid small {
+      min-width: 0;
+      display: grid;
+      gap: 2px;
+      padding: 7px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.09);
+      border: 1px solid rgba(255,255,255,.10);
+      color: #dbeafe;
+      font-size: 10px;
+      line-height: 1.2;
+    }
+
+    .seller-cont-date-grid small b {
+      color: #7dd3fc;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    body[data-theme="light"] .seller-cont-preview {
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255,255,255,.70), transparent 30%),
+        linear-gradient(135deg, rgba(186, 230, 253, .88), rgba(191, 219, 254, .78));
+      border-color: rgba(14, 165, 233, .30);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 12px 28px rgba(14, 165, 233, .10);
+    }
+
+    body[data-theme="light"] .seller-cont-preview-header span,
+    body[data-theme="light"] .seller-cont-date-grid small b {
+      color: #0369a1;
+    }
+
+    body[data-theme="light"] .seller-cont-preview-header strong,
+    body[data-theme="light"] .seller-cont-date-grid small {
+      color: #0f172a;
+    }
+
+    body[data-theme="light"] .seller-cont-date-grid small {
+      background: rgba(255,255,255,.50);
+      border-color: rgba(14, 165, 233, .18);
     }
 
     .meta {
@@ -1026,6 +1381,118 @@ body[data-theme="light"] {
 
     .detail-box.full {
       grid-column: 1 / -1;
+    }
+
+    .seller-cont-detail {
+      border-color: rgba(56, 189, 248, .42);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(255,255,255,.16), transparent 24%),
+        linear-gradient(135deg, rgba(14, 165, 233, .24), rgba(37, 99, 235, .14));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 18px 44px rgba(14, 165, 233, .10);
+    }
+
+    .seller-cont-detail-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(186, 230, 253, .18);
+    }
+
+    .seller-cont-detail-header small {
+      color: #7dd3fc;
+      margin-bottom: 4px;
+    }
+
+    .seller-cont-detail-header strong {
+      display: block;
+      font-size: 20px;
+      color: #f0f9ff;
+      letter-spacing: -.03em;
+    }
+
+    .seller-cont-detail-status {
+      padding: 8px 11px;
+      border-radius: 999px;
+      color: #eff6ff;
+      background: rgba(56, 189, 248, .16);
+      border: 1px solid rgba(186, 230, 253, .24);
+      font-size: 12px;
+      font-weight: 950;
+      text-align: right;
+    }
+
+    .seller-cont-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .seller-cont-detail-grid .wide {
+      grid-column: span 3;
+    }
+
+    .seller-cont-info-item {
+      padding: 11px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.075);
+      border: 1px solid rgba(255,255,255,.10);
+      min-width: 0;
+    }
+
+    .seller-cont-info-item small {
+      color: #7dd3fc;
+    }
+
+    .seller-cont-info-item strong {
+      display: block;
+      color: #f8fafc;
+      overflow-wrap: anywhere;
+    }
+
+    body[data-theme="light"] .seller-cont-detail {
+      background:
+        radial-gradient(circle at 8% 0%, rgba(255,255,255,.70), transparent 24%),
+        linear-gradient(135deg, rgba(186, 230, 253, .88), rgba(219, 234, 254, .80));
+      border-color: rgba(14, 165, 233, .30);
+    }
+
+    body[data-theme="light"] .seller-cont-detail-header strong,
+    body[data-theme="light"] .seller-cont-info-item strong,
+    body[data-theme="light"] .seller-cont-detail-status {
+      color: #0f172a;
+    }
+
+    body[data-theme="light"] .seller-cont-detail-header small,
+    body[data-theme="light"] .seller-cont-info-item small {
+      color: #0369a1;
+    }
+
+    body[data-theme="light"] .seller-cont-info-item,
+    body[data-theme="light"] .seller-cont-detail-status {
+      background: rgba(255,255,255,.55);
+      border-color: rgba(14, 165, 233, .20);
+    }
+
+    @media (max-width: 700px) {
+      .seller-cont-date-grid,
+      .seller-cont-detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .seller-cont-detail-grid .wide {
+        grid-column: auto;
+      }
+
+      .seller-cont-detail-header {
+        flex-direction: column;
+      }
+
+      .seller-cont-detail-status {
+        text-align: left;
+      }
     }
 
     .detail-actions {
@@ -1532,6 +1999,62 @@ body[data-theme="light"] {
 
 
 
+    .seller-cont-check {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 10px;
+      align-items: flex-start;
+      padding: 13px;
+      border-radius: 16px;
+      border: 1px solid rgba(56, 189, 248, .34);
+      background: linear-gradient(135deg, rgba(14, 165, 233, .18), rgba(37, 99, 235, .10));
+      color: #e0f2fe;
+      text-transform: none;
+      letter-spacing: 0;
+      cursor: pointer;
+    }
+
+    .seller-cont-check input {
+      width: 20px;
+      height: 20px;
+      margin-top: 1px;
+      accent-color: #38bdf8;
+      cursor: pointer;
+    }
+
+    .seller-cont-check strong {
+      display: block;
+      color: #f0f9ff;
+      font-size: 13px;
+      line-height: 1.25;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .seller-cont-check small {
+      display: block;
+      margin-top: 4px;
+      color: #bae6fd;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    body[data-theme="light"] .seller-cont-check {
+      background: linear-gradient(135deg, rgba(186, 230, 253, .86), rgba(219, 234, 254, .74));
+      border-color: rgba(14, 165, 233, .28);
+    }
+
+    body[data-theme="light"] .seller-cont-check strong {
+      color: #0f172a;
+    }
+
+    body[data-theme="light"] .seller-cont-check small {
+      color: #0369a1;
+    }
+
     .required-hint {
       color: var(--muted);
       font-size: 12px;
@@ -1612,9 +2135,9 @@ body[data-theme="light"] {
       }
 
       .card {
-        height: 315px;
-        min-height: 315px;
-        max-height: 315px;
+        height: 430px;
+        min-height: 430px;
+        max-height: 430px;
       }
 
       .board {
@@ -1837,6 +2360,16 @@ body[data-theme="light"] {
         </div>
 
         <div class="field full">
+          <label class="seller-cont-check seller-cont-check-task">
+            <input id="taskSellerContFlag" type="checkbox" />
+            <span>
+              <strong>Este card é Seller Cont</strong>
+              <small>Marque esta caixinha para deixar o card azul e exibir o aviso de Contabilidade Seller Cont.</small>
+            </span>
+          </label>
+        </div>
+
+        <div class="field full">
           <label>Descrição</label>
           <textarea id="taskDescription" placeholder="Explique o que precisa ser feito..."></textarea>
         </div>
@@ -1892,8 +2425,23 @@ body[data-theme="light"] {
       <div class="form-grid">
         <div class="field full">
           <div class="required-hint">
-            Para mover o card para <strong>Loja entregue</strong>, preencha todos os dados abaixo.
+            Para mover o card para <strong>Loja entregue</strong>, preencha todos os dados abaixo. A data de entrega será usada para calcular o prazo de 7 dias.
           </div>
+        </div>
+
+        <div class="field full">
+          <label>Data que a loja foi entregue</label>
+          <input id="deliveryCompletedDate" type="date" required />
+        </div>
+
+        <div class="field full">
+          <label class="seller-cont-check">
+            <input id="deliverySellerContFlag" type="checkbox" checked />
+            <span>
+              <strong>Marcar como Seller Cont</strong>
+              <small>Quando esta caixinha estiver marcada, o card fica azul e exibe o aviso de Contabilidade Seller Cont.</small>
+            </span>
+          </label>
         </div>
 
         <div class="field">
@@ -1940,6 +2488,33 @@ body[data-theme="light"] {
       <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
         <button class="btn secondary" onclick="closeDeliveryModal()">Cancelar</button>
         <button class="btn" id="confirmDeliveryButton" onclick="confirmDeliveryMove()">Confirmar entrega</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="saleFinalizedModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Registrar venda finalizada</h3>
+        <button class="close" onclick="closeSaleFinalizedModal()">×</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field full">
+          <div class="required-hint">
+            Para mover o card para <strong>Venda finalizada</strong>, informe a data em que a venda foi finalizada. Depois disso o card ficará verde.
+          </div>
+        </div>
+
+        <div class="field full">
+          <label>Data da venda finalizada</label>
+          <input id="saleFinalizedDate" type="date" required />
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
+        <button class="btn secondary" onclick="closeSaleFinalizedModal()">Cancelar</button>
+        <button class="btn" id="confirmSaleFinalizedButton" onclick="confirmSaleFinalizedMove()">Confirmar venda finalizada</button>
       </div>
     </div>
   </div>
@@ -2110,6 +2685,8 @@ body[data-theme="light"] {
     let currentTaskAttachments = [];
     let pendingDeliveryTaskId = null;
     let pendingDeliveryStatus = null;
+    let pendingSaleFinalizedTaskId = null;
+    let pendingSaleFinalizedStatus = null;
 
     function slugify(text) {
       return String(text || '')
@@ -2443,6 +3020,16 @@ body[data-theme="light"] {
 
       state.tasks = (tasks || []).map(task => {
         const deliveredStore = deliveredStoresByTaskId.get(String(task.id));
+        const savedSellerContFlag = getSellerContFlag(task.id);
+        const deliveredSellerContFlag = typeof deliveredStore?.is_seller_cont === 'boolean'
+          ? deliveredStore.is_seller_cont
+          : Boolean(deliveredStore);
+        const savedStatusDates = getDeliveryStatusDates(task.id);
+        const taskUpdates = Array.isArray(task.updates) ? task.updates : [];
+        const deliveredAtFromUpdates = findStatusDateInUpdates(taskUpdates, 'Loja entregue');
+        const finalizedAtFromUpdates = findStatusDateInUpdates(taskUpdates, 'Venda finalizada');
+        const deliveredAtFallback = task.delivery_completed_at || deliveredStore?.delivery_completed_at || deliveredAtFromUpdates || deliveredStore?.created_at || '';
+        const finalizedAtFallback = task.sale_finalized_at || deliveredStore?.sale_finalized_at || finalizedAtFromUpdates || '';
 
         return {
           id: task.id,
@@ -2458,8 +3045,11 @@ body[data-theme="light"] {
           deliveryPhone: deliveredStore?.telefone || '',
           deliveryProductSent: deliveredStore?.produto_que_enviou || '',
           deliverySellerContStatus: deliveredStore?.status_seller_cont || '',
+          deliveryIsSellerCont: typeof savedSellerContFlag === 'boolean' ? savedSellerContFlag : deliveredSellerContFlag,
+          deliveryCompletedAt: String(deliveredAtFallback || '').slice(0, 10) || savedStatusDates.deliveredAt || '',
+          saleFinalizedAt: String(finalizedAtFallback || '').slice(0, 10) || savedStatusDates.finalizedAt || '',
           description: task.description || '',
-          updates: Array.isArray(task.updates) ? task.updates : [],
+          updates: taskUpdates,
           attachments: Array.isArray(task.attachments) ? task.attachments : []
         };
       });
@@ -2544,6 +3134,14 @@ body[data-theme="light"] {
         task.owner,
         task.mcid,
         task.accountCreationEmail,
+        task.deliveryPhone,
+        task.deliveryProductSent,
+        task.deliverySellerContStatus,
+        task.deliveryCompletedAt,
+        task.saleFinalizedAt,
+        task.shipmentDate,
+        task.pickupDate,
+        task.billingConfigDate,
         task.status,
         task.description,
         getProjectName(task.project),
@@ -2673,9 +3271,366 @@ body[data-theme="light"] {
       return updates.length ? updates[updates.length - 1] : 'Nenhuma atualização ainda.';
     }
 
-    function taskTemplate(task) {
+    const SELLER_CONT_FLAGS_KEY = 'seller_pro_ares_seller_cont_flags_v1';
+
+    function readSellerContFlags() {
+      try {
+        return JSON.parse(localStorage.getItem(SELLER_CONT_FLAGS_KEY) || '{}') || {};
+      } catch (error) {
+        console.warn('Não consegui ler as marcações Seller Cont salvas localmente.', error);
+        return {};
+      }
+    }
+
+    function setSellerContFlag(taskId, checked) {
+      if (!taskId) return;
+
+      const flags = readSellerContFlags();
+      flags[String(taskId)] = Boolean(checked);
+      localStorage.setItem(SELLER_CONT_FLAGS_KEY, JSON.stringify(flags));
+    }
+
+    function getSellerContFlag(taskId) {
+      const flags = readSellerContFlags();
+      return flags[String(taskId)];
+    }
+
+
+
+    const DELIVERY_STATUS_DATES_KEY = 'seller_pro_ares_delivery_status_dates_v1';
+
+    function readDeliveryStatusDates() {
+      try {
+        return JSON.parse(localStorage.getItem(DELIVERY_STATUS_DATES_KEY) || '{}') || {};
+      } catch (error) {
+        console.warn('Não consegui ler as datas de controle de entrega salvas localmente.', error);
+        return {};
+      }
+    }
+
+    function writeDeliveryStatusDates(dates) {
+      localStorage.setItem(DELIVERY_STATUS_DATES_KEY, JSON.stringify(dates || {}));
+    }
+
+    function getDeliveryStatusDates(taskId) {
+      const dates = readDeliveryStatusDates();
+      return dates[String(taskId)] || {};
+    }
+
+    function setDeliveryStatusDates(taskId, patch) {
+      if (!taskId) return {};
+
+      const dates = readDeliveryStatusDates();
+      const current = dates[String(taskId)] || {};
+      const next = { ...current, ...patch };
+
+      Object.keys(next).forEach(key => {
+        if (!next[key]) delete next[key];
+      });
+
+      dates[String(taskId)] = next;
+      writeDeliveryStatusDates(dates);
+      return next;
+    }
+
+    function replaceDeliveryStatusDates(taskId, nextDates) {
+      if (!taskId) return;
+
+      const dates = readDeliveryStatusDates();
+      const clean = { ...(nextDates || {}) };
+
+      Object.keys(clean).forEach(key => {
+        if (!clean[key]) delete clean[key];
+      });
+
+      if (Object.keys(clean).length) {
+        dates[String(taskId)] = clean;
+      } else {
+        delete dates[String(taskId)];
+      }
+
+      writeDeliveryStatusDates(dates);
+    }
+
+    function todayLocalISO() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function parseLocalDate(value) {
+      if (!value) return null;
+
+      const cleanValue = String(value).slice(0, 10);
+      const parts = cleanValue.split('-').map(Number);
+
+      if (parts.length !== 3 || parts.some(number => Number.isNaN(number))) return null;
+
+      const [year, month, day] = parts;
+      return new Date(year, month - 1, day);
+    }
+
+    function daysBetweenToday(value) {
+      const date = parseLocalDate(value);
+      if (!date) return null;
+
+      const today = parseLocalDate(todayLocalISO());
+      const millisecondsPerDay = 24 * 60 * 60 * 1000;
+      return Math.floor((today - date) / millisecondsPerDay);
+    }
+
+    function isLojaEntregueTask(task) {
+      return task?.status === 'Loja entregue';
+    }
+
+    function isVendaFinalizadaTask(task) {
+      return task?.status === 'Venda finalizada';
+    }
+
+    function getDeliveredDays(task) {
+      return daysBetweenToday(task?.deliveryCompletedAt);
+    }
+
+    function requiresDeliveryAttention(task) {
+      const deliveredDays = getDeliveredDays(task);
+      return isLojaEntregueTask(task) && typeof deliveredDays === 'number' && deliveredDays > 7;
+    }
+
+    function getDeliveryCardClass(task) {
+      if (isVendaFinalizadaTask(task)) return ' sale-finalized-card';
+      if (requiresDeliveryAttention(task)) return ' requires-attention-card';
+      return '';
+    }
+
+    function deliveryControlBadgeTemplate(task) {
+      if (isVendaFinalizadaTask(task)) {
+        return `
+          <div class="delivery-status-badge finalized">
+            <span class="status-square">✓</span>
+            <span>
+              <strong>Venda finalizada</strong>
+              <small>Finalizada em ${escapeHTML(formatDateBR(task.saleFinalizedAt))}</small>
+            </span>
+          </div>
+        `;
+      }
+
+      if (!isLojaEntregueTask(task)) return '';
+
+      const deliveredDays = getDeliveredDays(task);
+      const deliveredDate = formatDateBR(task.deliveryCompletedAt);
+
+      if (requiresDeliveryAttention(task)) {
+        return `
+          <div class="delivery-status-badge attention">
+            <span class="status-square">!</span>
+            <span>
+              <strong>Requer atenção</strong>
+              <small>Loja entregue há ${deliveredDays} dias • entregue em ${escapeHTML(deliveredDate)}</small>
+            </span>
+          </div>
+        `;
+      }
+
+      const safeDays = typeof deliveredDays === 'number' ? deliveredDays : 0;
+
       return `
-        <article class="card" data-task-id="${escapeHTML(task.id)}" draggable="true" onclick="openTaskDetails('${escapeHTML(task.id)}')" ondragstart="dragStart(event, '${escapeHTML(task.id)}')" ondragend="dragEnd(event)">
+        <div class="delivery-status-badge">
+          <span class="status-square">⏱</span>
+          <span>
+            <strong>Loja entregue</strong>
+            <small>${safeDays}/7 dias desde a entrega • ${escapeHTML(deliveredDate)}</small>
+          </span>
+        </div>
+      `;
+    }
+
+    function deliveryControlDetailTemplate(task) {
+      if (!isLojaEntregueTask(task) && !isVendaFinalizadaTask(task)) return '';
+
+      const deliveredDays = getDeliveredDays(task);
+      const attentionText = requiresDeliveryAttention(task)
+        ? `Requer atenção: passou de 7 dias como Loja entregue.`
+        : isVendaFinalizadaTask(task)
+          ? 'Venda finalizada. O card fica verde.'
+          : 'Dentro do prazo de 7 dias.';
+
+      const finalizedClass = isVendaFinalizadaTask(task) ? ' finalized' : '';
+
+      return `
+        <div class="detail-box full delivery-control-detail${finalizedClass}">
+          <small>Controle de entrega e venda</small>
+          <strong>${escapeHTML(attentionText)}</strong>
+          <p style="margin-top:8px;">
+            Data em que apareceu como Loja entregue: <strong>${escapeHTML(formatDateBR(task.deliveryCompletedAt))}</strong><br>
+            Dias como Loja entregue: <strong>${typeof deliveredDays === 'number' ? deliveredDays : 'Não informado'}</strong><br>
+            Data em que a venda foi finalizada: <strong>${escapeHTML(formatDateBR(task.saleFinalizedAt))}</strong>
+          </p>
+        </div>
+      `;
+    }
+
+    function formatDateBR(value) {
+      if (!value) return 'Não informado';
+
+      const cleanValue = String(value).slice(0, 10);
+      const parts = cleanValue.split('-');
+
+      if (parts.length === 3 && parts.every(Boolean)) {
+        const [year, month, day] = parts;
+        return `${day}/${month}/${year}`;
+      }
+
+      return String(value);
+    }
+
+
+    function parseDateFromUpdateLine(line) {
+      const text = String(line || '');
+      const isoMatch = text.match(/(\d{4})-(\d{2})-(\d{2})/);
+
+      if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
+
+      const brMatch = text.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+      if (brMatch) return `${brMatch[3]}-${brMatch[2]}-${brMatch[1]}`;
+
+      return '';
+    }
+
+    function findStatusDateInUpdates(updates, statusText) {
+      const list = Array.isArray(updates) ? updates : [];
+      const normalizedStatus = String(statusText || '').toLowerCase();
+
+      for (let index = list.length - 1; index >= 0; index -= 1) {
+        const line = String(list[index] || '');
+        if (!line.toLowerCase().includes(normalizedStatus)) continue;
+
+        const parsedDate = parseDateFromUpdateLine(line);
+        if (parsedDate) return parsedDate;
+      }
+
+      return '';
+    }
+
+    function appendStatusUpdate(task, statusText, dateISO = todayLocalISO()) {
+      const currentUpdates = Array.isArray(task?.updates) ? [...task.updates] : [];
+      const displayDate = formatDateBR(dateISO);
+      const line = `${displayDate} - ${statusText}.`;
+      const alreadyExists = currentUpdates.some(update => String(update || '').trim() === line);
+
+      return alreadyExists ? currentUpdates : [...currentUpdates, line];
+    }
+
+    function hasSellerContData(task) {
+      return Boolean(
+        task?.deliverySellerContStatus ||
+        task?.shipmentDate ||
+        task?.pickupDate ||
+        task?.billingConfigDate ||
+        task?.accountCreationEmail ||
+        task?.deliveryPhone ||
+        task?.deliveryProductSent
+      );
+    }
+
+    function isSellerContTask(task) {
+      return task?.deliveryIsSellerCont === true;
+    }
+
+    function sellerContCheckboxBadgeTemplate(task) {
+      if (!isSellerContTask(task)) return '';
+
+      return `
+        <div class="seller-cont-checkbox-badge">
+          <span class="check-square">✓</span>
+          <span>
+            <strong>Seller Cont</strong>
+            <small>Card marcado para contabilidade</small>
+          </span>
+        </div>
+      `;
+    }
+
+    function sellerContPreviewTemplate(task) {
+      if (!isSellerContTask(task)) return '';
+
+      return `
+        <div class="seller-cont-preview">
+          <div class="seller-cont-preview-header">
+            <span>Contabilidade Seller Cont</span>
+            <strong>${escapeHTML(task.deliverySellerContStatus || task.status || 'Não informado')}</strong>
+          </div>
+
+          <div class="seller-cont-date-grid">
+            <small><b>1° envio</b>${escapeHTML(formatDateBR(task.shipmentDate))}</small>
+            <small><b>Coleta</b>${escapeHTML(formatDateBR(task.pickupDate))}</small>
+            <small><b>Faturador</b>${escapeHTML(formatDateBR(task.billingConfigDate))}</small>
+          </div>
+        </div>
+      `;
+    }
+
+    function sellerContDetailTemplate(task) {
+      if (!isSellerContTask(task)) return '';
+
+      return `
+        <div class="detail-box full seller-cont-detail">
+          <div class="seller-cont-detail-header">
+            <div>
+              <small>Contabilidade</small>
+              <strong>Seller Cont</strong>
+            </div>
+            <span class="seller-cont-detail-status">${escapeHTML(task.deliverySellerContStatus || task.status || 'Não informado')}</span>
+          </div>
+
+          <div class="seller-cont-detail-grid">
+            <div class="seller-cont-info-item">
+              <small>1° Data do 1° envio</small>
+              <strong>${escapeHTML(formatDateBR(task.shipmentDate))}</strong>
+            </div>
+
+            <div class="seller-cont-info-item">
+              <small>2° Data da coleta</small>
+              <strong>${escapeHTML(formatDateBR(task.pickupDate))}</strong>
+            </div>
+
+            <div class="seller-cont-info-item">
+              <small>3° Data que conf. faturador</small>
+              <strong>${escapeHTML(formatDateBR(task.billingConfigDate))}</strong>
+            </div>
+
+            <div class="seller-cont-info-item">
+              <small>MCID</small>
+              <strong>${escapeHTML(task.mcid || 'Não informado')}</strong>
+            </div>
+
+            <div class="seller-cont-info-item">
+              <small>Telefone</small>
+              <strong>${escapeHTML(task.deliveryPhone || 'Não informado')}</strong>
+            </div>
+
+            <div class="seller-cont-info-item">
+              <small>E-mail de criação de conta</small>
+              <strong>${escapeHTML(task.accountCreationEmail || 'Não informado')}</strong>
+            </div>
+
+            <div class="seller-cont-info-item wide">
+              <small>Produto que enviou</small>
+              <strong>${escapeHTML(task.deliveryProductSent || 'Não informado')}</strong>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function taskTemplate(task) {
+      const sellerContClass = isSellerContTask(task) ? ' seller-cont-card' : '';
+      const deliveryClass = getDeliveryCardClass(task);
+
+      return `
+        <article class="card${sellerContClass}${deliveryClass}" data-task-id="${escapeHTML(task.id)}" draggable="true" onclick="openTaskDetails('${escapeHTML(task.id)}')" ondragstart="dragStart(event, '${escapeHTML(task.id)}')" ondragend="dragEnd(event)">
           <h3>${escapeHTML(task.name)}</h3>
 
           <div class="owner-highlight">
@@ -2690,6 +3645,10 @@ body[data-theme="light"] {
             <span class="pill location-pill">${escapeHTML(getProjectName(task.project))} • ${escapeHTML(task.status)}</span>
             ${task.mcid ? `<span class="pill">MCID: ${escapeHTML(task.mcid)}</span>` : ''}
           </div>
+
+          ${deliveryControlBadgeTemplate(task)}
+          ${sellerContCheckboxBadgeTemplate(task)}
+          ${sellerContPreviewTemplate(task)}
 
           <p>${escapeHTML(task.description)}</p>
 
@@ -3040,6 +3999,7 @@ body[data-theme="light"] {
         document.getElementById('taskStatus').value = task.status || state.columns[0];
         renderTaskOwnerOptions(task.owner || '');
         document.getElementById('taskMcid').value = task.mcid || '';
+        document.getElementById('taskSellerContFlag').checked = isSellerContTask(task);
         document.getElementById('taskDescription').value = task.description || '';
         document.getElementById('taskUpdates').value = (task.updates || []).join('\n');
         currentTaskAttachments = Array.isArray(task.attachments)
@@ -3104,6 +4064,9 @@ body[data-theme="light"] {
         document.getElementById(id).value = '';
       });
 
+      const taskSellerContFlag = document.getElementById('taskSellerContFlag');
+      if (taskSellerContFlag) taskSellerContFlag.checked = false;
+
       const attachmentInput = document.getElementById('taskAttachments');
       if (attachmentInput) attachmentInput.value = '';
     }
@@ -3133,6 +4096,7 @@ body[data-theme="light"] {
 
     async function saveTaskData(name, updates) {
       const id = currentEditingTaskId || crypto.randomUUID();
+      const existingTask = currentEditingTaskId ? state.tasks.find(t => t.id === currentEditingTaskId) : null;
       const saveButton = document.getElementById('saveTaskButton');
 
       if (saveButton) {
@@ -3157,6 +4121,7 @@ body[data-theme="light"] {
       }
 
       const selectedOwner = document.getElementById('taskOwner').value.trim();
+      const taskSellerContChecked = Boolean(document.getElementById('taskSellerContFlag')?.checked);
 
       if (!selectedOwner) {
         alert('Selecione um suporte responsável na lista.');
@@ -3173,14 +4138,22 @@ body[data-theme="light"] {
         name,
         owner: selectedOwner,
         mcid: document.getElementById('taskMcid').value.trim(),
-        billing_config_date: currentEditingTaskId ? (state.tasks.find(t => t.id === currentEditingTaskId)?.billingConfigDate || null) : null,
-        shipment_date: currentEditingTaskId ? (state.tasks.find(t => t.id === currentEditingTaskId)?.shipmentDate || null) : null,
-        pickup_date: currentEditingTaskId ? (state.tasks.find(t => t.id === currentEditingTaskId)?.pickupDate || null) : null,
-        account_creation_email: currentEditingTaskId ? (state.tasks.find(t => t.id === currentEditingTaskId)?.accountCreationEmail || null) : null,
+        billing_config_date: currentEditingTaskId ? (existingTask?.billingConfigDate || null) : null,
+        shipment_date: currentEditingTaskId ? (existingTask?.shipmentDate || null) : null,
+        pickup_date: currentEditingTaskId ? (existingTask?.pickupDate || null) : null,
+        account_creation_email: currentEditingTaskId ? (existingTask?.accountCreationEmail || null) : null,
         description: document.getElementById('taskDescription').value.trim(),
         updates,
         attachments: uploadedAttachments
       };
+
+      const statusDatePatch = {};
+      const today = todayLocalISO();
+
+      if (taskData.status === 'Venda finalizada' && !existingTask?.saleFinalizedAt) {
+        statusDatePatch.finalizedAt = today;
+        statusDatePatch.deliveredAt = existingTask?.deliveryCompletedAt || today;
+      }
 
       if (currentEditingTaskId) {
         const task = state.tasks.find(t => t.id === currentEditingTaskId);
@@ -3222,6 +4195,12 @@ body[data-theme="light"] {
           shipmentDate: taskData.shipment_date || '',
           pickupDate: taskData.pickup_date || '',
           accountCreationEmail: taskData.account_creation_email || '',
+          deliveryPhone: task.deliveryPhone || '',
+          deliveryProductSent: task.deliveryProductSent || '',
+          deliverySellerContStatus: task.deliverySellerContStatus || '',
+          deliveryIsSellerCont: taskSellerContChecked,
+          deliveryCompletedAt: statusDatePatch.deliveredAt || task.deliveryCompletedAt || '',
+          saleFinalizedAt: statusDatePatch.finalizedAt || task.saleFinalizedAt || '',
           description: taskData.description,
           updates,
           attachments: uploadedAttachments
@@ -3254,10 +4233,21 @@ body[data-theme="light"] {
           shipmentDate: taskData.shipment_date || '',
           pickupDate: taskData.pickup_date || '',
           accountCreationEmail: taskData.account_creation_email || '',
+          deliveryPhone: '',
+          deliveryProductSent: '',
+          deliverySellerContStatus: taskSellerContChecked ? 'Seller Cont' : '',
+          deliveryIsSellerCont: taskSellerContChecked,
+          deliveryCompletedAt: statusDatePatch.deliveredAt || '',
+          saleFinalizedAt: statusDatePatch.finalizedAt || '',
           description: taskData.description,
           updates,
           attachments: uploadedAttachments
         });
+      }
+
+      setSellerContFlag(id, taskSellerContChecked);
+      if (Object.keys(statusDatePatch).length) {
+        setDeliveryStatusDates(id, statusDatePatch);
       }
 
       renderFilters();
@@ -3368,19 +4358,36 @@ body[data-theme="light"] {
         return;
       }
 
+      if (status === 'Venda finalizada') {
+        openSaleFinalizedModal(taskId, status);
+        return;
+      }
+
       const previousStatus = task.status;
+      const previousDeliveryCompletedAt = task.deliveryCompletedAt || '';
+      const previousSaleFinalizedAt = task.saleFinalizedAt || '';
+      const previousStoredDates = getDeliveryStatusDates(taskId);
+      const previousUpdates = Array.isArray(task.updates) ? [...task.updates] : [];
+      const today = todayLocalISO();
 
       task.status = status;
+
       playSound('drop');
       renderBoard();
 
+      const updatePayload = { status };
+
       const { error } = await supabaseClient
         .from('sp_tasks')
-        .update({ status })
+        .update(updatePayload)
         .eq('id', taskId);
 
       if (error) {
         task.status = previousStatus;
+        task.deliveryCompletedAt = previousDeliveryCompletedAt;
+        task.saleFinalizedAt = previousSaleFinalizedAt;
+        task.updates = previousUpdates;
+        replaceDeliveryStatusDates(taskId, previousStoredDates);
         renderBoard();
         showToast('Não consegui mover o card no Supabase.');
         console.error(error);
@@ -3388,6 +4395,175 @@ body[data-theme="light"] {
       }
 
       showToast(`Card movido para: ${status}`);
+    }
+
+    function openSaleFinalizedModal(taskId, status) {
+      const task = state.tasks.find(t => t.id === taskId);
+
+      if (!task) return;
+
+      pendingSaleFinalizedTaskId = taskId;
+      pendingSaleFinalizedStatus = status;
+
+      const input = document.getElementById('saleFinalizedDate');
+      if (input) input.value = task.saleFinalizedAt || todayLocalISO();
+
+      const button = document.getElementById('confirmSaleFinalizedButton');
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'Confirmar venda finalizada';
+      }
+
+      playSound('modal');
+      document.getElementById('saleFinalizedModal').classList.add('show');
+    }
+
+    function closeSaleFinalizedModal() {
+      document.getElementById('saleFinalizedModal').classList.remove('show');
+      pendingSaleFinalizedTaskId = null;
+      pendingSaleFinalizedStatus = null;
+
+      const input = document.getElementById('saleFinalizedDate');
+      if (input) input.value = '';
+
+      const button = document.getElementById('confirmSaleFinalizedButton');
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'Confirmar venda finalizada';
+      }
+    }
+
+    function montarRegistroVendaFinalizadaSupabase(task, finalizedAt) {
+      return {
+        task_id: String(task.id),
+        nome: task.name || '',
+        email: task.accountCreationEmail || null,
+        telefone: task.deliveryPhone || null,
+        produto_que_enviou: task.deliveryProductSent || null,
+        status_seller_cont: task.deliverySellerContStatus || 'Venda finalizada',
+        is_seller_cont: Boolean(task.deliveryIsSellerCont),
+        data_primeiro_envio: task.shipmentDate || null,
+        data_coleta: task.pickupDate || null,
+        data_conf_faturador: task.billingConfigDate || null,
+        delivery_completed_at: task.deliveryCompletedAt || finalizedAt || null,
+        sale_finalized_at: finalizedAt || null,
+        mcid: task.mcid || null,
+        responsavel: task.owner || null,
+        projeto_id: task.project || task.project_id || state.activeProject || null,
+        origem: 'ares',
+        enviado_para_planilha: false,
+        enviado_para_planilha_em: null,
+        deleted_at: null
+      };
+    }
+
+    async function salvarVendaFinalizadaNoSupabase(task, finalizedAt) {
+      const registro = montarRegistroVendaFinalizadaSupabase(task, finalizedAt);
+
+      return await supabaseClient
+        .from('sp_lojas_entregues')
+        .upsert(registro, { onConflict: 'task_id' })
+        .select('id')
+        .single();
+    }
+
+    async function confirmSaleFinalizedMove() {
+      const task = state.tasks.find(t => t.id === pendingSaleFinalizedTaskId);
+
+      if (!task || !pendingSaleFinalizedStatus) return;
+
+      const finalizedAt = document.getElementById('saleFinalizedDate').value;
+
+      if (!finalizedAt) {
+        alert('Preencha a data em que a venda foi finalizada.');
+        return;
+      }
+
+      const previousStatus = task.status;
+      const previousData = {
+        deliveryCompletedAt: task.deliveryCompletedAt,
+        saleFinalizedAt: task.saleFinalizedAt,
+        updates: Array.isArray(task.updates) ? [...task.updates] : []
+      };
+      const previousStoredDates = getDeliveryStatusDates(task.id);
+      const button = document.getElementById('confirmSaleFinalizedButton');
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Salvando...';
+      }
+
+      task.status = pendingSaleFinalizedStatus;
+      task.deliveryCompletedAt = task.deliveryCompletedAt || finalizedAt;
+      task.saleFinalizedAt = finalizedAt;
+      task.updates = appendStatusUpdate(task, 'Venda finalizada', finalizedAt);
+      setDeliveryStatusDates(task.id, {
+        deliveredAt: task.deliveryCompletedAt,
+        finalizedAt
+      });
+
+      renderBoard();
+
+      const { error } = await supabaseClient
+        .from('sp_tasks')
+        .update({
+          status: pendingSaleFinalizedStatus,
+          delivery_completed_at: task.deliveryCompletedAt || null,
+          sale_finalized_at: finalizedAt,
+          updates: task.updates
+        })
+        .eq('id', task.id);
+
+      if (error) {
+        task.status = previousStatus;
+        task.deliveryCompletedAt = previousData.deliveryCompletedAt;
+        task.saleFinalizedAt = previousData.saleFinalizedAt;
+        task.updates = previousData.updates;
+        replaceDeliveryStatusDates(task.id, previousStoredDates);
+        renderBoard();
+
+        if (button) {
+          button.disabled = false;
+          button.textContent = 'Confirmar venda finalizada';
+        }
+
+        showToast('Não consegui registrar a venda finalizada no Supabase. Confira as colunas delivery_completed_at e sale_finalized_at.');
+        console.error(error);
+        return;
+      }
+
+      const { error: deliveryStoreError } = await salvarVendaFinalizadaNoSupabase(task, finalizedAt);
+
+      if (deliveryStoreError) {
+        task.status = previousStatus;
+        task.deliveryCompletedAt = previousData.deliveryCompletedAt;
+        task.saleFinalizedAt = previousData.saleFinalizedAt;
+        task.updates = previousData.updates;
+        replaceDeliveryStatusDates(task.id, previousStoredDates);
+        renderBoard();
+
+        await supabaseClient
+          .from('sp_tasks')
+          .update({
+            status: previousStatus,
+            delivery_completed_at: previousData.deliveryCompletedAt || null,
+            sale_finalized_at: previousData.saleFinalizedAt || null,
+            updates: previousData.updates || []
+          })
+          .eq('id', task.id);
+
+        if (button) {
+          button.disabled = false;
+          button.textContent = 'Confirmar venda finalizada';
+        }
+
+        showToast('Não consegui salvar a venda finalizada na tabela sp_lojas_entregues. Confira as policies e colunas.');
+        console.error(deliveryStoreError);
+        return;
+      }
+
+      closeSaleFinalizedModal();
+      showToast(`Venda finalizada registrada em ${formatDateBR(finalizedAt)}.`);
     }
 
     function googleSheetsEntregaConfigurado() {
@@ -3404,9 +4580,12 @@ body[data-theme="light"] {
         telefone: deliveryData.phone || '',
         produtoQueEnviou: deliveryData.product_sent || '',
         statusSellerCont: deliveryData.seller_cont_status || status || '',
+        marcadoSellerCont: deliveryData.is_seller_cont ? 'Sim' : 'Não',
         dataPrimeiroEnvio: deliveryData.shipment_date || '',
         dataColeta: deliveryData.pickup_date || '',
         dataConfiguracaoFaturador: deliveryData.billing_config_date || '',
+        dataLojaEntregue: deliveryData.delivery_completed_at || '',
+        dataVendaFinalizada: deliveryData.sale_finalized_at || '',
         mcid: deliveryData.mcid || '',
         responsavel: task.owner || '',
         projeto: task.project || task.project_id || state.activeProject || ''
@@ -3448,9 +4627,12 @@ body[data-theme="light"] {
         telefone: deliveryData.phone || null,
         produto_que_enviou: deliveryData.product_sent || null,
         status_seller_cont: deliveryData.seller_cont_status || status || null,
+        is_seller_cont: Boolean(deliveryData.is_seller_cont),
         data_primeiro_envio: deliveryData.shipment_date || null,
         data_coleta: deliveryData.pickup_date || null,
         data_conf_faturador: deliveryData.billing_config_date || null,
+        delivery_completed_at: deliveryData.delivery_completed_at || null,
+        sale_finalized_at: deliveryData.sale_finalized_at || null,
         mcid: deliveryData.mcid || null,
         responsavel: task.owner || null,
         projeto_id: task.project || task.project_id || state.activeProject || null,
@@ -3489,6 +4671,7 @@ body[data-theme="light"] {
       pendingDeliveryTaskId = taskId;
       pendingDeliveryStatus = status;
 
+      document.getElementById('deliveryCompletedDate').value = task.deliveryCompletedAt || todayLocalISO();
       document.getElementById('deliveryBillingDate').value = task.billingConfigDate || '';
       document.getElementById('deliveryShipmentDate').value = task.shipmentDate || '';
       document.getElementById('deliveryPickupDate').value = task.pickupDate || '';
@@ -3497,6 +4680,7 @@ body[data-theme="light"] {
       document.getElementById('deliveryPhone').value = task.deliveryPhone || '';
       document.getElementById('deliveryProductSent').value = task.deliveryProductSent || '';
       document.getElementById('deliverySellerContStatus').value = task.deliverySellerContStatus || status || 'Loja entregue';
+      document.getElementById('deliverySellerContFlag').checked = isSellerContTask(task);
 
       const button = document.getElementById('confirmDeliveryButton');
       if (button) {
@@ -3514,6 +4698,7 @@ body[data-theme="light"] {
       pendingDeliveryStatus = null;
 
       [
+        'deliveryCompletedDate',
         'deliveryBillingDate',
         'deliveryShipmentDate',
         'deliveryPickupDate',
@@ -3526,6 +4711,9 @@ body[data-theme="light"] {
         const input = document.getElementById(id);
         if (input) input.value = '';
       });
+
+      const sellerContFlag = document.getElementById('deliverySellerContFlag');
+      if (sellerContFlag) sellerContFlag.checked = true;
     }
 
 
@@ -3583,6 +4771,7 @@ body[data-theme="light"] {
       if (!task || !pendingDeliveryStatus) return;
 
       const deliveryData = {
+        delivery_completed_at: document.getElementById('deliveryCompletedDate').value,
         billing_config_date: document.getElementById('deliveryBillingDate').value,
         shipment_date: document.getElementById('deliveryShipmentDate').value,
         pickup_date: document.getElementById('deliveryPickupDate').value,
@@ -3590,10 +4779,12 @@ body[data-theme="light"] {
         account_creation_email: document.getElementById('deliveryAccountEmail').value.trim(),
         phone: document.getElementById('deliveryPhone').value.trim(),
         product_sent: document.getElementById('deliveryProductSent').value.trim(),
-        seller_cont_status: document.getElementById('deliverySellerContStatus').value.trim()
+        seller_cont_status: document.getElementById('deliverySellerContStatus').value.trim(),
+        is_seller_cont: document.getElementById('deliverySellerContFlag')?.checked !== false
       };
 
       const requiredFields = [
+        deliveryData.delivery_completed_at,
         deliveryData.billing_config_date,
         deliveryData.shipment_date,
         deliveryData.pickup_date,
@@ -3627,8 +4818,13 @@ body[data-theme="light"] {
         accountCreationEmail: task.accountCreationEmail,
         deliveryPhone: task.deliveryPhone,
         deliveryProductSent: task.deliveryProductSent,
-        deliverySellerContStatus: task.deliverySellerContStatus
+        deliverySellerContStatus: task.deliverySellerContStatus,
+        deliveryIsSellerCont: task.deliveryIsSellerCont,
+        deliveryCompletedAt: task.deliveryCompletedAt,
+        saleFinalizedAt: task.saleFinalizedAt,
+        updates: Array.isArray(task.updates) ? [...task.updates] : []
       };
+      const previousStoredDates = getDeliveryStatusDates(task.id);
 
       const deliveredStatus = pendingDeliveryStatus;
       const button = document.getElementById('confirmDeliveryButton');
@@ -3646,6 +4842,12 @@ body[data-theme="light"] {
       task.deliveryPhone = deliveryData.phone;
       task.deliveryProductSent = deliveryData.product_sent;
       task.deliverySellerContStatus = deliveryData.seller_cont_status;
+      task.deliveryIsSellerCont = deliveryData.is_seller_cont;
+      task.deliveryCompletedAt = deliveryData.delivery_completed_at;
+      task.saleFinalizedAt = '';
+      task.updates = appendStatusUpdate(task, 'Loja entregue', task.deliveryCompletedAt);
+      setSellerContFlag(task.id, deliveryData.is_seller_cont);
+      setDeliveryStatusDates(task.id, { deliveredAt: task.deliveryCompletedAt });
 
       renderBoard();
 
@@ -3653,6 +4855,8 @@ body[data-theme="light"] {
         billing_config_date: deliveryData.billing_config_date,
         shipment_date: deliveryData.shipment_date,
         pickup_date: deliveryData.pickup_date,
+        delivery_completed_at: deliveryData.delivery_completed_at,
+        sale_finalized_at: null,
         mcid: deliveryData.mcid,
         account_creation_email: deliveryData.account_creation_email
       };
@@ -3661,6 +4865,7 @@ body[data-theme="light"] {
         .from('sp_tasks')
         .update({
           status: deliveredStatus,
+          updates: task.updates,
           ...supabaseDeliveryData
         })
         .eq('id', task.id);
@@ -3675,6 +4880,12 @@ body[data-theme="light"] {
         task.deliveryPhone = previousData.deliveryPhone;
         task.deliveryProductSent = previousData.deliveryProductSent;
         task.deliverySellerContStatus = previousData.deliverySellerContStatus;
+        task.deliveryIsSellerCont = previousData.deliveryIsSellerCont;
+        task.deliveryCompletedAt = previousData.deliveryCompletedAt;
+        task.saleFinalizedAt = previousData.saleFinalizedAt;
+        task.updates = previousData.updates;
+        setSellerContFlag(task.id, previousData.deliveryIsSellerCont);
+        replaceDeliveryStatusDates(task.id, previousStoredDates);
         renderBoard();
 
         if (button) {
@@ -3703,6 +4914,12 @@ body[data-theme="light"] {
         task.deliveryPhone = previousData.deliveryPhone;
         task.deliveryProductSent = previousData.deliveryProductSent;
         task.deliverySellerContStatus = previousData.deliverySellerContStatus;
+        task.deliveryIsSellerCont = previousData.deliveryIsSellerCont;
+        task.deliveryCompletedAt = previousData.deliveryCompletedAt;
+        task.saleFinalizedAt = previousData.saleFinalizedAt;
+        task.updates = previousData.updates;
+        setSellerContFlag(task.id, previousData.deliveryIsSellerCont);
+        replaceDeliveryStatusDates(task.id, previousStoredDates);
         renderBoard();
 
         await supabaseClient
@@ -3713,7 +4930,10 @@ body[data-theme="light"] {
             billing_config_date: previousData.billingConfigDate || null,
             shipment_date: previousData.shipmentDate || null,
             pickup_date: previousData.pickupDate || null,
-            account_creation_email: previousData.accountCreationEmail || null
+            account_creation_email: previousData.accountCreationEmail || null,
+            delivery_completed_at: previousData.deliveryCompletedAt || null,
+            sale_finalized_at: previousData.saleFinalizedAt || null,
+            updates: previousData.updates || []
           })
           .eq('id', task.id);
 
@@ -3855,6 +5075,9 @@ body[data-theme="light"] {
             <strong>${escapeHTML(getProjectName(task.project))}</strong>
           </div>
 
+          ${sellerContDetailTemplate(task)}
+          ${deliveryControlDetailTemplate(task)}
+
           <div class="detail-box">
             <small>E-mail criação de conta</small>
             <strong>${escapeHTML(task.accountCreationEmail || 'Não informado')}</strong>
@@ -3877,17 +5100,17 @@ body[data-theme="light"] {
 
           <div class="detail-box">
             <small>1° Data do 1° envio</small>
-            <strong>${escapeHTML(task.shipmentDate || 'Não informado')}</strong>
+            <strong>${escapeHTML(formatDateBR(task.shipmentDate))}</strong>
           </div>
 
           <div class="detail-box">
             <small>2° Data da coleta</small>
-            <strong>${escapeHTML(task.pickupDate || 'Não informado')}</strong>
+            <strong>${escapeHTML(formatDateBR(task.pickupDate))}</strong>
           </div>
 
           <div class="detail-box">
             <small>3° Data que conf faturador</small>
-            <strong>${escapeHTML(task.billingConfigDate || 'Não informado')}</strong>
+            <strong>${escapeHTML(formatDateBR(task.billingConfigDate))}</strong>
           </div>
 
           <div class="detail-box full">
