@@ -1920,6 +1920,21 @@ body[data-theme="light"] {
           <label>E-mail de criação de conta</label>
           <input id="deliveryAccountEmail" type="email" placeholder="email@exemplo.com" required />
         </div>
+
+        <div class="field">
+          <label>Telefone</label>
+          <input id="deliveryPhone" type="tel" placeholder="Ex.: (11) 99999-9999" required />
+        </div>
+
+        <div class="field">
+          <label>Status Seller Cont</label>
+          <input id="deliverySellerContStatus" placeholder="Ex.: Loja entregue" required />
+        </div>
+
+        <div class="field full">
+          <label>Produto que enviou</label>
+          <input id="deliveryProductSent" placeholder="Ex.: Kit banheiro, fruteira, gancho adesivo..." required />
+        </div>
       </div>
 
       <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
@@ -2013,6 +2028,10 @@ body[data-theme="light"] {
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
     const PRINTS_BUCKET = 'task-prints';
+
+    // Cole aqui o link do Web App gerado no Google Apps Script.
+    // Exemplo: https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxx/exec
+    const GOOGLE_SHEETS_WEB_APP_URL = 'COLE_AQUI_O_LINK_DO_APPS_SCRIPT';
 
     const defaultProjects = [
       { id: '2026-05', name: 'Maio 2026', description: 'Pasta mensal de projetos', position: 1 },
@@ -3332,6 +3351,44 @@ body[data-theme="light"] {
       showToast(`Card movido para: ${status}`);
     }
 
+    function googleSheetsEntregaConfigurado() {
+      const url = String(GOOGLE_SHEETS_WEB_APP_URL || '').trim();
+      return Boolean(url && !url.includes('COLE_AQUI') && url.startsWith('https://script.google.com/'));
+    }
+
+    function montarPayloadEntregaParaPlanilha(task, deliveryData, status) {
+      return {
+        nome: task.name || '',
+        email: deliveryData.account_creation_email || '',
+        telefone: deliveryData.phone || '',
+        produtoQueEnviou: deliveryData.product_sent || '',
+        statusSellerCont: deliveryData.seller_cont_status || status || '',
+        dataPrimeiroEnvio: deliveryData.shipment_date || '',
+        dataColeta: deliveryData.pickup_date || '',
+        dataConfiguracaoFaturador: deliveryData.billing_config_date || '',
+        mcid: deliveryData.mcid || '',
+        responsavel: task.owner || '',
+        projeto: task.project_id || state.activeProject || ''
+      };
+    }
+
+    async function enviarEntregaParaPlanilha(task, deliveryData, status) {
+      if (!googleSheetsEntregaConfigurado()) {
+        console.warn('Link do Google Apps Script ainda não configurado em GOOGLE_SHEETS_WEB_APP_URL.');
+        return { configured: false, sent: false };
+      }
+
+      const payload = montarPayloadEntregaParaPlanilha(task, deliveryData, status);
+
+      await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(payload)
+      });
+
+      return { configured: true, sent: true };
+    }
+
     function openDeliveryModal(taskId, status) {
       const task = state.tasks.find(t => t.id === taskId);
 
@@ -3345,6 +3402,9 @@ body[data-theme="light"] {
       document.getElementById('deliveryPickupDate').value = task.pickupDate || '';
       document.getElementById('deliveryMcid').value = task.mcid || '';
       document.getElementById('deliveryAccountEmail').value = task.accountCreationEmail || '';
+      document.getElementById('deliveryPhone').value = task.deliveryPhone || '';
+      document.getElementById('deliveryProductSent').value = task.deliveryProductSent || '';
+      document.getElementById('deliverySellerContStatus').value = task.deliverySellerContStatus || status || 'Loja entregue';
 
       const button = document.getElementById('confirmDeliveryButton');
       if (button) {
@@ -3361,7 +3421,16 @@ body[data-theme="light"] {
       pendingDeliveryTaskId = null;
       pendingDeliveryStatus = null;
 
-      ['deliveryBillingDate', 'deliveryShipmentDate', 'deliveryPickupDate', 'deliveryMcid', 'deliveryAccountEmail'].forEach(id => {
+      [
+        'deliveryBillingDate',
+        'deliveryShipmentDate',
+        'deliveryPickupDate',
+        'deliveryMcid',
+        'deliveryAccountEmail',
+        'deliveryPhone',
+        'deliveryProductSent',
+        'deliverySellerContStatus'
+      ].forEach(id => {
         const input = document.getElementById(id);
         if (input) input.value = '';
       });
@@ -3426,10 +3495,24 @@ body[data-theme="light"] {
         shipment_date: document.getElementById('deliveryShipmentDate').value,
         pickup_date: document.getElementById('deliveryPickupDate').value,
         mcid: document.getElementById('deliveryMcid').value.trim(),
-        account_creation_email: document.getElementById('deliveryAccountEmail').value.trim()
+        account_creation_email: document.getElementById('deliveryAccountEmail').value.trim(),
+        phone: document.getElementById('deliveryPhone').value.trim(),
+        product_sent: document.getElementById('deliveryProductSent').value.trim(),
+        seller_cont_status: document.getElementById('deliverySellerContStatus').value.trim()
       };
 
-      const missingField = Object.values(deliveryData).some(value => !String(value || '').trim());
+      const requiredFields = [
+        deliveryData.billing_config_date,
+        deliveryData.shipment_date,
+        deliveryData.pickup_date,
+        deliveryData.mcid,
+        deliveryData.account_creation_email,
+        deliveryData.phone,
+        deliveryData.product_sent,
+        deliveryData.seller_cont_status
+      ];
+
+      const missingField = requiredFields.some(value => !String(value || '').trim());
 
       if (missingField) {
         alert('Preencha todos os campos obrigatórios para entregar a loja.');
@@ -3449,29 +3532,44 @@ body[data-theme="light"] {
         billingConfigDate: task.billingConfigDate,
         shipmentDate: task.shipmentDate,
         pickupDate: task.pickupDate,
-        accountCreationEmail: task.accountCreationEmail
+        accountCreationEmail: task.accountCreationEmail,
+        deliveryPhone: task.deliveryPhone,
+        deliveryProductSent: task.deliveryProductSent,
+        deliverySellerContStatus: task.deliverySellerContStatus
       };
 
+      const deliveredStatus = pendingDeliveryStatus;
       const button = document.getElementById('confirmDeliveryButton');
       if (button) {
         button.disabled = true;
         button.textContent = 'Salvando...';
       }
 
-      task.status = pendingDeliveryStatus;
+      task.status = deliveredStatus;
       task.mcid = deliveryData.mcid;
       task.billingConfigDate = deliveryData.billing_config_date;
       task.shipmentDate = deliveryData.shipment_date;
       task.pickupDate = deliveryData.pickup_date;
       task.accountCreationEmail = deliveryData.account_creation_email;
+      task.deliveryPhone = deliveryData.phone;
+      task.deliveryProductSent = deliveryData.product_sent;
+      task.deliverySellerContStatus = deliveryData.seller_cont_status;
 
       renderBoard();
+
+      const supabaseDeliveryData = {
+        billing_config_date: deliveryData.billing_config_date,
+        shipment_date: deliveryData.shipment_date,
+        pickup_date: deliveryData.pickup_date,
+        mcid: deliveryData.mcid,
+        account_creation_email: deliveryData.account_creation_email
+      };
 
       const { error } = await supabaseClient
         .from('sp_tasks')
         .update({
-          status: pendingDeliveryStatus,
-          ...deliveryData
+          status: deliveredStatus,
+          ...supabaseDeliveryData
         })
         .eq('id', task.id);
 
@@ -3482,6 +3580,9 @@ body[data-theme="light"] {
         task.shipmentDate = previousData.shipmentDate;
         task.pickupDate = previousData.pickupDate;
         task.accountCreationEmail = previousData.accountCreationEmail;
+        task.deliveryPhone = previousData.deliveryPhone;
+        task.deliveryProductSent = previousData.deliveryProductSent;
+        task.deliverySellerContStatus = previousData.deliverySellerContStatus;
         renderBoard();
 
         if (button) {
@@ -3494,11 +3595,35 @@ body[data-theme="light"] {
         return;
       }
 
+      let sheetResult = { configured: false, sent: false };
+      let sheetError = null;
+
+      if (button) {
+        button.textContent = 'Enviando para a planilha...';
+      }
+
+      try {
+        sheetResult = await enviarEntregaParaPlanilha(task, deliveryData, deliveredStatus);
+      } catch (error) {
+        sheetError = error;
+        console.error('Erro ao enviar dados para Google Sheets:', error);
+      }
+
       closeDeliveryModal();
       launchDeliveryCelebration();
-      showToast('Loja entregue com dados obrigatórios salvos.');
-    }
 
+      if (sheetError) {
+        showToast('Loja entregue salva, mas não consegui enviar os dados para a planilha. Verifique o Apps Script.');
+        return;
+      }
+
+      if (!sheetResult.configured) {
+        showToast('Loja entregue salva. Agora cole o link do Apps Script em GOOGLE_SHEETS_WEB_APP_URL para ativar a planilha.');
+        return;
+      }
+
+      showToast('Loja entregue salva e enviada para a planilha.');
+    }
     function scrollBoard(direction) {
       const boardElement = document.getElementById('board');
       const amount = Math.max(320, Math.floor(boardElement.clientWidth * 0.75));
