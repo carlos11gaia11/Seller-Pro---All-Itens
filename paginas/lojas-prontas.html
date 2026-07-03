@@ -1638,6 +1638,333 @@
       opacity: 0.20;
     }
 
+
+
+    /* Navegação por cards de situação */
+    .overview-card.is-clickable {
+      cursor: pointer;
+    }
+
+    .overview-card.is-clickable:focus-visible {
+      outline: 4px solid rgba(249, 115, 22, 0.28);
+      outline-offset: 3px;
+    }
+
+    .overview-card.active-filter {
+      border-color: rgba(249, 115, 22, 0.74) !important;
+      box-shadow: 0 18px 48px rgba(249, 115, 22, 0.20) !important;
+    }
+
+    .overview-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+      position: relative;
+      z-index: 1;
+    }
+
+    .table-card.table-focus {
+      border-color: rgba(249, 115, 22, 0.72) !important;
+      box-shadow: 0 20px 58px rgba(249, 115, 22, 0.18) !important;
+    }
+
+
+
+    /* Ajustes finais solicitados: alerta de prazo, tema escuro azul e tema claro menos claro */
+    .metric-danger {
+      border-color: rgba(220, 38, 38, 0.42) !important;
+      background: linear-gradient(180deg, rgba(254, 242, 242, 0.98), rgba(255, 255, 255, 0.94)) !important;
+    }
+
+    .metric-danger .overview-icon {
+      background: #fee2e2 !important;
+      color: #b91c1c !important;
+    }
+
+    .metric-danger .overview-label,
+    .metric-danger .overview-value,
+    .metric-danger .overview-note {
+      color: #b91c1c !important;
+    }
+
+    .days-waiting-badge {
+      background: #f8fafc;
+      color: #334155;
+      border-color: #cbd5e1;
+    }
+
+    .danger-badge,
+    tr.waiting-sale-danger .days-waiting-badge {
+      background: #fee2e2 !important;
+      color: #991b1b !important;
+      border-color: #fecaca !important;
+    }
+
+    tr.waiting-sale-danger td {
+      background: #fff1f2 !important;
+    }
+
+    tr.waiting-sale-danger .store-name,
+    tr.waiting-sale-danger .table-highlight {
+      color: #991b1b !important;
+    }
+
+    body:not(.theme-dark) {
+      --body-bg:
+        radial-gradient(circle at 8% 0%, rgba(59, 130, 246, 0.13) 0, transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(30, 41, 59, 0.10) 0, transparent 26%),
+        linear-gradient(180deg, #e2e8f0 0%, #dbe3ef 100%);
+      --card: rgba(248, 250, 252, 0.98);
+      --glass: rgba(226, 232, 240, 0.90);
+      --text: #0f172a;
+      --muted: #475569;
+      --line: #cbd5e1;
+      --shadow: 0 16px 42px rgba(15, 23, 42, 0.13);
+    }
+
+    body:not(.theme-dark) .hero {
+      background: linear-gradient(135deg, #e2e8f0 0%, #f8fafc 46%, #dbeafe 100%);
+      border-color: #cbd5e1;
+    }
+
+    body:not(.theme-dark) .panel,
+    body:not(.theme-dark) .overview-card,
+    body:not(.theme-dark) .support-card,
+    body:not(.theme-dark) .table-card {
+      background: rgba(248, 250, 252, 0.98);
+      border-color: #cbd5e1;
+    }
+
+    body:not(.theme-dark) .table-filters,
+    body:not(.theme-dark) .table-top,
+    body:not(.theme-dark) .tabs,
+    body:not(.theme-dark) .table-summary {
+      background: rgba(226, 232, 240, 0.86);
+      border-color: #cbd5e1;
+    }
+
+    body:not(.theme-dark) td {
+      background: rgba(248, 250, 252, 0.94);
+    }
+
+    body:not(.theme-dark) tr:hover td {
+      background: #dbeafe;
+    }
+
+    body.theme-dark {
+      --bg: #020617;
+      --card: rgba(15, 23, 42, 0.92);
+      --glass: rgba(15, 23, 42, 0.84);
+      --text: #e0f2fe;
+      --muted: #bfdbfe;
+      --line: rgba(59, 130, 246, 0.26);
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --accent: #60a5fa;
+      --blue-soft: rgba(59, 130, 246, 0.16);
+      --shadow: 0 22px 65px rgba(2, 6, 23, 0.55);
+      --hero-gradient: linear-gradient(135deg, #020617 0%, #0f172a 48%, #1d4ed8 135%);
+      --body-bg:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.28) 0, transparent 32%),
+        radial-gradient(circle at top right, rgba(96, 165, 250, 0.16) 0, transparent 28%),
+        linear-gradient(180deg, #020617 0%, #0f172a 100%);
+    }
+
+    body.theme-dark .hero,
+    body.theme-dark .panel,
+    body.theme-dark .overview-card,
+    body.theme-dark .support-card,
+    body.theme-dark .table-card {
+      border-color: rgba(59, 130, 246, 0.30);
+    }
+
+    body.theme-dark .hero::after {
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.34), transparent 66%);
+    }
+
+    body.theme-dark .hero-badge,
+    body.theme-dark .theme-toggle,
+    body.theme-dark .btn-light,
+    body.theme-dark .summary-chip,
+    body.theme-dark .tab-btn {
+      background: rgba(30, 41, 59, 0.92);
+      border-color: rgba(96, 165, 250, 0.28);
+      color: #dbeafe;
+    }
+
+    body.theme-dark .btn-primary,
+    body.theme-dark .tab-btn.active,
+    body.theme-dark .support-total,
+    body.theme-dark .support-avatar,
+    body.theme-dark .overview-icon {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+      color: #eff6ff !important;
+      box-shadow: 0 14px 32px rgba(37, 99, 235, 0.30) !important;
+    }
+
+    body.theme-dark .table-filters,
+    body.theme-dark .table-top,
+    body.theme-dark .tabs,
+    body.theme-dark .table-summary {
+      background: rgba(15, 23, 42, 0.86);
+      border-color: rgba(59, 130, 246, 0.24);
+    }
+
+    body.theme-dark th {
+      background: #0f172a;
+      color: #bfdbfe;
+      border-bottom-color: rgba(59, 130, 246, 0.28);
+    }
+
+    body.theme-dark td {
+      background: rgba(15, 23, 42, 0.80);
+      color: #dbeafe;
+      border-bottom-color: rgba(59, 130, 246, 0.16);
+    }
+
+    body.theme-dark tr:hover td {
+      background: rgba(37, 99, 235, 0.16);
+    }
+
+    body.theme-dark .badge,
+    body.theme-dark .andamento-badge,
+    body.theme-dark .mini-blue {
+      background: rgba(37, 99, 235, 0.16);
+      color: #bfdbfe;
+      border-color: rgba(96, 165, 250, 0.30);
+    }
+
+    body.theme-dark .overview-card.active-filter {
+      border-color: rgba(96, 165, 250, 0.78) !important;
+      box-shadow: 0 18px 48px rgba(37, 99, 235, 0.28) !important;
+    }
+
+    body.theme-dark .table-card.table-focus {
+      border-color: rgba(96, 165, 250, 0.74) !important;
+      box-shadow: 0 20px 58px rgba(37, 99, 235, 0.24) !important;
+    }
+
+    body.theme-dark .field input,
+    body.theme-dark .field select {
+      background: #020617;
+      color: #e0f2fe;
+      border-color: rgba(96, 165, 250, 0.28);
+    }
+
+    body.theme-dark .field input:focus,
+    body.theme-dark .field select:focus,
+    body.theme-dark .overview-card.is-clickable:focus-visible {
+      border-color: rgba(96, 165, 250, 0.78);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.16);
+      outline-color: rgba(96, 165, 250, 0.35);
+    }
+
+    body.theme-dark .orb-one,
+    body.theme-dark .orb-two,
+    body.theme-dark .orb-three {
+      background: rgba(37, 99, 235, 0.22);
+    }
+
+    body.theme-dark .scroll::-webkit-scrollbar-thumb,
+    body.theme-dark .status-list::-webkit-scrollbar-thumb,
+    body.theme-dark .tabs::-webkit-scrollbar-thumb {
+      background: #1d4ed8;
+    }
+
+    body.theme-dark .metric-danger {
+      background: linear-gradient(180deg, rgba(69, 10, 10, 0.72), rgba(15, 23, 42, 0.94)) !important;
+      border-color: rgba(248, 113, 113, 0.55) !important;
+    }
+
+    body.theme-dark tr.waiting-sale-danger td {
+      background: rgba(127, 29, 29, 0.34) !important;
+    }
+
+
+    /* Remoção visual de tons laranja no tema escuro */
+    body.theme-dark .hero {
+      box-shadow: 0 26px 82px rgba(37, 99, 235, 0.18), 0 24px 65px rgba(0, 0, 0, 0.48) !important;
+    }
+
+    body.theme-dark .hero::before,
+    body.theme-dark .panel::before,
+    body.theme-dark .overview-card::before,
+    body.theme-dark .support-card::before,
+    body.theme-dark .table-card::before {
+      background: linear-gradient(135deg, rgba(96, 165, 250, 0.52), rgba(255,255,255,0.06), rgba(37, 99, 235, 0.18)) !important;
+    }
+
+    body.theme-dark .panel-sub,
+    body.theme-dark .muted,
+    body.theme-dark .overview-label,
+    body.theme-dark .store-sub,
+    body.theme-dark .status-percent,
+    body.theme-dark .support-subtitle,
+    body.theme-dark .status-name,
+    body.theme-dark .status-index,
+    body.theme-dark .field label,
+    body.theme-dark .overview-note {
+      color: #bfdbfe !important;
+    }
+
+    body.theme-dark .panel-title-row h2,
+    body.theme-dark .section-title h2,
+    body.theme-dark .table-top h2,
+    body.theme-dark .overview-value,
+    body.theme-dark .store-name,
+    body.theme-dark .support-name,
+    body.theme-dark .status-count,
+    body.theme-dark .table-highlight {
+      color: #e0f2fe !important;
+    }
+
+    body.theme-dark .btn-light:hover,
+    body.theme-dark .tab-btn:hover {
+      background: rgba(37, 99, 235, 0.20) !important;
+      color: #eff6ff !important;
+    }
+
+    body.theme-dark .glow-hover:hover,
+    body.theme-dark .overview-card:hover,
+    body.theme-dark .support-card:hover {
+      border-color: rgba(96, 165, 250, 0.48) !important;
+      box-shadow:
+        0 24px 68px rgba(37, 99, 235, 0.18),
+        0 0 0 1px rgba(255, 255, 255, 0.06) inset !important;
+    }
+
+    body.theme-dark .animated-count {
+      text-shadow: 0 10px 32px rgba(37, 99, 235, 0.28) !important;
+    }
+
+    body.theme-dark .progress-bar {
+      background: #020617 !important;
+      border-color: rgba(96, 165, 250, 0.18) !important;
+    }
+
+    body.theme-dark .status-item {
+      border-bottom-color: rgba(96, 165, 250, 0.16) !important;
+    }
+
+    body.theme-dark .scroll::-webkit-scrollbar-track,
+    body.theme-dark .status-list::-webkit-scrollbar-track,
+    body.theme-dark .tabs::-webkit-scrollbar-track {
+      background: #020617 !important;
+    }
+
+    body.theme-dark .metric-danger .overview-icon {
+      background: #7f1d1d !important;
+      color: #fecaca !important;
+      box-shadow: none !important;
+    }
+
+    body.theme-dark .metric-danger .overview-label,
+    body.theme-dark .metric-danger .overview-value,
+    body.theme-dark .metric-danger .overview-note {
+      color: #fecaca !important;
+    }
+
   </style>
 </head>
 
@@ -1655,8 +1982,8 @@
         <div>
           <h1>Painel Loja Pronta</h1>
           <p>
-            Visualize o total de lojas, acompanhe o que está em andamento e veja
-            as lojas finalizadas pela regra correta: vendas concluídas + cancelamentos.
+            Visualize apenas as lojas pendentes, acompanhe cada situação do processo
+            e clique nos cards para abrir o grupo detalhado de lojas daquela etapa.
           </p>
         </div>
 
@@ -1676,7 +2003,7 @@
         <div>
           <h2>Filtros gerais</h2>
           <div class="panel-sub">
-            Os filtros gerais afetam os cards de suporte e a tabela. Os cards do topo mostram o total geral da base.
+            Os filtros gerais afetam os cards do topo, os cards de suporte e a tabela.
           </div>
         </div>
       </div>
@@ -1711,9 +2038,7 @@
         <div class="field">
           <label for="stageFilter">Etapa</label>
           <select id="stageFilter">
-            <option value="">Todas</option>
-            <option value="andamento">Em andamento</option>
-            <option value="finalizada">Finalizadas</option>
+            <option value="andamento">Lojas pendentes</option>
           </select>
         </div>
 
@@ -1737,104 +2062,88 @@
       </div>
     </section>
 
-    <section class="overview">
-      <div class="overview-card metric-total">
-        <div class="overview-icon">🏬</div>
-        <div class="overview-label">Total de lojas</div>
-        <div class="overview-value" id="totalStores">0</div>
+    <section class="overview" id="overviewCards">
+      <div class="overview-card metric-andamento is-clickable" data-stage-target="andamento" title="Ver lojas pendentes">
+        <div class="overview-icon">⏳</div>
+        <div class="overview-label">Lojas pendentes</div>
+        <div class="overview-value" id="totalLojasPendentes">0</div>
       </div>
 
-      <div class="overview-card metric-finalizadas">
-        <div class="overview-icon">✅</div>
-        <div class="overview-label">Lojas finalizadas</div>
-        <div class="overview-value" id="totalLojasFinalizadas">0</div>
-      </div>
-
-      <div class="overview-card metric-andamento">
-        <div class="overview-icon">🔄</div>
-        <div class="overview-label">Lojas em andamento</div>
-        <div class="overview-value" id="totalLojasAndamento">0</div>
-      </div>
-
-      <div class="overview-card">
-        <div class="overview-icon">💰</div>
-        <div class="overview-label">Vendas finalizadas</div>
-        <div class="overview-value" id="totalVendaFinalizada">0</div>
-      </div>
-
-      <div class="overview-card">
+      <div class="overview-card is-clickable" data-status-target="totalLojaAguardandoVenda" title="Ver lojas aguardando venda">
         <div class="overview-icon">📦</div>
-        <div class="overview-label">Lojas entregues</div>
-        <div class="overview-value" id="totalLojaEntregue">0</div>
+        <div class="overview-label">Loja aguardando venda</div>
+        <div class="overview-value" id="totalLojaAguardandoVenda">0</div>
       </div>
 
-      <div class="overview-card">
+      <div class="overview-card metric-danger is-clickable" data-aging-target="aguardandoVendaMais7" title="Ver lojas aguardando venda há mais de 7 dias">
+        <div class="overview-icon">🔴</div>
+        <div class="overview-label">Aguardando venda +7 dias</div>
+        <div class="overview-value" id="totalAguardandoVendaMais7">0</div>
+        <div class="overview-note">Lojas acima do prazo de atenção</div>
+      </div>
+
+      <div class="overview-card is-clickable" data-status-target="totalChamadosEspeciais" title="Ver chamados especiais">
         <div class="overview-icon">🚨</div>
         <div class="overview-label">Chamados especiais</div>
         <div class="overview-value" id="totalChamadosEspeciais">0</div>
       </div>
 
-      <div class="overview-card">
+      <div class="overview-card is-clickable" data-status-target="totalConfiguracaoFaturador" title="Ver configuração do faturador">
         <div class="overview-icon">🧾</div>
         <div class="overview-label">Configuração do faturador</div>
         <div class="overview-value" id="totalConfiguracaoFaturador">0</div>
       </div>
 
-      <div class="overview-card">
+      <div class="overview-card is-clickable" data-status-target="totalEnvioFba" title="Ver envio ao FBA">
         <div class="overview-icon">📦</div>
         <div class="overview-label">Envio ao FBA</div>
         <div class="overview-value" id="totalEnvioFba">0</div>
       </div>
 
-      <div class="overview-card">
+      <div class="overview-card is-clickable" data-status-target="totalCriacaoConta" title="Ver criação de conta">
         <div class="overview-icon">👤</div>
         <div class="overview-label">Criação de conta</div>
         <div class="overview-value" id="totalCriacaoConta">0</div>
       </div>
 
-      <div class="overview-card">
+      <div class="overview-card is-clickable" data-status-target="totalPreenchimentoFormulario" title="Ver preenchimento do formulário">
         <div class="overview-icon">📝</div>
         <div class="overview-label">Preenchimento do formulário</div>
         <div class="overview-value" id="totalPreenchimentoFormulario">0</div>
       </div>
 
-      <div class="overview-card">
-        <div class="overview-icon">❌</div>
-        <div class="overview-label">Cancelados</div>
-        <div class="overview-value" id="totalCancelados">0</div>
-      </div>
-
-      <div class="overview-card">
+      <div class="overview-card is-clickable" data-status-target="totalCongelado" title="Ver lojas congeladas">
         <div class="overview-icon">🧊</div>
         <div class="overview-label">Congelado</div>
         <div class="overview-value" id="totalCongelado">0</div>
       </div>
 
-      <div class="overview-card">
+      <div class="overview-card is-clickable" data-status-target="totalAguardandoCnpj" title="Ver lojas aguardando CNPJ">
         <div class="overview-icon">🏢</div>
         <div class="overview-label">Aguardando CNPJ</div>
         <div class="overview-value" id="totalAguardandoCnpj">0</div>
+        <div class="overview-note">Seller cont: <span id="totalAguardandoCnpjSellerCont">0</span></div>
       </div>
 
-      <div class="overview-card">
+      <div class="overview-card is-clickable" data-status-target="totalCriacaoGrupo" title="Ver criação de grupo">
         <div class="overview-icon">👥</div>
         <div class="overview-label">Criação de grupo</div>
         <div class="overview-value" id="totalCriacaoGrupo">0</div>
       </div>
 
-      <div class="overview-card">
+      <div class="overview-card is-clickable" data-status-target="totalCallBriefing" title="Ver call de briefing">
         <div class="overview-icon">🎧</div>
         <div class="overview-label">Call de briefing</div>
         <div class="overview-value" id="totalCallBriefing">0</div>
       </div>
 
-      <div class="overview-card">
+      <div class="overview-card is-clickable" data-status-target="totalCriacaoAnuncio" title="Ver criação de anúncio">
         <div class="overview-icon">🛒</div>
         <div class="overview-label">Criação de anúncio</div>
         <div class="overview-value" id="totalCriacaoAnuncio">0</div>
       </div>
 
-      <div class="overview-card">
+      <div class="overview-card is-clickable" data-status-target="totalCallOnboard" title="Ver call de onboard">
         <div class="overview-icon">🚀</div>
         <div class="overview-label">Call de onboard</div>
         <div class="overview-value" id="totalCallOnboard">0</div>
@@ -1866,15 +2175,7 @@
 
       <div class="tabs">
         <button class="tab-btn active" data-tab="andamento">
-          Em andamento <span id="tabInProgressCount">0</span>
-        </button>
-
-        <button class="tab-btn" data-tab="finalizadas">
-          Finalizadas <span id="tabFinalizedCount">0</span>
-        </button>
-
-        <button class="tab-btn" data-tab="todas">
-          Todas <span id="tabAllCount">0</span>
+          Lojas pendentes <span id="tabInProgressCount">0</span>
         </button>
       </div>
 
@@ -1912,9 +2213,7 @@
         <div class="field">
           <label for="tableStageFilter">Etapa</label>
           <select id="tableStageFilter">
-            <option value="">Todas</option>
-            <option value="andamento">Em andamento</option>
-            <option value="finalizada">Finalizadas</option>
+            <option value="andamento">Lojas pendentes</option>
           </select>
         </div>
 
@@ -1941,7 +2240,7 @@
 
       <div class="table-summary">
         <div class="summary-chip">
-          Aba atual: <span id="currentStageLabel">Em andamento</span>
+          Aba atual: <span id="currentStageLabel">Lojas pendentes</span>
         </div>
 
         <div class="summary-chip">
@@ -1956,6 +2255,7 @@
               <th>Loja</th>
               <th>Suporte</th>
               <th>Situação</th>
+              <th>Dias aguardando venda</th>
               <th>Etapa</th>
               <th>Mês</th>
               <th>Contato</th>
@@ -1965,7 +2265,7 @@
 
           <tbody id="storesTable">
             <tr>
-              <td colspan="7" class="empty">Carregando dados...</td>
+              <td colspan="8" class="empty">Carregando dados...</td>
             </tr>
           </tbody>
         </table>
@@ -2014,13 +2314,13 @@
           fullScreen: { enable: false },
           particles: {
             number: { value: 42, density: { enable: true, area: 900 } },
-            color: { value: ["#2563eb", "#7c3aed", "#f97316", "#ffffff"] },
+            color: { value: ["#2563eb", "#3b82f6", "#60a5fa", "#ffffff"] },
             opacity: { value: { min: 0.12, max: 0.48 } },
             size: { value: { min: 1, max: 3.2 } },
             links: {
               enable: true,
               distance: 145,
-              color: "#7c3aed",
+              color: "#3b82f6",
               opacity: 0.15,
               width: 1
             },
@@ -2157,6 +2457,7 @@
     let allProjects = [];
     let supportLookup = new Map();
     let currentTab = "andamento";
+    let activeOverviewMode = "";
 
     const SALE_FINALIZED_KEYWORDS = [
       "venda finalizada",
@@ -2193,18 +2494,26 @@
     const DELIVERED_KEYWORDS = [
       "loja entregue",
       "lojas entregues",
+      "loja aguardando venda",
+      "lojas aguardando venda",
+      "aguardando venda",
       "entregue",
       "entregues"
     ];
 
+    const SELLER_CONT_KEYWORDS = [
+      "seller cont",
+      "sellercont",
+      "seller contabil",
+      "seller contábil",
+      "seller contador",
+      "seller contabilidade"
+    ];
+
     const OVERVIEW_STAGE_METRICS = [
       {
-        elementId: "totalVendaFinalizada",
-        aliases: ["venda finalizada", "vendas finalizadas"]
-      },
-      {
-        elementId: "totalLojaEntregue",
-        aliases: ["loja entregue", "lojas entregues", "entregue", "entregues"]
+        elementId: "totalLojaAguardandoVenda",
+        aliases: ["loja aguardando venda", "lojas aguardando venda", "aguardando venda", "loja entregue", "lojas entregues", "entregue", "entregues"]
       },
       {
         elementId: "totalChamadosEspeciais",
@@ -2225,10 +2534,6 @@
       {
         elementId: "totalPreenchimentoFormulario",
         aliases: ["preenchimento do formulário", "preenchimento do formulario"]
-      },
-      {
-        elementId: "totalCancelados",
-        aliases: ["cancelados", "cancelado", "cancelada", "canceladas"]
       },
       {
         elementId: "totalCongelado",
@@ -2321,9 +2626,9 @@
     const storesTable = document.getElementById("storesTable");
     const supportCards = document.getElementById("supportCards");
 
-    const totalStores = document.getElementById("totalStores");
-    const totalLojasFinalizadas = document.getElementById("totalLojasFinalizadas");
-    const totalLojasAndamento = document.getElementById("totalLojasAndamento");
+    const totalLojasPendentes = document.getElementById("totalLojasPendentes");
+    const totalAguardandoVendaMais7 = document.getElementById("totalAguardandoVendaMais7");
+    const totalAguardandoCnpjSellerCont = document.getElementById("totalAguardandoCnpjSellerCont");
 
     const overviewStageElements = Object.fromEntries(
       OVERVIEW_STAGE_METRICS.map((metric) => [
@@ -2345,14 +2650,14 @@
     const currentTableRows = document.getElementById("currentTableRows");
 
     const statusColors = [
-      "#f97316",
-      "#fb923c",
-      "#fdba74",
-      "#ea580c",
-      "#c2410c",
-      "#9a3412",
-      "#f59e0b",
-      "#22c55e"
+      "#2563eb",
+      "#3b82f6",
+      "#60a5fa",
+      "#1d4ed8",
+      "#0369a1",
+      "#0ea5e9",
+      "#22c55e",
+      "#64748b"
     ];
 
     function showError(message) {
@@ -2658,8 +2963,65 @@
     }
 
     function isInProgressStatus(statusName) {
-      // Lojas em andamento = tudo que não está finalizado e não está cancelado.
+      // Lojas pendentes = tudo que ainda não está com venda finalizada e não está cancelado.
       return !isFinalizedStatus(statusName);
+    }
+
+    function formatStatusForDisplay(statusName) {
+      if (isDeliveredStatus(statusName)) {
+        return "Loja aguardando venda";
+      }
+
+      return statusName || "Sem situação";
+    }
+
+    function isSellerContTask(task) {
+      const possibleSellerContFields = [
+        "seller_cont",
+        "sellerCont",
+        "sellercont",
+        "seller_conta",
+        "seller_contabil",
+        "seller_contábil",
+        "tipo_seller",
+        "seller_tipo",
+        "seller_type",
+        "categoria_seller",
+        "status_seller",
+        "perfil_seller",
+        "tipo_conta",
+        "marcado_como",
+        "marcada_como",
+        "contabilidade",
+        "observacao",
+        "observação",
+        "classificacao",
+        "classificação",
+        "marcacao",
+        "marcação",
+        "tag",
+        "tags",
+        "etiqueta",
+        "etiquetas",
+        "seller"
+      ];
+
+      const values = [];
+
+      possibleSellerContFields.forEach((field) => {
+        if (task && task[field] !== undefined && task[field] !== null && task[field] !== "") {
+          collectComparableValues(task[field], values);
+        }
+      });
+
+      return values.some((value) => {
+        const normalizedValue = normalizeKey(value);
+
+        return SELLER_CONT_KEYWORDS.some((keyword) => {
+          const normalizedKeyword = normalizeKey(keyword);
+          return normalizedValue === normalizedKeyword || normalizedValue.includes(normalizedKeyword);
+        });
+      });
     }
 
     function getStatusDisplayName(item) {
@@ -2801,6 +3163,21 @@
     }
 
     function getProjectName(task) {
+      const directMonth = getPossibleValue(task, [
+        "mes",
+        "mês",
+        "month",
+        "mes_referencia",
+        "mês_referencia",
+        "mes_projeto",
+        "competencia",
+        "competência"
+      ]);
+
+      if (directMonth) {
+        return directMonth;
+      }
+
       const projectId = getPossibleValue(task, [
         "project_id",
         "projectId",
@@ -2932,14 +3309,89 @@
       return date.getTime();
     }
 
+
+    function getComparableDateStart(date) {
+      if (!date || isNaN(date.getTime())) return null;
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    function getDaysSinceTimestamp(timestamp) {
+      if (!timestamp) return null;
+
+      const startDate = getComparableDateStart(new Date(timestamp));
+      const today = getComparableDateStart(new Date());
+
+      if (!startDate || !today) return null;
+
+      const diff = today.getTime() - startDate.getTime();
+      return Math.max(0, Math.floor(diff / 86400000));
+    }
+
+    function getStatusStartTimestamp(task) {
+      const dateValue = getPossibleValue(task, [
+        "data_aguardando_venda",
+        "aguardando_venda_em",
+        "loja_aguardando_venda_em",
+        "data_loja_entregue",
+        "data_entrega",
+        "entregue_em",
+        "status_updated_at",
+        "statusChangedAt",
+        "status_changed_at",
+        "last_status_change_at",
+        "data_movimentacao",
+        "moved_at",
+        "updated_at",
+        "updatedAt",
+        "modified_at",
+        "created_at",
+        "data_criacao",
+        "createdAt",
+        "inserted_at"
+      ]);
+
+      if (!dateValue) return 0;
+
+      const date = new Date(dateValue);
+      return isNaN(date.getTime()) ? 0 : date.getTime();
+    }
+
+    function formatDateFromTimestamp(timestamp) {
+      if (!timestamp) return "-";
+
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) return "-";
+
+      return date.toLocaleDateString("pt-BR");
+    }
+
+    function formatWaitingSaleDays(row) {
+      if (!row.entregue) return "-";
+      if (row.diasAguardandoVenda === null || row.diasAguardandoVenda === undefined) return "Sem data";
+
+      const dias = row.diasAguardandoVenda;
+      const plural = dias === 1 ? "dia" : "dias";
+      return `${dias} ${plural}`;
+    }
+
+    function valuesMatchSelected(rowValue, selectedValue) {
+      if (!selectedValue) return true;
+      return normalizeKey(rowValue) === normalizeKey(selectedValue);
+    }
+
     function buildRows(tasks) {
       return tasks.map((task) => {
-        const situacao = getStatusName(task);
-        const vendaFinalizada = isSaleFinalizedStatus(situacao);
-        const cancelada = isCancelledStatus(situacao);
-        const entregue = isDeliveredStatus(situacao);
-        const finalizada = isFinalizedStatus(situacao);
-        const emAndamento = isInProgressStatus(situacao);
+        const situacaoOriginal = getStatusName(task);
+        const vendaFinalizada = isSaleFinalizedStatus(situacaoOriginal);
+        const cancelada = isCancelledStatus(situacaoOriginal);
+        const entregue = isDeliveredStatus(situacaoOriginal);
+        const finalizada = isFinalizedStatus(situacaoOriginal);
+        const emAndamento = isInProgressStatus(situacaoOriginal);
+        const situacao = formatStatusForDisplay(situacaoOriginal);
+        const sellerCont = isSellerContTask(task);
+        const aguardandoVendaDesdeTs = entregue ? getStatusStartTimestamp(task) : 0;
+        const diasAguardandoVenda = entregue ? getDaysSinceTimestamp(aguardandoVendaDesdeTs) : null;
+        const aguardandoVendaMais7 = entregue && diasAguardandoVenda !== null && diasAguardandoVenda > 7;
 
         return {
           raw: task,
@@ -2950,12 +3402,18 @@
           telefone: getPhone(task),
           suporte: getSupportName(task),
           situacao,
+          situacaoOriginal,
           mes: getProjectName(task),
           created_at: getCreatedAt(task),
           created_ts: getCreatedTimestamp(task),
           vendaFinalizada,
           cancelada,
           entregue,
+          aguardandoVendaDesdeTs,
+          aguardandoVendaDesde: formatDateFromTimestamp(aguardandoVendaDesdeTs),
+          diasAguardandoVenda,
+          aguardandoVendaMais7,
+          sellerCont,
           finalizada,
           emAndamento
         };
@@ -2990,7 +3448,7 @@
         .filter((item) => item && item !== "-" && item !== "Sem suporte")
         .sort();
 
-      const statuses = [...new Set(rows.map((row) => row.situacao))]
+      const statuses = [...new Set(rows.filter((row) => row.emAndamento).map((row) => row.situacao))]
         .filter((item) => item && item !== "-" && item !== "Sem situação")
         .sort();
 
@@ -3014,11 +3472,13 @@
     function getRowsForOverviewAndSupportCards() {
       const selectedMonth = monthFilter.value;
       const selectedSupport = supportFilter.value;
+      const selectedStatus = statusFilter.value;
       const searchTerm = normalizeText(searchInput.value);
 
       return allRows.filter((row) => {
-        const matchMonth = !selectedMonth || row.mes === selectedMonth;
-        const matchSupport = !selectedSupport || row.suporte === selectedSupport;
+        const matchMonth = valuesMatchSelected(row.mes, selectedMonth);
+        const matchSupport = valuesMatchSelected(row.suporte, selectedSupport);
+        const matchStatus = valuesMatchSelected(row.situacao, selectedStatus);
 
         const searchable = normalizeText(`
           ${row.loja}
@@ -3031,8 +3491,9 @@
         `);
 
         const matchSearch = !searchTerm || searchable.includes(searchTerm);
+        const matchOverviewMode = activeOverviewMode !== "aguardandoVendaMais7" || row.aguardandoVendaMais7;
 
-        return matchMonth && matchSupport && matchSearch;
+        return matchMonth && matchSupport && matchStatus && matchSearch && matchOverviewMode;
       });
     }
 
@@ -3044,9 +3505,9 @@
       const searchTerm = normalizeText(searchInput.value);
 
       return allRows.filter((row) => {
-        const matchMonth = !selectedMonth || row.mes === selectedMonth;
-        const matchSupport = !selectedSupport || row.suporte === selectedSupport;
-        const matchStatus = !selectedStatus || row.situacao === selectedStatus;
+        const matchMonth = valuesMatchSelected(row.mes, selectedMonth);
+        const matchSupport = valuesMatchSelected(row.suporte, selectedSupport);
+        const matchStatus = valuesMatchSelected(row.situacao, selectedStatus);
 
         let matchStage = true;
 
@@ -3069,8 +3530,9 @@
         `);
 
         const matchSearch = !searchTerm || searchable.includes(searchTerm);
+        const matchOverviewMode = activeOverviewMode !== "aguardandoVendaMais7" || row.aguardandoVendaMais7;
 
-        return matchMonth && matchSupport && matchStatus && matchStage && matchSearch;
+        return row.emAndamento && matchMonth && matchSupport && matchStatus && matchStage && matchSearch && matchOverviewMode;
       });
     }
 
@@ -3094,9 +3556,9 @@
       const searchTerm = normalizeText(tableSearchInput.value);
 
       return rows.filter((row) => {
-        const matchMonth = !selectedMonth || row.mes === selectedMonth;
-        const matchSupport = !selectedSupport || row.suporte === selectedSupport;
-        const matchStatus = !selectedStatus || row.situacao === selectedStatus;
+        const matchMonth = valuesMatchSelected(row.mes, selectedMonth);
+        const matchSupport = valuesMatchSelected(row.suporte, selectedSupport);
+        const matchStatus = valuesMatchSelected(row.situacao, selectedStatus);
 
         let matchStage = true;
 
@@ -3119,8 +3581,9 @@
         `);
 
         const matchSearch = !searchTerm || searchable.includes(searchTerm);
+        const matchOverviewMode = activeOverviewMode !== "aguardandoVendaMais7" || row.aguardandoVendaMais7;
 
-        return matchMonth && matchSupport && matchStatus && matchStage && matchSearch;
+        return row.emAndamento && matchMonth && matchSupport && matchStatus && matchStage && matchSearch && matchOverviewMode;
       });
     }
 
@@ -3196,50 +3659,50 @@
 
 
     function renderOverview(rowsWithoutTab) {
+      const pendingRows = rowsWithoutTab.filter((row) => row.emAndamento);
+
       const supports = new Set(
-        rowsWithoutTab
+        pendingRows
           .map((row) => row.suporte)
           .filter((support) => support && support !== "-" && support !== "Sem suporte")
       );
 
-      const finalizedStores = rowsWithoutTab.filter((row) => row.finalizada).length;
-      const inProgressStores = rowsWithoutTab.filter((row) => row.emAndamento).length;
+      if (totalLojasPendentes) {
+        totalLojasPendentes.textContent = pendingRows.length;
+      }
 
-      totalStores.textContent = rowsWithoutTab.length;
-      totalLojasFinalizadas.textContent = finalizedStores;
-      totalLojasAndamento.textContent = inProgressStores;
+      if (totalAguardandoVendaMais7) {
+        totalAguardandoVendaMais7.textContent = pendingRows.filter((row) => row.aguardandoVendaMais7).length;
+      }
 
       OVERVIEW_STAGE_METRICS.forEach((metric) => {
         const element = overviewStageElements[metric.elementId];
         if (!element) return;
 
-        element.textContent = countRowsByExactStage(rowsWithoutTab, metric.elementId);
+        element.textContent = countRowsByExactStage(pendingRows, metric.elementId);
       });
 
+      if (totalAguardandoCnpjSellerCont) {
+        totalAguardandoCnpjSellerCont.textContent = pendingRows.filter((row) => {
+          return getOverviewStageElementId(row.situacao) === "totalAguardandoCnpj" && row.sellerCont;
+        }).length;
+      }
 
       supportCountLabel.textContent = `${supports.size} suporte${supports.size === 1 ? "" : "s"}`;
     }
 
     function renderTabs(rowsWithoutTab) {
-      const finalized = rowsWithoutTab.filter((row) => row.finalizada).length;
       const inProgress = rowsWithoutTab.filter((row) => row.emAndamento).length;
 
-      tabInProgressCount.textContent = inProgress;
-      tabFinalizedCount.textContent = finalized;
-      tabAllCount.textContent = rowsWithoutTab.length;
+      if (tabInProgressCount) tabInProgressCount.textContent = inProgress;
+      if (tabFinalizedCount) tabFinalizedCount.textContent = 0;
+      if (tabAllCount) tabAllCount.textContent = inProgress;
 
       document.querySelectorAll(".tab-btn").forEach((button) => {
         button.classList.toggle("active", button.dataset.tab === currentTab);
       });
 
-      const labels = {
-        andamento: "Em andamento",
-        finalizadas: "Finalizadas",
-        entregues: "Finalizadas",
-        todas: "Todas"
-      };
-
-      currentStageLabel.textContent = labels[currentTab] || "Todas";
+      currentStageLabel.textContent = "Lojas pendentes";
     }
 
     function renderSupportCards(rowsWithoutTab) {
@@ -3352,8 +3815,7 @@
           </div>
 
           <div class="support-mini-stats">
-            <span class="mini-pill mini-blue">${data.inProgress} em andamento</span>
-            <span class="mini-pill mini-green">${data.finalized} finalizadas</span>
+            <span class="mini-pill mini-blue">${data.inProgress} pendente${data.inProgress === 1 ? "" : "s"}</span>
           </div>
 
           <div class="progress-bar">
@@ -3376,7 +3838,7 @@
       if (!rows.length) {
         storesTable.innerHTML = `
           <tr>
-            <td colspan="7" class="empty">Nenhuma loja encontrada nessa visualização.</td>
+            <td colspan="8" class="empty">Nenhuma loja encontrada nessa visualização.</td>
           </tr>
         `;
         return;
@@ -3385,9 +3847,12 @@
       storesTable.innerHTML = rows
         .map((row) => {
           const color = getStatusColor(row.situacao);
+          const waitingSaleClass = row.aguardandoVendaMais7 ? "waiting-sale-danger" : "";
+          const waitingSaleLabel = formatWaitingSaleDays(row);
+          const waitingSaleSince = row.entregue && row.aguardandoVendaDesde !== "-" ? `Desde ${row.aguardandoVendaDesde}` : "";
 
           return `
-            <tr>
+            <tr class="${waitingSaleClass}">
               <td>
                 <div class="store-name">${escapeHtml(safe(row.loja))}</div>
                 <div class="store-sub">
@@ -3407,8 +3872,15 @@
               </td>
 
               <td>
+                <span class="badge days-waiting-badge ${row.aguardandoVendaMais7 ? "danger-badge" : ""}">
+                  ${escapeHtml(waitingSaleLabel)}
+                </span>
+                ${waitingSaleSince ? `<div class="store-sub">${escapeHtml(waitingSaleSince)}</div>` : ""}
+              </td>
+
+              <td>
                 <span class="badge ${row.finalizada ? "finalizado-badge" : "andamento-badge"}">
-                  ${row.cancelada ? "Cancelada" : row.finalizada ? "Finalizada" : "Em andamento"}
+                  Pendente
                 </span>
               </td>
 
@@ -3436,10 +3908,11 @@
       rowsForTable = getRowsAfterTableFilters(rowsForTable);
       rowsForTable = sortRowsByValue(rowsForTable, tableSortFilter.value);
 
-      // Painel superior: sempre conta todos os processos, sem sofrer alteração pelos filtros.
-      renderOverview(allRows);
+      // Painel superior: segue os filtros gerais de busca, mês e suporte.
+      const rowsForOverview = getRowsForOverviewAndSupportCards();
+      renderOverview(rowsForOverview);
 
-      // Cards de suporte, abas e tabela seguem os filtros gerais.
+      // Cards de suporte, abas e tabela seguem os filtros gerais e também mostram apenas pendentes.
       renderTabs(rowsWithoutTab);
       renderSupportCards(rowsWithoutTab);
       renderTable(rowsForTable);
@@ -3452,7 +3925,7 @@
 
       storesTable.innerHTML = `
         <tr>
-          <td colspan="7" class="empty">Carregando dados...</td>
+          <td colspan="8" class="empty">Carregando dados...</td>
         </tr>
       `;
 
@@ -3485,7 +3958,7 @@
 
         storesTable.innerHTML = `
           <tr>
-            <td colspan="7" class="empty">Erro ao carregar dados.</td>
+            <td colspan="8" class="empty">Erro ao carregar dados.</td>
           </tr>
         `;
       } finally {
@@ -3494,13 +3967,105 @@
       }
     }
 
+    function clearOverviewActiveState() {
+      document.querySelectorAll(".overview-card.active-filter").forEach((card) => {
+        card.classList.remove("active-filter");
+      });
+    }
+
+    function focusTableCard() {
+      if (tableCard.classList.contains("is-collapsed")) {
+        tableCard.classList.remove("is-collapsed");
+        toggleTableButton.textContent = "Minimizar tabela";
+      }
+
+      tableCard.classList.add("table-focus");
+      tableCard.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      window.setTimeout(() => {
+        tableCard.classList.remove("table-focus");
+      }, 1500);
+    }
+
+    function setStatusFilterByMetric(metricId) {
+      const matchingOption = [...statusFilter.options].find((option) => {
+        return option.value && getOverviewStageElementId(option.value) === metricId;
+      });
+
+      statusFilter.value = matchingOption ? matchingOption.value : "";
+      tableStatusFilter.value = "";
+    }
+
+    function openOverviewGroup(card) {
+      if (!card) return;
+
+      clearOverviewActiveState();
+      card.classList.add("active-filter");
+
+      currentTab = "andamento";
+      tableSearchInput.value = "";
+      tableMonthFilter.value = "";
+      tableSupportFilter.value = "";
+      tableStageFilter.value = "andamento";
+
+      const statusTarget = card.dataset.statusTarget;
+      const stageTarget = card.dataset.stageTarget;
+      const agingTarget = card.dataset.agingTarget;
+
+      activeOverviewMode = agingTarget || "";
+
+      if (stageTarget === "andamento") {
+        statusFilter.value = "";
+        tableStatusFilter.value = "";
+        stageFilter.value = "andamento";
+      }
+
+      if (statusTarget) {
+        stageFilter.value = "andamento";
+        activeOverviewMode = "";
+        setStatusFilterByMetric(statusTarget);
+      }
+
+      if (agingTarget === "aguardandoVendaMais7") {
+        stageFilter.value = "andamento";
+        setStatusFilterByMetric("totalLojaAguardandoVenda");
+      }
+
+      render();
+      focusTableCard();
+    }
+
+    function initializeOverviewCardNavigation() {
+      const overviewCards = document.getElementById("overviewCards");
+      if (!overviewCards) return;
+
+      overviewCards.addEventListener("click", (event) => {
+        const card = event.target.closest(".overview-card.is-clickable");
+        if (!card) return;
+        openOverviewGroup(card);
+      });
+
+      overviewCards.querySelectorAll(".overview-card.is-clickable").forEach((card) => {
+        card.setAttribute("tabindex", "0");
+        card.setAttribute("role", "button");
+
+        card.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          openOverviewGroup(card);
+        });
+      });
+    }
+
     function clearGeneralFilters() {
       searchInput.value = "";
       monthFilter.value = "";
       supportFilter.value = "";
       statusFilter.value = "";
-      stageFilter.value = "";
+      stageFilter.value = "andamento";
       sortFilter.value = "loja-asc";
+      activeOverviewMode = "";
+      clearOverviewActiveState();
 
       render();
     }
@@ -3510,7 +4075,7 @@
       tableMonthFilter.value = "";
       tableSupportFilter.value = "";
       tableStatusFilter.value = "";
-      tableStageFilter.value = "";
+      tableStageFilter.value = "andamento";
       tableSortFilter.value = "loja-asc";
 
       render();
@@ -3559,8 +4124,8 @@
         currentTab = button.dataset.tab;
         render();
 
-        if (currentTab === "finalizadas") {
-          celebrateDeliveredView();
+        if (currentTab === "andamento") {
+          // Mantém a navegação focada somente nas lojas pendentes.
         }
       });
     });
@@ -3573,6 +4138,7 @@
     initializeVisualFramework();
     initializeButtonEffects();
     initializeTheme();
+    initializeOverviewCardNavigation();
     loadData();
   </script>
 </body>
