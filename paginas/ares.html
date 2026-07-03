@@ -1897,18 +1897,18 @@ body[data-theme="light"] {
         </div>
 
         <div class="field">
-          <label>Data configuração faturador</label>
-          <input id="deliveryBillingDate" type="date" required />
-        </div>
-
-        <div class="field">
-          <label>Data envio</label>
+          <label>1° Data do 1° envio</label>
           <input id="deliveryShipmentDate" type="date" required />
         </div>
 
         <div class="field">
-          <label>Data coleta</label>
+          <label>2° Data da coleta</label>
           <input id="deliveryPickupDate" type="date" required />
+        </div>
+
+        <div class="field">
+          <label>3° Data que conf faturador</label>
+          <input id="deliveryBillingDate" type="date" required />
         </div>
 
         <div class="field">
@@ -3724,12 +3724,12 @@ body[data-theme="light"] {
           </div>
 
           <div class="detail-box">
-            <small>Data configuração faturador</small>
+            <small>3° Data que conf faturador</small>
             <strong>${escapeHTML(task.billingConfigDate || 'Não informado')}</strong>
           </div>
 
           <div class="detail-box">
-            <small>Data envio / coleta</small>
+            <small>1° Data do 1° envio / 2° Data da coleta</small>
             <strong>${escapeHTML(task.shipmentDate || 'Não informado')} / ${escapeHTML(task.pickupDate || 'Não informado')}</strong>
           </div>
 
