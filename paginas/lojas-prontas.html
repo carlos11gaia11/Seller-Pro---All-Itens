@@ -1664,6 +1664,22 @@
       z-index: 1;
     }
 
+    .seller-cont-note {
+      cursor: pointer;
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 4px 8px;
+      margin-left: -8px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .seller-cont-note:hover,
+    .seller-cont-note:focus-visible {
+      background: rgba(249, 115, 22, 0.14);
+      color: var(--text);
+      outline: none;
+    }
+
     .table-card.table-focus {
       border-color: rgba(249, 115, 22, 0.72) !important;
       box-shadow: 0 20px 58px rgba(249, 115, 22, 0.18) !important;
@@ -2122,7 +2138,15 @@
         <div class="overview-icon">🏢</div>
         <div class="overview-label">Aguardando CNPJ</div>
         <div class="overview-value" id="totalAguardandoCnpj">0</div>
-        <div class="overview-note">Seller cont: <span id="totalAguardandoCnpjSellerCont">0</span></div>
+        <div
+          class="overview-note seller-cont-note"
+          data-seller-cont-target="aguardandoCnpjSellerCont"
+          role="button"
+          tabindex="0"
+          title="Ver apenas lojas Seller Cont aguardando CNPJ"
+        >
+          Seller cont: <span id="totalAguardandoCnpjSellerCont">0</span>
+        </div>
       </div>
 
       <div class="overview-card is-clickable" data-status-target="totalCriacaoGrupo" title="Ver criação de grupo">
@@ -2174,7 +2198,7 @@
       </div>
 
       <div class="tabs">
-        <button class="tab-btn active" data-tab="andamento">
+                <button class="tab-btn active" data-tab="andamento">
           Lojas pendentes <span id="tabInProgressCount">0</span>
         </button>
       </div>
@@ -3001,11 +3025,13 @@
         return savedSellerContFlag;
       }
 
-      const directBooleanSellerContFields = [
+      const explicitSellerContFields = [
         "deliveryIsSellerCont",
         "delivery_is_seller_cont",
         "is_seller_cont",
         "isSellerCont",
+        "status_seller_cont",
+        "seller_cont_status",
         "seller_cont",
         "sellerCont",
         "sellercont",
@@ -3019,11 +3045,22 @@
         "seller_cont_flag"
       ];
 
-      const hasDirectBooleanFlag = directBooleanSellerContFields.some((field) => {
+      const hasDirectBooleanFlag = explicitSellerContFields.some((field) => {
         return task && task[field] === true;
       });
 
       if (hasDirectBooleanFlag) return true;
+
+      const truthySellerContValues = ["true", "sim", "yes", "1", "marcado", "marcada", "selecionado", "selecionada"];
+      const hasExplicitTruthyFlag = explicitSellerContFields.some((field) => {
+        if (!task || task[field] === undefined || task[field] === null || task[field] === "") return false;
+
+        return collectComparableValues(task[field]).some((value) => {
+          return truthySellerContValues.includes(normalizeKey(value));
+        });
+      });
+
+      if (hasExplicitTruthyFlag) return true;
 
       const possibleSellerContFields = [
         "deliveryIsSellerCont",
@@ -3063,7 +3100,15 @@
         "tags",
         "etiqueta",
         "etiquetas",
-        "seller"
+        "suporte",
+        "support",
+        "suporte_responsavel",
+        "suporte_responsável",
+        "responsavel",
+        "responsável",
+        "assignee",
+        "assigned_to",
+        "owner"
       ];
 
       const values = [];
@@ -3076,11 +3121,6 @@
 
       return values.some((value) => {
         const normalizedValue = normalizeKey(value);
-        const truthySellerContValues = ["true", "sim", "yes", "1", "marcado", "marcada", "selecionado", "selecionada"];
-
-        if (truthySellerContValues.includes(normalizedValue)) {
-          return true;
-        }
 
         return SELLER_CONT_KEYWORDS.some((keyword) => {
           const normalizedKeyword = normalizeKey(keyword);
@@ -3258,7 +3298,7 @@
         found?.title ||
         found?.month ||
         found?.mes ||
-        found?.mês ||
+                found?.mês ||
         projectId ||
         "Sem mês"
       );
@@ -3556,7 +3596,7 @@
         `);
 
         const matchSearch = !searchTerm || searchable.includes(searchTerm);
-        const matchOverviewMode = activeOverviewMode !== "aguardandoVendaMais15" || row.aguardandoVendaMais15;
+        const matchOverviewMode = matchesActiveOverviewMode(row);
 
         return matchMonth && matchSupport && matchStatus && matchSearch && matchOverviewMode;
       });
@@ -3595,7 +3635,7 @@
         `);
 
         const matchSearch = !searchTerm || searchable.includes(searchTerm);
-        const matchOverviewMode = activeOverviewMode !== "aguardandoVendaMais15" || row.aguardandoVendaMais15;
+        const matchOverviewMode = matchesActiveOverviewMode(row);
 
         return row.emAndamento && matchMonth && matchSupport && matchStatus && matchStage && matchSearch && matchOverviewMode;
       });
@@ -3646,7 +3686,7 @@
         `);
 
         const matchSearch = !searchTerm || searchable.includes(searchTerm);
-        const matchOverviewMode = activeOverviewMode !== "aguardandoVendaMais15" || row.aguardandoVendaMais15;
+        const matchOverviewMode = matchesActiveOverviewMode(row);
 
         return row.emAndamento && matchMonth && matchSupport && matchStatus && matchStage && matchSearch && matchOverviewMode;
       });
@@ -3722,6 +3762,26 @@
       return rows.filter((row) => getOverviewStageElementId(row.situacao) === elementId).length;
     }
 
+    function isAguardandoCnpjRow(row) {
+      return getOverviewStageElementId(row?.situacao) === "totalAguardandoCnpj";
+    }
+
+    function isAguardandoCnpjSellerContRow(row) {
+      return isAguardandoCnpjRow(row) && row?.sellerCont === true;
+    }
+
+    function matchesActiveOverviewMode(row) {
+      if (activeOverviewMode === "aguardandoVendaMais15") {
+        return row.aguardandoVendaMais15;
+      }
+
+      if (activeOverviewMode === "aguardandoCnpjSellerCont") {
+        return isAguardandoCnpjSellerContRow(row);
+      }
+
+      return true;
+    }
+
 
     function renderOverview(rowsWithoutTab) {
       const pendingRows = rowsWithoutTab.filter((row) => row.emAndamento);
@@ -3748,9 +3808,7 @@
       });
 
       if (totalAguardandoCnpjSellerCont) {
-        totalAguardandoCnpjSellerCont.textContent = pendingRows.filter((row) => {
-          return getOverviewStageElementId(row.situacao) === "totalAguardandoCnpj" && row.sellerCont;
-        }).length;
+        totalAguardandoCnpjSellerCont.textContent = pendingRows.filter(isAguardandoCnpjSellerContRow).length;
       }
 
       supportCountLabel.textContent = `${supports.size} suporte${supports.size === 1 ? "" : "s"}`;
@@ -4100,11 +4158,39 @@
       focusTableCard();
     }
 
+    function openSellerContOverviewGroup(triggerElement) {
+      if (!triggerElement) return;
+
+      const card = triggerElement.closest(".overview-card.is-clickable");
+
+      clearOverviewActiveState();
+      if (card) card.classList.add("active-filter");
+
+      currentTab = "andamento";
+      tableSearchInput.value = "";
+      tableMonthFilter.value = "";
+      tableSupportFilter.value = "";
+      tableStageFilter.value = "andamento";
+      stageFilter.value = "andamento";
+      activeOverviewMode = triggerElement.dataset.sellerContTarget || "aguardandoCnpjSellerCont";
+      setStatusFilterByMetric("totalAguardandoCnpj");
+
+      render();
+      focusTableCard();
+    }
+
     function initializeOverviewCardNavigation() {
       const overviewCards = document.getElementById("overviewCards");
       if (!overviewCards) return;
 
       overviewCards.addEventListener("click", (event) => {
+        const sellerContTarget = event.target.closest("[data-seller-cont-target]");
+        if (sellerContTarget) {
+          event.stopPropagation();
+          openSellerContOverviewGroup(sellerContTarget);
+          return;
+        }
+
         const card = event.target.closest(".overview-card.is-clickable");
         if (!card) return;
         openOverviewGroup(card);
@@ -4115,9 +4201,19 @@
         card.setAttribute("role", "button");
 
         card.addEventListener("keydown", (event) => {
+          if (event.target.closest("[data-seller-cont-target]")) return;
           if (event.key !== "Enter" && event.key !== " ") return;
           event.preventDefault();
           openOverviewGroup(card);
+        });
+      });
+
+      overviewCards.querySelectorAll("[data-seller-cont-target]").forEach((target) => {
+        target.addEventListener("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " ") return;
+          event.preventDefault();
+          event.stopPropagation();
+          openSellerContOverviewGroup(target);
         });
       });
     }
