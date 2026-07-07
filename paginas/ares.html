@@ -4353,7 +4353,7 @@ body[data-theme="light"] {
 
       if (!task || task.status === status) return;
 
-      if (status === 'Loja entregue') {
+      if (status === 'Loja entregue' && isSellerContTask(task)) {
         openDeliveryModal(taskId, status);
         return;
       }
@@ -4370,12 +4370,28 @@ body[data-theme="light"] {
       const previousUpdates = Array.isArray(task.updates) ? [...task.updates] : [];
       const today = todayLocalISO();
 
+      const movingToLojaEntregue = status === 'Loja entregue';
+
       task.status = status;
+
+      if (movingToLojaEntregue) {
+        task.deliveryCompletedAt = task.deliveryCompletedAt || today;
+        task.saleFinalizedAt = '';
+        task.updates = appendStatusUpdate(task, 'Loja entregue', task.deliveryCompletedAt);
+        setDeliveryStatusDates(taskId, { deliveredAt: task.deliveryCompletedAt, finalizedAt: '' });
+      }
 
       playSound('drop');
       renderBoard();
 
-      const updatePayload = { status };
+      const updatePayload = movingToLojaEntregue
+        ? {
+            status,
+            delivery_completed_at: task.deliveryCompletedAt,
+            sale_finalized_at: null,
+            updates: task.updates
+          }
+        : { status };
 
       const { error } = await supabaseClient
         .from('sp_tasks')
@@ -4947,23 +4963,26 @@ body[data-theme="light"] {
         return;
       }
 
-      let sheetResult = { configured: false, sent: false };
+      let sheetResult = { configured: true, sent: false };
       let sheetError = null;
+      const shouldSendToSheet = Boolean(deliveryData.is_seller_cont);
 
-      if (button) {
+      if (button && shouldSendToSheet) {
         button.textContent = 'Enviando para a planilha...';
       }
 
-      try {
-        sheetResult = await enviarEntregaParaPlanilha(task, deliveryData, deliveredStatus);
+      if (shouldSendToSheet) {
+        try {
+          sheetResult = await enviarEntregaParaPlanilha(task, deliveryData, deliveredStatus);
 
-        if (sheetResult.configured && sheetResult.sent) {
-          const { error: sheetFlagError } = await marcarLojaEntregueEnviadaParaPlanilha(task.id);
-          if (sheetFlagError) console.warn('Não consegui marcar o envio para planilha no Supabase.', sheetFlagError);
+          if (sheetResult.configured && sheetResult.sent) {
+            const { error: sheetFlagError } = await marcarLojaEntregueEnviadaParaPlanilha(task.id);
+            if (sheetFlagError) console.warn('Não consegui marcar o envio para planilha no Supabase.', sheetFlagError);
+          }
+        } catch (error) {
+          sheetError = error;
+          console.error('Erro ao enviar dados para Google Sheets:', error);
         }
-      } catch (error) {
-        sheetError = error;
-        console.error('Erro ao enviar dados para Google Sheets:', error);
       }
 
       closeDeliveryModal();
@@ -4971,6 +4990,11 @@ body[data-theme="light"] {
 
       if (sheetError) {
         showToast('Loja entregue salva no Supabase, mas não consegui enviar os dados para a planilha. Verifique o Apps Script.');
+        return;
+      }
+
+      if (!shouldSendToSheet) {
+        showToast('Loja entregue salva no Supabase. A planilha não recebeu porque Seller Cont não está selecionado.');
         return;
       }
 
