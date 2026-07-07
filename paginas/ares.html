@@ -2042,6 +2042,10 @@ body[data-theme="light"] {
       letter-spacing: 0;
     }
 
+    .seller-cont-only-field.is-hidden {
+      display: none;
+    }
+
     body[data-theme="light"] .seller-cont-check {
       background: linear-gradient(135deg, rgba(186, 230, 253, .86), rgba(219, 234, 254, .74));
       border-color: rgba(14, 165, 233, .28);
@@ -2425,7 +2429,7 @@ body[data-theme="light"] {
       <div class="form-grid">
         <div class="field full">
           <div class="required-hint">
-            Para mover o card para <strong>Loja entregue</strong>, preencha todos os dados abaixo. A data de entrega será usada para calcular o prazo de 15 dias.
+            Para mover o card para <strong>Loja entregue</strong>, informe a data da entrega. Os dados de Seller Cont só são obrigatórios quando a caixinha abaixo estiver marcada.
           </div>
         </div>
 
@@ -2436,7 +2440,7 @@ body[data-theme="light"] {
 
         <div class="field full">
           <label class="seller-cont-check">
-            <input id="deliverySellerContFlag" type="checkbox" checked />
+            <input id="deliverySellerContFlag" type="checkbox" onchange="syncDeliverySellerContFields()" />
             <span>
               <strong>Marcar como Seller Cont</strong>
               <small>Quando esta caixinha estiver marcada, o card fica azul e exibe o aviso de Contabilidade Seller Cont.</small>
@@ -2444,42 +2448,42 @@ body[data-theme="light"] {
           </label>
         </div>
 
-        <div class="field">
+        <div class="field seller-cont-only-field">
           <label>1° Data do 1° envio</label>
           <input id="deliveryShipmentDate" type="date" required />
         </div>
 
-        <div class="field">
+        <div class="field seller-cont-only-field">
           <label>2° Data da coleta</label>
           <input id="deliveryPickupDate" type="date" required />
         </div>
 
-        <div class="field">
+        <div class="field seller-cont-only-field">
           <label>3° Data que conf faturador</label>
           <input id="deliveryBillingDate" type="date" required />
         </div>
 
-        <div class="field">
+        <div class="field seller-cont-only-field">
           <label>MCID</label>
           <input id="deliveryMcid" placeholder="MCID da loja" required />
         </div>
 
-        <div class="field full">
+        <div class="field full seller-cont-only-field">
           <label>E-mail de criação de conta</label>
           <input id="deliveryAccountEmail" type="email" placeholder="email@exemplo.com" required />
         </div>
 
-        <div class="field">
+        <div class="field seller-cont-only-field">
           <label>Telefone</label>
           <input id="deliveryPhone" type="tel" placeholder="Ex.: (11) 99999-9999" required />
         </div>
 
-        <div class="field">
+        <div class="field seller-cont-only-field">
           <label>Status Seller Cont</label>
           <input id="deliverySellerContStatus" placeholder="Ex.: Loja entregue" required />
         </div>
 
-        <div class="field full">
+        <div class="field full seller-cont-only-field">
           <label>Produto que enviou</label>
           <input id="deliveryProductSent" placeholder="Ex.: Kit banheiro, fruteira, gancho adesivo..." required />
         </div>
@@ -2488,6 +2492,38 @@ body[data-theme="light"] {
       <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
         <button class="btn secondary" onclick="closeDeliveryModal()">Cancelar</button>
         <button class="btn" id="confirmDeliveryButton" onclick="confirmDeliveryMove()">Confirmar entrega</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="onboardModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Confirmar SPN</h3>
+        <button class="close" onclick="closeOnboardModal()">×</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field full">
+          <div class="required-hint">
+            Para mover o card para <strong>Call de onboard</strong>, confirme se a pessoa fez o SPN.
+          </div>
+        </div>
+
+        <div class="field full">
+          <label class="seller-cont-check">
+            <input id="onboardSpnConfirmed" type="checkbox" />
+            <span>
+              <strong>Sim, fez o SPN</strong>
+              <small>Somente com esta confirmação o card pode seguir para Call de onboard.</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
+        <button class="btn secondary" onclick="closeOnboardModal()">Cancelar</button>
+        <button class="btn" id="confirmOnboardButton" onclick="confirmOnboardMove()">Confirmar onboard</button>
       </div>
     </div>
   </div>
@@ -2687,6 +2723,8 @@ body[data-theme="light"] {
     let pendingDeliveryStatus = null;
     let pendingSaleFinalizedTaskId = null;
     let pendingSaleFinalizedStatus = null;
+    let pendingOnboardTaskId = null;
+    let pendingOnboardStatus = null;
 
     function slugify(text) {
       return String(text || '')
@@ -3021,6 +3059,7 @@ body[data-theme="light"] {
       state.tasks = (tasks || []).map(task => {
         const deliveredStore = deliveredStoresByTaskId.get(String(task.id));
         const savedSellerContFlag = getSellerContFlag(task.id);
+        const savedSpnConfirmationFlag = getSpnConfirmationFlag(task.id);
         const deliveredSellerContFlag = typeof deliveredStore?.is_seller_cont === 'boolean'
           ? deliveredStore.is_seller_cont
           : Boolean(deliveredStore);
@@ -3046,6 +3085,7 @@ body[data-theme="light"] {
           deliveryProductSent: deliveredStore?.produto_que_enviou || '',
           deliverySellerContStatus: deliveredStore?.status_seller_cont || '',
           deliveryIsSellerCont: typeof savedSellerContFlag === 'boolean' ? savedSellerContFlag : deliveredSellerContFlag,
+          spnConfirmed: Boolean(savedSpnConfirmationFlag),
           deliveryCompletedAt: String(deliveredAtFallback || '').slice(0, 10) || savedStatusDates.deliveredAt || '',
           saleFinalizedAt: String(finalizedAtFallback || '').slice(0, 10) || savedStatusDates.finalizedAt || '',
           description: task.description || '',
@@ -3296,6 +3336,30 @@ body[data-theme="light"] {
     }
 
 
+    const SPN_CONFIRMATION_FLAGS_KEY = 'seller_pro_ares_spn_confirmation_flags_v1';
+
+    function readSpnConfirmationFlags() {
+      try {
+        return JSON.parse(localStorage.getItem(SPN_CONFIRMATION_FLAGS_KEY) || '{}') || {};
+      } catch (error) {
+        console.warn('Não consegui ler as confirmações de SPN salvas localmente.', error);
+        return {};
+      }
+    }
+
+    function setSpnConfirmationFlag(taskId, checked) {
+      if (!taskId) return;
+
+      const flags = readSpnConfirmationFlags();
+      flags[String(taskId)] = Boolean(checked);
+      localStorage.setItem(SPN_CONFIRMATION_FLAGS_KEY, JSON.stringify(flags));
+    }
+
+    function getSpnConfirmationFlag(taskId) {
+      const flags = readSpnConfirmationFlags();
+      return flags[String(taskId)];
+    }
+
 
     const DELIVERY_STATUS_DATES_KEY = 'seller_pro_ares_delivery_status_dates_v1';
 
@@ -3395,7 +3459,7 @@ body[data-theme="light"] {
 
     function requiresDeliveryAttention(task) {
       const deliveredDays = getDeliveredDays(task);
-      return isLojaEntregueTask(task) && typeof deliveredDays === 'number' && deliveredDays > 7;
+      return isLojaEntregueTask(task) && typeof deliveredDays === 'number' && deliveredDays >= 15;
     }
 
     function getDeliveryCardClass(task) {
@@ -3452,7 +3516,7 @@ body[data-theme="light"] {
 
       const deliveredDays = getDeliveredDays(task);
       const attentionText = requiresDeliveryAttention(task)
-        ? `Requer atenção: passou de 15 dias como Loja entregue.`
+        ? `Requer atenção: completou 15 dias ou mais como Loja entregue sem venda finalizada.`
         : isVendaFinalizadaTask(task)
           ? 'Venda finalizada. O card fica verde.'
           : 'Dentro do prazo de 15 dias.';
@@ -4199,6 +4263,7 @@ body[data-theme="light"] {
           deliveryProductSent: task.deliveryProductSent || '',
           deliverySellerContStatus: task.deliverySellerContStatus || '',
           deliveryIsSellerCont: taskSellerContChecked,
+          spnConfirmed: Boolean(task.spnConfirmed),
           deliveryCompletedAt: statusDatePatch.deliveredAt || task.deliveryCompletedAt || '',
           saleFinalizedAt: statusDatePatch.finalizedAt || task.saleFinalizedAt || '',
           description: taskData.description,
@@ -4237,6 +4302,7 @@ body[data-theme="light"] {
           deliveryProductSent: '',
           deliverySellerContStatus: taskSellerContChecked ? 'Seller Cont' : '',
           deliveryIsSellerCont: taskSellerContChecked,
+          spnConfirmed: false,
           deliveryCompletedAt: statusDatePatch.deliveredAt || '',
           saleFinalizedAt: statusDatePatch.finalizedAt || '',
           description: taskData.description,
@@ -4353,8 +4419,13 @@ body[data-theme="light"] {
 
       if (!task || task.status === status) return;
 
-      if (status === 'Loja entregue' && isSellerContTask(task)) {
+      if (status === 'Loja entregue') {
         openDeliveryModal(taskId, status);
+        return;
+      }
+
+      if (status === 'Call de onboard') {
+        openOnboardModal(taskId, status);
         return;
       }
 
@@ -4411,6 +4482,101 @@ body[data-theme="light"] {
       }
 
       showToast(`Card movido para: ${status}`);
+    }
+
+    function openOnboardModal(taskId, status) {
+      const task = state.tasks.find(t => t.id === taskId);
+
+      if (!task) return;
+
+      pendingOnboardTaskId = taskId;
+      pendingOnboardStatus = status;
+
+      const checkbox = document.getElementById('onboardSpnConfirmed');
+      if (checkbox) checkbox.checked = Boolean(task.spnConfirmed);
+
+      const button = document.getElementById('confirmOnboardButton');
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'Confirmar onboard';
+      }
+
+      playSound('modal');
+      document.getElementById('onboardModal').classList.add('show');
+    }
+
+    function closeOnboardModal() {
+      document.getElementById('onboardModal').classList.remove('show');
+      pendingOnboardTaskId = null;
+      pendingOnboardStatus = null;
+
+      const checkbox = document.getElementById('onboardSpnConfirmed');
+      if (checkbox) checkbox.checked = false;
+
+      const button = document.getElementById('confirmOnboardButton');
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'Confirmar onboard';
+      }
+    }
+
+    async function confirmOnboardMove() {
+      const task = state.tasks.find(t => t.id === pendingOnboardTaskId);
+
+      if (!task || !pendingOnboardStatus) return;
+
+      const spnConfirmed = Boolean(document.getElementById('onboardSpnConfirmed')?.checked);
+
+      if (!spnConfirmed) {
+        alert('Para mover para Call de onboard, confirme que a pessoa fez o SPN.');
+        return;
+      }
+
+      const previousStatus = task.status;
+      const previousUpdates = Array.isArray(task.updates) ? [...task.updates] : [];
+      const previousSpnConfirmed = Boolean(task.spnConfirmed);
+      const button = document.getElementById('confirmOnboardButton');
+
+      if (button) {
+        button.disabled = true;
+        button.textContent = 'Salvando...';
+      }
+
+      task.status = pendingOnboardStatus;
+      task.spnConfirmed = true;
+      task.updates = appendStatusUpdate(task, 'SPN confirmado e movido para Call de onboard');
+      setSpnConfirmationFlag(task.id, true);
+
+      playSound('drop');
+      renderBoard();
+
+      const { error } = await supabaseClient
+        .from('sp_tasks')
+        .update({
+          status: pendingOnboardStatus,
+          updates: task.updates
+        })
+        .eq('id', task.id);
+
+      if (error) {
+        task.status = previousStatus;
+        task.updates = previousUpdates;
+        task.spnConfirmed = previousSpnConfirmed;
+        setSpnConfirmationFlag(task.id, previousSpnConfirmed);
+        renderBoard();
+
+        if (button) {
+          button.disabled = false;
+          button.textContent = 'Confirmar onboard';
+        }
+
+        showToast('Não consegui mover o card para Call de onboard no Supabase.');
+        console.error(error);
+        return;
+      }
+
+      closeOnboardModal();
+      showToast('SPN confirmado. Card movido para Call de onboard.');
     }
 
     function openSaleFinalizedModal(taskId, status) {
@@ -4679,6 +4845,17 @@ body[data-theme="light"] {
         .eq('task_id', String(taskId));
     }
 
+    function syncDeliverySellerContFields() {
+      const checked = Boolean(document.getElementById('deliverySellerContFlag')?.checked);
+
+      document.querySelectorAll('.seller-cont-only-field').forEach(field => {
+        field.classList.toggle('is-hidden', !checked);
+        field.querySelectorAll('input, select, textarea').forEach(input => {
+          input.required = checked;
+        });
+      });
+    }
+
     function openDeliveryModal(taskId, status) {
       const task = state.tasks.find(t => t.id === taskId);
 
@@ -4697,6 +4874,7 @@ body[data-theme="light"] {
       document.getElementById('deliveryProductSent').value = task.deliveryProductSent || '';
       document.getElementById('deliverySellerContStatus').value = task.deliverySellerContStatus || status || 'Loja entregue';
       document.getElementById('deliverySellerContFlag').checked = isSellerContTask(task);
+      syncDeliverySellerContFields();
 
       const button = document.getElementById('confirmDeliveryButton');
       if (button) {
@@ -4729,7 +4907,8 @@ body[data-theme="light"] {
       });
 
       const sellerContFlag = document.getElementById('deliverySellerContFlag');
-      if (sellerContFlag) sellerContFlag.checked = true;
+      if (sellerContFlag) sellerContFlag.checked = false;
+      syncDeliverySellerContFields();
     }
 
 
@@ -4799,17 +4978,19 @@ body[data-theme="light"] {
         is_seller_cont: document.getElementById('deliverySellerContFlag')?.checked !== false
       };
 
-      const requiredFields = [
-        deliveryData.delivery_completed_at,
-        deliveryData.billing_config_date,
-        deliveryData.shipment_date,
-        deliveryData.pickup_date,
-        deliveryData.mcid,
-        deliveryData.account_creation_email,
-        deliveryData.phone,
-        deliveryData.product_sent,
-        deliveryData.seller_cont_status
-      ];
+      const requiredFields = deliveryData.is_seller_cont
+        ? [
+            deliveryData.delivery_completed_at,
+            deliveryData.billing_config_date,
+            deliveryData.shipment_date,
+            deliveryData.pickup_date,
+            deliveryData.mcid,
+            deliveryData.account_creation_email,
+            deliveryData.phone,
+            deliveryData.product_sent,
+            deliveryData.seller_cont_status
+          ]
+        : [deliveryData.delivery_completed_at];
 
       const missingField = requiredFields.some(value => !String(value || '').trim());
 
@@ -4818,7 +4999,7 @@ body[data-theme="light"] {
         return;
       }
 
-      const emailIsValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(deliveryData.account_creation_email);
+      const emailIsValid = !deliveryData.account_creation_email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(deliveryData.account_creation_email);
 
       if (!emailIsValid) {
         alert('Informe um e-mail válido para criação de conta.');
