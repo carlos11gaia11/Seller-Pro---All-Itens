@@ -4764,8 +4764,6 @@ body[data-theme="light"] {
         .from('sp_tasks')
         .update({
           status: pendingSaleFinalizedStatus,
-          delivery_completed_at: task.deliveryCompletedAt || null,
-          sale_finalized_at: finalizedAt,
           updates: task.updates
         })
         .eq('id', task.id);
@@ -4783,7 +4781,7 @@ body[data-theme="light"] {
           button.textContent = 'Confirmar venda finalizada';
         }
 
-        showToast('Não consegui registrar a venda finalizada no Supabase. Confira as colunas delivery_completed_at e sale_finalized_at.');
+        showToast('Não consegui registrar a venda finalizada no Supabase. Confira a permissão de UPDATE em sp_tasks.');
         console.error(error);
         return;
       }
@@ -4802,8 +4800,6 @@ body[data-theme="light"] {
           .from('sp_tasks')
           .update({
             status: previousStatus,
-            delivery_completed_at: previousData.deliveryCompletedAt || null,
-            sale_finalized_at: previousData.saleFinalizedAt || null,
             updates: previousData.updates || []
           })
           .eq('id', task.id);
@@ -5121,22 +5117,11 @@ body[data-theme="light"] {
 
       renderBoard();
 
-      const supabaseDeliveryData = {
-        billing_config_date: deliveryData.billing_config_date,
-        shipment_date: deliveryData.shipment_date,
-        pickup_date: deliveryData.pickup_date,
-        delivery_completed_at: deliveryData.delivery_completed_at,
-        sale_finalized_at: null,
-        mcid: deliveryData.mcid,
-        account_creation_email: deliveryData.account_creation_email
-      };
-
       const { error } = await supabaseClient
         .from('sp_tasks')
         .update({
           status: deliveredStatus,
-          updates: task.updates,
-          ...supabaseDeliveryData
+          updates: task.updates
         })
         .eq('id', task.id);
 
@@ -5162,7 +5147,7 @@ body[data-theme="light"] {
           button.textContent = 'Confirmar entrega';
         }
 
-        showToast('Não consegui entregar a loja no Supabase. Verifique as colunas criadas.');
+        showToast('Não consegui atualizar o status da loja no Supabase. Confira a permissão de UPDATE em sp_tasks.');
         console.error(error);
         return;
       }
@@ -5196,13 +5181,6 @@ body[data-theme="light"] {
           .from('sp_tasks')
           .update({
             status: previousStatus,
-            mcid: previousData.mcid || null,
-            billing_config_date: previousData.billingConfigDate || null,
-            shipment_date: previousData.shipmentDate || null,
-            pickup_date: previousData.pickupDate || null,
-            account_creation_email: previousData.accountCreationEmail || null,
-            delivery_completed_at: previousData.deliveryCompletedAt || null,
-            sale_finalized_at: previousData.saleFinalizedAt || null,
             updates: previousData.updates || []
           })
           .eq('id', task.id);
