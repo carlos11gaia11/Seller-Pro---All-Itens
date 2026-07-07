@@ -2567,9 +2567,16 @@
         aliases: ["congelado", "congelada", "congelados", "congeladas"]
       },
       {
-        elementId: "totalAguardandoCnpj",
-        aliases: ["aguardando cnpj", "aguardando o cnpj"]
-      },
+        {
+  elementId: "totalAguardandoCnpj",
+  aliases: [
+    "aguardando cnpj",
+    "aguardando o cnpj",
+    "aguardam cnpj",
+    "aguardando documentação cnpj",
+    "aguardando documentacao cnpj"
+  ]
+},
       {
         elementId: "totalCriacaoGrupo",
         aliases: ["criação de grupo", "criacao de grupo", "grupo criado", "criar grupo"]
@@ -3100,15 +3107,8 @@
         "tags",
         "etiqueta",
         "etiquetas",
-        "suporte",
-        "support",
-        "suporte_responsavel",
-        "suporte_responsável",
-        "responsavel",
-        "responsável",
-        "assignee",
-        "assigned_to",
-        "owner"
+        "tag",
+];
       ];
 
       const values = [];
@@ -3770,6 +3770,10 @@
       return isAguardandoCnpjRow(row) && row?.sellerCont === true;
     }
 
+    function getAguardandoCnpjSellerContRows(rows) {
+  return rows.filter((row) => row.emAndamento && isAguardandoCnpjSellerContRow(row));
+}
+
     function matchesActiveOverviewMode(row) {
       if (activeOverviewMode === "aguardandoVendaMais15") {
         return row.aguardandoVendaMais15;
@@ -3808,7 +3812,7 @@
       });
 
       if (totalAguardandoCnpjSellerCont) {
-        totalAguardandoCnpjSellerCont.textContent = pendingRows.filter(isAguardandoCnpjSellerContRow).length;
+        totalAguardandoCnpjSellerCont.textContent = getAguardandoCnpjSellerContRows(pendingRows).length;
       }
 
       supportCountLabel.textContent = `${supports.size} suporte${supports.size === 1 ? "" : "s"}`;
