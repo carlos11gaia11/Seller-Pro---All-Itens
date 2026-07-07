@@ -2075,10 +2075,10 @@
         <div class="overview-value" id="totalLojaAguardandoVenda">0</div>
       </div>
 
-      <div class="overview-card metric-danger is-clickable" data-aging-target="aguardandoVendaMais7" title="Ver lojas aguardando venda há mais de 15 dias">
+      <div class="overview-card metric-danger is-clickable" data-aging-target="aguardandoVendaMais15" title="Ver lojas aguardando venda há mais de 15 dias">
         <div class="overview-icon">🔴</div>
         <div class="overview-label">Aguardando venda +15 dias</div>
-        <div class="overview-value" id="totalAguardandoVendaMais7">0</div>
+        <div class="overview-value" id="totalAguardandoVendaMais15">0</div>
         <div class="overview-note">Lojas acima do prazo de atenção</div>
       </div>
 
@@ -2458,6 +2458,8 @@
     let supportLookup = new Map();
     let currentTab = "andamento";
     let activeOverviewMode = "";
+    const AGUARDANDO_VENDA_ALERT_DAYS = 15;
+    const SELLER_CONT_FLAGS_KEY = "seller_pro_ares_seller_cont_flags_v1";
 
     const SALE_FINALIZED_KEYWORDS = [
       "venda finalizada",
@@ -2507,7 +2509,8 @@
       "seller contabil",
       "seller contábil",
       "seller contador",
-      "seller contabilidade"
+      "seller contabilidade",
+      "contabilidade seller cont"
     ];
 
     const OVERVIEW_STAGE_METRICS = [
@@ -2627,7 +2630,7 @@
     const supportCards = document.getElementById("supportCards");
 
     const totalLojasPendentes = document.getElementById("totalLojasPendentes");
-    const totalAguardandoVendaMais7 = document.getElementById("totalAguardandoVendaMais7");
+    const totalAguardandoVendaMais15 = document.getElementById("totalAguardandoVendaMais15");
     const totalAguardandoCnpjSellerCont = document.getElementById("totalAguardandoCnpjSellerCont");
 
     const overviewStageElements = Object.fromEntries(
@@ -2975,8 +2978,65 @@
       return statusName || "Sem situação";
     }
 
+    function readSellerContFlags() {
+      try {
+        return JSON.parse(localStorage.getItem(SELLER_CONT_FLAGS_KEY) || "{}") || {};
+      } catch (error) {
+        console.warn("Não consegui ler as marcações Seller Cont salvas localmente.", error);
+        return {};
+      }
+    }
+
+    function getSavedSellerContFlag(taskId) {
+      if (!taskId) return undefined;
+
+      const flags = readSellerContFlags();
+      const value = flags[String(taskId)];
+      return typeof value === "boolean" ? value : undefined;
+    }
+
     function isSellerContTask(task) {
+      const savedSellerContFlag = getSavedSellerContFlag(task?.id);
+      if (typeof savedSellerContFlag === "boolean") {
+        return savedSellerContFlag;
+      }
+
+      const directBooleanSellerContFields = [
+        "deliveryIsSellerCont",
+        "delivery_is_seller_cont",
+        "is_seller_cont",
+        "isSellerCont",
+        "seller_cont",
+        "sellerCont",
+        "sellercont",
+        "seller_conta",
+        "seller_contabil",
+        "seller_contábil",
+        "marcadoSellerCont",
+        "marcado_seller_cont",
+        "marcado_sellercont",
+        "marcado_como_seller_cont",
+        "seller_cont_flag"
+      ];
+
+      const hasDirectBooleanFlag = directBooleanSellerContFields.some((field) => {
+        return task && task[field] === true;
+      });
+
+      if (hasDirectBooleanFlag) return true;
+
       const possibleSellerContFields = [
+        "deliveryIsSellerCont",
+        "delivery_is_seller_cont",
+        "is_seller_cont",
+        "isSellerCont",
+        "status_seller_cont",
+        "seller_cont_status",
+        "marcadoSellerCont",
+        "marcado_seller_cont",
+        "marcado_sellercont",
+        "marcado_como_seller_cont",
+        "seller_cont_flag",
         "seller_cont",
         "sellerCont",
         "sellercont",
@@ -3016,6 +3076,11 @@
 
       return values.some((value) => {
         const normalizedValue = normalizeKey(value);
+        const truthySellerContValues = ["true", "sim", "yes", "1", "marcado", "marcada", "selecionado", "selecionada"];
+
+        if (truthySellerContValues.includes(normalizedValue)) {
+          return true;
+        }
 
         return SELLER_CONT_KEYWORDS.some((keyword) => {
           const normalizedKeyword = normalizeKey(keyword);
@@ -3391,7 +3456,7 @@
         const sellerCont = isSellerContTask(task);
         const aguardandoVendaDesdeTs = entregue ? getStatusStartTimestamp(task) : 0;
         const diasAguardandoVenda = entregue ? getDaysSinceTimestamp(aguardandoVendaDesdeTs) : null;
-        const aguardandoVendaMais7 = entregue && diasAguardandoVenda !== null && diasAguardandoVenda > 7;
+        const aguardandoVendaMais15 = entregue && diasAguardandoVenda !== null && diasAguardandoVenda > AGUARDANDO_VENDA_ALERT_DAYS;
 
         return {
           raw: task,
@@ -3412,7 +3477,7 @@
           aguardandoVendaDesdeTs,
           aguardandoVendaDesde: formatDateFromTimestamp(aguardandoVendaDesdeTs),
           diasAguardandoVenda,
-          aguardandoVendaMais7,
+          aguardandoVendaMais15,
           sellerCont,
           finalizada,
           emAndamento
@@ -3491,7 +3556,7 @@
         `);
 
         const matchSearch = !searchTerm || searchable.includes(searchTerm);
-        const matchOverviewMode = activeOverviewMode !== "aguardandoVendaMais7" || row.aguardandoVendaMais7;
+        const matchOverviewMode = activeOverviewMode !== "aguardandoVendaMais15" || row.aguardandoVendaMais15;
 
         return matchMonth && matchSupport && matchStatus && matchSearch && matchOverviewMode;
       });
@@ -3530,7 +3595,7 @@
         `);
 
         const matchSearch = !searchTerm || searchable.includes(searchTerm);
-        const matchOverviewMode = activeOverviewMode !== "aguardandoVendaMais7" || row.aguardandoVendaMais7;
+        const matchOverviewMode = activeOverviewMode !== "aguardandoVendaMais15" || row.aguardandoVendaMais15;
 
         return row.emAndamento && matchMonth && matchSupport && matchStatus && matchStage && matchSearch && matchOverviewMode;
       });
@@ -3581,7 +3646,7 @@
         `);
 
         const matchSearch = !searchTerm || searchable.includes(searchTerm);
-        const matchOverviewMode = activeOverviewMode !== "aguardandoVendaMais7" || row.aguardandoVendaMais7;
+        const matchOverviewMode = activeOverviewMode !== "aguardandoVendaMais15" || row.aguardandoVendaMais15;
 
         return row.emAndamento && matchMonth && matchSupport && matchStatus && matchStage && matchSearch && matchOverviewMode;
       });
@@ -3671,8 +3736,8 @@
         totalLojasPendentes.textContent = pendingRows.length;
       }
 
-      if (totalAguardandoVendaMais7) {
-        totalAguardandoVendaMais7.textContent = pendingRows.filter((row) => row.aguardandoVendaMais7).length;
+      if (totalAguardandoVendaMais15) {
+        totalAguardandoVendaMais15.textContent = pendingRows.filter((row) => row.aguardandoVendaMais15).length;
       }
 
       OVERVIEW_STAGE_METRICS.forEach((metric) => {
@@ -3847,7 +3912,7 @@
       storesTable.innerHTML = rows
         .map((row) => {
           const color = getStatusColor(row.situacao);
-          const waitingSaleClass = row.aguardandoVendaMais7 ? "waiting-sale-danger" : "";
+          const waitingSaleClass = row.aguardandoVendaMais15 ? "waiting-sale-danger" : "";
           const waitingSaleLabel = formatWaitingSaleDays(row);
           const waitingSaleSince = row.entregue && row.aguardandoVendaDesde !== "-" ? `Desde ${row.aguardandoVendaDesde}` : "";
 
@@ -3872,7 +3937,7 @@
               </td>
 
               <td>
-                <span class="badge days-waiting-badge ${row.aguardandoVendaMais7 ? "danger-badge" : ""}">
+                <span class="badge days-waiting-badge ${row.aguardandoVendaMais15 ? "danger-badge" : ""}">
                   ${escapeHtml(waitingSaleLabel)}
                 </span>
                 ${waitingSaleSince ? `<div class="store-sub">${escapeHtml(waitingSaleSince)}</div>` : ""}
@@ -4026,7 +4091,7 @@
         setStatusFilterByMetric(statusTarget);
       }
 
-      if (agingTarget === "aguardandoVendaMais7") {
+      if (agingTarget === "aguardandoVendaMais15") {
         stageFilter.value = "andamento";
         setStatusFilterByMetric("totalLojaAguardandoVenda");
       }
