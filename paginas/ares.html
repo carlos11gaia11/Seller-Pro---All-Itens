@@ -2425,7 +2425,7 @@ body[data-theme="light"] {
       <div class="form-grid">
         <div class="field full">
           <div class="required-hint">
-            Para mover o card para <strong>Loja entregue</strong>, preencha todos os dados abaixo. A data de entrega será usada para calcular o prazo de 7 dias.
+            Para mover o card para <strong>Loja entregue</strong>, preencha todos os dados abaixo. A data de entrega será usada para calcular o prazo de 15 dias.
           </div>
         </div>
 
@@ -3441,7 +3441,7 @@ body[data-theme="light"] {
           <span class="status-square">⏱</span>
           <span>
             <strong>Loja entregue</strong>
-            <small>${safeDays}/7 dias desde a entrega • ${escapeHTML(deliveredDate)}</small>
+            <small>${safeDays}/15 dias desde a entrega • ${escapeHTML(deliveredDate)}</small>
           </span>
         </div>
       `;
@@ -3452,10 +3452,10 @@ body[data-theme="light"] {
 
       const deliveredDays = getDeliveredDays(task);
       const attentionText = requiresDeliveryAttention(task)
-        ? `Requer atenção: passou de 7 dias como Loja entregue.`
+        ? `Requer atenção: passou de 15 dias como Loja entregue.`
         : isVendaFinalizadaTask(task)
           ? 'Venda finalizada. O card fica verde.'
-          : 'Dentro do prazo de 7 dias.';
+          : 'Dentro do prazo de 15 dias.';
 
       const finalizedClass = isVendaFinalizadaTask(task) ? ' finalized' : '';
 
