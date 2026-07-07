@@ -2935,6 +2935,97 @@ body[data-theme="light"] {
       button.textContent = theme === 'dark' ? '☀️ Tema claro' : '🌙 Tema escuro';
     }
 
+    function isSellerContColumnError(error) {
+      const message = [
+        error?.message,
+        error?.details,
+        error?.hint,
+        error?.code
+      ].filter(Boolean).join(' ').toLowerCase();
+
+      return message.includes('is_seller_cont');
+    }
+
+    async function updateTaskSellerContFlag(taskId, checked) {
+      if (!taskId) return false;
+
+      const { error } = await supabaseClient
+        .from('sp_tasks')
+        .update({ is_seller_cont: Boolean(checked) })
+        .eq('id', taskId);
+
+      if (!error) return true;
+
+      console.error(error);
+
+      if (isSellerContColumnError(error)) {
+        showToast('Card salvo, mas o azul ainda precisa da coluna is_seller_cont no Supabase. Rode o SQL corrigido.');
+        return false;
+      }
+
+      showToast('Card salvo, mas não consegui gravar o controle Seller Cont no banco.');
+      return false;
+    }
+
+    const LEGACY_SELLER_CONT_FLAGS_KEY = 'seller_pro_ares_seller_cont_flags_v1';
+
+    async function migrateLegacySellerContFlagsToSupabase(tasks) {
+      const rawFlags = localStorage.getItem(LEGACY_SELLER_CONT_FLAGS_KEY);
+      if (!rawFlags) return;
+
+      let flags = {};
+
+      try {
+        flags = JSON.parse(rawFlags) || {};
+      } catch (error) {
+        console.warn('Marcações antigas Seller Cont estavam corrompidas e foram removidas.', error);
+        localStorage.removeItem(LEGACY_SELLER_CONT_FLAGS_KEY);
+        return;
+      }
+
+      const taskById = new Map((tasks || []).map(task => [String(task.id), task]));
+      const idsByFlag = { true: [], false: [] };
+
+      Object.entries(flags).forEach(([taskId, checked]) => {
+        if (typeof checked !== 'boolean') return;
+
+        const task = taskById.get(String(taskId));
+        if (!task || task.is_seller_cont === checked) return;
+
+        idsByFlag[String(checked)].push(task.id);
+      });
+
+      const migrationGroups = [
+        { checked: true, ids: idsByFlag.true },
+        { checked: false, ids: idsByFlag.false }
+      ].filter(group => group.ids.length);
+
+      try {
+        for (const group of migrationGroups) {
+          const { error } = await supabaseClient
+            .from('sp_tasks')
+            .update({ is_seller_cont: group.checked })
+            .in('id', group.ids);
+
+          if (error) throw error;
+
+          group.ids.forEach(taskId => {
+            const task = taskById.get(String(taskId));
+            if (task) task.is_seller_cont = group.checked;
+          });
+        }
+
+        localStorage.removeItem(LEGACY_SELLER_CONT_FLAGS_KEY);
+
+        if (migrationGroups.length) {
+          showToast('Marcações Seller Cont migradas para o banco de dados.');
+        }
+      } catch (error) {
+        console.warn('Não consegui migrar as marcações Seller Cont para o Supabase.', error);
+        showToast('Não consegui migrar o card azul para o banco. Verifique a coluna is_seller_cont em sp_tasks.');
+      }
+    }
+
     async function initApp() {
       applySavedTheme();
       playSound('site');
@@ -2984,7 +3075,7 @@ body[data-theme="light"] {
         columns = defaultColumns;
       }
 
-      const { data: tasks, error: tasksError } = await supabaseClient
+      let { data: tasks, error: tasksError } = await supabaseClient
         .from('sp_tasks')
         .select('*')
         .order('created_at', { ascending: false });
@@ -3000,6 +3091,8 @@ body[data-theme="light"] {
         if (error) throw error;
         tasks = seededTasks || defaultTasks;
       }
+
+      await migrateLegacySellerContFlagsToSupabase(tasks);
 
       let reminders = [];
       try {
@@ -3058,8 +3151,10 @@ body[data-theme="light"] {
 
       state.tasks = (tasks || []).map(task => {
         const deliveredStore = deliveredStoresByTaskId.get(String(task.id));
-        const savedSellerContFlag = getSellerContFlag(task.id);
         const savedSpnConfirmationFlag = getSpnConfirmationFlag(task.id);
+        const taskSellerContFlag = typeof task.is_seller_cont === 'boolean'
+          ? task.is_seller_cont
+          : null;
         const deliveredSellerContFlag = typeof deliveredStore?.is_seller_cont === 'boolean'
           ? deliveredStore.is_seller_cont
           : Boolean(deliveredStore);
@@ -3084,7 +3179,7 @@ body[data-theme="light"] {
           deliveryPhone: deliveredStore?.telefone || '',
           deliveryProductSent: deliveredStore?.produto_que_enviou || '',
           deliverySellerContStatus: deliveredStore?.status_seller_cont || '',
-          deliveryIsSellerCont: typeof savedSellerContFlag === 'boolean' ? savedSellerContFlag : deliveredSellerContFlag,
+          deliveryIsSellerCont: taskSellerContFlag ?? deliveredSellerContFlag,
           spnConfirmed: Boolean(savedSpnConfirmationFlag),
           deliveryCompletedAt: String(deliveredAtFallback || '').slice(0, 10) || savedStatusDates.deliveredAt || '',
           saleFinalizedAt: String(finalizedAtFallback || '').slice(0, 10) || savedStatusDates.finalizedAt || '',
@@ -3310,31 +3405,6 @@ body[data-theme="light"] {
       const updates = Array.isArray(task.updates) ? task.updates.filter(Boolean) : [];
       return updates.length ? updates[updates.length - 1] : 'Nenhuma atualização ainda.';
     }
-
-    const SELLER_CONT_FLAGS_KEY = 'seller_pro_ares_seller_cont_flags_v1';
-
-    function readSellerContFlags() {
-      try {
-        return JSON.parse(localStorage.getItem(SELLER_CONT_FLAGS_KEY) || '{}') || {};
-      } catch (error) {
-        console.warn('Não consegui ler as marcações Seller Cont salvas localmente.', error);
-        return {};
-      }
-    }
-
-    function setSellerContFlag(taskId, checked) {
-      if (!taskId) return;
-
-      const flags = readSellerContFlags();
-      flags[String(taskId)] = Boolean(checked);
-      localStorage.setItem(SELLER_CONT_FLAGS_KEY, JSON.stringify(flags));
-    }
-
-    function getSellerContFlag(taskId) {
-      const flags = readSellerContFlags();
-      return flags[String(taskId)];
-    }
-
 
     const SPN_CONFIRMATION_FLAGS_KEY = 'seller_pro_ares_spn_confirmation_flags_v1';
 
@@ -4248,6 +4318,8 @@ body[data-theme="light"] {
           return;
         }
 
+        await updateTaskSellerContFlag(currentEditingTaskId, taskSellerContChecked);
+
         Object.assign(task, {
           id: currentEditingTaskId,
           project: taskData.project_id,
@@ -4261,7 +4333,7 @@ body[data-theme="light"] {
           accountCreationEmail: taskData.account_creation_email || '',
           deliveryPhone: task.deliveryPhone || '',
           deliveryProductSent: task.deliveryProductSent || '',
-          deliverySellerContStatus: task.deliverySellerContStatus || '',
+          deliverySellerContStatus: taskSellerContChecked ? (task.deliverySellerContStatus || 'Seller Cont') : '',
           deliveryIsSellerCont: taskSellerContChecked,
           spnConfirmed: Boolean(task.spnConfirmed),
           deliveryCompletedAt: statusDatePatch.deliveredAt || task.deliveryCompletedAt || '',
@@ -4287,6 +4359,8 @@ body[data-theme="light"] {
           return;
         }
 
+        await updateTaskSellerContFlag(id, taskSellerContChecked);
+
         state.tasks.unshift({
           id,
           project: taskData.project_id,
@@ -4311,7 +4385,6 @@ body[data-theme="light"] {
         });
       }
 
-      setSellerContFlag(id, taskSellerContChecked);
       if (Object.keys(statusDatePatch).length) {
         setDeliveryStatusDates(id, statusDatePatch);
       }
@@ -4665,6 +4738,7 @@ body[data-theme="light"] {
       const previousData = {
         deliveryCompletedAt: task.deliveryCompletedAt,
         saleFinalizedAt: task.saleFinalizedAt,
+        deliveryIsSellerCont: task.deliveryIsSellerCont,
         updates: Array.isArray(task.updates) ? [...task.updates] : []
       };
       const previousStoredDates = getDeliveryStatusDates(task.id);
@@ -5043,7 +5117,6 @@ body[data-theme="light"] {
       task.deliveryCompletedAt = deliveryData.delivery_completed_at;
       task.saleFinalizedAt = '';
       task.updates = appendStatusUpdate(task, 'Loja entregue', task.deliveryCompletedAt);
-      setSellerContFlag(task.id, deliveryData.is_seller_cont);
       setDeliveryStatusDates(task.id, { deliveredAt: task.deliveryCompletedAt });
 
       renderBoard();
@@ -5081,7 +5154,6 @@ body[data-theme="light"] {
         task.deliveryCompletedAt = previousData.deliveryCompletedAt;
         task.saleFinalizedAt = previousData.saleFinalizedAt;
         task.updates = previousData.updates;
-        setSellerContFlag(task.id, previousData.deliveryIsSellerCont);
         replaceDeliveryStatusDates(task.id, previousStoredDates);
         renderBoard();
 
@@ -5094,6 +5166,8 @@ body[data-theme="light"] {
         console.error(error);
         return;
       }
+
+      await updateTaskSellerContFlag(task.id, deliveryData.is_seller_cont);
 
       if (button) {
         button.textContent = 'Salvando no banco de lojas entregues...';
@@ -5115,7 +5189,6 @@ body[data-theme="light"] {
         task.deliveryCompletedAt = previousData.deliveryCompletedAt;
         task.saleFinalizedAt = previousData.saleFinalizedAt;
         task.updates = previousData.updates;
-        setSellerContFlag(task.id, previousData.deliveryIsSellerCont);
         replaceDeliveryStatusDates(task.id, previousStoredDates);
         renderBoard();
 
