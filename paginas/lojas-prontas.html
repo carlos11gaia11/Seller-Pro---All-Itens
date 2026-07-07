@@ -2145,7 +2145,7 @@
           tabindex="0"
           title="Ver apenas lojas Seller Cont aguardando CNPJ"
         >
-          Seller cont: <span id="totalAguardandoCnpjSellerCont">0</span>
+          (Seller cont: <span id="totalAguardandoCnpjSellerCont">0</span>)
         </div>
       </div>
 
@@ -3594,9 +3594,8 @@
         `);
 
         const matchSearch = !searchTerm || searchable.includes(searchTerm);
-        const matchOverviewMode = matchesActiveOverviewMode(row);
 
-        return matchMonth && matchSupport && matchStatus && matchSearch && matchOverviewMode;
+return matchMonth && matchSupport && matchStatus && matchSearch;
       });
     }
 
