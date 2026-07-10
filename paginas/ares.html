@@ -2642,7 +2642,30 @@ body[data-theme="light"] {
 
     // Cole aqui o link do Web App gerado no Google Apps Script.
     // Exemplo: https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxx/exec
-    const GOOGLE_SHEETS_WEB_APP_URL = 'COLE_AQUI_A_URL_DA_NOVA_IMPLANTACAO';
+    let GOOGLE_SHEETS_WEB_APP_URL = localStorage.getItem('seller_cont_web_app_url') || '';
+
+    function solicitarGoogleSheetsWebAppUrl() {
+      const atual = String(GOOGLE_SHEETS_WEB_APP_URL || '').trim();
+      const informada = window.prompt(
+        'Cole a URL do App da Web do Google Apps Script. A URL deve terminar em /exec:',
+        atual
+      );
+
+      if (informada === null) return '';
+
+      const url = String(informada || '').trim();
+      const valida = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec(?:\?.*)?$/.test(url);
+
+      if (!valida) {
+        showToast('URL inválida. Use a URL do Apps Script terminada em /exec.');
+        return '';
+      }
+
+      GOOGLE_SHEETS_WEB_APP_URL = url;
+      localStorage.setItem('seller_cont_web_app_url', url);
+      showToast('URL do Apps Script salva neste navegador.');
+      return url;
+    }
 
     const defaultProjects = [
       { id: '2026-05', name: 'Maio 2026', description: 'Pasta mensal de projetos', position: 1 },
@@ -4902,8 +4925,11 @@ body[data-theme="light"] {
 
     async function enviarPayloadParaPlanilha(payload) {
       if (!googleSheetsEntregaConfigurado()) {
-        console.warn('Link do Google Apps Script ainda não configurado em GOOGLE_SHEETS_WEB_APP_URL.');
-        return { configured: false, sent: false };
+        const urlConfigurada = solicitarGoogleSheetsWebAppUrl();
+        if (!urlConfigurada || !googleSheetsEntregaConfigurado()) {
+          console.warn('Link do Google Apps Script não configurado.');
+          return { configured: false, sent: false };
+        }
       }
 
       const mcidParaPlanilha = String(
