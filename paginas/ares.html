@@ -4876,24 +4876,17 @@ body[data-theme="light"] {
         throw new Error('O MCID está vazio antes do envio para a planilha.');
       }
 
-      // URLSearchParams preenche e.parameter no Apps Script.
-      // payload_json mantém uma cópia completa em JSON.
-      const formBody = new URLSearchParams();
+      console.log('Payload JSON enviado para a planilha:', payloadCompleto);
 
-      Object.entries(payloadCompleto).forEach(([chave, valor]) => {
-        formBody.set(chave, String(valor ?? ''));
-      });
-
-      formBody.set('payload_json', JSON.stringify(payloadCompleto));
-
-      console.log('Payload enviado para a planilha:', payloadCompleto);
-
+      // O Apps Script lê este conteúdo em e.postData.contents e faz JSON.parse().
+      // Mantemos no-cors porque o Web App do Google pode não liberar a leitura
+      // da resposta pelo navegador, mas o doPost ainda é executado normalmente.
       await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
         method: 'POST',
         mode: 'no-cors',
         cache: 'no-store',
         redirect: 'follow',
-        body: formBody
+        body: JSON.stringify(payloadCompleto)
       });
 
       return {
