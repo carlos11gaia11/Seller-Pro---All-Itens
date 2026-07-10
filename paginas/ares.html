@@ -2642,7 +2642,7 @@ body[data-theme="light"] {
 
     // Cole aqui o link do Web App gerado no Google Apps Script.
     // Exemplo: https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxx/exec
-    const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyi543Y51rcZa_UsZHMeQBnu4HcrcVfK0EfilhP64AWh0yCYHRomrkJ7tI4d07mf9Ic/exec';
+    const GOOGLE_SHEETS_WEB_APP_URL = 'COLE_AQUI_A_URL_DA_NOVA_IMPLANTACAO';
 
     const defaultProjects = [
       { id: '2026-05', name: 'Maio 2026', description: 'Pasta mensal de projetos', position: 1 },
@@ -4342,6 +4342,47 @@ body[data-theme="light"] {
           updates,
           attachments: uploadedAttachments
         });
+
+
+        // Se o card Seller Cont já foi entregue, qualquer alteração no MCID deve
+        // substituir a linha antiga da planilha. Antes, editar o card atualizava
+        // apenas o Supabase e a planilha permanecia com o MCID vazio.
+        const taskJaFoiEntregue = Boolean(
+          task.deliveryCompletedAt ||
+          task.status === 'Loja entregue' ||
+          task.status === 'Venda finalizada'
+        );
+
+        if (taskSellerContChecked && taskJaFoiEntregue && task.mcid) {
+          const deliveryDataSincronizacao = {
+            delivery_completed_at: task.deliveryCompletedAt || '',
+            billing_config_date: task.billingConfigDate || '',
+            shipment_date: task.shipmentDate || '',
+            pickup_date: task.pickupDate || '',
+            mcid: task.mcid || '',
+            account_creation_email: task.accountCreationEmail || '',
+            phone: task.deliveryPhone || '',
+            product_sent: task.deliveryProductSent || '',
+            seller_cont_status: task.deliverySellerContStatus || task.status || 'Seller Cont',
+            is_seller_cont: true,
+            sale_finalized_at: task.saleFinalizedAt || ''
+          };
+
+          try {
+            // Remove a linha anterior usando e-mail/MCID e envia os dados atualizados.
+            // Nenhum taskId é enviado para a planilha.
+            await enviarExclusaoParaPlanilha({
+              email: existingTask?.accountCreationEmail || '',
+              mcid: existingTask?.mcid || ''
+            });
+            await enviarEntregaParaPlanilha(task, deliveryDataSincronizacao, task.status);
+            await marcarLojaEntregueEnviadaParaPlanilha(task.id);
+            console.log('Linha Seller Cont sincronizada após edição. MCID:', task.mcid);
+          } catch (sheetSyncError) {
+            console.error('Não consegui sincronizar a edição com a planilha Seller Cont:', sheetSyncError);
+            showToast('Card salvo, mas a planilha Seller Cont não foi atualizada. Verifique o Apps Script.');
+          }
+        }
       } else {
         const newTask = { id, ...taskData };
 
@@ -4429,6 +4470,8 @@ body[data-theme="light"] {
 
       if (!confirmDelete) return;
 
+      const taskParaExcluir = state.tasks.find(task => task.id === taskId);
+
       const { error } = await supabaseClient
         .from('sp_tasks')
         .delete()
@@ -4451,7 +4494,10 @@ body[data-theme="light"] {
       }
 
       try {
-        await enviarExclusaoParaPlanilha(taskId);
+        await enviarExclusaoParaPlanilha({
+          email: taskParaExcluir?.accountCreationEmail || '',
+          mcid: taskParaExcluir?.mcid || ''
+        });
       } catch (sheetDeleteError) {
         console.warn('O trabalho foi excluído, mas não consegui remover a linha correspondente da planilha.', sheetDeleteError);
       }
@@ -4832,7 +4878,6 @@ body[data-theme="light"] {
 
       return {
         acao: 'adicionar',
-        taskId: String(task.id || ''),
         nome: task.name || '',
         email: deliveryData.account_creation_email || '',
         telefone: deliveryData.phone || '',
@@ -4903,16 +4948,27 @@ body[data-theme="light"] {
         throw new Error('O MCID está vazio antes do envio para a planilha.');
       }
 
+      // Google Apps Script preenche e.parameter somente quando os dados chegam
+      // como formulário ou pela URL. URLSearchParams garante que MCID e os demais
+      // campos sejam lidos diretamente por e.parameter, sem depender de JSON.parse.
+      const formBody = new URLSearchParams();
+
+      Object.entries(payloadCompleto).forEach(([chave, valor]) => {
+        formBody.set(chave, String(valor ?? ''));
+      });
+
+      // Mantém uma cópia JSON para scripts que já utilizam e.postData.contents.
+      formBody.set('payload_json', JSON.stringify(payloadCompleto));
+
       await fetch(requestUrl.toString(), {
         method: 'POST',
         mode: 'no-cors',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
-        },
-        body: JSON.stringify(payloadCompleto)
+        cache: 'no-store',
+        redirect: 'follow',
+        body: formBody
       });
 
-      return { configured: true, sent: true };
+      return { configured: true, sent: true, mcid: mcidParaPlanilha };
     }
 
     async function enviarEntregaParaPlanilha(task, deliveryData, status) {
@@ -4920,10 +4976,15 @@ body[data-theme="light"] {
       return await enviarPayloadParaPlanilha(payload);
     }
 
-    async function enviarExclusaoParaPlanilha(taskId) {
+    async function enviarExclusaoParaPlanilha(dados = {}) {
+      const mcid = String(dados.mcid || dados.MCID || '').trim();
+
       return await enviarPayloadParaPlanilha({
         acao: 'excluir',
-        taskId: String(taskId || '')
+        email: String(dados.email || '').trim(),
+        MCID: mcid,
+        mcid: mcid,
+        mcId: mcid
       });
     }
 
