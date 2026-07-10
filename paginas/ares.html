@@ -4838,7 +4838,7 @@ body[data-theme="light"] {
         dataConfiguracaoFaturador: deliveryData.billing_config_date || '',
         dataLojaEntregue: deliveryData.delivery_completed_at || '',
         dataVendaFinalizada: deliveryData.sale_finalized_at || '',
-        mcid: deliveryData.mcid || '',
+        mcid: String(deliveryData.mcid || task.mcid || '').trim(),
         responsavel: task.owner || '',
         projeto: task.project || task.project_id || state.activeProject || ''
       };
@@ -4885,7 +4885,7 @@ body[data-theme="light"] {
         data_conf_faturador: deliveryData.billing_config_date || null,
         delivery_completed_at: deliveryData.delivery_completed_at || null,
         sale_finalized_at: deliveryData.sale_finalized_at || null,
-        mcid: deliveryData.mcid || null,
+        mcid: String(deliveryData.mcid || task.mcid || '').trim() || null,
         responsavel: task.owner || null,
         projeto_id: task.project || task.project_id || state.activeProject || null,
         origem: 'ares',
@@ -5121,7 +5121,14 @@ body[data-theme="light"] {
         .from('sp_tasks')
         .update({
           status: deliveredStatus,
-          updates: task.updates
+          updates: task.updates,
+          mcid: deliveryData.mcid || null,
+          billing_config_date: deliveryData.billing_config_date || null,
+          shipment_date: deliveryData.shipment_date || null,
+          pickup_date: deliveryData.pickup_date || null,
+          account_creation_email: deliveryData.account_creation_email || null,
+          delivery_completed_at: deliveryData.delivery_completed_at || null,
+          sale_finalized_at: null
         })
         .eq('id', task.id);
 
@@ -5181,7 +5188,14 @@ body[data-theme="light"] {
           .from('sp_tasks')
           .update({
             status: previousStatus,
-            updates: previousData.updates || []
+            updates: previousData.updates || [],
+            mcid: previousData.mcid || null,
+            billing_config_date: previousData.billingConfigDate || null,
+            shipment_date: previousData.shipmentDate || null,
+            pickup_date: previousData.pickupDate || null,
+            account_creation_email: previousData.accountCreationEmail || null,
+            delivery_completed_at: previousData.deliveryCompletedAt || null,
+            sale_finalized_at: previousData.saleFinalizedAt || null
           })
           .eq('id', task.id);
 
