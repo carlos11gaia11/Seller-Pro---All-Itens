@@ -4824,6 +4824,12 @@ body[data-theme="light"] {
     }
 
     function montarPayloadEntregaParaPlanilha(task, deliveryData, status) {
+      const mcidNormalizado = String(
+        deliveryData?.mcid ||
+        task?.mcid ||
+        ''
+      ).trim();
+
       return {
         acao: 'adicionar',
         taskId: String(task.id || ''),
@@ -4838,7 +4844,11 @@ body[data-theme="light"] {
         dataConfiguracaoFaturador: deliveryData.billing_config_date || '',
         dataLojaEntregue: deliveryData.delivery_completed_at || '',
         dataVendaFinalizada: deliveryData.sale_finalized_at || '',
-        mcid: deliveryData.mcid || '',
+
+        // O Apps Script aceita MCID e mcid. Enviamos os dois por compatibilidade.
+        MCID: mcidNormalizado,
+        mcid: mcidNormalizado,
+
         responsavel: task.owner || '',
         projeto: task.project || task.project_id || state.activeProject || ''
       };
@@ -4850,13 +4860,47 @@ body[data-theme="light"] {
         return { configured: false, sent: false };
       }
 
+      const mcidParaPlanilha = String(
+        payload.MCID ||
+        payload.mcid ||
+        ''
+      ).trim();
+
+      const payloadCompleto = {
+        ...payload,
+        MCID: mcidParaPlanilha,
+        mcid: mcidParaPlanilha
+      };
+
+      if (payloadCompleto.acao !== 'excluir' && !mcidParaPlanilha) {
+        throw new Error('O MCID está vazio antes do envio para a planilha.');
+      }
+
+      // URLSearchParams preenche e.parameter no Apps Script.
+      // payload_json mantém uma cópia completa em JSON.
+      const formBody = new URLSearchParams();
+
+      Object.entries(payloadCompleto).forEach(([chave, valor]) => {
+        formBody.set(chave, String(valor ?? ''));
+      });
+
+      formBody.set('payload_json', JSON.stringify(payloadCompleto));
+
+      console.log('Payload enviado para a planilha:', payloadCompleto);
+
       await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
         method: 'POST',
         mode: 'no-cors',
-        body: JSON.stringify(payload)
+        cache: 'no-store',
+        redirect: 'follow',
+        body: formBody
       });
 
-      return { configured: true, sent: true };
+      return {
+        configured: true,
+        sent: true,
+        mcid: mcidParaPlanilha
+      };
     }
 
     async function enviarEntregaParaPlanilha(task, deliveryData, status) {
