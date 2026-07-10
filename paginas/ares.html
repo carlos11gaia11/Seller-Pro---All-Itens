@@ -2640,32 +2640,9 @@ body[data-theme="light"] {
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
     const PRINTS_BUCKET = 'task-prints';
 
-    // Cole aqui o link do Web App gerado no Google Apps Script.
-    // Exemplo: https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxx/exec
-    let GOOGLE_SHEETS_WEB_APP_URL = localStorage.getItem('seller_cont_web_app_url') || '';
-
-    function solicitarGoogleSheetsWebAppUrl() {
-      const atual = String(GOOGLE_SHEETS_WEB_APP_URL || '').trim();
-      const informada = window.prompt(
-        'Cole a URL do App da Web do Google Apps Script. A URL deve terminar em /exec:',
-        atual
-      );
-
-      if (informada === null) return '';
-
-      const url = String(informada || '').trim();
-      const valida = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec(?:\?.*)?$/.test(url);
-
-      if (!valida) {
-        showToast('URL inválida. Use a URL do Apps Script terminada em /exec.');
-        return '';
-      }
-
-      GOOGLE_SHEETS_WEB_APP_URL = url;
-      localStorage.setItem('seller_cont_web_app_url', url);
-      showToast('URL do Apps Script salva neste navegador.');
-      return url;
-    }
+    // Integração fixa com a planilha Seller Cont.
+    // O usuário não precisa informar, copiar ou configurar nenhuma URL.
+    const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyb1ERRGinPZW5CoRw4sLZzleF0wXnuUxS5OZIp4RjBr0fFKvUjxRrhm7Zdmguyq0v3/exec';
 
     const defaultProjects = [
       { id: '2026-05', name: 'Maio 2026', description: 'Pasta mensal de projetos', position: 1 },
@@ -4403,7 +4380,7 @@ body[data-theme="light"] {
             console.log('Linha Seller Cont sincronizada após edição. MCID:', task.mcid);
           } catch (sheetSyncError) {
             console.error('Não consegui sincronizar a edição com a planilha Seller Cont:', sheetSyncError);
-            showToast('Card salvo, mas a planilha Seller Cont não foi atualizada. Verifique o Apps Script.');
+            showToast('Card salvo. A sincronização com a planilha não foi concluída; tente salvar novamente.');
           }
         }
       } else {
@@ -4925,11 +4902,7 @@ body[data-theme="light"] {
 
     async function enviarPayloadParaPlanilha(payload) {
       if (!googleSheetsEntregaConfigurado()) {
-        const urlConfigurada = solicitarGoogleSheetsWebAppUrl();
-        if (!urlConfigurada || !googleSheetsEntregaConfigurado()) {
-          console.warn('Link do Google Apps Script não configurado.');
-          return { configured: false, sent: false };
-        }
+        throw new Error('A integração automática com a planilha está indisponível.');
       }
 
       const mcidParaPlanilha = String(
@@ -5378,7 +5351,7 @@ body[data-theme="light"] {
       launchDeliveryCelebration();
 
       if (sheetError) {
-        showToast('Loja entregue salva no Supabase, mas não consegui enviar os dados para a planilha. Verifique o Apps Script.');
+        showToast('Loja entregue salva, mas a sincronização com a planilha falhou. Tente novamente.');
         return;
       }
 
@@ -5388,7 +5361,7 @@ body[data-theme="light"] {
       }
 
       if (!sheetResult.configured) {
-        showToast('Loja entregue salva no Supabase. A planilha não recebeu porque o Apps Script não está configurado.');
+        showToast('Loja entregue salva, mas a integração com a planilha está indisponível.');
         return;
       }
 
