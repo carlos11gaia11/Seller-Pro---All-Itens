@@ -4824,6 +4824,12 @@ body[data-theme="light"] {
     }
 
     function montarPayloadEntregaParaPlanilha(task, deliveryData, status) {
+      const mcidNormalizado = String(
+        deliveryData?.mcid ||
+        task?.mcid ||
+        ''
+      ).trim();
+
       return {
         acao: 'adicionar',
         taskId: String(task.id || ''),
@@ -4838,7 +4844,12 @@ body[data-theme="light"] {
         dataConfiguracaoFaturador: deliveryData.billing_config_date || '',
         dataLojaEntregue: deliveryData.delivery_completed_at || '',
         dataVendaFinalizada: deliveryData.sale_finalized_at || '',
-        mcid: String(deliveryData.mcid || task.mcid || '').trim(),
+
+        // Mantém compatibilidade com diferentes nomes usados no Apps Script.
+        MCID: mcidNormalizado,
+        mcid: mcidNormalizado,
+        mcId: mcidNormalizado,
+
         responsavel: task.owner || '',
         projeto: task.project || task.project_id || state.activeProject || ''
       };
@@ -4850,9 +4861,14 @@ body[data-theme="light"] {
         return { configured: false, sent: false };
       }
 
+      console.log('Payload enviado para a tabela Seller Cont:', payload);
+
       await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
         method: 'POST',
         mode: 'no-cors',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
         body: JSON.stringify(payload)
       });
 
