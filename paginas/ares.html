@@ -2640,8 +2640,8 @@ body[data-theme="light"] {
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
     const PRINTS_BUCKET = 'task-prints';
 
-    // Integração fixa com a planilha Seller Cont.
-    // O usuário não precisa informar, copiar ou configurar nenhuma URL.
+    // Cole aqui o link do Web App gerado no Google Apps Script.
+    // Exemplo: https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxx/exec
     const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyb1ERRGinPZW5CoRw4sLZzleF0wXnuUxS5OZIp4RjBr0fFKvUjxRrhm7Zdmguyq0v3/exec';
 
     const defaultProjects = [
@@ -4342,47 +4342,6 @@ body[data-theme="light"] {
           updates,
           attachments: uploadedAttachments
         });
-
-
-        // Se o card Seller Cont já foi entregue, qualquer alteração no MCID deve
-        // substituir a linha antiga da planilha. Antes, editar o card atualizava
-        // apenas o Supabase e a planilha permanecia com o MCID vazio.
-        const taskJaFoiEntregue = Boolean(
-          task.deliveryCompletedAt ||
-          task.status === 'Loja entregue' ||
-          task.status === 'Venda finalizada'
-        );
-
-        if (taskSellerContChecked && taskJaFoiEntregue && task.mcid) {
-          const deliveryDataSincronizacao = {
-            delivery_completed_at: task.deliveryCompletedAt || '',
-            billing_config_date: task.billingConfigDate || '',
-            shipment_date: task.shipmentDate || '',
-            pickup_date: task.pickupDate || '',
-            mcid: task.mcid || '',
-            account_creation_email: task.accountCreationEmail || '',
-            phone: task.deliveryPhone || '',
-            product_sent: task.deliveryProductSent || '',
-            seller_cont_status: task.deliverySellerContStatus || task.status || 'Seller Cont',
-            is_seller_cont: true,
-            sale_finalized_at: task.saleFinalizedAt || ''
-          };
-
-          try {
-            // Remove a linha anterior usando e-mail/MCID e envia os dados atualizados.
-            // Nenhum taskId é enviado para a planilha.
-            await enviarExclusaoParaPlanilha({
-              email: existingTask?.accountCreationEmail || '',
-              mcid: existingTask?.mcid || ''
-            });
-            await enviarEntregaParaPlanilha(task, deliveryDataSincronizacao, task.status);
-            await marcarLojaEntregueEnviadaParaPlanilha(task.id);
-            console.log('Linha Seller Cont sincronizada após edição. MCID:', task.mcid);
-          } catch (sheetSyncError) {
-            console.error('Não consegui sincronizar a edição com a planilha Seller Cont:', sheetSyncError);
-            showToast('Card salvo. A sincronização com a planilha não foi concluída; tente salvar novamente.');
-          }
-        }
       } else {
         const newTask = { id, ...taskData };
 
@@ -4470,8 +4429,6 @@ body[data-theme="light"] {
 
       if (!confirmDelete) return;
 
-      const taskParaExcluir = state.tasks.find(task => task.id === taskId);
-
       const { error } = await supabaseClient
         .from('sp_tasks')
         .delete()
@@ -4494,10 +4451,7 @@ body[data-theme="light"] {
       }
 
       try {
-        await enviarExclusaoParaPlanilha({
-          email: taskParaExcluir?.accountCreationEmail || '',
-          mcid: taskParaExcluir?.mcid || ''
-        });
+        await enviarExclusaoParaPlanilha(taskId);
       } catch (sheetDeleteError) {
         console.warn('O trabalho foi excluído, mas não consegui remover a linha correspondente da planilha.', sheetDeleteError);
       }
@@ -4870,14 +4824,9 @@ body[data-theme="light"] {
     }
 
     function montarPayloadEntregaParaPlanilha(task, deliveryData, status) {
-      const mcidNormalizado = String(
-        deliveryData?.mcid ||
-        task?.mcid ||
-        ''
-      ).trim();
-
       return {
         acao: 'adicionar',
+        taskId: String(task.id || ''),
         nome: task.name || '',
         email: deliveryData.account_creation_email || '',
         telefone: deliveryData.phone || '',
@@ -4889,12 +4838,7 @@ body[data-theme="light"] {
         dataConfiguracaoFaturador: deliveryData.billing_config_date || '',
         dataLojaEntregue: deliveryData.delivery_completed_at || '',
         dataVendaFinalizada: deliveryData.sale_finalized_at || '',
-
-        // Mantém compatibilidade com diferentes nomes usados no Apps Script.
-        MCID: mcidNormalizado,
-        mcid: mcidNormalizado,
-        mcId: mcidNormalizado,
-
+        mcid: deliveryData.mcid || '',
         responsavel: task.owner || '',
         projeto: task.project || task.project_id || state.activeProject || ''
       };
@@ -4902,72 +4846,17 @@ body[data-theme="light"] {
 
     async function enviarPayloadParaPlanilha(payload) {
       if (!googleSheetsEntregaConfigurado()) {
-        throw new Error('A integração automática com a planilha está indisponível.');
+        console.warn('Link do Google Apps Script ainda não configurado em GOOGLE_SHEETS_WEB_APP_URL.');
+        return { configured: false, sent: false };
       }
 
-      const mcidParaPlanilha = String(
-        payload.MCID ||
-        payload.mcid ||
-        payload.mcId ||
-        payload.numeroMCID ||
-        payload.numeroMcid ||
-        ''
-      ).trim();
-
-      // Envia o MCID também na URL. Assim, o Apps Script recebe o valor tanto
-      // quando lê o JSON com JSON.parse(e.postData.contents) quanto quando usa
-      // e.parameter.MCID / e.parameter.mcid.
-      const requestUrl = new URL(GOOGLE_SHEETS_WEB_APP_URL);
-      requestUrl.searchParams.set('MCID', mcidParaPlanilha);
-      requestUrl.searchParams.set('mcid', mcidParaPlanilha);
-      requestUrl.searchParams.set('mcId', mcidParaPlanilha);
-      requestUrl.searchParams.set('numeroMCID', mcidParaPlanilha);
-      requestUrl.searchParams.set('numeroMcid', mcidParaPlanilha);
-      requestUrl.searchParams.set('numero_mcid', mcidParaPlanilha);
-      requestUrl.searchParams.set('Numero MCID', mcidParaPlanilha);
-      requestUrl.searchParams.set('Número MCID', mcidParaPlanilha);
-      requestUrl.searchParams.set('_ts', String(Date.now()));
-
-      const payloadCompleto = {
-        ...payload,
-        MCID: mcidParaPlanilha,
-        mcid: mcidParaPlanilha,
-        mcId: mcidParaPlanilha,
-        numeroMCID: mcidParaPlanilha,
-        numeroMcid: mcidParaPlanilha,
-        numero_mcid: mcidParaPlanilha,
-        'Numero MCID': mcidParaPlanilha,
-        'Número MCID': mcidParaPlanilha
-      };
-
-      console.log('MCID capturado para a planilha:', mcidParaPlanilha);
-      console.log('Payload enviado para a tabela Seller Cont:', payloadCompleto);
-
-      if (!mcidParaPlanilha && payloadCompleto.acao === 'adicionar') {
-        throw new Error('O MCID está vazio antes do envio para a planilha.');
-      }
-
-      // Google Apps Script preenche e.parameter somente quando os dados chegam
-      // como formulário ou pela URL. URLSearchParams garante que MCID e os demais
-      // campos sejam lidos diretamente por e.parameter, sem depender de JSON.parse.
-      const formBody = new URLSearchParams();
-
-      Object.entries(payloadCompleto).forEach(([chave, valor]) => {
-        formBody.set(chave, String(valor ?? ''));
-      });
-
-      // Mantém uma cópia JSON para scripts que já utilizam e.postData.contents.
-      formBody.set('payload_json', JSON.stringify(payloadCompleto));
-
-      await fetch(requestUrl.toString(), {
+      await fetch(GOOGLE_SHEETS_WEB_APP_URL, {
         method: 'POST',
         mode: 'no-cors',
-        cache: 'no-store',
-        redirect: 'follow',
-        body: formBody
+        body: JSON.stringify(payload)
       });
 
-      return { configured: true, sent: true, mcid: mcidParaPlanilha };
+      return { configured: true, sent: true };
     }
 
     async function enviarEntregaParaPlanilha(task, deliveryData, status) {
@@ -4975,15 +4864,10 @@ body[data-theme="light"] {
       return await enviarPayloadParaPlanilha(payload);
     }
 
-    async function enviarExclusaoParaPlanilha(dados = {}) {
-      const mcid = String(dados.mcid || dados.MCID || '').trim();
-
+    async function enviarExclusaoParaPlanilha(taskId) {
       return await enviarPayloadParaPlanilha({
         acao: 'excluir',
-        email: String(dados.email || '').trim(),
-        MCID: mcid,
-        mcid: mcid,
-        mcId: mcid
+        taskId: String(taskId || '')
       });
     }
 
@@ -5001,7 +4885,7 @@ body[data-theme="light"] {
         data_conf_faturador: deliveryData.billing_config_date || null,
         delivery_completed_at: deliveryData.delivery_completed_at || null,
         sale_finalized_at: deliveryData.sale_finalized_at || null,
-        mcid: String(deliveryData.mcid || task.mcid || '').trim() || null,
+        mcid: deliveryData.mcid || null,
         responsavel: task.owner || null,
         projeto_id: task.project || task.project_id || state.activeProject || null,
         origem: 'ares',
@@ -5237,14 +5121,7 @@ body[data-theme="light"] {
         .from('sp_tasks')
         .update({
           status: deliveredStatus,
-          updates: task.updates,
-          mcid: deliveryData.mcid || null,
-          billing_config_date: deliveryData.billing_config_date || null,
-          shipment_date: deliveryData.shipment_date || null,
-          pickup_date: deliveryData.pickup_date || null,
-          account_creation_email: deliveryData.account_creation_email || null,
-          delivery_completed_at: deliveryData.delivery_completed_at || null,
-          sale_finalized_at: null
+          updates: task.updates
         })
         .eq('id', task.id);
 
@@ -5304,14 +5181,7 @@ body[data-theme="light"] {
           .from('sp_tasks')
           .update({
             status: previousStatus,
-            updates: previousData.updates || [],
-            mcid: previousData.mcid || null,
-            billing_config_date: previousData.billingConfigDate || null,
-            shipment_date: previousData.shipmentDate || null,
-            pickup_date: previousData.pickupDate || null,
-            account_creation_email: previousData.accountCreationEmail || null,
-            delivery_completed_at: previousData.deliveryCompletedAt || null,
-            sale_finalized_at: previousData.saleFinalizedAt || null
+            updates: previousData.updates || []
           })
           .eq('id', task.id);
 
@@ -5351,7 +5221,7 @@ body[data-theme="light"] {
       launchDeliveryCelebration();
 
       if (sheetError) {
-        showToast('Loja entregue salva, mas a sincronização com a planilha falhou. Tente novamente.');
+        showToast('Loja entregue salva no Supabase, mas não consegui enviar os dados para a planilha. Verifique o Apps Script.');
         return;
       }
 
@@ -5361,7 +5231,7 @@ body[data-theme="light"] {
       }
 
       if (!sheetResult.configured) {
-        showToast('Loja entregue salva, mas a integração com a planilha está indisponível.');
+        showToast('Loja entregue salva no Supabase. A planilha não recebeu porque o Apps Script não está configurado.');
         return;
       }
 
