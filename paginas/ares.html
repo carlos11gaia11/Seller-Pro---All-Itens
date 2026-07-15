@@ -2439,6 +2439,16 @@ body[data-theme="light"] {
         </div>
 
         <div class="field full">
+          <label>Avaliação de SPN feita?</label>
+          <select id="deliverySpnEvaluation" required>
+            <option value="">Selecione</option>
+            <option value="Sim">Sim</option>
+            <option value="Não">Não</option>
+          </select>
+          <small style="color:var(--muted);line-height:1.4;">A resposta e os dados informados na etapa de solicitação SPN serão enviados para a aba Avaliação.</small>
+        </div>
+
+        <div class="field full">
           <label class="seller-cont-check">
             <input id="deliverySellerContFlag" type="checkbox" onchange="syncDeliverySellerContFields()" />
             <span>
@@ -2506,18 +2516,31 @@ body[data-theme="light"] {
       <div class="form-grid">
         <div class="field full">
           <div class="required-hint">
-            Para mover o card para <strong>Call de onboard</strong>, confirme se a pessoa fez o SPN.
+            Selecione se o seller precisa de solicitação SPN. Quando a resposta for <strong>Sim</strong>, os dados serão enviados para a aba <strong>Autorização</strong> e o card somente seguirá após a coluna <strong>Autorizado</strong> ser preenchida manualmente com Sim ou Não.
           </div>
         </div>
 
         <div class="field full">
-          <label class="seller-cont-check">
-            <input id="onboardSpnConfirmed" type="checkbox" />
-            <span>
-              <strong>Sim, fez o SPN</strong>
-              <small>Somente com esta confirmação o card pode seguir para Call de onboard.</small>
-            </span>
-          </label>
+          <label>Solicitar SPN?</label>
+          <select id="onboardRequestSpn" onchange="syncOnboardSpnFields()" required>
+            <option value="">Selecione</option>
+            <option value="Sim">Sim</option>
+            <option value="Não">Não</option>
+          </select>
+        </div>
+
+        <div class="field spn-request-only-field">
+          <label>Telefone do seller</label>
+          <input id="onboardSellerPhone" type="tel" placeholder="Ex.: (11) 99999-9999" />
+        </div>
+
+        <div class="field spn-request-only-field">
+          <label>E-mail do seller</label>
+          <input id="onboardSellerEmail" type="email" placeholder="email@exemplo.com" />
+        </div>
+
+        <div class="field full" id="onboardAuthorizationStatusBox" style="display:none;">
+          <div class="required-hint" id="onboardAuthorizationStatusText"></div>
         </div>
       </div>
 
@@ -2643,6 +2666,9 @@ body[data-theme="light"] {
     // Cole aqui o link do Web App gerado no Google Apps Script.
     // Exemplo: https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxx/exec
     const GOOGLE_SHEETS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwOTcBHXaTslLKx6y8K54VrAJpjAj2OB2RB-Zox5eLBvjtwkBbCLR9y6_rtWB4rUdRRAg/exec';
+
+    // Esta URL deve apontar para o Apps Script SPN fornecido junto com este arquivo.
+    const SPN_GOOGLE_SHEETS_WEB_APP_URL = 'COLE_AQUI_A_URL_DO_WEB_APP_SPN';
 
     const defaultProjects = [
       { id: '2026-05', name: 'Maio 2026', description: 'Pasta mensal de projetos', position: 1 },
@@ -3428,6 +3454,63 @@ body[data-theme="light"] {
     function getSpnConfirmationFlag(taskId) {
       const flags = readSpnConfirmationFlags();
       return flags[String(taskId)];
+    }
+
+
+    const SPN_DATA_KEY = 'seller_pro_ares_spn_data_v2';
+
+    function readSpnDataStore() {
+      try {
+        return JSON.parse(localStorage.getItem(SPN_DATA_KEY) || '{}') || {};
+      } catch (error) {
+        console.warn('Não consegui ler os dados de SPN.', error);
+        return {};
+      }
+    }
+
+    function getTaskSpnData(taskId) {
+      return readSpnDataStore()[String(taskId)] || {};
+    }
+
+    function setTaskSpnData(taskId, data) {
+      const store = readSpnDataStore();
+      store[String(taskId)] = { ...(store[String(taskId)] || {}), ...(data || {}) };
+      localStorage.setItem(SPN_DATA_KEY, JSON.stringify(store));
+      return store[String(taskId)];
+    }
+
+    function spnEndpointConfigured() {
+      const url = String(SPN_GOOGLE_SHEETS_WEB_APP_URL || '').trim();
+      return Boolean(url && url.startsWith('https://script.google.com/'));
+    }
+
+    async function callSpnSheet(action, payload = {}) {
+      if (!spnEndpointConfigured()) throw new Error('Configure SPN_GOOGLE_SHEETS_WEB_APP_URL.');
+
+      const response = await fetch(SPN_GOOGLE_SHEETS_WEB_APP_URL, {
+        method: 'POST',
+        cache: 'no-store',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action, ...payload })
+      });
+
+      if (!response.ok) throw new Error(`Apps Script respondeu HTTP ${response.status}.`);
+      const result = await response.json();
+      if (!result.ok) throw new Error(result.message || 'Erro na integração SPN.');
+      return result;
+    }
+
+    async function consultarAutorizacaoSpn(taskId) {
+      return await callSpnSheet('consultarAutorizacao', { taskId: String(taskId || '') });
+    }
+
+    function syncOnboardSpnFields() {
+      const requestSpn = document.getElementById('onboardRequestSpn')?.value === 'Sim';
+      document.querySelectorAll('.spn-request-only-field').forEach(field => {
+        field.style.display = requestSpn ? '' : 'none';
+        field.querySelectorAll('input').forEach(input => input.required = requestSpn);
+      });
     }
 
 
@@ -4559,14 +4642,17 @@ body[data-theme="light"] {
 
     function openOnboardModal(taskId, status) {
       const task = state.tasks.find(t => t.id === taskId);
-
       if (!task) return;
 
       pendingOnboardTaskId = taskId;
       pendingOnboardStatus = status;
 
-      const checkbox = document.getElementById('onboardSpnConfirmed');
-      if (checkbox) checkbox.checked = Boolean(task.spnConfirmed);
+      const spnData = getTaskSpnData(taskId);
+      document.getElementById('onboardRequestSpn').value = spnData.requestSpn || '';
+      document.getElementById('onboardSellerPhone').value = spnData.phone || task.deliveryPhone || '';
+      document.getElementById('onboardSellerEmail').value = spnData.email || task.accountCreationEmail || '';
+      document.getElementById('onboardAuthorizationStatusBox').style.display = 'none';
+      syncOnboardSpnFields();
 
       const button = document.getElementById('confirmOnboardButton');
       if (button) {
@@ -4582,9 +4668,12 @@ body[data-theme="light"] {
       document.getElementById('onboardModal').classList.remove('show');
       pendingOnboardTaskId = null;
       pendingOnboardStatus = null;
-
-      const checkbox = document.getElementById('onboardSpnConfirmed');
-      if (checkbox) checkbox.checked = false;
+      ['onboardRequestSpn','onboardSellerPhone','onboardSellerEmail'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      document.getElementById('onboardAuthorizationStatusBox').style.display = 'none';
+      syncOnboardSpnFields();
 
       const button = document.getElementById('confirmOnboardButton');
       if (button) {
@@ -4595,61 +4684,91 @@ body[data-theme="light"] {
 
     async function confirmOnboardMove() {
       const task = state.tasks.find(t => t.id === pendingOnboardTaskId);
-
       if (!task || !pendingOnboardStatus) return;
 
-      const spnConfirmed = Boolean(document.getElementById('onboardSpnConfirmed')?.checked);
+      const requestSpn = document.getElementById('onboardRequestSpn').value;
+      const phone = document.getElementById('onboardSellerPhone').value.trim();
+      const email = document.getElementById('onboardSellerEmail').value.trim();
+      const button = document.getElementById('confirmOnboardButton');
+      const statusBox = document.getElementById('onboardAuthorizationStatusBox');
+      const statusText = document.getElementById('onboardAuthorizationStatusText');
 
-      if (!spnConfirmed) {
-        alert('Para mover para Call de onboard, confirme que a pessoa fez o SPN.');
+      if (!['Sim', 'Não'].includes(requestSpn)) {
+        alert('Selecione Sim ou Não em Solicitar SPN.');
         return;
       }
 
-      const previousStatus = task.status;
-      const previousUpdates = Array.isArray(task.updates) ? [...task.updates] : [];
-      const previousSpnConfirmed = Boolean(task.spnConfirmed);
-      const button = document.getElementById('confirmOnboardButton');
-
-      if (button) {
-        button.disabled = true;
-        button.textContent = 'Salvando...';
+      if (requestSpn === 'Sim') {
+        if (!phone || !email) {
+          alert('Informe o telefone e o e-mail do seller para solicitar o SPN.');
+          return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          alert('Informe um e-mail válido.');
+          return;
+        }
       }
 
-      task.status = pendingOnboardStatus;
-      task.spnConfirmed = true;
-      task.updates = appendStatusUpdate(task, 'SPN confirmado e movido para Call de onboard');
-      setSpnConfirmationFlag(task.id, true);
+      if (button) { button.disabled = true; button.textContent = 'Verificando SPN...'; }
 
-      playSound('drop');
-      renderBoard();
+      try {
+        let authorization = 'Não se aplica';
 
-      const { error } = await supabaseClient
-        .from('sp_tasks')
-        .update({
-          status: pendingOnboardStatus,
-          updates: task.updates
-        })
-        .eq('id', task.id);
+        if (requestSpn === 'Sim') {
+          await callSpnSheet('solicitarAutorizacao', {
+            taskId: String(task.id),
+            nome: task.name || '',
+            telefone: phone,
+            email,
+            solicitarSpn: 'Sim',
+            responsavel: task.owner || '',
+            projeto: task.project || state.activeProject || ''
+          });
 
-      if (error) {
-        task.status = previousStatus;
-        task.updates = previousUpdates;
-        task.spnConfirmed = previousSpnConfirmed;
-        setSpnConfirmationFlag(task.id, previousSpnConfirmed);
+          const check = await consultarAutorizacaoSpn(task.id);
+          authorization = String(check.autorizado || '').trim();
+
+          statusBox.style.display = '';
+          if (!['Sim', 'Não'].includes(authorization)) {
+            statusText.innerHTML = 'Solicitação enviada. A coluna <strong>Autorizado</strong> ainda está vazia na aba Autorização. Preencha-a manualmente com Sim ou Não e tente mover o card novamente.';
+            return;
+          }
+          statusText.innerHTML = `Autorização registrada na planilha: <strong>${authorization}</strong>.`;
+        }
+
+        setTaskSpnData(task.id, { requestSpn, phone, email, authorization });
+
+        const previousStatus = task.status;
+        const previousUpdates = Array.isArray(task.updates) ? [...task.updates] : [];
+        task.status = pendingOnboardStatus;
+        task.spnConfirmed = true;
+        task.updates = appendStatusUpdate(task, `Solicitar SPN: ${requestSpn}. Autorizado: ${authorization}`);
+        setSpnConfirmationFlag(task.id, true);
         renderBoard();
 
-        if (button) {
+        const { error } = await supabaseClient.from('sp_tasks').update({
+          status: pendingOnboardStatus,
+          updates: task.updates
+        }).eq('id', task.id);
+
+        if (error) {
+          task.status = previousStatus;
+          task.updates = previousUpdates;
+          renderBoard();
+          throw error;
+        }
+
+        closeOnboardModal();
+        showToast('Etapa de SPN validada. Card movido para Call de onboard.');
+      } catch (error) {
+        console.error(error);
+        showToast(error.message || 'Não consegui validar a autorização SPN.');
+      } finally {
+        if (button && document.getElementById('onboardModal').classList.contains('show')) {
           button.disabled = false;
           button.textContent = 'Confirmar onboard';
         }
-
-        showToast('Não consegui mover o card para Call de onboard no Supabase.');
-        console.error(error);
-        return;
       }
-
-      closeOnboardModal();
-      showToast('SPN confirmado. Card movido para Call de onboard.');
     }
 
     function openSaleFinalizedModal(taskId, status) {
@@ -4972,6 +5091,7 @@ body[data-theme="light"] {
       pendingDeliveryStatus = status;
 
       document.getElementById('deliveryCompletedDate').value = task.deliveryCompletedAt || todayLocalISO();
+      document.getElementById('deliverySpnEvaluation').value = getTaskSpnData(taskId).evaluation || '';
       document.getElementById('deliveryBillingDate').value = task.billingConfigDate || '';
       document.getElementById('deliveryShipmentDate').value = task.shipmentDate || '';
       document.getElementById('deliveryPickupDate').value = task.pickupDate || '';
@@ -5007,7 +5127,8 @@ body[data-theme="light"] {
         'deliveryAccountEmail',
         'deliveryPhone',
         'deliveryProductSent',
-        'deliverySellerContStatus'
+        'deliverySellerContStatus',
+        'deliverySpnEvaluation'
       ].forEach(id => {
         const input = document.getElementById(id);
         if (input) input.value = '';
@@ -5082,7 +5203,8 @@ body[data-theme="light"] {
         phone: document.getElementById('deliveryPhone').value.trim(),
         product_sent: document.getElementById('deliveryProductSent').value.trim(),
         seller_cont_status: document.getElementById('deliverySellerContStatus').value.trim(),
-        is_seller_cont: document.getElementById('deliverySellerContFlag')?.checked !== false
+        is_seller_cont: document.getElementById('deliverySellerContFlag')?.checked !== false,
+        spn_evaluation: document.getElementById('deliverySpnEvaluation').value
       };
 
       const requiredFields = deliveryData.is_seller_cont
@@ -5098,6 +5220,8 @@ body[data-theme="light"] {
             deliveryData.seller_cont_status
           ]
         : [deliveryData.delivery_completed_at];
+
+      requiredFields.push(deliveryData.spn_evaluation);
 
       const missingField = requiredFields.some(value => !String(value || '').trim());
 
@@ -5252,6 +5376,25 @@ body[data-theme="light"] {
           sheetError = error;
           console.error('Erro ao enviar dados para Google Sheets:', error);
         }
+      }
+
+      try {
+        const spnData = getTaskSpnData(task.id);
+        await callSpnSheet('registrarAvaliacao', {
+          taskId: String(task.id),
+          nome: task.name || '',
+          telefone: spnData.phone || deliveryData.phone || '',
+          email: spnData.email || deliveryData.account_creation_email || '',
+          solicitarSpn: spnData.requestSpn || 'Não',
+          autorizado: spnData.authorization || 'Não se aplica',
+          avaliacaoFeita: deliveryData.spn_evaluation,
+          responsavel: task.owner || '',
+          projeto: task.project || state.activeProject || ''
+        });
+        setTaskSpnData(task.id, { evaluation: deliveryData.spn_evaluation });
+      } catch (spnError) {
+        console.error('Erro ao registrar avaliação SPN:', spnError);
+        showToast('Loja entregue, mas não consegui registrar a avaliação SPN na planilha.');
       }
 
       closeDeliveryModal();
