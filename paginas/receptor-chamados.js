@@ -1,26 +1,47 @@
 /*
   RECEPTOR DE CHAMADOS POR VOZ — SELLER PRO
 
-  Antes deste arquivo, carregue:
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  Uso antes do </body>:
 
-  Defina o canal da página antes deste arquivo:
   <script>
-    window.CHAMADOS_CONFIG = { canal: "painel_sellers" };
+    window.CHAMADOS_CONFIG = {
+      canal: "ares",
+      mostrarBotaoAtivacao: true,
+      tocarSinal: true
+    };
   </script>
+  <script src="./receptor-chamados.js"></script>
+
+  Observação:
+  - A autorização escolhida pelo usuário fica salva no localStorage deste navegador.
+  - O receptor usa Realtime e também consulta a tabela periodicamente como contingência.
 */
 
 (() => {
   "use strict";
 
+  if (window.__SELLERPRO_VOICE_RECEIVER__) {
+    console.info("Chamados por voz: receptor já inicializado nesta página.");
+    return;
+  }
+  window.__SELLERPRO_VOICE_RECEIVER__ = true;
+
   const SUPABASE_URL = "https://owgvzmeewzpmzgcdwbfq.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr";
   const TABLE_NAME = "chamados_audio";
+  const AUDIO_PERMISSION_KEY = "sellerpro_voice_enabled";
+  const LEGACY_AUDIO_PERMISSION_KEYS = [
+    "sellerpro_voice_enabled_v3",
+    "sellerpro_voice_enabled_v2",
+    "sellerpro_voice_enabled_v1"
+  ];
+  const POLLING_INTERVAL_MS = 4000;
 
   const config = {
     canal: "todos",
     mostrarBotaoAtivacao: true,
     tocarSinal: true,
+    polling: true,
     ...window.CHAMADOS_CONFIG
   };
 
@@ -29,12 +50,54 @@
     return;
   }
 
-  const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  function resolveSupabaseClient() {
+    try {
+      // Reutiliza o cliente já criado pela página para preservar a mesma sessão.
+      if (
+        typeof supabaseClient !== "undefined" &&
+        supabaseClient &&
+        typeof supabaseClient.from === "function" &&
+        typeof supabaseClient.channel === "function"
+      ) {
+        return supabaseClient;
+      }
+    } catch (error) {
+      console.debug("Chamados por voz: cliente global não reutilizado.", error);
+    }
+
+    if (
+      window.__SUPABASE_CLIENT__ &&
+      typeof window.__SUPABASE_CLIENT__.from === "function" &&
+      typeof window.__SUPABASE_CLIENT__.channel === "function"
+    ) {
+      return window.__SUPABASE_CLIENT__;
+    }
+
+    return window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY,
+      {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true
+        }
+      }
+    );
+  }
+
+  const client = resolveSupabaseClient();
   const queue = [];
+  const seenIds = new Set();
+
   let processing = false;
-  let audioEnabled = false;
   let voices = [];
   let audioContext = null;
+  let subscription = null;
+  let pollingTimer = null;
+  let pollCursorIso = new Date(Date.now() - 5000).toISOString();
+  let audioEnabled = readSavedAudioPermission();
+  let interfaceReady = false;
 
   function normalize(value) {
     return String(value || "")
@@ -48,13 +111,64 @@
 
   const pageChannel = normalize(config.canal) || "todos";
 
+  function readSavedAudioPermission() {
+    try {
+      if (window.localStorage.getItem(AUDIO_PERMISSION_KEY) === "1") return true;
+
+      const legacyEnabled = LEGACY_AUDIO_PERMISSION_KEYS.some(
+        key => window.localStorage.getItem(key) === "1"
+      );
+
+      if (legacyEnabled) {
+        window.localStorage.setItem(AUDIO_PERMISSION_KEY, "1");
+      }
+
+      return legacyEnabled;
+    } catch (error) {
+      console.warn("Chamados por voz: não foi possível ler a preferência salva.", error);
+      return false;
+    }
+  }
+
+  async function persistBrowserStorage() {
+    try {
+      if (navigator.storage?.persist) {
+        await navigator.storage.persist();
+      }
+    } catch (error) {
+      console.debug("Chamados por voz: persistência adicional indisponível.", error);
+    }
+  }
+
+  function saveAudioPermission(enabled) {
+    try {
+      window.localStorage.setItem(AUDIO_PERMISSION_KEY, enabled ? "1" : "0");
+      LEGACY_AUDIO_PERMISSION_KEYS.forEach(key => {
+        if (enabled) window.localStorage.setItem(key, "1");
+        else window.localStorage.removeItem(key);
+      });
+    } catch (error) {
+      console.warn("Chamados por voz: não foi possível salvar a preferência.", error);
+    }
+  }
+
   function receives(row) {
     const destination = normalize(row?.destino);
     return destination === "todos" || destination === pageChannel;
   }
 
+  function emitStatus(status, detail = {}) {
+    console.info(`Chamados por voz [${pageChannel}]: ${status}`, detail);
+    window.dispatchEvent(new CustomEvent("sellerpro:voice-status", {
+      detail: { status, canal: pageChannel, ...detail }
+    }));
+  }
+
   function addStyles() {
+    if (document.getElementById("sp-voice-styles")) return;
+
     const style = document.createElement("style");
+    style.id = "sp-voice-styles";
     style.textContent = `
       #sp-voice-enable {
         position: fixed;
@@ -75,6 +189,12 @@
         color: #b8ffc9;
         border: 1px solid rgba(48,209,88,.35);
         background: rgba(9,25,14,.95);
+      }
+
+      #sp-voice-enable.is-error {
+        color: #ffd0d0;
+        border: 1px solid rgba(255,77,77,.38);
+        background: rgba(48,8,8,.96);
       }
 
       #sp-voice-overlay {
@@ -171,25 +291,32 @@
   }
 
   function addInterface() {
-    const overlay = document.createElement("div");
-    overlay.id = "sp-voice-overlay";
-    overlay.setAttribute("role", "alert");
-    overlay.setAttribute("aria-live", "assertive");
-    overlay.innerHTML = `
-      <div class="sp-voice-card">
-        <div class="sp-voice-label">Chamado Seller Pro</div>
-        <p class="sp-voice-message" id="sp-voice-message"></p>
-        <div class="sp-voice-destination" id="sp-voice-destination"></div>
-      </div>
-    `;
-    document.body.appendChild(overlay);
+    if (interfaceReady) return;
+    interfaceReady = true;
 
-    if (config.mostrarBotaoAtivacao) {
+    addStyles();
+
+    if (!document.getElementById("sp-voice-overlay")) {
+      const overlay = document.createElement("div");
+      overlay.id = "sp-voice-overlay";
+      overlay.setAttribute("role", "alert");
+      overlay.setAttribute("aria-live", "assertive");
+      overlay.innerHTML = `
+        <div class="sp-voice-card">
+          <div class="sp-voice-label">Chamado Seller Pro</div>
+          <p class="sp-voice-message" id="sp-voice-message"></p>
+          <div class="sp-voice-destination" id="sp-voice-destination"></div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
+
+    if (config.mostrarBotaoAtivacao && !audioEnabled && !document.getElementById("sp-voice-enable")) {
       const button = document.createElement("button");
       button.id = "sp-voice-enable";
       button.type = "button";
       button.textContent = "🔊 Ativar chamados por voz";
-      button.addEventListener("click", enableAudio);
+      button.addEventListener("click", () => enableAudio({ announce: true }));
       document.body.appendChild(button);
     }
   }
@@ -206,28 +333,66 @@
       || null;
   }
 
-  async function enableAudio() {
-    audioEnabled = true;
+  async function prepareAudioContext() {
+    if (!config.tocarSinal) return;
 
     try {
-      audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
-      if (audioContext.state === "suspended") await audioContext.resume();
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+
+      audioContext = audioContext || new AudioContextClass();
+      if (audioContext.state === "suspended") {
+        await audioContext.resume();
+      }
     } catch (error) {
-      console.warn("Chamados por voz: sinal sonoro indisponível.", error);
+      console.warn("Chamados por voz: sinal sonoro aguardando interação do usuário.", error);
     }
+  }
+
+  async function enableAudio({ announce = false } = {}) {
+    audioEnabled = true;
+    saveAudioPermission(true);
+    await persistBrowserStorage();
+    await prepareAudioContext();
 
     const button = document.getElementById("sp-voice-enable");
     if (button) {
       button.textContent = `✓ Voz ativa — canal ${pageChannel}`;
+      button.classList.remove("is-error");
       button.classList.add("is-active");
       window.setTimeout(() => button.remove(), 1800);
     }
 
-    speakText("Chamados por voz ativados.", 1, 1);
+    if (announce) {
+      await speakText("Chamados por voz ativados.", 1, 1);
+    }
+
+    processQueue();
+  }
+
+  function installSilentAudioUnlock() {
+    if (!audioEnabled) return;
+
+    const unlock = async () => {
+      await prepareAudioContext();
+      ["pointerdown", "keydown", "touchstart"].forEach(eventName => {
+        document.removeEventListener(eventName, unlock, true);
+      });
+      processQueue();
+    };
+
+    ["pointerdown", "keydown", "touchstart"].forEach(eventName => {
+      document.addEventListener(eventName, unlock, { capture: true, once: true });
+    });
+
+    // Tenta imediatamente; caso o navegador bloqueie, a primeira interação libera silenciosamente.
+    prepareAudioContext();
   }
 
   function playChime() {
-    if (!config.tocarSinal || !audioContext) return Promise.resolve();
+    if (!config.tocarSinal || !audioContext || audioContext.state !== "running") {
+      return Promise.resolve();
+    }
 
     return new Promise(resolve => {
       const now = audioContext.currentTime;
@@ -256,9 +421,16 @@
     return new Promise(resolve => {
       const selectedVoice = preferredVoice();
       let remaining = Math.max(1, Number(repetitions || 1));
+      let finished = false;
+
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        resolve();
+      };
 
       function next() {
-        const utterance = new SpeechSynthesisUtterance(text);
+        const utterance = new SpeechSynthesisUtterance(String(text || ""));
         utterance.lang = selectedVoice?.lang || "pt-BR";
         utterance.rate = Number(rate || .95);
         utterance.pitch = .92;
@@ -268,14 +440,22 @@
         utterance.onend = () => {
           remaining -= 1;
           if (remaining > 0) window.setTimeout(next, 650);
-          else resolve();
+          else finish();
         };
 
-        utterance.onerror = () => resolve();
+        utterance.onerror = event => {
+          console.warn("Chamados por voz: falha na síntese de voz.", event);
+          finish();
+        };
+
         window.speechSynthesis.speak(utterance);
       }
 
       next();
+
+      // Evita travamento da fila caso o navegador não dispare onend/onerror.
+      const estimatedMs = Math.min(45000, Math.max(8000, String(text || "").length * 115 * remaining));
+      window.setTimeout(finish, estimatedMs);
     });
   }
 
@@ -301,20 +481,34 @@
     processing = true;
 
     while (queue.length) {
-      const row = queue.shift();
+      const row = queue[0];
       showOverlay(row);
 
-      if (audioEnabled) {
-        await playChime();
-        const spoken = row.prioridade === "urgente"
-          ? `Atenção. Chamado urgente. ${row.mensagem}`
-          : row.mensagem;
-        await speakText(spoken, row.repeticoes, row.velocidade);
-      } else {
-        console.warn("Chamado recebido, mas a voz ainda não foi ativada nesta página:", row.mensagem);
-        await new Promise(resolve => window.setTimeout(resolve, 5000));
+      if (!audioEnabled) {
+        emitStatus("WAITING_AUDIO_PERMISSION", { id: row.id });
+        processing = false;
+        return;
       }
 
+      await prepareAudioContext();
+
+      // Quando o navegador restaurou a preferência, mas ainda exige a primeira
+      // interação da sessão, preserva o chamado na fila em vez de consumi-lo sem som.
+      if (config.tocarSinal && audioContext && audioContext.state !== "running") {
+        emitStatus("WAITING_BROWSER_INTERACTION", { id: row.id });
+        installSilentAudioUnlock();
+        processing = false;
+        return;
+      }
+
+      await playChime();
+
+      const spoken = row.prioridade === "urgente"
+        ? `Atenção. Chamado urgente. ${row.mensagem}`
+        : row.mensagem;
+
+      await speakText(spoken, row.repeticoes, row.velocidade);
+      queue.shift();
       hideOverlay();
       await new Promise(resolve => window.setTimeout(resolve, 450));
     }
@@ -322,28 +516,105 @@
     processing = false;
   }
 
-  function enqueue(row) {
+  function enqueue(row, source = "unknown") {
+    if (!row || !row.id) return;
+    if (seenIds.has(row.id)) return;
+
+    seenIds.add(row.id);
     if (!receives(row)) return;
+
     queue.push(row);
+    emitStatus("ANNOUNCEMENT_RECEIVED", { id: row.id, source, destino: row.destino });
     processQueue();
   }
 
-  addStyles();
-  addInterface();
-  loadVoices();
+  async function pollForAnnouncements() {
+    const { data, error } = await client
+      .from(TABLE_NAME)
+      .select("id,mensagem,destino,prioridade,repeticoes,velocidade,created_at")
+      .gt("created_at", pollCursorIso)
+      .order("created_at", { ascending: true })
+      .limit(100);
 
-  if ("speechSynthesis" in window) {
-    window.speechSynthesis.onvoiceschanged = loadVoices;
+    if (error) {
+      emitStatus("POLLING_ERROR", { message: error.message });
+      showConnectionError(error.message);
+      return;
+    }
+
+    const rows = data || [];
+    rows.forEach(row => enqueue(row, "polling"));
+
+    if (rows.length) {
+      pollCursorIso = rows[rows.length - 1].created_at;
+    }
   }
 
-  client
-    .channel(`chamados-voz-${pageChannel}-${Math.random().toString(36).slice(2)}`)
-    .on(
-      "postgres_changes",
-      { event: "INSERT", schema: "public", table: TABLE_NAME },
-      payload => enqueue(payload.new)
-    )
-    .subscribe(status => {
-      console.info(`Chamados por voz [${pageChannel}]:`, status);
-    });
+  function showConnectionError(message) {
+    if (!config.mostrarBotaoAtivacao || !interfaceReady) return;
+
+    let button = document.getElementById("sp-voice-enable");
+    if (!button) {
+      button = document.createElement("button");
+      button.id = "sp-voice-enable";
+      button.type = "button";
+      document.body.appendChild(button);
+    }
+
+    button.textContent = "⚠ Chamados sem conexão";
+    button.title = message;
+    button.classList.remove("is-active");
+    button.classList.add("is-error");
+  }
+
+  function startPolling() {
+    if (!config.polling || pollingTimer) return;
+    pollForAnnouncements();
+    pollingTimer = window.setInterval(pollForAnnouncements, POLLING_INTERVAL_MS);
+  }
+
+  function startRealtime() {
+    subscription = client
+      .channel(`chamados-voz-${pageChannel}-${Math.random().toString(36).slice(2)}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: TABLE_NAME },
+        payload => enqueue(payload.new, "realtime")
+      )
+      .subscribe(status => {
+        emitStatus(status);
+
+        if (["CHANNEL_ERROR", "TIMED_OUT", "CLOSED"].includes(status)) {
+          startPolling();
+        }
+      });
+  }
+
+  function init() {
+    addInterface();
+    loadVoices();
+
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    if (audioEnabled) {
+      installSilentAudioUnlock();
+      emitStatus("AUDIO_PERMISSION_RESTORED");
+    }
+
+    startRealtime();
+    startPolling();
+
+    window.addEventListener("beforeunload", () => {
+      if (pollingTimer) window.clearInterval(pollingTimer);
+      if (subscription) client.removeChannel(subscription);
+    }, { once: true });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
 })();
