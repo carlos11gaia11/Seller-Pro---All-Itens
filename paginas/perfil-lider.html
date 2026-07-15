@@ -583,6 +583,259 @@
         font-size: 34px;
       }
     }
+  
+
+    /* Central de chamados por voz */
+    .voice-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(380px, .95fr);
+      gap: 22px;
+      margin-top: 22px;
+      align-items: stretch;
+    }
+
+    .voice-panel {
+      background:
+        radial-gradient(circle at 100% 0%, rgba(255, 122, 0, .2), transparent 36%),
+        var(--card);
+    }
+
+    .voice-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .voice-heading h2 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -.045em;
+    }
+
+    .voice-heading p {
+      margin: 7px 0 0;
+      max-width: 690px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+      padding: 9px 12px;
+      border: 1px solid rgba(48, 209, 88, .28);
+      border-radius: 999px;
+      background: rgba(48, 209, 88, .09);
+      color: #b8ffc9;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .live-badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 0 5px rgba(48, 209, 88, .1), 0 0 18px rgba(48, 209, 88, .65);
+    }
+
+    .voice-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .voice-form textarea.input {
+      min-height: 128px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .voice-message-wrap {
+      position: relative;
+    }
+
+    .voice-message-tools {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .char-counter {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .mic-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 146px;
+    }
+
+    .mic-btn.is-listening {
+      color: #fff;
+      border-color: rgba(255, 77, 77, .55);
+      background: rgba(255, 77, 77, .18);
+      animation: micPulse 1.1s ease-in-out infinite;
+    }
+
+    @keyframes micPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,77,77,.18); }
+      50% { box-shadow: 0 0 0 7px rgba(255,77,77,.05); }
+    }
+
+    .voice-settings {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr .8fr;
+      gap: 12px;
+    }
+
+    .voice-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .voice-actions .btn:first-child {
+      min-width: 190px;
+    }
+
+    .voice-status {
+      min-height: 46px;
+      display: flex;
+      align-items: center;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 15px;
+      background: rgba(0,0,0,.2);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .voice-status.success {
+      color: #b8ffc9;
+      border-color: rgba(48,209,88,.25);
+      background: rgba(48,209,88,.08);
+    }
+
+    .voice-status.error {
+      color: #ffc1c1;
+      border-color: rgba(255,77,77,.25);
+      background: rgba(255,77,77,.08);
+    }
+
+    .voice-history-list {
+      display: grid;
+      gap: 10px;
+      max-height: 520px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .voice-history-empty {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed rgba(255,255,255,.12);
+      border-radius: 18px;
+      padding: 24px;
+    }
+
+    .voice-history-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.2);
+      border-radius: 17px;
+    }
+
+    .voice-history-item:hover {
+      border-color: rgba(255,122,0,.3);
+      background: rgba(255,122,0,.035);
+    }
+
+    .voice-history-message {
+      margin: 0;
+      color: #f4f4f4;
+      line-height: 1.48;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .voice-history-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .voice-chip {
+      padding: 5px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.09);
+      background: rgba(255,255,255,.04);
+    }
+
+    .voice-chip.urgent {
+      color: #ffc1c1;
+      border-color: rgba(255,77,77,.25);
+      background: rgba(255,77,77,.08);
+    }
+
+    .voice-replay-btn {
+      align-self: start;
+      white-space: nowrap;
+    }
+
+    .custom-destination.hidden-field {
+      display: none;
+    }
+
+    @media (max-width: 980px) {
+      .voice-grid,
+      .voice-settings {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .voice-heading {
+        flex-direction: column;
+      }
+
+      .voice-message-tools,
+      .voice-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .mic-btn,
+      .voice-actions .btn {
+        width: 100%;
+      }
+
+      .voice-history-item {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 
@@ -694,6 +947,118 @@
         </div>
       </div>
     </section>
+
+
+
+    <section class="voice-grid" aria-label="Central de chamados por voz">
+      <section class="panel voice-panel" id="voiceComposerPanel">
+        <div class="panel-inner">
+          <div class="voice-heading">
+            <div>
+              <h2>Central de chamados por voz</h2>
+              <p>
+                Digite ou dite uma mensagem. Ela será enviada pelo Supabase e falada nas páginas receptoras em tempo real.
+              </p>
+            </div>
+            <span class="live-badge">Tempo real</span>
+          </div>
+
+          <form id="voiceAnnouncementForm" class="voice-form">
+            <div class="form-grid-2">
+              <div class="field">
+                <label for="voiceDestination">Página de destino</label>
+                <select id="voiceDestination" class="select">
+                  <option value="todos">Todas as páginas</option>
+                  <option value="painel_sellers">Painel de sellers</option>
+                  <option value="painel_suportes">Painel de suportes</option>
+                  <option value="tela_recepcao">Tela de recepção</option>
+                  <option value="__custom__">Outro canal...</option>
+                </select>
+              </div>
+
+              <div class="field custom-destination hidden-field" id="voiceCustomDestinationField">
+                <label for="voiceCustomDestination">Nome do canal</label>
+                <input id="voiceCustomDestination" class="input" type="text" maxlength="60" placeholder="Ex: sala_treinamento" />
+              </div>
+
+              <div class="field">
+                <label for="voicePriority">Prioridade</label>
+                <select id="voicePriority" class="select">
+                  <option value="normal">Normal</option>
+                  <option value="urgente">Urgente</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="voiceMessage">Mensagem que será falada</label>
+              <div class="voice-message-wrap">
+                <textarea id="voiceMessage" class="input" maxlength="280" placeholder="Ex: Atenção, suporte Gabriel, dirigir-se à sala de reunião." required></textarea>
+              </div>
+              <div class="voice-message-tools">
+                <span id="voiceCharCounter" class="char-counter">0 / 280 caracteres</span>
+                <button class="btn secondary mic-btn" id="voiceMicBtn" type="button">🎙️ Ditar mensagem</button>
+              </div>
+            </div>
+
+            <div class="voice-settings">
+              <div class="field">
+                <label for="voiceSelect">Voz do navegador</label>
+                <select id="voiceSelect" class="select">
+                  <option value="">Carregando vozes...</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="voiceRepetitions">Repetições</label>
+                <select id="voiceRepetitions" class="select">
+                  <option value="1">1 vez</option>
+                  <option value="2" selected>2 vezes</option>
+                  <option value="3">3 vezes</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="voiceRate">Velocidade</label>
+                <select id="voiceRate" class="select">
+                  <option value="0.85">Mais lenta</option>
+                  <option value="0.95" selected>Hospital</option>
+                  <option value="1">Normal</option>
+                  <option value="1.1">Mais rápida</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="voice-actions">
+              <button class="btn" id="voiceSendBtn" type="submit">Enviar chamado</button>
+              <button class="btn secondary" id="voiceTestBtn" type="button">Ouvir teste nesta página</button>
+              <button class="btn secondary" id="voiceClearBtn" type="button">Limpar</button>
+            </div>
+
+            <div id="voiceStatus" class="voice-status" role="status" aria-live="polite">
+              Pronto para enviar um chamado.
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="panel" id="voiceHistoryPanel">
+        <div class="panel-inner">
+          <div class="section-title">
+            <div>
+              <h2>Últimos chamados</h2>
+              <small>Histórico recente armazenado no Supabase.</small>
+            </div>
+            <button class="btn secondary" id="voiceRefreshHistoryBtn" type="button">Atualizar</button>
+          </div>
+
+          <div id="voiceHistoryList" class="voice-history-list">
+            <div class="voice-history-empty">Carregando histórico...</div>
+          </div>
+        </div>
+      </section>
+    </section>
+
 
     <section class="full-grid">
       <section class="panel collapsible" id="sellerPanel">
@@ -1627,5 +1992,350 @@
 
     init();
   </script>
+
+
+  <script>
+    (() => {
+      const VOICE_TABLE_NAME = "chamados_audio";
+      const voiceForm = document.getElementById("voiceAnnouncementForm");
+
+      if (!voiceForm) return;
+
+      const voiceMessage = document.getElementById("voiceMessage");
+      const voiceDestination = document.getElementById("voiceDestination");
+      const voiceCustomDestination = document.getElementById("voiceCustomDestination");
+      const voiceCustomDestinationField = document.getElementById("voiceCustomDestinationField");
+      const voicePriority = document.getElementById("voicePriority");
+      const voiceRepetitions = document.getElementById("voiceRepetitions");
+      const voiceRate = document.getElementById("voiceRate");
+      const voiceSelect = document.getElementById("voiceSelect");
+      const voiceMicBtn = document.getElementById("voiceMicBtn");
+      const voiceSendBtn = document.getElementById("voiceSendBtn");
+      const voiceHistoryList = document.getElementById("voiceHistoryList");
+      const voiceStatus = document.getElementById("voiceStatus");
+      const voiceCharCounter = document.getElementById("voiceCharCounter");
+
+      let browserVoices = [];
+      let recognition = null;
+      let isListening = false;
+
+      function setVoiceStatus(message, type = "") {
+        voiceStatus.textContent = message;
+        voiceStatus.className = `voice-status${type ? ` ${type}` : ""}`;
+      }
+
+      function escapeVoiceHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function normalizeVoiceChannel(value) {
+        return String(value || "")
+          .trim()
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9_-]+/g, "_")
+          .replace(/^_+|_+$/g, "");
+      }
+
+      function getDestinationValue() {
+        if (voiceDestination.value !== "__custom__") {
+          return voiceDestination.value;
+        }
+
+        const custom = normalizeVoiceChannel(voiceCustomDestination.value);
+        if (!custom) throw new Error("Informe o nome do canal personalizado.");
+        return custom;
+      }
+
+      function formatVoiceDate(value) {
+        if (!value) return "Agora";
+        return new Intl.DateTimeFormat("pt-BR", {
+          dateStyle: "short",
+          timeStyle: "short"
+        }).format(new Date(value));
+      }
+
+      function loadBrowserVoices() {
+        if (!("speechSynthesis" in window)) {
+          voiceSelect.innerHTML = '<option value="">Fala não suportada neste navegador</option>';
+          return;
+        }
+
+        browserVoices = window.speechSynthesis.getVoices();
+        const portugueseVoices = browserVoices.filter(voice =>
+          String(voice.lang || "").toLowerCase().startsWith("pt")
+        );
+        const available = portugueseVoices.length ? portugueseVoices : browserVoices;
+
+        available.sort((a, b) => {
+          const aGoogle = /google/i.test(a.name) ? 0 : 1;
+          const bGoogle = /google/i.test(b.name) ? 0 : 1;
+          if (aGoogle !== bGoogle) return aGoogle - bGoogle;
+          const aBrazil = /pt[-_]br/i.test(a.lang) ? 0 : 1;
+          const bBrazil = /pt[-_]br/i.test(b.lang) ? 0 : 1;
+          if (aBrazil !== bBrazil) return aBrazil - bBrazil;
+          return a.name.localeCompare(b.name);
+        });
+
+        voiceSelect.innerHTML = available.length
+          ? available.map(voice => {
+              const selected = /google/i.test(voice.name) && /pt[-_]br/i.test(voice.lang) ? " selected" : "";
+              return `<option value="${escapeVoiceHtml(voice.voiceURI)}"${selected}>${escapeVoiceHtml(voice.name)} — ${escapeVoiceHtml(voice.lang)}</option>`;
+            }).join("")
+          : '<option value="">Voz padrão do navegador</option>';
+      }
+
+      function getSelectedVoice() {
+        return browserVoices.find(voice => voice.voiceURI === voiceSelect.value)
+          || browserVoices.find(voice => /google/i.test(voice.name) && /pt[-_]br/i.test(voice.lang))
+          || browserVoices.find(voice => /pt[-_]br/i.test(voice.lang))
+          || browserVoices.find(voice => String(voice.lang || "").toLowerCase().startsWith("pt"))
+          || null;
+      }
+
+      function speakLocal(message, repetitions = 1, rate = .95) {
+        if (!("speechSynthesis" in window)) {
+          setVoiceStatus("Este navegador não oferece síntese de voz.", "error");
+          return;
+        }
+
+        const cleanMessage = String(message || "").trim();
+        if (!cleanMessage) {
+          setVoiceStatus("Digite uma mensagem antes de testar a voz.", "error");
+          return;
+        }
+
+        window.speechSynthesis.cancel();
+        const selectedVoice = getSelectedVoice();
+
+        for (let index = 0; index < repetitions; index += 1) {
+          const utterance = new SpeechSynthesisUtterance(cleanMessage);
+          utterance.lang = selectedVoice?.lang || "pt-BR";
+          utterance.rate = Number(rate) || .95;
+          utterance.pitch = .92;
+          utterance.volume = 1;
+          if (selectedVoice) utterance.voice = selectedVoice;
+          window.speechSynthesis.speak(utterance);
+        }
+      }
+
+      function setupSpeechRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+          voiceMicBtn.disabled = true;
+          voiceMicBtn.textContent = "Microfone indisponível";
+          return;
+        }
+
+        recognition = new SpeechRecognition();
+        recognition.lang = "pt-BR";
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        recognition.onstart = () => {
+          isListening = true;
+          voiceMicBtn.classList.add("is-listening");
+          voiceMicBtn.textContent = "Ouvindo... clique para parar";
+          setVoiceStatus("O microfone está ouvindo. Fale a mensagem do chamado.");
+        };
+
+        recognition.onresult = event => {
+          let transcript = "";
+          for (let index = event.resultIndex; index < event.results.length; index += 1) {
+            transcript += event.results[index][0].transcript;
+          }
+          voiceMessage.value = transcript.trim().slice(0, 280);
+          updateCharacterCounter();
+        };
+
+        recognition.onerror = event => {
+          const messages = {
+            "not-allowed": "Permissão do microfone negada pelo navegador.",
+            "no-speech": "Nenhuma fala foi identificada. Tente novamente.",
+            "network": "O reconhecimento de voz não conseguiu acessar o serviço de fala."
+          };
+          setVoiceStatus(messages[event.error] || `Erro no microfone: ${event.error}`, "error");
+        };
+
+        recognition.onend = () => {
+          isListening = false;
+          voiceMicBtn.classList.remove("is-listening");
+          voiceMicBtn.textContent = "🎙️ Ditar mensagem";
+        };
+      }
+
+      function updateCharacterCounter() {
+        voiceCharCounter.textContent = `${voiceMessage.value.length} / 280 caracteres`;
+      }
+
+      async function loadVoiceHistory() {
+        voiceHistoryList.innerHTML = '<div class="voice-history-empty">Carregando histórico...</div>';
+
+        const { data, error } = await supabaseClient
+          .from(VOICE_TABLE_NAME)
+          .select("id,mensagem,destino,prioridade,repeticoes,velocidade,created_by_email,created_at")
+          .order("created_at", { ascending: false })
+          .limit(20);
+
+        if (error) {
+          voiceHistoryList.innerHTML = `
+            <div class="voice-history-empty">
+              Não foi possível carregar os chamados.<br>${escapeVoiceHtml(error.message)}
+            </div>
+          `;
+          setVoiceStatus(`Erro ao acessar ${VOICE_TABLE_NAME}: ${error.message}`, "error");
+          return;
+        }
+
+        renderVoiceHistory(data || []);
+      }
+
+      function renderVoiceHistory(rows) {
+        if (!rows.length) {
+          voiceHistoryList.innerHTML = '<div class="voice-history-empty">Nenhum chamado enviado até o momento.</div>';
+          return;
+        }
+
+        voiceHistoryList.innerHTML = rows.map(row => `
+          <article class="voice-history-item">
+            <div>
+              <p class="voice-history-message">${escapeVoiceHtml(row.mensagem)}</p>
+              <div class="voice-history-meta">
+                <span class="voice-chip">Destino: ${escapeVoiceHtml(row.destino)}</span>
+                <span class="voice-chip${row.prioridade === "urgente" ? " urgent" : ""}">${escapeVoiceHtml(row.prioridade || "normal")}</span>
+                <span class="voice-chip">${Number(row.repeticoes || 1)}x</span>
+                <span class="voice-chip">${escapeVoiceHtml(formatVoiceDate(row.created_at))}</span>
+              </div>
+            </div>
+            <button
+              class="icon-btn voice-replay-btn"
+              type="button"
+              data-replay-message="${escapeVoiceHtml(row.mensagem)}"
+              data-replay-repetitions="${Number(row.repeticoes || 1)}"
+              data-replay-rate="${Number(row.velocidade || .95)}"
+            >Ouvir</button>
+          </article>
+        `).join("");
+      }
+
+      async function sendVoiceAnnouncement(event) {
+        event.preventDefault();
+
+        const message = voiceMessage.value.trim();
+        if (!message) {
+          setVoiceStatus("Digite ou dite a mensagem do chamado.", "error");
+          voiceMessage.focus();
+          return;
+        }
+
+        let destination;
+        try {
+          destination = getDestinationValue();
+        } catch (error) {
+          setVoiceStatus(error.message, "error");
+          return;
+        }
+
+        const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+        if (sessionError || !sessionData?.session?.user) {
+          setVoiceStatus("Sua sessão não está ativa. Entre novamente no painel.", "error");
+          return;
+        }
+
+        const user = sessionData.session.user;
+        const payload = {
+          mensagem: message,
+          destino: destination,
+          prioridade: voicePriority.value,
+          repeticoes: Number(voiceRepetitions.value),
+          velocidade: Number(voiceRate.value),
+          created_by: user.id,
+          created_by_email: user.email || null
+        };
+
+        voiceSendBtn.disabled = true;
+        voiceSendBtn.textContent = "Enviando...";
+        setVoiceStatus(`Enviando para o canal “${destination}”...`);
+
+        const { error } = await supabaseClient
+          .from(VOICE_TABLE_NAME)
+          .insert(payload);
+
+        voiceSendBtn.disabled = false;
+        voiceSendBtn.textContent = "Enviar chamado";
+
+        if (error) {
+          setVoiceStatus(`Não foi possível enviar: ${error.message}`, "error");
+          return;
+        }
+
+        setVoiceStatus(`Chamado enviado para “${destination}” com sucesso.`, "success");
+        voiceMessage.value = "";
+        updateCharacterCounter();
+        await loadVoiceHistory();
+      }
+
+      voiceDestination.addEventListener("change", () => {
+        const isCustom = voiceDestination.value === "__custom__";
+        voiceCustomDestinationField.classList.toggle("hidden-field", !isCustom);
+        if (isCustom) voiceCustomDestination.focus();
+      });
+
+      voiceMessage.addEventListener("input", updateCharacterCounter);
+      voiceForm.addEventListener("submit", sendVoiceAnnouncement);
+
+      voiceMicBtn.addEventListener("click", () => {
+        if (!recognition) return;
+        if (isListening) recognition.stop();
+        else recognition.start();
+      });
+
+      document.getElementById("voiceTestBtn").addEventListener("click", () => {
+        speakLocal(
+          voiceMessage.value,
+          Number(voiceRepetitions.value),
+          Number(voiceRate.value)
+        );
+        setVoiceStatus("Reproduzindo teste local. O chamado ainda não foi enviado.");
+      });
+
+      document.getElementById("voiceClearBtn").addEventListener("click", () => {
+        voiceMessage.value = "";
+        updateCharacterCounter();
+        setVoiceStatus("Campos limpos. Pronto para um novo chamado.");
+      });
+
+      document.getElementById("voiceRefreshHistoryBtn").addEventListener("click", loadVoiceHistory);
+
+      voiceHistoryList.addEventListener("click", event => {
+        const button = event.target.closest("[data-replay-message]");
+        if (!button) return;
+        speakLocal(
+          button.dataset.replayMessage,
+          Number(button.dataset.replayRepetitions || 1),
+          Number(button.dataset.replayRate || .95)
+        );
+      });
+
+      if ("speechSynthesis" in window) {
+        loadBrowserVoices();
+        window.speechSynthesis.onvoiceschanged = loadBrowserVoices;
+      }
+
+      setupSpeechRecognition();
+      updateCharacterCounter();
+
+      // Aguarda a autenticação do painel terminar antes de consultar o histórico.
+      window.setTimeout(loadVoiceHistory, 900);
+    })();
+  </script>
+
 </body>
 </html>
