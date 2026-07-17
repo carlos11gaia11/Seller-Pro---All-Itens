@@ -1175,20 +1175,47 @@ body[data-theme="light"] {
     }
 
     .update-box {
-      border-top: 1px solid rgba(255, 122, 24, .13);
-      padding-top: 8px;
-      margin-top: 4px;
-      min-height: 72px;
-      max-height: 72px;
+      margin-top: 10px;
+      min-height: 84px;
+      max-height: 84px;
+      padding: 10px 12px;
       overflow: hidden;
       flex-shrink: 0;
       position: relative;
       z-index: 1;
+      border: 1px solid rgba(250, 204, 21, .48);
+      border-radius: 15px;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255,255,255,.13), transparent 30%),
+        linear-gradient(135deg, rgba(250, 204, 21, .16), rgba(245, 158, 11, .08));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 10px 26px rgba(245, 158, 11, .10);
+      transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .update-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
     }
 
     .update-box strong {
       font-size: 12px;
-      color: #ff9d3d;
+      color: #facc15;
+      letter-spacing: .02em;
+    }
+
+    .update-age {
+      flex-shrink: 0;
+      padding: 3px 7px;
+      border-radius: 999px;
+      color: #fef3c7;
+      background: rgba(245, 158, 11, .16);
+      border: 1px solid rgba(250, 204, 21, .28);
+      font-size: 9px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .05em;
     }
 
     .update-box ul {
@@ -1200,15 +1227,71 @@ body[data-theme="light"] {
 
     .last-update-preview {
       margin-top: 6px;
-      color: var(--muted);
+      color: #f8fafc;
       font-size: 12px;
+      font-weight: 650;
       line-height: 1.35;
       display: -webkit-box;
-      line-clamp: 3;
-      -webkit-line-clamp: 3;
+      line-clamp: 2;
+      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
       word-break: break-word;
+    }
+
+    .update-box.stale-update {
+      border-color: rgba(248, 113, 113, .82);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255,255,255,.15), transparent 30%),
+        linear-gradient(135deg, rgba(239, 68, 68, .30), rgba(127, 29, 29, .20));
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, .08), 0 14px 34px rgba(239, 68, 68, .20);
+      animation: staleUpdatePulse 2.2s ease-in-out infinite;
+    }
+
+    .update-box.stale-update strong {
+      color: #fecaca;
+    }
+
+    .update-box.stale-update .update-age {
+      color: #fff1f2;
+      background: rgba(185, 28, 28, .42);
+      border-color: rgba(254, 202, 202, .52);
+    }
+
+    .update-box.stale-update .last-update-preview {
+      color: #fff1f2;
+    }
+
+    @keyframes staleUpdatePulse {
+      0%, 100% { box-shadow: 0 0 0 3px rgba(239, 68, 68, .08), 0 14px 34px rgba(239, 68, 68, .18); }
+      50% { box-shadow: 0 0 0 5px rgba(239, 68, 68, .15), 0 18px 42px rgba(239, 68, 68, .28); }
+    }
+
+    body[data-theme="light"] .update-box {
+      background: linear-gradient(135deg, rgba(254, 243, 199, .96), rgba(255, 251, 235, .90));
+      border-color: rgba(217, 119, 6, .32);
+    }
+
+    body[data-theme="light"] .update-box strong,
+    body[data-theme="light"] .last-update-preview {
+      color: #78350f;
+    }
+
+    body[data-theme="light"] .update-age {
+      color: #92400e;
+      background: rgba(245, 158, 11, .12);
+      border-color: rgba(217, 119, 6, .22);
+    }
+
+    body[data-theme="light"] .update-box.stale-update {
+      background: linear-gradient(135deg, rgba(254, 202, 202, .98), rgba(254, 226, 226, .94));
+      border-color: rgba(220, 38, 38, .48);
+    }
+
+    body[data-theme="light"] .update-box.stale-update strong,
+    body[data-theme="light"] .update-box.stale-update .last-update-preview,
+    body[data-theme="light"] .update-box.stale-update .update-age {
+      color: #7f1d1d;
     }
 
     .card-actions {
@@ -3433,6 +3516,47 @@ body[data-theme="light"] {
       return updates.length ? updates[updates.length - 1] : 'Nenhuma atualização ainda.';
     }
 
+    function getLastUpdateInfo(task) {
+      const text = getLastUpdate(task);
+      const dateISO = parseDateFromUpdateLine(text);
+
+      if (!dateISO) {
+        return { text, dateISO: '', days: null, isStale: false };
+      }
+
+      const [year, month, day] = dateISO.split('-').map(Number);
+      const updateDate = new Date(year, month - 1, day);
+      const today = new Date();
+
+      updateDate.setHours(0, 0, 0, 0);
+      today.setHours(0, 0, 0, 0);
+
+      const days = Math.max(0, Math.floor((today - updateDate) / 86400000));
+
+      return {
+        text,
+        dateISO,
+        days,
+        isStale: days > 7
+      };
+    }
+
+    function formatUpdateAge(days) {
+      if (typeof days !== 'number') return '';
+      if (days === 0) return 'Hoje';
+      if (days === 1) return '1 dia';
+      return `${days} dias`;
+    }
+
+    function ensureUpdateHasDate(updateText) {
+      const cleanText = String(updateText || '').trim();
+
+      if (!cleanText || parseDateFromUpdateLine(cleanText)) return cleanText;
+
+      const todayBR = formatDateBR(todayLocalISO()).slice(0, 5);
+      return `${todayBR} - ${cleanText}`;
+    }
+
     const SPN_CONFIRMATION_FLAGS_KEY = 'seller_pro_ares_spn_confirmation_flags_v1';
 
     function readSpnConfirmationFlags() {
@@ -3711,8 +3835,40 @@ body[data-theme="light"] {
 
       if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}`;
 
-      const brMatch = text.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-      if (brMatch) return `${brMatch[3]}-${brMatch[2]}-${brMatch[1]}`;
+      const brMatch = text.match(/(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+      if (brMatch) {
+        const day = String(brMatch[1]).padStart(2, '0');
+        const month = String(brMatch[2]).padStart(2, '0');
+        return `${brMatch[3]}-${month}-${day}`;
+      }
+
+      const shortBrMatch = text.match(/(?:^|\D)(\d{1,2})[\/-](\d{1,2})(?![\/-]\d)/);
+
+      if (shortBrMatch) {
+        const day = Number(shortBrMatch[1]);
+        const month = Number(shortBrMatch[2]);
+        const today = new Date();
+        let year = today.getFullYear();
+        let candidate = new Date(year, month - 1, day);
+
+        if (
+          candidate.getFullYear() !== year ||
+          candidate.getMonth() !== month - 1 ||
+          candidate.getDate() !== day
+        ) {
+          return '';
+        }
+
+        today.setHours(0, 0, 0, 0);
+        candidate.setHours(0, 0, 0, 0);
+
+        if (candidate > today) {
+          year -= 1;
+          candidate = new Date(year, month - 1, day);
+        }
+
+        return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      }
 
       return '';
     }
@@ -3844,8 +4000,11 @@ body[data-theme="light"] {
     }
 
     function taskTemplate(task) {
-      const sellerContClass = isSellerContTask(task) ? ' seller-cont-card' : '';
+      const isSellerCont = isSellerContTask(task);
+      const sellerContClass = isSellerCont ? ' seller-cont-card' : '';
       const deliveryClass = getDeliveryCardClass(task);
+      const lastUpdateInfo = getLastUpdateInfo(task);
+      const updateAgeLabel = formatUpdateAge(lastUpdateInfo.days);
 
       return `
         <article class="card${sellerContClass}${deliveryClass}" data-task-id="${escapeHTML(task.id)}" draggable="true" onclick="openTaskDetails('${escapeHTML(task.id)}')" ondragstart="dragStart(event, '${escapeHTML(task.id)}')" ondragend="dragEnd(event)">
@@ -3859,20 +4018,23 @@ body[data-theme="light"] {
             </div>
           </div>
 
-          <div class="meta">
-            <span class="pill location-pill">${escapeHTML(getProjectName(task.project))} • ${escapeHTML(task.status)}</span>
-            ${task.mcid ? `<span class="pill">MCID: ${escapeHTML(task.mcid)}</span>` : ''}
-          </div>
+          ${!isSellerCont ? `
+            <div class="meta">
+              <span class="pill location-pill">${escapeHTML(getProjectName(task.project))} • ${escapeHTML(task.status)}</span>
+              ${task.mcid ? `<span class="pill">MCID: ${escapeHTML(task.mcid)}</span>` : ''}
+            </div>
+          ` : ''}
 
           ${deliveryControlBadgeTemplate(task)}
-          ${sellerContCheckboxBadgeTemplate(task)}
-          ${sellerContPreviewTemplate(task)}
 
           <p>${escapeHTML(task.description)}</p>
 
-          <div class="update-box">
-            <strong>Última atualização</strong>
-            <div class="last-update-preview">${escapeHTML(getLastUpdate(task))}</div>
+          <div class="update-box${lastUpdateInfo.isStale ? ' stale-update' : ''}">
+            <div class="update-box-header">
+              <strong>Última atualização</strong>
+              ${updateAgeLabel ? `<span class="update-age">${escapeHTML(updateAgeLabel)}</span>` : ''}
+            </div>
+            <div class="last-update-preview">${escapeHTML(lastUpdateInfo.text)}</div>
           </div>
 
           ${attachmentStripTemplate(task)}
@@ -4489,7 +4651,8 @@ body[data-theme="light"] {
 
       if (!task) return;
 
-      const updates = [...(task.updates || []), update.trim()];
+      const datedUpdate = ensureUpdateHasDate(update);
+      const updates = [...(task.updates || []), datedUpdate];
 
       const { error } = await supabaseClient
         .from('sp_tasks')
