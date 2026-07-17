@@ -683,9 +683,10 @@ body[data-theme="light"] {
     }
 
     .card {
-      height: 430px;
-      min-height: 430px;
+      height: auto;
+      min-height: 0;
       max-height: 430px;
+      flex: 0 0 auto;
       background:
         linear-gradient(180deg, rgba(255, 255, 255, .085), rgba(255, 255, 255, .035)),
         var(--card);
@@ -722,9 +723,6 @@ body[data-theme="light"] {
     }
 
     .card.seller-cont-card {
-      height: 430px;
-      min-height: 430px;
-      max-height: 430px;
       background:
         radial-gradient(circle at 12% 0%, rgba(255,255,255,.22), transparent 24%),
         linear-gradient(160deg, rgba(14, 165, 233, .42), rgba(37, 99, 235, .30) 50%, rgba(15, 23, 42, .88)),
@@ -1297,7 +1295,7 @@ body[data-theme="light"] {
     .card-actions {
       display: flex;
       gap: 8px;
-      margin-top: auto;
+      margin-top: 12px;
       padding-top: 8px;
       flex-shrink: 0;
       position: relative;
@@ -2222,8 +2220,8 @@ body[data-theme="light"] {
       }
 
       .card {
-        height: 430px;
-        min-height: 430px;
+        height: auto;
+        min-height: 0;
         max-height: 430px;
       }
 
@@ -4018,16 +4016,15 @@ body[data-theme="light"] {
             </div>
           </div>
 
-          ${!isSellerCont ? `
+          ${task.mcid ? `
             <div class="meta">
-              <span class="pill location-pill">${escapeHTML(getProjectName(task.project))} • ${escapeHTML(task.status)}</span>
-              ${task.mcid ? `<span class="pill">MCID: ${escapeHTML(task.mcid)}</span>` : ''}
+              <span class="pill">MCID: ${escapeHTML(task.mcid)}</span>
             </div>
           ` : ''}
 
           ${deliveryControlBadgeTemplate(task)}
 
-          <p>${escapeHTML(task.description)}</p>
+          ${task.description ? `<p>${escapeHTML(task.description)}</p>` : ''}
 
           <div class="update-box${lastUpdateInfo.isStale ? ' stale-update' : ''}">
             <div class="update-box-header">
