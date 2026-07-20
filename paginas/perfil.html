@@ -299,11 +299,80 @@
       const workspace = document.getElementById("leaderWorkspace");
       if (!workspace) return;
 
-      const SUPABASE_URL = "https://owgvzmeewzpmzgcdwbfq.supabase.co";
-      const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr";
       const LEADER_FUNCTION = "leader-admin";
-      const client = window.supabase?.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+      const FALLBACK_SUPABASE_URL = "https://owgvzmeewzpmzgcdwbfq.supabase.co";
+      const FALLBACK_SUPABASE_KEY = "sb_publishable_vEZ-hnwOMl9Z1NJGrK5ktw_vT2-4HMr";
       const $ = selector => workspace.querySelector(selector);
+
+      let leaderClient = null;
+      let fallbackClient = null;
+
+      function getConfiguredValue(...keys) {
+        const sources = [
+          window.SellerProConfig,
+          window.SELLER_PRO_CONFIG,
+          window.APP_CONFIG,
+          window.CONFIG
+        ].filter(Boolean);
+
+        for (const source of sources) {
+          for (const key of keys) {
+            if (source?.[key]) return source[key];
+          }
+        }
+
+        return null;
+      }
+
+      function createFallbackClient() {
+        if (fallbackClient) return fallbackClient;
+        if (!window.supabase?.createClient) return null;
+
+        const url = getConfiguredValue("supabaseUrl", "SUPABASE_URL") || FALLBACK_SUPABASE_URL;
+        const key = getConfiguredValue("supabaseKey", "publishableKey", "SUPABASE_KEY", "SUPABASE_PUBLISHABLE_KEY") || FALLBACK_SUPABASE_KEY;
+
+        fallbackClient = window.supabase.createClient(url, key);
+        return fallbackClient;
+      }
+
+      function resolveSupabaseClient() {
+        const app = window.SellerProApp;
+        const candidates = [
+          app?.supabaseClient,
+          app?.supabase,
+          app?.client,
+          window.supabaseClient,
+          window.sellerProSupabase,
+          createFallbackClient()
+        ];
+
+        return candidates.find(candidate =>
+          candidate?.auth?.getSession && candidate?.functions?.invoke
+        ) || null;
+      }
+
+      async function requireAuthenticatedClient() {
+        leaderClient = resolveSupabaseClient();
+
+        if (!leaderClient) {
+          throw new Error("Cliente do Supabase não foi encontrado. Verifique config.js e app-core.js.");
+        }
+
+        const { data, error } = await leaderClient.auth.getSession();
+        if (error) throw new Error(`Não foi possível consultar a sessão: ${error.message}`);
+
+        let session = data?.session || window.SellerProApp?.session || null;
+
+        if (!session && typeof window.SellerProApp?.getSession === "function") {
+          session = await window.SellerProApp.getSession();
+        }
+
+        if (!session?.access_token) {
+          throw new Error("A sessão do Supabase não foi encontrada. Saia do sistema e entre novamente.");
+        }
+
+        return { client: leaderClient, session };
+      }
 
       let supports = [];
       let sellers = [];
@@ -332,10 +401,22 @@
       }
 
       async function invokeLeader(action, payload = {}) {
-        if (!client) throw new Error("Biblioteca do Supabase não foi carregada.");
-        const { data, error } = await client.functions.invoke(LEADER_FUNCTION, { body: { action, ...payload } });
-        if (error) throw new Error(data?.error || error.message || "Falha ao chamar a função administrativa.");
-        if (!data?.ok) throw new Error(data?.error || "A função administrativa recusou a operação.");
+        const { client, session } = await requireAuthenticatedClient();
+        const { data, error } = await client.functions.invoke(LEADER_FUNCTION, {
+          body: { action, ...payload },
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        });
+
+        if (error) {
+          throw new Error(data?.error || error.message || "Falha ao chamar a função administrativa.");
+        }
+
+        if (!data?.ok) {
+          throw new Error(data?.error || "A função administrativa recusou a operação.");
+        }
+
         return data;
       }
 
@@ -437,15 +518,18 @@
 
       async function loadDashboard() {
         setStatus("#leaderGlobalStatus", "Carregando dados administrativos...");
+
         try {
           const data = await invokeLeader("dashboard");
           supports = Array.isArray(data.supports) ? data.supports : [];
           sellers = Array.isArray(data.sellers) ? data.sellers : [];
           renderAll();
           setStatus("#leaderGlobalStatus", "Dados atualizados com sucesso.", "success");
+          return true;
         } catch (error) {
+          console.error("Falha ao carregar a área da liderança:", error);
           setStatus("#leaderGlobalStatus", error.message, "error");
-          throw error;
+          return false;
         }
       }
 
@@ -585,21 +669,47 @@
         }
       });
 
-      $("#leaderRefreshButton").addEventListener("click", loadDashboard);
+      $("#leaderRefreshButton").addEventListener("click", () => { void loadDashboard(); });
       $("#leaderClearSupportButton").addEventListener("click", clearSupportForm);
-      $("#leaderClearSellerButton").addEventListener("click", () => $("#leaderSellerForm").reset());
+      $("#leaderClearSellerButton").addEventListener("click", () => {
+        $("#leaderSellerForm").reset();
+        $("#leaderSellerSupport").value = "__auto__";
+      });
       $("#leaderClearSearchButton").addEventListener("click", () => { $("#leaderSupportSearch").value = ""; renderSupportTable(); });
       $("#leaderSupportSearch").addEventListener("input", renderSupportTable);
       $("#leaderSellerSearch").addEventListener("input", renderSellerTable);
       $("#leaderAccessSupport").addEventListener("change", updateAccessHelp);
 
-      window.SellerProApp?.ready
-        .then(async () => {
-          if (!window.SellerProApp.isLeader(window.SellerProApp.profile)) return;
-          workspace.hidden = false;
+      async function initializeLeaderWorkspace() {
+        const app = window.SellerProApp;
+
+        if (!app?.ready) {
+          console.error("SellerProApp.ready não está disponível.");
+          return;
+        }
+
+        await app.ready;
+
+        const profile = app.profile || {};
+        const allowed = typeof app.isLeader === "function"
+          ? app.isLeader(profile)
+          : isLeaderRole(profile.cargo || profile.role || profile.perfil);
+
+        if (!allowed) return;
+
+        workspace.hidden = false;
+        setStatus("#leaderGlobalStatus", "Validando sessão administrativa...");
+
+        try {
+          await requireAuthenticatedClient();
           await loadDashboard();
-        })
-        .catch(error => setStatus("#leaderGlobalStatus", `Falha ao validar liderança: ${error.message}`, "error"));
+        } catch (error) {
+          console.error("Falha ao iniciar a área da liderança:", error);
+          setStatus("#leaderGlobalStatus", error.message, "error");
+        }
+      }
+
+      void initializeLeaderWorkspace();
     })();
   </script>
 
