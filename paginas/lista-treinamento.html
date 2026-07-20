@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="light">
+<html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -56,6 +56,643 @@
   <script>document.documentElement.classList.add('sp-auth-pending');</script>
   <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
   <link rel="stylesheet" href="../assets/css/seller-pro.css?v=20260720">
+
+  <!-- Tema escuro confortável: grafite azulado, contraste suave e laranja como destaque -->
+  <style id="seller-pro-dark-refresh">
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) {
+      color-scheme: dark;
+
+      /* DaisyUI: base escura menos agressiva que preto puro */
+      --fallback-b1: 23 26 33;
+      --fallback-b2: 29 33 42;
+      --fallback-b3: 38 43 54;
+      --fallback-bc: 231 234 239;
+      --fallback-n: 44 49 61;
+      --fallback-nc: 245 247 250;
+      --fallback-p: 249 115 22;
+      --fallback-pc: 255 255 255;
+      --rounded-box: 1.25rem;
+      --rounded-btn: .9rem;
+      --animation-btn: .15s;
+      --animation-input: .15s;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) body {
+      background:
+        radial-gradient(circle at 8% 0%, rgba(249, 115, 22, .11), transparent 28rem),
+        radial-gradient(circle at 92% 10%, rgba(71, 85, 105, .16), transparent 30rem),
+        linear-gradient(145deg, #0f1116 0%, #12151b 52%, #0d1015 100%) !important;
+      color: #d8dce3 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) body > .fixed.inset-0.-z-10 .bg-orange-300\/30 {
+      background: rgba(249, 115, 22, .10) !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) body > .fixed.inset-0.-z-10 .bg-zinc-900\/10 {
+      background: rgba(100, 116, 139, .10) !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .glass {
+      background: linear-gradient(135deg, rgba(28, 32, 41, .94), rgba(21, 24, 31, .90)) !important;
+      border-color: rgba(255, 255, 255, .075) !important;
+      box-shadow:
+        0 22px 65px rgba(0, 0, 0, .30),
+        0 0 0 1px rgba(249, 115, 22, .025) inset !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) main > section.bg-white,
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .modal-box {
+      background: #171a21 !important;
+      border-color: #2a2f3a !important;
+      color: #d8dce3 !important;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, .34) !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) main > section.bg-white {
+      border: 1px solid #292e38 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .text-zinc-950,
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .text-zinc-800 {
+      color: #f1f3f6 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .text-zinc-500 {
+      color: #a7adb8 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .text-zinc-400 {
+      color: #858d99 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .bg-zinc-50,
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .bg-zinc-100 {
+      background: #20242d !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .border-zinc-100,
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .border-zinc-200 {
+      border-color: #303642 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .bg-green-50 {
+      background: rgba(34, 197, 94, .095) !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .border-green-100 {
+      border-color: rgba(74, 222, 128, .22) !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .bg-red-50 {
+      background: rgba(239, 68, 68, .085) !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .border-red-100,
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .border-red-200 {
+      border-color: rgba(248, 113, 113, .24) !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) #expiredAlert {
+      background: linear-gradient(135deg, rgba(88, 28, 35, .45), rgba(49, 22, 28, .48)) !important;
+      border-color: rgba(248, 113, 113, .24) !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) #expiredAlert .text-red-700 {
+      color: #fca5a5 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) #expiredAlert .text-red-600 {
+      color: #f0a1a1 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .bg-orange-100 {
+      background: rgba(249, 115, 22, .13) !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .text-orange-700 {
+      color: #fdba74 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .stats,
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .support-card {
+      box-shadow: none !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .support-card {
+      background: linear-gradient(145deg, #20242d, #1b1f27) !important;
+      border-color: #303642 !important;
+      transition: transform .16s ease, border-color .16s ease, background .16s ease;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .support-card:hover {
+      transform: translateY(-1px);
+      background: #232833 !important;
+      border-color: #3a414f !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .input,
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .select {
+      background-color: #1f232c !important;
+      border-color: #373d49 !important;
+      color: #e8ebef !important;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .025) inset;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .input::placeholder {
+      color: #777f8c !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .input:focus-within,
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .select:focus {
+      border-color: rgba(251, 146, 60, .78) !important;
+      outline: 3px solid rgba(249, 115, 22, .12) !important;
+      outline-offset: 0 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .label-text {
+      color: #cdd2da !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .badge-ghost {
+      background: #242934 !important;
+      border-color: #383f4c !important;
+      color: #b9c0ca !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .btn:not(.bg-orange-500):not(.btn-error):not(.btn-success) {
+      background: #282d38 !important;
+      border-color: #3a414f !important;
+      color: #edf0f4 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .btn:not(.bg-orange-500):not(.btn-error):not(.btn-success):hover {
+      background: #333946 !important;
+      border-color: #4a5261 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) #lojasProntasBtn {
+      background: #2a2f3a !important;
+      border: 1px solid #3a414f !important;
+      color: #f2f4f7 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) #lojasProntasBtn:hover {
+      background: #353b48 !important;
+      border-color: #4b5362 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .table-card-header {
+      background: rgba(23, 26, 33, .96) !important;
+      border-color: #2d333e !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .table-sticky thead th {
+      background: #252a34 !important;
+      color: #eef1f5 !important;
+      box-shadow: 0 1px 0 #3a404c, 0 7px 16px rgba(0, 0, 0, .18) !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .compact-table tbody tr {
+      background: #171a21 !important;
+      border-color: #2a2f39 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .compact-table.table-zebra tbody tr:nth-child(even) {
+      background: #1c2028 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .compact-table tbody tr:hover,
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .compact-table.table-zebra tbody tr:nth-child(even):hover {
+      background: #252b36 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .compact-table td {
+      border-color: #292f39 !important;
+      color: #cbd0d8 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .compact-table td.text-zinc-950,
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .compact-table td.font-semibold {
+      color: #edf0f4 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .sort-btn {
+      color: #d8dce3 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .sort-btn:hover {
+      color: #fb923c !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .modal::backdrop {
+      background: rgba(5, 7, 10, .74) !important;
+      backdrop-filter: blur(5px);
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) .modal-box {
+      border: 1px solid #343a46 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) #validadePreview {
+      background: #191d24 !important;
+      color: #9fa7b3 !important;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) * {
+      scrollbar-color: #454c59 #171a21;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) *::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) *::-webkit-scrollbar-track {
+      background: #171a21;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) *::-webkit-scrollbar-thumb {
+      background: #454c59;
+      border: 2px solid #171a21;
+      border-radius: 999px;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) *::-webkit-scrollbar-thumb:hover {
+      background: #596170;
+    }
+
+    :is(
+      html[data-theme="dark"],
+      html[data-theme="night"],
+      html[data-theme="black"],
+      html[data-theme="sellerpro-dark"],
+      html.dark
+    ) ::selection {
+      background: rgba(249, 115, 22, .38);
+      color: #fff;
+    }
+  </style>
   <script src="../assets/js/config.js?v=20260720"></script>
   <script src="../assets/js/file-session.js?v=20260720-loginfix2"></script>
   <script src="../assets/js/app-core.js?v=20260720-loginfix2"></script>
