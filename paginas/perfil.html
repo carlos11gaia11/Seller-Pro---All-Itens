@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Perfil profissional e progresso do suporte Seller Pro.">
+  <title>Meu Perfil | Seller Pro</title>
+  <script>document.documentElement.classList.add('sp-auth-pending');</script>
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+  <link rel="stylesheet" href="../assets/css/seller-pro.css?v=20260720">
+  <link rel="stylesheet" href="../assets/css/profile.css?v=20260720">
+  <script src="../assets/js/config.js?v=20260720"></script>
+  <script src="../assets/js/file-session.js?v=20260720-loginfix2"></script>
+  <script src="../assets/js/app-core.js?v=20260720-loginfix2"></script>
+</head>
+<body class="sp-profile-page">
+  <main class="sp-profile-main">
+    <section class="sp-profile-loading" id="profileLoading" aria-live="polite">
+      <div class="sp-profile-loading__box">
+        <span class="sp-spinner" aria-hidden="true"></span>
+        <span>Carregando seu perfil e indicadores...</span>
+      </div>
+    </section>
+
+    <div class="sp-profile-layout" id="profileApp" hidden>
+      <aside class="sp-profile-sidebar" aria-label="Resumo do perfil">
+        <section class="sp-panel sp-identity-card">
+          <div class="sp-avatar-editor" id="avatarEditor">
+            <img class="sp-avatar-editor__image" id="avatarImage" alt="Foto do perfil">
+            <div class="sp-avatar-editor__fallback" id="avatarFallback" aria-hidden="true">SP</div>
+            <button class="sp-avatar-editor__button" id="avatarButton" type="button" aria-label="Alterar foto do perfil" title="Alterar foto">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5H20a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5.5l1.5-2h2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </button>
+            <input id="avatarInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+          </div>
+
+          <div class="sp-identity-copy">
+            <h1 id="profileName">Suporte Seller Pro</h1>
+            <p id="profileEmail">Sessão autenticada</p>
+            <span class="sp-role-badge" id="profileRole">Suporte</span>
+          </div>
+
+          <div class="sp-level-block">
+            <div class="sp-level-row">
+              <strong id="levelTitle">Nível 1 · Iniciante</strong>
+              <span id="xpValue">0 XP</span>
+            </div>
+            <div class="sp-progress" role="progressbar" aria-label="Progresso para o próximo nível" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="levelProgress">
+              <div class="sp-progress__bar" id="levelProgressBar"></div>
+            </div>
+            <div class="sp-progress-copy"><span id="levelStartXp">0 XP</span><span id="nextLevelXp">250 XP</span></div>
+          </div>
+        </section>
+
+        <section class="sp-panel sp-completeness">
+          <div class="sp-completeness__top"><strong>Perfil completo</strong><span id="profileCompleteness">0%</span></div>
+          <div class="sp-progress" aria-hidden="true"><div class="sp-progress__bar" id="profileCompletenessBar"></div></div>
+          <p>Complete seus dados para facilitar a identificação da equipe e melhorar a personalização do sistema.</p>
+        </section>
+      </aside>
+
+      <div class="sp-profile-content">
+        <section class="sp-panel sp-profile-intro">
+          <h2>Seu espaço profissional</h2>
+          <p>Acompanhe sua evolução, mantenha os dados do perfil atualizados e visualize os marcos gerados pelas atividades registradas nos painéis Seller Pro.</p>
+        </section>
+
+        <section class="sp-stat-grid" aria-label="Indicadores operacionais">
+          <article class="sp-stat">
+            <span class="sp-stat__icon"><svg viewBox="0 0 24 24"><path d="M4 9v11h16V9M3 9l2-6h14l2 6M8 20v-6h8v6"/></svg></span>
+            <strong id="deliveredStoresValue">0</strong><span>Lojas entregues</span>
+          </article>
+          <article class="sp-stat">
+            <span class="sp-stat__icon"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/><circle cx="12" cy="12" r="10"/></svg></span>
+            <strong id="finalizedSalesValue">0</strong><span>Vendas finalizadas</span>
+          </article>
+          <article class="sp-stat">
+            <span class="sp-stat__icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+            <strong id="completedTasksValue">0</strong><span>Tarefas concluídas</span>
+          </article>
+          <article class="sp-stat">
+            <span class="sp-stat__icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m7-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8m13 10v-2a4 4 0 0 0-3-3.9"/></svg></span>
+            <strong id="activeSellersValue">0</strong><span>Sellers ativos</span>
+          </article>
+        </section>
+
+        <section class="sp-panel sp-section">
+          <div class="sp-section__header">
+            <div><h2>Dados do suporte</h2><p>Estas informações aparecem somente no ambiente interno da equipe.</p></div>
+          </div>
+
+          <form class="sp-profile-form" id="profileForm">
+            <div class="sp-field">
+              <label for="profileFullName">Nome completo</label>
+              <input id="profileFullName" name="nome" type="text" minlength="3" maxlength="90" required autocomplete="name">
+            </div>
+            <div class="sp-field">
+              <label for="profileEmailInput">E-mail</label>
+              <input id="profileEmailInput" name="email" type="email" readonly>
+            </div>
+            <div class="sp-field">
+              <label for="profileRoleInput">Cargo</label>
+              <input id="profileRoleInput" name="cargo" type="text" maxlength="60" readonly>
+              <span class="sp-field__help">O cargo é controlado pela liderança e pelas permissões do Supabase.</span>
+            </div>
+            <div class="sp-field">
+              <label for="profilePhone">Telefone</label>
+              <input id="profilePhone" name="telefone" type="tel" maxlength="24" autocomplete="tel" placeholder="(00) 00000-0000">
+            </div>
+            <div class="sp-field">
+              <label for="profileSpecialty">Especialidade</label>
+              <input id="profileSpecialty" name="especialidade" type="text" maxlength="80" placeholder="Ex.: FBA, Loja Pronta, Onboarding">
+            </div>
+            <div class="sp-field">
+              <label for="profileStartDate">Data de entrada</label>
+              <input id="profileStartDate" name="data_entrada" type="date">
+            </div>
+            <div class="sp-field sp-field--full">
+              <label for="profileBio">Sobre você</label>
+              <textarea id="profileBio" name="bio" maxlength="300" placeholder="Conte brevemente em quais processos você atua e como ajuda os sellers."></textarea>
+              <span class="sp-field__help"><span id="bioCount">0</span>/300 caracteres</span>
+            </div>
+            <div class="sp-form-actions">
+              <button class="sp-button" id="resetProfileButton" type="button">Desfazer alterações</button>
+              <button class="sp-button sp-button--primary" id="saveProfileButton" type="submit">Salvar perfil</button>
+            </div>
+          </form>
+          <div class="sp-form-status" id="profileStatus" aria-live="polite"></div>
+        </section>
+
+        <section class="sp-panel sp-section">
+          <div class="sp-section__header">
+            <div><h2>Conquistas</h2><p>Marcos calculados a partir das atividades operacionais disponíveis para seu suporte.</p></div>
+            <span class="sp-role-badge" id="streakBadge">0 dias de sequência</span>
+          </div>
+          <div class="sp-achievements" id="achievementsGrid"></div>
+        </section>
+
+        <div class="sp-data-note" id="profileDataNote">
+          <span aria-hidden="true">ⓘ</span>
+          <span><strong>Como funciona:</strong> os indicadores são calculados com os registros do Ares, Lojas Prontas e Sellers. Se alguma tabela não estiver liberada pelas políticas RLS, somente os dados disponíveis serão exibidos.</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../assets/js/gamification.js?v=20260720-loginfix2"></script>
+  <script src="../assets/js/profile.js?v=20260720-loginfix2"></script>
+</body>
+</html>
