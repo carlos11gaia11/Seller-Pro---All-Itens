@@ -20,15 +20,18 @@
   }
 
   function translate(error) {
-    const value = String(error?.message || error || '').toLowerCase();
-    if (value.includes('already registered') || value.includes('already exists') || value.includes('user already')) return 'Este e-mail já está cadastrado.';
-    if (value.includes('invalid email') || value.includes('email address')) return 'O e-mail informado é inválido.';
-    if (value.includes('password') || value.includes('weak')) return 'A senha não atende aos requisitos do Supabase.';
-    if (value.includes('rate limit') || value.includes('security purposes')) return 'Muitas tentativas. Aguarde alguns instantes e tente novamente.';
-    if (value.includes('network') || value.includes('fetch') || value.includes('supabase') || value.includes('biblioteca')) {
-      return 'Não foi possível conectar ao Supabase. Verifique sua internet e tente novamente.';
-    }
-    return error?.message || 'Não foi possível criar a conta.';
+    return window.SellerProAuthErrors?.translate(error) || 'Não foi possível criar a conta.';
+  }
+
+  function diagnostics(error) {
+    return window.SellerProAuthErrors?.diagnostics(error) || {
+      name: error?.name || '',
+      message: error?.message || '',
+      code: error?.code || '',
+      status: Number(error?.status) || 0,
+      details: error?.details || '',
+      hint: error?.hint || ''
+    };
   }
 
   async function getClient() {
@@ -109,7 +112,7 @@
       showMessage('Conta criada. Verifique seu e-mail para confirmar o cadastro.', 'success');
       window.setTimeout(() => window.location.replace(redirectTo), 1200);
     } catch (error) {
-      console.error('[Seller Pro] Falha no cadastro.', error);
+      console.error('[Seller Pro] Falha no cadastro.', diagnostics(error), error);
       showMessage(translate(error), 'error');
       button.disabled = false;
       button.textContent = 'Criar conta';
