@@ -2055,9 +2055,9 @@
         </div>
 
         <div class="field">
-          <label for="monthFilter">Mês</label>
+          <label for="monthFilter">Mês do projeto</label>
           <select id="monthFilter">
-            <option value="">Todos os meses</option>
+            <option value="">Todos os meses do projeto</option>
           </select>
         </div>
 
@@ -2115,11 +2115,11 @@
         <div class="overview-value" id="totalLojaAguardandoVenda">0</div>
       </div>
 
-      <div class="overview-card metric-danger is-clickable" data-aging-target="aguardandoVendaMais15" title="Ver lojas aguardando venda há mais de 15 dias">
+      <div class="overview-card metric-danger is-clickable" data-aging-target="aguardandoVendaMais15" title="Ver lojas aguardando venda há 15 dias ou mais">
         <div class="overview-icon">🔴</div>
-        <div class="overview-label">Aguardando venda +15 dias</div>
+        <div class="overview-label">Aguardando venda há 15+ dias</div>
         <div class="overview-value" id="totalAguardandoVendaMais15">0</div>
-        <div class="overview-note">Lojas acima do prazo de atenção</div>
+        <div class="overview-note">Lojas com 15 dias ou mais desde a entrega</div>
       </div>
 
       <div class="overview-card is-clickable" data-status-target="totalChamadosEspeciais" title="Ver chamados especiais">
@@ -2238,9 +2238,9 @@
         </div>
 
         <div class="field">
-          <label for="tableMonthFilter">Mês</label>
+          <label for="tableMonthFilter">Mês do projeto</label>
           <select id="tableMonthFilter">
-            <option value="">Todos os meses</option>
+            <option value="">Todos os meses do projeto</option>
           </select>
         </div>
 
@@ -3392,33 +3392,81 @@
       return Math.max(0, Math.floor(diff / 86400000));
     }
 
+    function parseDateSafely(value) {
+      if (value === undefined || value === null || value === "") return null;
+
+      if (value instanceof Date) {
+        return isNaN(value.getTime()) ? null : value;
+      }
+
+      if (typeof value === "number") {
+        // Aceita timestamps em segundos ou milissegundos.
+        const timestamp = value < 100000000000 ? value * 1000 : value;
+        const numericDate = new Date(timestamp);
+        return isNaN(numericDate.getTime()) ? null : numericDate;
+      }
+
+      const text = String(value).trim();
+      if (!text) return null;
+
+      // Data ISO sem horário: cria no horário local e evita voltar um dia no Brasil.
+      const isoDateOnlyMatch = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (isoDateOnlyMatch) {
+        const [, year, month, day] = isoDateOnlyMatch;
+        const localDate = new Date(Number(year), Number(month) - 1, Number(day));
+        return isNaN(localDate.getTime()) ? null : localDate;
+      }
+
+      // Data brasileira: DD/MM/AAAA, com horário opcional.
+      const brazilianDateMatch = text.match(
+        /^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
+      );
+
+      if (brazilianDateMatch) {
+        const [, day, month, year, hour = "0", minute = "0", second = "0"] = brazilianDateMatch;
+        const localDate = new Date(
+          Number(year),
+          Number(month) - 1,
+          Number(day),
+          Number(hour),
+          Number(minute),
+          Number(second)
+        );
+
+        return isNaN(localDate.getTime()) ? null : localDate;
+      }
+
+      const date = new Date(text);
+      return isNaN(date.getTime()) ? null : date;
+    }
+
     function getStatusStartTimestamp(task) {
       const dateValue = getPossibleValue(task, [
+        // Campo oficial utilizado quando a loja é marcada como entregue.
+        "delivery_completed_at",
+        "deliveryCompletedAt",
+
+        // Nomes alternativos aceitos para bases antigas ou integrações.
+        "delivered_at",
+        "delivery_date",
         "data_aguardando_venda",
         "aguardando_venda_em",
         "loja_aguardando_venda_em",
         "data_loja_entregue",
         "data_entrega",
         "entregue_em",
+
+        // Último recurso: data específica da mudança de situação.
         "status_updated_at",
         "statusChangedAt",
         "status_changed_at",
         "last_status_change_at",
         "data_movimentacao",
-        "moved_at",
-        "updated_at",
-        "updatedAt",
-        "modified_at",
-        "created_at",
-        "data_criacao",
-        "createdAt",
-        "inserted_at"
+        "moved_at"
       ]);
 
-      if (!dateValue) return 0;
-
-      const date = new Date(dateValue);
-      return isNaN(date.getTime()) ? 0 : date.getTime();
+      const date = parseDateSafely(dateValue);
+      return date ? date.getTime() : 0;
     }
 
     function formatDateFromTimestamp(timestamp) {
@@ -3456,7 +3504,10 @@
         const sellerCont = isSellerContTask(task);
         const aguardandoVendaDesdeTs = entregue ? getStatusStartTimestamp(task) : 0;
         const diasAguardandoVenda = entregue ? getDaysSinceTimestamp(aguardandoVendaDesdeTs) : null;
-        const aguardandoVendaMais15 = entregue && diasAguardandoVenda !== null && diasAguardandoVenda > AGUARDANDO_VENDA_ALERT_DAYS;
+        const aguardandoVendaMais15 =
+          entregue &&
+          diasAguardandoVenda !== null &&
+          diasAguardandoVenda >= AGUARDANDO_VENDA_ALERT_DAYS;
 
         return {
           raw: task,
@@ -3517,11 +3568,11 @@
         .filter((item) => item && item !== "-" && item !== "Sem situação")
         .sort();
 
-      fillSelect(monthFilter, "Todos os meses", months);
+      fillSelect(monthFilter, "Todos os meses do projeto", months);
       fillSelect(supportFilter, "Todos os suportes", supports);
       fillSelect(statusFilter, "Todas as situações", statuses);
 
-      fillSelect(tableMonthFilter, "Todos os meses", months);
+      fillSelect(tableMonthFilter, "Todos os meses do projeto", months);
       fillSelect(tableSupportFilter, "Todos os suportes", supports);
       fillSelect(tableStatusFilter, "Todas as situações", statuses);
 
