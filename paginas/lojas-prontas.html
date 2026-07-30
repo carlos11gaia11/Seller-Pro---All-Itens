@@ -3440,13 +3440,11 @@
       return isNaN(date.getTime()) ? null : date;
     }
 
-    function getStatusStartTimestamp(task) {
-      const dateValue = getPossibleValue(task, [
-        // Campo oficial utilizado quando a loja é marcada como entregue.
+    function getStatusStartInfo(task) {
+      // 1. Data oficial da entrega. Esta sempre tem prioridade.
+      const officialValue = getPossibleValue(task, [
         "delivery_completed_at",
         "deliveryCompletedAt",
-
-        // Nomes alternativos aceitos para bases antigas ou integrações.
         "delivered_at",
         "delivery_date",
         "data_aguardando_venda",
@@ -3454,19 +3452,80 @@
         "loja_aguardando_venda_em",
         "data_loja_entregue",
         "data_entrega",
-        "entregue_em",
+        "entregue_em"
+      ]);
 
-        // Último recurso: data específica da mudança de situação.
+      const officialDate = parseDateSafely(officialValue);
+      if (officialDate) {
+        return {
+          timestamp: officialDate.getTime(),
+          source: "entrega",
+          estimated: false
+        };
+      }
+
+      // 2. Bases antigas podem ter apenas a data da mudança de situação.
+      const statusChangeValue = getPossibleValue(task, [
         "status_updated_at",
         "statusChangedAt",
         "status_changed_at",
         "last_status_change_at",
         "data_movimentacao",
-        "moved_at"
+        "moved_at",
+        "column_changed_at",
+        "columnChangedAt"
       ]);
 
-      const date = parseDateSafely(dateValue);
-      return date ? date.getTime() : 0;
+      const statusChangeDate = parseDateSafely(statusChangeValue);
+      if (statusChangeDate) {
+        return {
+          timestamp: statusChangeDate.getTime(),
+          source: "mudança de situação",
+          estimated: true
+        };
+      }
+
+      // 3. Fallback para registros antigos sem histórico de entrega.
+      // updated_at é tentado antes de created_at, pois normalmente representa
+      // a movimentação mais recente do card. Caso não exista, usa a criação.
+      const updatedValue = getPossibleValue(task, [
+        "updated_at",
+        "updatedAt",
+        "modified_at",
+        "modifiedAt",
+        "last_updated_at"
+      ]);
+
+      const updatedDate = parseDateSafely(updatedValue);
+      if (updatedDate) {
+        return {
+          timestamp: updatedDate.getTime(),
+          source: "última atualização",
+          estimated: true
+        };
+      }
+
+      const createdValue = getPossibleValue(task, [
+        "created_at",
+        "data_criacao",
+        "createdAt",
+        "inserted_at"
+      ]);
+
+      const createdDate = parseDateSafely(createdValue);
+      if (createdDate) {
+        return {
+          timestamp: createdDate.getTime(),
+          source: "criação do registro",
+          estimated: true
+        };
+      }
+
+      return {
+        timestamp: 0,
+        source: "sem data",
+        estimated: false
+      };
     }
 
     function formatDateFromTimestamp(timestamp) {
@@ -3502,7 +3561,10 @@
         const emAndamento = isInProgressStatus(situacaoOriginal);
         const situacao = formatStatusForDisplay(situacaoOriginal);
         const sellerCont = isSellerContTask(task);
-        const aguardandoVendaDesdeTs = entregue ? getStatusStartTimestamp(task) : 0;
+        const aguardandoVendaInfo = entregue
+          ? getStatusStartInfo(task)
+          : { timestamp: 0, source: "sem data", estimated: false };
+        const aguardandoVendaDesdeTs = aguardandoVendaInfo.timestamp;
         const diasAguardandoVenda = entregue ? getDaysSinceTimestamp(aguardandoVendaDesdeTs) : null;
         const aguardandoVendaMais15 =
           entregue &&
@@ -3527,6 +3589,8 @@
           entregue,
           aguardandoVendaDesdeTs,
           aguardandoVendaDesde: formatDateFromTimestamp(aguardandoVendaDesdeTs),
+          aguardandoVendaFonte: aguardandoVendaInfo.source,
+          aguardandoVendaEstimado: aguardandoVendaInfo.estimated,
           diasAguardandoVenda,
           aguardandoVendaMais15,
           sellerCont,
@@ -3986,7 +4050,12 @@ return matchMonth && matchSupport && matchStatus && matchSearch;
           const color = getStatusColor(row.situacao);
           const waitingSaleClass = row.aguardandoVendaMais15 ? "waiting-sale-danger" : "";
           const waitingSaleLabel = formatWaitingSaleDays(row);
-          const waitingSaleSince = row.entregue && row.aguardandoVendaDesde !== "-" ? `Desde ${row.aguardandoVendaDesde}` : "";
+          const waitingSaleSince = row.entregue && row.aguardandoVendaDesde !== "-"
+            ? `${row.aguardandoVendaEstimado ? "Estimado desde" : "Desde"} ${row.aguardandoVendaDesde}`
+            : "";
+          const waitingSaleSource = row.entregue && row.aguardandoVendaFonte && row.aguardandoVendaFonte !== "sem data"
+            ? `Base: ${row.aguardandoVendaFonte}`
+            : "";
 
           return `
             <tr class="${waitingSaleClass}">
@@ -4013,6 +4082,7 @@ return matchMonth && matchSupport && matchStatus && matchSearch;
                   ${escapeHtml(waitingSaleLabel)}
                 </span>
                 ${waitingSaleSince ? `<div class="store-sub">${escapeHtml(waitingSaleSince)}</div>` : ""}
+                ${waitingSaleSource ? `<div class="store-sub">${escapeHtml(waitingSaleSource)}</div>` : ""}
               </td>
 
               <td>
