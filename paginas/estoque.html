@@ -755,6 +755,32 @@
       background: rgba(255, 122, 0, 0.055);
     }
 
+    .upload-status {
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-weight: 750;
+      line-height: 1.45;
+    }
+
+    .upload-status-info {
+      color: #fed7aa;
+      border: 1px solid rgba(255, 122, 0, 0.28);
+      background: rgba(255, 122, 0, 0.09);
+    }
+
+    .upload-status-erro {
+      color: #fecaca;
+      border: 1px solid rgba(239, 68, 68, 0.32);
+      background: rgba(239, 68, 68, 0.11);
+    }
+
+    .upload-status-sucesso {
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      background: rgba(34, 197, 94, 0.1);
+    }
+
     .countdown {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       font-weight: 900;
@@ -2042,8 +2068,9 @@
             <div class="upload-zone mt-4">
               <label class="block font-bold text-orange-100 mb-2">Adicionar PDF da Nota Fiscal</label>
               <input id="arquivoNf-${escaparHTML(item.id)}" type="file" accept="application/pdf,.pdf" class="w-full rounded-xl" />
-              <p class="text-xs text-zinc-500 mt-2">Somente PDF, com no máximo 10 MB.</p>
-              <button type="button" onclick="uploadNotaFiscal('${escaparHTML(item.id)}')" class="btn-primary w-full px-4 py-3 mt-3">
+              <p class="text-xs text-zinc-500 mt-2">Somente PDF real, com no máximo 10 MB.</p>
+              <div id="statusNf-${escaparHTML(item.id)}" class="upload-status upload-status-info hidden mt-3" role="status" aria-live="polite"></div>
+              <button id="btnUploadNf-${escaparHTML(item.id)}" type="button" onclick="uploadNotaFiscal('${escaparHTML(item.id)}')" class="btn-primary w-full px-4 py-3 mt-3">
                 Enviar PDF e liberar por 24 horas
               </button>
             </div>
@@ -2111,81 +2138,150 @@
       }
     }
 
+    async function validarArquivoPdf(arquivo) {
+      if (!arquivo) {
+        return { valido: false, mensagem: "Selecione o arquivo PDF da nota fiscal." };
+      }
+
+      const nome = String(arquivo.name || "").trim();
+
+      if (!nome.toLowerCase().endsWith(".pdf")) {
+        return { valido: false, mensagem: "O arquivo precisa ter a extensão .pdf." };
+      }
+
+      if (Number(arquivo.size || 0) > 10 * 1024 * 1024) {
+        return { valido: false, mensagem: "O PDF ultrapassa o limite de 10 MB." };
+      }
+
+      try {
+        const cabecalho = new Uint8Array(await arquivo.slice(0, 5).arrayBuffer());
+        const assinatura = String.fromCharCode(...cabecalho);
+
+        if (assinatura !== "%PDF-") {
+          return { valido: false, mensagem: "O arquivo selecionado não contém uma estrutura PDF válida." };
+        }
+      } catch (error) {
+        console.error("Falha ao validar o PDF:", error);
+        return { valido: false, mensagem: "Não foi possível ler o arquivo selecionado. Escolha o PDF novamente." };
+      }
+
+      return { valido: true, mensagem: "" };
+    }
+
+    function mostrarStatusUploadNf(solicitacaoId, texto, tipo = "info") {
+      const status = document.getElementById(`statusNf-${solicitacaoId}`);
+
+      if (status) {
+        status.textContent = texto;
+        status.classList.remove("hidden", "upload-status-info", "upload-status-erro", "upload-status-sucesso");
+        status.classList.add(`upload-status-${tipo}`);
+      }
+
+      if (tipo === "erro") {
+        mostrarMensagem(texto, "erro");
+      }
+    }
+
+    function definirUploadNfEmAndamento(solicitacaoId, ativo) {
+      const botao = document.getElementById(`btnUploadNf-${solicitacaoId}`);
+      const input = document.getElementById(`arquivoNf-${solicitacaoId}`);
+
+      if (botao) {
+        botao.disabled = ativo;
+        botao.setAttribute("aria-busy", ativo ? "true" : "false");
+        botao.textContent = ativo ? "Enviando Nota Fiscal..." : "Enviar PDF e liberar por 24 horas";
+        botao.style.opacity = ativo ? "0.72" : "";
+        botao.style.cursor = ativo ? "wait" : "";
+      }
+
+      if (input) input.disabled = ativo;
+    }
+
     async function uploadNotaFiscal(solicitacaoId) {
       const solicitacao = solicitacoesNf.find(item => String(item.id) === String(solicitacaoId));
       const input = document.getElementById(`arquivoNf-${solicitacaoId}`);
       const arquivo = input?.files?.[0];
 
       if (!solicitacao || solicitacao.status !== "pendente") {
-        mostrarMensagem("Esta solicitação não está mais pendente.", "erro");
+        mostrarStatusUploadNf(solicitacaoId, "Esta solicitação não está mais pendente.", "erro");
         await carregarDados();
         return;
       }
 
-      if (!arquivo) {
-        mostrarMensagem("Selecione o arquivo PDF da nota fiscal.", "erro");
+      const validacao = await validarArquivoPdf(arquivo);
+
+      if (!validacao.valido) {
+        mostrarStatusUploadNf(solicitacaoId, validacao.mensagem, "erro");
         return;
       }
 
-      const nomePdf = arquivo.name.toLowerCase().endsWith(".pdf");
-      const tipoPdf = arquivo.type === "application/pdf";
-
-      if (!nomePdf || !tipoPdf) {
-        mostrarMensagem("O arquivo precisa ser um PDF válido.", "erro");
-        return;
-      }
-
-      if (arquivo.size > 10 * 1024 * 1024) {
-        mostrarMensagem("O PDF ultrapassa o limite de 10 MB.", "erro");
-        return;
-      }
-
+      definirUploadNfEmAndamento(solicitacaoId, true);
+      mostrarStatusUploadNf(solicitacaoId, "Validando sua sessão e preparando o envio...", "info");
       mostrarLoading(true);
 
-      const { data: usuarioData, error: erroUsuario } = await db.auth.getUser();
-      const usuario = usuarioData?.user;
+      let caminho = "";
+      let pdfFoiEnviado = false;
 
-      if (erroUsuario || !usuario) {
-        mostrarMensagem("Sua sessão expirou. Entre novamente para enviar a nota.", "erro");
-        mostrarLoading(false);
-        return;
-      }
+      try {
+        const { data: usuarioData, error: erroUsuario } = await db.auth.getUser();
+        const usuario = usuarioData?.user;
 
-      const nomeSeguro = nomeArquivoSeguro(arquivo.name);
-      const caminho = `${usuario.id}/${solicitacaoId}/${Date.now()}-${nomeSeguro}`;
+        if (erroUsuario || !usuario) {
+          throw new Error("Sua sessão expirou. Entre novamente para enviar a nota.");
+        }
 
-      const { error: erroUpload } = await db.storage
-        .from("notas-fiscais")
-        .upload(caminho, arquivo, {
-          cacheControl: "0",
-          contentType: "application/pdf",
-          upsert: false
+        const nomeSeguro = nomeArquivoSeguro(arquivo.name);
+        caminho = `${usuario.id}/${solicitacaoId}/${Date.now()}-${nomeSeguro}`;
+
+        mostrarStatusUploadNf(solicitacaoId, "Enviando o PDF para o armazenamento seguro...", "info");
+
+        const { error: erroUpload } = await db.storage
+          .from("notas-fiscais")
+          .upload(caminho, arquivo, {
+            cacheControl: "0",
+            contentType: "application/pdf",
+            upsert: false
+          });
+
+        if (erroUpload) {
+          throw new Error("Erro ao enviar o PDF: " + erroUpload.message);
+        }
+
+        pdfFoiEnviado = true;
+        mostrarStatusUploadNf(solicitacaoId, "PDF recebido. Liberando o download por 24 horas...", "info");
+
+        const { error: erroRegistro } = await db.rpc("registrar_nf_enviada", {
+          p_solicitacao_id: solicitacaoId,
+          p_storage_path: caminho,
+          p_nome_arquivo: arquivo.name
         });
 
-      if (erroUpload) {
-        mostrarMensagem("Erro ao enviar o PDF: " + erroUpload.message, "erro");
+        if (erroRegistro) {
+          throw new Error("O PDF foi enviado, mas não foi possível liberar a nota: " + erroRegistro.message);
+        }
+
+        mostrarStatusUploadNf(solicitacaoId, "Nota Fiscal enviada com sucesso.", "sucesso");
+        await carregarDados();
+        mostrarMensagem("Nota Fiscal enviada. O download ficará disponível durante 24 horas.", "sucesso");
+        efeitoSucesso();
+        trocarAba("nfPendente");
+      } catch (error) {
+        console.error("Falha no envio da Nota Fiscal:", error);
+
+        if (pdfFoiEnviado && caminho) {
+          const { error: erroRemocao } = await db.storage.from("notas-fiscais").remove([caminho]);
+          if (erroRemocao) console.error("Falha ao remover o PDF após erro no registro:", erroRemocao);
+        }
+
+        mostrarStatusUploadNf(
+          solicitacaoId,
+          error?.message || "Não foi possível enviar a Nota Fiscal. Tente novamente.",
+          "erro"
+        );
+      } finally {
+        definirUploadNfEmAndamento(solicitacaoId, false);
         mostrarLoading(false);
-        return;
       }
-
-      const { error: erroRegistro } = await db.rpc("registrar_nf_enviada", {
-        p_solicitacao_id: solicitacaoId,
-        p_storage_path: caminho,
-        p_nome_arquivo: arquivo.name
-      });
-
-      if (erroRegistro) {
-        await db.storage.from("notas-fiscais").remove([caminho]);
-        mostrarMensagem("O PDF foi enviado, mas não foi possível liberar a nota: " + erroRegistro.message, "erro");
-        mostrarLoading(false);
-        return;
-      }
-
-      await carregarDados();
-      mostrarMensagem("Nota Fiscal enviada. O download ficará disponível durante 24 horas.", "sucesso");
-      efeitoSucesso();
-      trocarAba("nfPendente");
-      mostrarLoading(false);
     }
 
     async function baixarNotaFiscal(solicitacaoId) {
