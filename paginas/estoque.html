@@ -637,6 +637,163 @@
       }
     }
 
+
+
+    /* =========================
+       FLUXO DE NOTA FISCAL
+    ========================= */
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(10px);
+      animation: modalFadeIn 0.24s ease both;
+    }
+
+    .modal-card {
+      width: min(980px, 100%);
+      max-height: calc(100vh - 36px);
+      overflow-y: auto;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 122, 0, 0.3);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+        #101010;
+      box-shadow: 0 34px 100px rgba(0, 0, 0, 0.75);
+      animation: modalCardIn 0.3s ease both;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes modalCardIn {
+      from { opacity: 0; transform: translateY(18px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-summary {
+      border: 1px solid rgba(255, 122, 0, 0.24);
+      background: rgba(255, 122, 0, 0.09);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .nf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+    }
+
+    .nf-card {
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.045);
+      padding: 16px;
+      transition: 0.22s ease;
+    }
+
+    .nf-card:hover {
+      border-color: rgba(255, 122, 0, 0.34);
+      background: rgba(255, 122, 0, 0.07);
+      transform: translateY(-2px);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .status-pendente {
+      color: #fde68a;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    .status-disponivel {
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .nf-detail {
+      display: grid;
+      grid-template-columns: minmax(110px, 0.72fr) minmax(0, 1.28fr);
+      gap: 7px 12px;
+      font-size: 13px;
+    }
+
+    .nf-detail dt {
+      color: #a1a1aa;
+      font-weight: 700;
+    }
+
+    .nf-detail dd {
+      color: #f4f4f5;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .upload-zone {
+      border: 1px dashed rgba(255, 122, 0, 0.36);
+      border-radius: 14px;
+      padding: 12px;
+      background: rgba(255, 122, 0, 0.055);
+    }
+
+    .countdown {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 900;
+      color: #86efac;
+    }
+
+    .tab-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 7px;
+      margin-left: 7px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.16);
+      font-size: 11px;
+      font-weight: 950;
+    }
+
+    .aba-ativa .tab-badge {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    input[type="file"] {
+      padding: 8px !important;
+    }
+
+    input[type="file"]::file-selector-button {
+      margin-right: 10px;
+      border: 0;
+      border-radius: 10px;
+      padding: 8px 12px;
+      background: rgba(255, 122, 0, 0.18);
+      color: #ffd3a3;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
     @media (max-width: 768px) {
       .tab-btn {
         width: 100%;
@@ -719,6 +876,11 @@
 
       <button onclick="trocarAba('edicao')" id="btnEdicao" class="tab-btn aba-inativa">
         Editar Estoque
+      </button>
+
+      <button onclick="trocarAba('nfPendente')" id="btnNfPendente" class="tab-btn aba-inativa">
+        NF pendente
+        <span id="badgeNfPendente" class="tab-badge">0</span>
       </button>
 
       <button onclick="trocarAba('historico')" id="btnHistorico" class="tab-btn aba-inativa">
@@ -942,6 +1104,26 @@
       </form>
     </section>
 
+
+
+    <section id="abaNfPendente" class="hidden card section-animate">
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-5">
+        <div>
+          <h2 class="font-black mb-1">Notas Fiscais Pendentes</h2>
+          <p class="text-zinc-400 text-sm">
+            Anexe o PDF da nota. Depois do envio, ele poderá ser baixado durante 24 horas.
+          </p>
+        </div>
+
+        <button type="button" onclick="carregarDados()" class="btn-dark px-4 py-3 font-bold">
+          Atualizar lista
+        </button>
+      </div>
+
+      <div id="resumoNfsPendentes" class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5"></div>
+      <div id="listaNfsPendentes" class="nf-grid"></div>
+    </section>
+
     <section id="abaHistorico" class="hidden card section-animate">
       <h2 class="font-black mb-1">Histórico de Coletas</h2>
       <p class="text-zinc-400 text-sm mb-4">
@@ -958,6 +1140,7 @@
               <th class="text-left">Produto</th>
               <th class="text-left">Código</th>
               <th class="text-center">Quantidade</th>
+              <th class="text-left">NF enviada em</th>
             </tr>
           </thead>
 
@@ -966,6 +1149,89 @@
       </div>
     </section>
   </div>
+
+  <div id="modalDadosFiscais" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="tituloModalFiscal">
+    <div class="modal-card">
+      <div class="p-5 md:p-7 border-b border-white/10 flex items-start justify-between gap-4">
+        <div>
+          <span class="status-pill status-pendente mb-3">Etapa obrigatória</span>
+          <h2 id="tituloModalFiscal" class="text-2xl md:text-3xl font-black">Dados para emissão da Nota Fiscal</h2>
+          <p class="text-zinc-400 text-sm mt-2">
+            A retirada só será concluída depois que estes dados forem cadastrados.
+          </p>
+        </div>
+
+        <button type="button" onclick="fecharModalDadosFiscais()" class="btn-dark px-4 py-2 font-black" aria-label="Fechar">
+          ✕
+        </button>
+      </div>
+
+      <form onsubmit="confirmarRetiradaComDadosFiscais(event)" class="p-5 md:p-7">
+        <div id="resumoColetaFiscal" class="modal-summary text-sm mb-5"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold mb-2 text-orange-200">Nome da empresa</label>
+            <input id="nfNomeEmpresa" required class="w-full rounded-2xl px-4 py-3" placeholder="Razão social ou nome comercial" />
+          </div>
+
+          <div>
+            <label class="block font-bold mb-2 text-orange-200">Nome do representante da empresa</label>
+            <input id="nfNomeRepresentante" required class="w-full rounded-2xl px-4 py-3" placeholder="Nome completo" />
+          </div>
+
+          <div>
+            <label class="block font-bold mb-2 text-orange-200">Tipo da pessoa</label>
+            <select id="nfTipoPessoa" required onchange="atualizarCampoDocumento()" class="w-full rounded-2xl px-4 py-3">
+              <option value="">Selecione PF ou PJ</option>
+              <option value="pf">Pessoa Física (PF)</option>
+              <option value="pj">Pessoa Jurídica (PJ)</option>
+            </select>
+          </div>
+
+          <div>
+            <label id="labelDocumentoFiscal" class="block font-bold mb-2 text-orange-200">CPF ou CNPJ</label>
+            <input id="nfDocumento" required inputmode="numeric" class="w-full rounded-2xl px-4 py-3" placeholder="Somente números" />
+          </div>
+
+          <div>
+            <label class="block font-bold mb-2 text-orange-200">IE</label>
+            <input id="nfIe" class="w-full rounded-2xl px-4 py-3" placeholder="Inscrição Estadual, quando aplicável" />
+          </div>
+
+          <div>
+            <label class="block font-bold mb-2 text-orange-200">CEP</label>
+            <input id="nfCep" required inputmode="numeric" maxlength="9" class="w-full rounded-2xl px-4 py-3" placeholder="00000-000" />
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block font-bold mb-2 text-orange-200">Endereço completo</label>
+            <input id="nfEnderecoCompleto" required class="w-full rounded-2xl px-4 py-3" placeholder="Rua, número, complemento, bairro, cidade e estado" />
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="block font-bold mb-2 text-orange-200">Produto que irá vender</label>
+            <input id="nfProdutoVenda" required class="w-full rounded-2xl px-4 py-3" placeholder="Produto destinado à empresa" />
+          </div>
+
+          <div class="md:col-span-2 rounded-2xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-100">
+            <strong>Produto baixado?</strong> Sim, automaticamente após a confirmação e a validação do estoque.
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-5">
+          <button type="button" onclick="fecharModalDadosFiscais()" class="btn-dark w-full px-5 py-4 font-bold">
+            Cancelar
+          </button>
+
+          <button id="btnConfirmarDadosFiscais" type="submit" class="btn-primary w-full px-5 py-4">
+            Confirmar retirada e criar NF pendente
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 
   <script>
     const SUPABASE_URL = "https://owgvzmeewzpmzgcdwbfq.supabase.co";
@@ -976,6 +1242,10 @@
     let produtos = [];
     let saidas = [];
     let responsaveis = [];
+    let solicitacoesNf = [];
+    let coletaPendente = null;
+    let intervaloContagemNf = null;
+    let recarregandoExpiracaoNf = false;
 
     document.getElementById("dataColeta").value = new Date().toISOString().split("T")[0];
 
@@ -1012,12 +1282,43 @@
             produto,
             variacao,
             codigo
+          ),
+          solicitacoes_nf (
+            status,
+            nf_enviada_em,
+            expira_em,
+            pdf_excluido_em
           )
         `)
         .order("criado_em", { ascending: false });
 
       if (erroSaidas) {
         mostrarMensagem("Erro ao carregar histórico: " + erroSaidas.message, "erro");
+        mostrarLoading(false);
+        return;
+      }
+
+      const { data: solicitacoesData, error: erroSolicitacoes } = await db
+        .from("solicitacoes_nf")
+        .select(`
+          *,
+          saidas_estoque (
+            loja_pronta,
+            responsavel,
+            quantidade,
+            data_coleta,
+            codigo,
+            produtos_estoque (
+              produto,
+              variacao,
+              codigo
+            )
+          )
+        `)
+        .order("criado_em", { ascending: false });
+
+      if (erroSolicitacoes) {
+        mostrarMensagem("Erro ao carregar notas fiscais pendentes: " + erroSolicitacoes.message, "erro");
         mostrarLoading(false);
         return;
       }
@@ -1035,18 +1336,20 @@
       produtos = produtosData || [];
       saidas = saidasData || [];
       responsaveis = responsaveisData || [];
+      solicitacoesNf = solicitacoesData || [];
 
       renderizarEstoque();
       renderizarSelectProdutos();
       renderizarSelectEditarProdutos();
       renderizarResponsaveis();
+      renderizarNfsPendentes();
       renderizarHistorico();
 
       mostrarLoading(false);
     }
 
     function trocarAba(aba) {
-      const abas = ["Estoque", "Saida", "Produto", "Edicao", "Historico"];
+      const abas = ["Estoque", "Saida", "Produto", "Edicao", "NfPendente", "Historico"];
 
       abas.forEach(nome => {
         document.getElementById("aba" + nome).classList.add("hidden");
@@ -1111,6 +1414,127 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+    }
+
+
+    function somenteDigitos(valor) {
+      return String(valor || "").replace(/\D/g, "");
+    }
+
+    function validarCPF(valor) {
+      const cpf = somenteDigitos(valor);
+
+      if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+      const calcularDigito = quantidade => {
+        let soma = 0;
+
+        for (let i = 0; i < quantidade; i++) {
+          soma += Number(cpf[i]) * (quantidade + 1 - i);
+        }
+
+        const resto = (soma * 10) % 11;
+        return resto === 10 ? 0 : resto;
+      };
+
+      return calcularDigito(9) === Number(cpf[9])
+        && calcularDigito(10) === Number(cpf[10]);
+    }
+
+    function validarCNPJ(valor) {
+      const cnpj = somenteDigitos(valor);
+
+      if (cnpj.length !== 14 || /^(\d)\1{13}$/.test(cnpj)) return false;
+
+      const calcularDigito = tamanho => {
+        const pesos = tamanho === 12
+          ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
+          : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+
+        const soma = pesos.reduce((total, peso, indice) => {
+          return total + Number(cnpj[indice]) * peso;
+        }, 0);
+
+        const resto = soma % 11;
+        return resto < 2 ? 0 : 11 - resto;
+      };
+
+      return calcularDigito(12) === Number(cnpj[12])
+        && calcularDigito(13) === Number(cnpj[13]);
+    }
+
+    function formatarDocumento(valor, tipoPessoa) {
+      const documento = somenteDigitos(valor);
+
+      if (tipoPessoa === "pf" && documento.length === 11) {
+        return documento.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+      }
+
+      if (tipoPessoa === "pj" && documento.length === 14) {
+        return documento.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+      }
+
+      return documento || "-";
+    }
+
+    function formatarCep(valor) {
+      const cep = somenteDigitos(valor);
+      return cep.length === 8 ? cep.replace(/(\d{5})(\d{3})/, "$1-$2") : cep;
+    }
+
+    function formatarDataHora(valor) {
+      if (!valor) return "-";
+
+      const data = new Date(valor);
+
+      if (Number.isNaN(data.getTime())) return "-";
+
+      return new Intl.DateTimeFormat("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(data);
+    }
+
+    function estaNfExpirada(item) {
+      if (item.status !== "disponivel" || !item.expira_em) return false;
+      return new Date(item.expira_em).getTime() <= Date.now();
+    }
+
+    function formatarTempoRestante(expiraEm) {
+      const diferenca = new Date(expiraEm).getTime() - Date.now();
+
+      if (diferenca <= 0) return "Expirado";
+
+      const totalSegundos = Math.floor(diferenca / 1000);
+      const horas = Math.floor(totalSegundos / 3600);
+      const minutos = Math.floor((totalSegundos % 3600) / 60);
+      const segundos = totalSegundos % 60;
+
+      return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}:${String(segundos).padStart(2, "0")}`;
+    }
+
+    function obterSolicitacaoDoHistorico(saida) {
+      const relacao = saida.solicitacoes_nf;
+
+      if (Array.isArray(relacao)) return relacao[0] || null;
+      return relacao || null;
+    }
+
+    function nomeArquivoSeguro(nome) {
+      const normalizado = String(nome || "nota-fiscal.pdf")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9._-]+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+
+      return normalizado.toLowerCase().endsWith(".pdf")
+        ? normalizado
+        : `${normalizado || "nota-fiscal"}.pdf`;
     }
 
     function obterProdutosFiltrados() {
@@ -1326,7 +1750,7 @@
       if (saidas.length === 0) {
         tabela.innerHTML = `
           <tr>
-            <td colspan="6" class="p-5 text-center text-zinc-400">
+            <td colspan="7" class="p-5 text-center text-zinc-400">
               Nenhuma coleta registrada.
             </td>
           </tr>
@@ -1335,6 +1759,11 @@
       }
 
       saidas.forEach(item => {
+        const solicitacao = obterSolicitacaoDoHistorico(item);
+        const dataEnvio = solicitacao?.nf_enviada_em
+          ? formatarDataHora(solicitacao.nf_enviada_em)
+          : "Pendente";
+
         tabela.innerHTML += `
           <tr>
             <td class="text-zinc-300">${formatarData(item.data_coleta)}</td>
@@ -1348,6 +1777,9 @@
             </td>
             <td class="text-center">
               <span class="stock-pill">${escaparHTML(item.quantidade)}</span>
+            </td>
+            <td class="text-zinc-300" title="${escaparHTML(dataEnvio)}">
+              ${escaparHTML(dataEnvio)}
             </td>
           </tr>
         `;
@@ -1364,7 +1796,7 @@
       renderizarEstoque();
     }
 
-    async function registrarSaida(event) {
+    function registrarSaida(event) {
       event.preventDefault();
 
       const lojaPronta = document.getElementById("lojaPronta").value.trim();
@@ -1372,39 +1804,428 @@
       const produtoId = document.getElementById("produtoSaida").value;
       const quantidade = Number(document.getElementById("quantidadeSaida").value);
       const dataColeta = document.getElementById("dataColeta").value;
+      const produtoSelecionado = produtos.find(item => String(item.id) === String(produtoId));
 
-      if (!lojaPronta || !responsavel || !produtoId || !quantidade || !dataColeta) {
+      if (!lojaPronta || !responsavel || !produtoId || !quantidade || quantidade <= 0 || !dataColeta) {
         mostrarMensagem("Preencha todos os campos da coleta.", "erro");
         return;
       }
 
-      mostrarLoading(true);
-
-      const { error } = await db.rpc("registrar_saida_estoque", {
-        p_loja_pronta: lojaPronta,
-        p_responsavel: responsavel,
-        p_produto_id: produtoId,
-        p_quantidade: quantidade,
-        p_data_coleta: dataColeta
-      });
-
-      if (error) {
-        mostrarMensagem("Erro ao registrar coleta: " + error.message, "erro");
-        mostrarLoading(false);
+      if (!produtoSelecionado) {
+        mostrarMensagem("O produto selecionado não foi encontrado.", "erro");
         return;
       }
 
+      if (quantidade > Number(produtoSelecionado.estoque_atual || 0)) {
+        mostrarMensagem("Quantidade maior que o estoque disponível.", "erro");
+        return;
+      }
+
+      abrirModalDadosFiscais({
+        lojaPronta,
+        responsavel,
+        produtoId,
+        quantidade,
+        dataColeta,
+        produto: produtoSelecionado
+      });
+    }
+
+    function abrirModalDadosFiscais(coleta) {
+      coletaPendente = coleta;
+
+      document.getElementById("nfNomeEmpresa").value = "";
+      document.getElementById("nfNomeRepresentante").value = "";
+      document.getElementById("nfTipoPessoa").value = "";
+      document.getElementById("nfDocumento").value = "";
+      document.getElementById("nfIe").value = "";
+      document.getElementById("nfEnderecoCompleto").value = "";
+      document.getElementById("nfCep").value = "";
+      document.getElementById("nfProdutoVenda").value = `${coleta.produto.produto} / ${coleta.produto.variacao}`;
+
+      atualizarCampoDocumento();
+
+      document.getElementById("resumoColetaFiscal").innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div><span class="text-zinc-400">Loja:</span> <strong>${escaparHTML(coleta.lojaPronta)}</strong></div>
+          <div><span class="text-zinc-400">Responsável:</span> <strong>${escaparHTML(coleta.responsavel)}</strong></div>
+          <div><span class="text-zinc-400">Produto:</span> <strong>${escaparHTML(coleta.produto.codigo)} - ${escaparHTML(coleta.produto.produto)} / ${escaparHTML(coleta.produto.variacao)}</strong></div>
+          <div><span class="text-zinc-400">Quantidade:</span> <strong>${escaparHTML(coleta.quantidade)}</strong></div>
+        </div>
+      `;
+
+      document.getElementById("modalDadosFiscais").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+      setTimeout(() => document.getElementById("nfNomeEmpresa").focus(), 80);
+    }
+
+    function fecharModalDadosFiscais() {
+      document.getElementById("modalDadosFiscais").classList.add("hidden");
+      document.body.style.overflow = "";
+      coletaPendente = null;
+    }
+
+    function atualizarCampoDocumento() {
+      const tipoPessoa = document.getElementById("nfTipoPessoa").value;
+      const input = document.getElementById("nfDocumento");
+      const label = document.getElementById("labelDocumentoFiscal");
+
+      if (tipoPessoa === "pf") {
+        label.textContent = "CPF";
+        input.placeholder = "000.000.000-00";
+        input.maxLength = 14;
+      } else if (tipoPessoa === "pj") {
+        label.textContent = "CNPJ";
+        input.placeholder = "00.000.000/0000-00";
+        input.maxLength = 18;
+      } else {
+        label.textContent = "CPF ou CNPJ";
+        input.placeholder = "Somente números";
+        input.removeAttribute("maxlength");
+      }
+    }
+
+    function limparFormularioSaida() {
       document.getElementById("lojaPronta").value = "";
       document.getElementById("responsavel").value = "";
       document.getElementById("produtoSaida").value = "";
       document.getElementById("quantidadeSaida").value = "";
       document.getElementById("dataColeta").value = new Date().toISOString().split("T")[0];
+    }
+
+    async function confirmarRetiradaComDadosFiscais(event) {
+      event.preventDefault();
+
+      if (!coletaPendente) {
+        mostrarMensagem("A retirada pendente não foi encontrada. Preencha novamente.", "erro");
+        fecharModalDadosFiscais();
+        return;
+      }
+
+      const nomeEmpresa = document.getElementById("nfNomeEmpresa").value.trim();
+      const nomeRepresentante = document.getElementById("nfNomeRepresentante").value.trim();
+      const tipoPessoa = document.getElementById("nfTipoPessoa").value;
+      const documento = somenteDigitos(document.getElementById("nfDocumento").value);
+      const ie = document.getElementById("nfIe").value.trim();
+      const enderecoCompleto = document.getElementById("nfEnderecoCompleto").value.trim();
+      const cep = somenteDigitos(document.getElementById("nfCep").value);
+      const produtoVenda = document.getElementById("nfProdutoVenda").value.trim();
+
+      if (!nomeEmpresa || !nomeRepresentante || !tipoPessoa || !documento || !enderecoCompleto || !cep || !produtoVenda) {
+        mostrarMensagem("Preencha todos os dados fiscais obrigatórios.", "erro");
+        return;
+      }
+
+      if (tipoPessoa === "pf" && !validarCPF(documento)) {
+        mostrarMensagem("Informe um CPF válido.", "erro");
+        return;
+      }
+
+      if (tipoPessoa === "pj" && !validarCNPJ(documento)) {
+        mostrarMensagem("Informe um CNPJ válido.", "erro");
+        return;
+      }
+
+      if (cep.length !== 8) {
+        mostrarMensagem("Informe um CEP válido com 8 números.", "erro");
+        return;
+      }
+
+      const coleta = coletaPendente;
+      const botao = document.getElementById("btnConfirmarDadosFiscais");
+
+      mostrarLoading(true);
+      botao.disabled = true;
+      botao.textContent = "Registrando retirada...";
+
+      const { error } = await db.rpc("registrar_saida_com_nf_pendente", {
+        p_loja_pronta: coleta.lojaPronta,
+        p_responsavel: coleta.responsavel,
+        p_produto_id: coleta.produtoId,
+        p_quantidade: coleta.quantidade,
+        p_data_coleta: coleta.dataColeta,
+        p_nome_empresa: nomeEmpresa,
+        p_nome_representante: nomeRepresentante,
+        p_tipo_pessoa: tipoPessoa,
+        p_documento: documento,
+        p_ie: ie,
+        p_endereco_completo: enderecoCompleto,
+        p_cep: cep,
+        p_produto_venda: produtoVenda
+      });
+
+      botao.disabled = false;
+      botao.textContent = "Confirmar retirada e criar NF pendente";
+
+      if (error) {
+        mostrarMensagem("Erro ao registrar retirada: " + error.message, "erro");
+        mostrarLoading(false);
+        return;
+      }
+
+      document.getElementById("modalDadosFiscais").classList.add("hidden");
+      document.body.style.overflow = "";
+      coletaPendente = null;
+      limparFormularioSaida();
 
       await carregarDados();
 
-      mostrarMensagem("Coleta registrada com sucesso. Estoque atualizado.", "sucesso");
+      mostrarMensagem("Retirada registrada, estoque baixado e NF adicionada às pendências.", "sucesso");
       efeitoSucesso();
-      trocarAba("estoque");
+      trocarAba("nfPendente");
+      mostrarLoading(false);
+    }
+
+    function obterSolicitacoesAtivas() {
+      return solicitacoesNf.filter(item => {
+        if (item.status === "pendente") return true;
+        return item.status === "disponivel" && !estaNfExpirada(item);
+      });
+    }
+
+    function renderizarNfsPendentes() {
+      const lista = document.getElementById("listaNfsPendentes");
+      const resumo = document.getElementById("resumoNfsPendentes");
+      const badge = document.getElementById("badgeNfPendente");
+      const ativas = obterSolicitacoesAtivas();
+      const pendentes = ativas.filter(item => item.status === "pendente").length;
+      const disponiveis = ativas.filter(item => item.status === "disponivel").length;
+
+      badge.textContent = String(ativas.length);
+
+      resumo.innerHTML = `
+        <div class="rounded-2xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3">
+          <div class="text-2xl font-black text-yellow-200">${pendentes}</div>
+          <div class="text-xs uppercase tracking-wider text-yellow-100/70">Aguardando PDF</div>
+        </div>
+        <div class="rounded-2xl border border-green-500/20 bg-green-500/10 px-4 py-3">
+          <div class="text-2xl font-black text-green-200">${disponiveis}</div>
+          <div class="text-xs uppercase tracking-wider text-green-100/70">Disponíveis para baixar</div>
+        </div>
+        <div class="rounded-2xl border border-orange-500/20 bg-orange-500/10 px-4 py-3">
+          <div class="text-2xl font-black text-orange-200">24h</div>
+          <div class="text-xs uppercase tracking-wider text-orange-100/70">Prazo após o upload</div>
+        </div>
+      `;
+
+      if (ativas.length === 0) {
+        lista.innerHTML = `
+          <div class="md:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-zinc-400">
+            Nenhuma nota fiscal pendente ou disponível no momento.
+          </div>
+        `;
+        iniciarContagemNfs();
+        return;
+      }
+
+      lista.innerHTML = ativas.map(item => {
+        const saida = item.saidas_estoque || {};
+        const produto = saida.produtos_estoque || {};
+        const tipoPessoa = String(item.tipo_pessoa || "").toUpperCase();
+        const statusDisponivel = item.status === "disponivel";
+        const statusClasse = statusDisponivel ? "status-disponivel" : "status-pendente";
+        const statusTexto = statusDisponivel ? "NF disponível" : "Aguardando PDF";
+
+        const acao = statusDisponivel
+          ? `
+            <div class="rounded-2xl border border-green-500/20 bg-green-500/10 p-3 mt-4">
+              <div class="text-xs text-green-100/70 mb-1">Tempo restante para download</div>
+              <div class="countdown" data-countdown-nf="${escaparHTML(item.id)}" data-expira-em="${escaparHTML(item.expira_em)}">
+                ${formatarTempoRestante(item.expira_em)}
+              </div>
+              <button type="button" onclick="baixarNotaFiscal('${escaparHTML(item.id)}')" class="btn-primary w-full px-4 py-3 mt-3">
+                Baixar Nota Fiscal
+              </button>
+            </div>
+          `
+          : `
+            <div class="upload-zone mt-4">
+              <label class="block font-bold text-orange-100 mb-2">Adicionar PDF da Nota Fiscal</label>
+              <input id="arquivoNf-${escaparHTML(item.id)}" type="file" accept="application/pdf,.pdf" class="w-full rounded-xl" />
+              <p class="text-xs text-zinc-500 mt-2">Somente PDF, com no máximo 10 MB.</p>
+              <button type="button" onclick="uploadNotaFiscal('${escaparHTML(item.id)}')" class="btn-primary w-full px-4 py-3 mt-3">
+                Enviar PDF e liberar por 24 horas
+              </button>
+            </div>
+          `;
+
+        return `
+          <article class="nf-card">
+            <div class="flex items-start justify-between gap-3 mb-4">
+              <div class="min-w-0">
+                <h3 class="font-black text-lg truncate" title="${escaparHTML(item.nome_empresa)}">${escaparHTML(item.nome_empresa)}</h3>
+                <p class="text-xs text-zinc-500 mt-1">Criado em ${formatarDataHora(item.criado_em)}</p>
+              </div>
+              <span class="status-pill ${statusClasse}">${statusTexto}</span>
+            </div>
+
+            <dl class="nf-detail">
+              <dt>Representante</dt><dd>${escaparHTML(item.nome_representante)}</dd>
+              <dt>Tipo</dt><dd>${escaparHTML(tipoPessoa)}</dd>
+              <dt>CPF/CNPJ</dt><dd>${escaparHTML(formatarDocumento(item.documento, item.tipo_pessoa))}</dd>
+              <dt>IE</dt><dd>${escaparHTML(item.ie || "Não informada")}</dd>
+              <dt>Endereço</dt><dd>${escaparHTML(item.endereco_completo)}</dd>
+              <dt>CEP</dt><dd>${escaparHTML(formatarCep(item.cep))}</dd>
+              <dt>Loja pronta</dt><dd>${escaparHTML(saida.loja_pronta || "-")}</dd>
+              <dt>Responsável</dt><dd>${escaparHTML(saida.responsavel || "-")}</dd>
+              <dt>Produto retirado</dt><dd>${escaparHTML(produto.produto || "-")} / ${escaparHTML(produto.variacao || "-")}</dd>
+              <dt>Código</dt><dd>${escaparHTML(saida.codigo || produto.codigo || "-")}</dd>
+              <dt>Quantidade</dt><dd>${escaparHTML(saida.quantidade || "-")}</dd>
+              <dt>Produto que venderá</dt><dd>${escaparHTML(item.produto_venda)}</dd>
+              <dt>Produto baixado?</dt><dd class="text-green-300 font-black">${item.produto_baixado ? "Sim" : "Não"}</dd>
+              ${statusDisponivel ? `<dt>NF enviada em</dt><dd>${formatarDataHora(item.nf_enviada_em)}</dd>` : ""}
+            </dl>
+
+            ${acao}
+          </article>
+        `;
+      }).join("");
+
+      iniciarContagemNfs();
+    }
+
+    function iniciarContagemNfs() {
+      atualizarContadoresNf();
+
+      if (intervaloContagemNf) return;
+
+      intervaloContagemNf = setInterval(atualizarContadoresNf, 1000);
+    }
+
+    async function atualizarContadoresNf() {
+      const contadores = document.querySelectorAll("[data-countdown-nf]");
+      let encontrouExpirada = false;
+
+      contadores.forEach(elemento => {
+        const expiraEm = elemento.dataset.expiraEm;
+        const texto = formatarTempoRestante(expiraEm);
+        elemento.textContent = texto;
+
+        if (texto === "Expirado") encontrouExpirada = true;
+      });
+
+      if (encontrouExpirada && !recarregandoExpiracaoNf) {
+        recarregandoExpiracaoNf = true;
+        await carregarDados();
+        recarregandoExpiracaoNf = false;
+      }
+    }
+
+    async function uploadNotaFiscal(solicitacaoId) {
+      const solicitacao = solicitacoesNf.find(item => String(item.id) === String(solicitacaoId));
+      const input = document.getElementById(`arquivoNf-${solicitacaoId}`);
+      const arquivo = input?.files?.[0];
+
+      if (!solicitacao || solicitacao.status !== "pendente") {
+        mostrarMensagem("Esta solicitação não está mais pendente.", "erro");
+        await carregarDados();
+        return;
+      }
+
+      if (!arquivo) {
+        mostrarMensagem("Selecione o arquivo PDF da nota fiscal.", "erro");
+        return;
+      }
+
+      const nomePdf = arquivo.name.toLowerCase().endsWith(".pdf");
+      const tipoPdf = arquivo.type === "application/pdf";
+
+      if (!nomePdf || !tipoPdf) {
+        mostrarMensagem("O arquivo precisa ser um PDF válido.", "erro");
+        return;
+      }
+
+      if (arquivo.size > 10 * 1024 * 1024) {
+        mostrarMensagem("O PDF ultrapassa o limite de 10 MB.", "erro");
+        return;
+      }
+
+      mostrarLoading(true);
+
+      const { data: usuarioData, error: erroUsuario } = await db.auth.getUser();
+      const usuario = usuarioData?.user;
+
+      if (erroUsuario || !usuario) {
+        mostrarMensagem("Sua sessão expirou. Entre novamente para enviar a nota.", "erro");
+        mostrarLoading(false);
+        return;
+      }
+
+      const nomeSeguro = nomeArquivoSeguro(arquivo.name);
+      const caminho = `${usuario.id}/${solicitacaoId}/${Date.now()}-${nomeSeguro}`;
+
+      const { error: erroUpload } = await db.storage
+        .from("notas-fiscais")
+        .upload(caminho, arquivo, {
+          cacheControl: "0",
+          contentType: "application/pdf",
+          upsert: false
+        });
+
+      if (erroUpload) {
+        mostrarMensagem("Erro ao enviar o PDF: " + erroUpload.message, "erro");
+        mostrarLoading(false);
+        return;
+      }
+
+      const { error: erroRegistro } = await db.rpc("registrar_nf_enviada", {
+        p_solicitacao_id: solicitacaoId,
+        p_storage_path: caminho,
+        p_nome_arquivo: arquivo.name
+      });
+
+      if (erroRegistro) {
+        await db.storage.from("notas-fiscais").remove([caminho]);
+        mostrarMensagem("O PDF foi enviado, mas não foi possível liberar a nota: " + erroRegistro.message, "erro");
+        mostrarLoading(false);
+        return;
+      }
+
+      await carregarDados();
+      mostrarMensagem("Nota Fiscal enviada. O download ficará disponível durante 24 horas.", "sucesso");
+      efeitoSucesso();
+      trocarAba("nfPendente");
+      mostrarLoading(false);
+    }
+
+    async function baixarNotaFiscal(solicitacaoId) {
+      const solicitacao = solicitacoesNf.find(item => String(item.id) === String(solicitacaoId));
+
+      if (!solicitacao || solicitacao.status !== "disponivel" || !solicitacao.storage_path) {
+        mostrarMensagem("A Nota Fiscal não está disponível para download.", "erro");
+        await carregarDados();
+        return;
+      }
+
+      const segundosRestantes = Math.floor((new Date(solicitacao.expira_em).getTime() - Date.now()) / 1000);
+
+      if (segundosRestantes <= 0) {
+        mostrarMensagem("O prazo de 24 horas desta Nota Fiscal terminou.", "erro");
+        await carregarDados();
+        return;
+      }
+
+      mostrarLoading(true);
+
+      const validadeLink = Math.max(1, Math.min(60, segundosRestantes));
+      const { data, error } = await db.storage
+        .from("notas-fiscais")
+        .createSignedUrl(solicitacao.storage_path, validadeLink, {
+          download: solicitacao.nome_arquivo || "nota-fiscal.pdf"
+        });
+
+      if (error || !data?.signedUrl) {
+        mostrarMensagem("Erro ao gerar o download da Nota Fiscal: " + (error?.message || "URL indisponível"), "erro");
+        mostrarLoading(false);
+        return;
+      }
+
+      const link = document.createElement("a");
+      link.href = data.signedUrl;
+      link.rel = "noopener";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
 
       mostrarLoading(false);
     }
@@ -1608,6 +2429,14 @@
       flashSucesso();
       dispararConfete();
     }
+
+
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !document.getElementById("modalDadosFiscais").classList.contains("hidden")) {
+        fecharModalDadosFiscais();
+      }
+    });
 
     criarParticulas();
     ativarRippleBotoes();
