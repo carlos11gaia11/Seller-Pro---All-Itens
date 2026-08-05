@@ -1030,7 +1030,7 @@
           </div>
 
           <div class="md:col-span-2">
-            <button class="btn-primary w-full px-5 py-4">
+            <button id="btnRegistrarColeta" type="submit" class="btn-primary w-full px-5 py-4">
               Registrar coleta e descontar estoque
             </button>
           </div>
@@ -1073,7 +1073,7 @@
         </div>
 
         <div class="md:col-span-2">
-          <button class="btn-primary w-full px-5 py-4">
+          <button id="btnAdicionarProduto" type="submit" class="btn-primary w-full px-5 py-4">
             Adicionar produto ao estoque
           </button>
         </div>
@@ -1123,7 +1123,7 @@
             Limpar edição
           </button>
 
-          <button class="btn-primary w-full px-5 py-4">
+          <button id="btnSalvarEdicao" type="submit" class="btn-primary w-full px-5 py-4">
             Salvar alterações no estoque
           </button>
         </div>
@@ -1192,7 +1192,8 @@
         </button>
       </div>
 
-      <form onsubmit="confirmarRetiradaComDadosFiscais(event)" class="p-5 md:p-7">
+      <form id="formDadosFiscais" onsubmit="confirmarRetiradaComDadosFiscais(event)" class="p-5 md:p-7">
+        <div id="mensagemModalFiscal" class="hidden mb-4 rounded-2xl px-4 py-3 border message-box text-sm" role="alert" aria-live="assertive"></div>
         <div id="resumoColetaFiscal" class="modal-summary text-sm mb-5"></div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1289,89 +1290,104 @@
       limparMensagem();
       mostrarLoading(true);
 
-      const { data: produtosData, error: erroProdutos } = await db
-        .from("produtos_estoque")
-        .select("*")
-        .order("produto", { ascending: true });
+      try {
+        const { data: produtosData, error: erroProdutos } = await db
+          .from("produtos_estoque")
+          .select("*")
+          .order("produto", { ascending: true });
 
-      if (erroProdutos) {
-        mostrarMensagem("Erro ao carregar produtos: " + erroProdutos.message, "erro");
+        if (erroProdutos) {
+          throw new Error("Erro ao carregar produtos: " + erroProdutos.message);
+        }
+
+        produtos = produtosData || [];
+        renderizarEstoque();
+        renderizarSelectProdutos();
+        renderizarSelectEditarProdutos();
+
+        const [resultadoSaidas, resultadoSolicitacoes, resultadoResponsaveis] = await Promise.all([
+          db
+            .from("saidas_estoque")
+            .select(`
+              *,
+              produtos_estoque (
+                produto,
+                variacao,
+                codigo
+              ),
+              solicitacoes_nf (
+                status,
+                nf_enviada_em,
+                expira_em,
+                pdf_excluido_em
+              )
+            `)
+            .order("criado_em", { ascending: false }),
+          db
+            .from("solicitacoes_nf")
+            .select(`
+              *,
+              saidas_estoque (
+                loja_pronta,
+                responsavel,
+                quantidade,
+                data_coleta,
+                codigo,
+                produtos_estoque (
+                  produto,
+                  variacao,
+                  codigo
+                )
+              )
+            `)
+            .order("criado_em", { ascending: false }),
+          db
+            .from("suportes_sellerpro")
+            .select("*")
+        ]);
+
+        const falhasParciais = [];
+
+        if (resultadoSaidas.error) {
+          falhasParciais.push("histórico: " + resultadoSaidas.error.message);
+          saidas = [];
+        } else {
+          saidas = resultadoSaidas.data || [];
+        }
+
+        if (resultadoSolicitacoes.error) {
+          falhasParciais.push("notas fiscais: " + resultadoSolicitacoes.error.message);
+          solicitacoesNf = [];
+        } else {
+          solicitacoesNf = resultadoSolicitacoes.data || [];
+        }
+
+        if (resultadoResponsaveis.error) {
+          falhasParciais.push("responsáveis: " + resultadoResponsaveis.error.message);
+          responsaveis = [];
+        } else {
+          responsaveis = resultadoResponsaveis.data || [];
+        }
+
+        renderizarResponsaveis();
+        renderizarNfsPendentes();
+        renderizarHistorico();
+
+        if (falhasParciais.length > 0) {
+          mostrarMensagem(
+            "O painel do estoque foi carregado, mas houve falha em: " + falhasParciais.join(" | "),
+            "erro"
+          );
+        }
+
+        return falhasParciais.length === 0;
+      } catch (error) {
+        console.error("Falha ao carregar o estoque:", error);
+        mostrarMensagem(error?.message || "Não foi possível carregar os dados do estoque.", "erro");
+        return false;
+      } finally {
         mostrarLoading(false);
-        return;
       }
-
-      const { data: saidasData, error: erroSaidas } = await db
-        .from("saidas_estoque")
-        .select(`
-          *,
-          produtos_estoque (
-            produto,
-            variacao,
-            codigo
-          ),
-          solicitacoes_nf (
-            status,
-            nf_enviada_em,
-            expira_em,
-            pdf_excluido_em
-          )
-        `)
-        .order("criado_em", { ascending: false });
-
-      if (erroSaidas) {
-        mostrarMensagem("Erro ao carregar histórico: " + erroSaidas.message, "erro");
-        mostrarLoading(false);
-        return;
-      }
-
-      const { data: solicitacoesData, error: erroSolicitacoes } = await db
-        .from("solicitacoes_nf")
-        .select(`
-          *,
-          saidas_estoque (
-            loja_pronta,
-            responsavel,
-            quantidade,
-            data_coleta,
-            codigo,
-            produtos_estoque (
-              produto,
-              variacao,
-              codigo
-            )
-          )
-        `)
-        .order("criado_em", { ascending: false });
-
-      if (erroSolicitacoes) {
-        mostrarMensagem("Erro ao carregar notas fiscais pendentes: " + erroSolicitacoes.message, "erro");
-        mostrarLoading(false);
-        return;
-      }
-
-      const { data: responsaveisData, error: erroResponsaveis } = await db
-        .from("suportes_sellerpro")
-        .select("*");
-
-      if (erroResponsaveis) {
-        mostrarMensagem("Erro ao carregar responsáveis: " + erroResponsaveis.message, "erro");
-        mostrarLoading(false);
-        return;
-      }
-
-      produtos = produtosData || [];
-      saidas = saidasData || [];
-      responsaveis = responsaveisData || [];
-      solicitacoesNf = solicitacoesData || [];
-
-      renderizarEstoque();
-      renderizarSelectProdutos();
-      renderizarSelectEditarProdutos();
-      renderizarResponsaveis();
-      renderizarNfsPendentes();
-      renderizarHistorico();
-
-      mostrarLoading(false);
     }
 
     function trocarAba(aba) {
@@ -1725,47 +1741,60 @@
 
     async function editarProdutoEstoque(event) {
       event.preventDefault();
+      limparMensagem();
 
       const id = document.getElementById("produtoEdicaoId").value;
       const produto = document.getElementById("editProduto").value.trim();
       const variacao = document.getElementById("editVariacao").value.trim();
       const codigo = document.getElementById("editCodigo").value.trim().toUpperCase();
-      const estoque = Number(document.getElementById("editEstoque").value);
+      const campoEstoque = document.getElementById("editEstoque").value;
+      const estoque = Number(campoEstoque);
+      const botao = document.getElementById("btnSalvarEdicao");
 
       if (!id) {
         mostrarMensagem("Selecione um produto para editar.", "erro");
         return;
       }
 
-      if (!produto || !variacao || !codigo || Number.isNaN(estoque) || estoque < 0) {
+      if (!produto || !variacao || !codigo || campoEstoque === "" || Number.isNaN(estoque) || estoque < 0) {
         mostrarMensagem("Preencha produto, variação, código e quantidade corretamente.", "erro");
         return;
       }
 
       mostrarLoading(true);
+      botao.disabled = true;
+      botao.textContent = "Salvando alterações...";
 
-      const { error } = await db.rpc("editar_produto_estoque", {
-        p_id: id,
-        p_produto: produto,
-        p_variacao: variacao,
-        p_codigo: codigo,
-        p_estoque: estoque
-      });
+      try {
+        const { error } = await db.rpc("editar_produto_estoque", {
+          p_id: id,
+          p_produto: produto,
+          p_variacao: variacao,
+          p_codigo: codigo,
+          p_estoque: estoque
+        });
 
-      if (error) {
-        mostrarMensagem("Erro ao editar produto: " + error.message, "erro");
+        if (error) {
+          throw new Error(error.message || "Falha desconhecida no Supabase.");
+        }
+
+        await carregarDados();
+        limparFormularioEdicao();
+
+        mostrarMensagem("Produto atualizado com sucesso.", "sucesso");
+        efeitoSucesso();
+        trocarAba("estoque");
+      } catch (error) {
+        console.error("Falha ao editar produto:", error);
+        mostrarMensagem(
+          "Erro ao editar produto: " + (error?.message || "erro inesperado"),
+          "erro"
+        );
+      } finally {
+        botao.disabled = false;
+        botao.textContent = "Salvar alterações no estoque";
         mostrarLoading(false);
-        return;
       }
-
-      await carregarDados();
-      limparFormularioEdicao();
-
-      mostrarMensagem("Produto atualizado com sucesso.", "sucesso");
-      efeitoSucesso();
-      trocarAba("estoque");
-
-      mostrarLoading(false);
     }
 
     function renderizarHistorico() {
@@ -1859,6 +1888,7 @@
 
     function abrirModalDadosFiscais(coleta) {
       coletaPendente = coleta;
+      limparMensagemModalFiscal();
 
       document.getElementById("nfNomeEmpresa").value = "";
       document.getElementById("nfNomeRepresentante").value = "";
@@ -1888,6 +1918,7 @@
     function fecharModalDadosFiscais() {
       document.getElementById("modalDadosFiscais").classList.add("hidden");
       document.body.style.overflow = "";
+      limparMensagemModalFiscal();
       coletaPendente = null;
     }
 
@@ -1921,10 +1952,12 @@
 
     async function confirmarRetiradaComDadosFiscais(event) {
       event.preventDefault();
+      limparMensagemModalFiscal();
+
+      const botao = document.getElementById("btnConfirmarDadosFiscais");
 
       if (!coletaPendente) {
-        mostrarMensagem("A retirada pendente não foi encontrada. Preencha novamente.", "erro");
-        fecharModalDadosFiscais();
+        mostrarMensagemModalFiscal("A retirada pendente não foi encontrada. Feche o formulário e preencha a coleta novamente.", "erro");
         return;
       }
 
@@ -1938,68 +1971,76 @@
       const produtoVenda = document.getElementById("nfProdutoVenda").value.trim();
 
       if (!nomeEmpresa || !nomeRepresentante || !tipoPessoa || !documento || !enderecoCompleto || !cep || !produtoVenda) {
-        mostrarMensagem("Preencha todos os dados fiscais obrigatórios.", "erro");
+        mostrarMensagemModalFiscal("Preencha todos os dados fiscais obrigatórios.", "erro");
         return;
       }
 
       if (tipoPessoa === "pf" && !validarCPF(documento)) {
-        mostrarMensagem("Informe um CPF válido.", "erro");
+        mostrarMensagemModalFiscal("Informe um CPF válido.", "erro");
+        document.getElementById("nfDocumento").focus();
         return;
       }
 
       if (tipoPessoa === "pj" && !validarCNPJ(documento)) {
-        mostrarMensagem("Informe um CNPJ válido.", "erro");
+        mostrarMensagemModalFiscal("Informe um CNPJ válido.", "erro");
+        document.getElementById("nfDocumento").focus();
         return;
       }
 
       if (cep.length !== 8) {
-        mostrarMensagem("Informe um CEP válido com 8 números.", "erro");
+        mostrarMensagemModalFiscal("Informe um CEP válido com 8 números.", "erro");
+        document.getElementById("nfCep").focus();
         return;
       }
 
       const coleta = coletaPendente;
-      const botao = document.getElementById("btnConfirmarDadosFiscais");
 
       mostrarLoading(true);
       botao.disabled = true;
       botao.textContent = "Registrando retirada...";
 
-      const { error } = await db.rpc("registrar_saida_com_nf_pendente", {
-        p_loja_pronta: coleta.lojaPronta,
-        p_responsavel: coleta.responsavel,
-        p_produto_id: coleta.produtoId,
-        p_quantidade: coleta.quantidade,
-        p_data_coleta: coleta.dataColeta,
-        p_nome_empresa: nomeEmpresa,
-        p_nome_representante: nomeRepresentante,
-        p_tipo_pessoa: tipoPessoa,
-        p_documento: documento,
-        p_ie: ie,
-        p_endereco_completo: enderecoCompleto,
-        p_cep: cep,
-        p_produto_venda: produtoVenda
-      });
+      try {
+        const { error } = await db.rpc("registrar_saida_com_nf_pendente", {
+          p_loja_pronta: coleta.lojaPronta,
+          p_responsavel: coleta.responsavel,
+          p_produto_id: coleta.produtoId,
+          p_quantidade: coleta.quantidade,
+          p_data_coleta: coleta.dataColeta,
+          p_nome_empresa: nomeEmpresa,
+          p_nome_representante: nomeRepresentante,
+          p_tipo_pessoa: tipoPessoa,
+          p_documento: documento,
+          p_ie: ie || null,
+          p_endereco_completo: enderecoCompleto,
+          p_cep: cep,
+          p_produto_venda: produtoVenda
+        });
 
-      botao.disabled = false;
-      botao.textContent = "Confirmar retirada e criar NF pendente";
+        if (error) {
+          throw new Error(error.message || "Falha desconhecida no Supabase.");
+        }
 
-      if (error) {
-        mostrarMensagem("Erro ao registrar retirada: " + error.message, "erro");
+        document.getElementById("modalDadosFiscais").classList.add("hidden");
+        document.body.style.overflow = "";
+        coletaPendente = null;
+        limparFormularioSaida();
+
+        await carregarDados();
+
+        mostrarMensagem("Retirada registrada, estoque baixado e NF adicionada às pendências.", "sucesso");
+        efeitoSucesso();
+        trocarAba("nfPendente");
+      } catch (error) {
+        console.error("Falha ao registrar retirada:", error);
+        mostrarMensagemModalFiscal(
+          "Não foi possível registrar a retirada: " + (error?.message || "erro inesperado"),
+          "erro"
+        );
+      } finally {
+        botao.disabled = false;
+        botao.textContent = "Confirmar retirada e criar NF pendente";
         mostrarLoading(false);
-        return;
       }
-
-      document.getElementById("modalDadosFiscais").classList.add("hidden");
-      document.body.style.overflow = "";
-      coletaPendente = null;
-      limparFormularioSaida();
-
-      await carregarDados();
-
-      mostrarMensagem("Retirada registrada, estoque baixado e NF adicionada às pendências.", "sucesso");
-      efeitoSucesso();
-      trocarAba("nfPendente");
-      mostrarLoading(false);
     }
 
     function obterSolicitacoesAtivas() {
@@ -2133,8 +2174,12 @@
 
       if (encontrouExpirada && !recarregandoExpiracaoNf) {
         recarregandoExpiracaoNf = true;
-        await carregarDados();
-        recarregandoExpiracaoNf = false;
+
+        try {
+          await carregarDados();
+        } finally {
+          recarregandoExpiracaoNf = false;
+        }
       }
     }
 
@@ -2303,69 +2348,88 @@
 
       mostrarLoading(true);
 
-      const validadeLink = Math.max(1, Math.min(60, segundosRestantes));
-      const { data, error } = await db.storage
-        .from("notas-fiscais")
-        .createSignedUrl(solicitacao.storage_path, validadeLink, {
-          download: solicitacao.nome_arquivo || "nota-fiscal.pdf"
-        });
+      try {
+        const validadeLink = Math.max(1, Math.min(60, segundosRestantes));
+        const { data, error } = await db.storage
+          .from("notas-fiscais")
+          .createSignedUrl(solicitacao.storage_path, validadeLink, {
+            download: solicitacao.nome_arquivo || "nota-fiscal.pdf"
+          });
 
-      if (error || !data?.signedUrl) {
-        mostrarMensagem("Erro ao gerar o download da Nota Fiscal: " + (error?.message || "URL indisponível"), "erro");
+        if (error || !data?.signedUrl) {
+          throw new Error(error?.message || "URL indisponível");
+        }
+
+        const link = document.createElement("a");
+        link.href = data.signedUrl;
+        link.rel = "noopener";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (error) {
+        console.error("Falha ao baixar Nota Fiscal:", error);
+        mostrarMensagem(
+          "Erro ao gerar o download da Nota Fiscal: " + (error?.message || "erro inesperado"),
+          "erro"
+        );
+      } finally {
         mostrarLoading(false);
-        return;
       }
-
-      const link = document.createElement("a");
-      link.href = data.signedUrl;
-      link.rel = "noopener";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      mostrarLoading(false);
     }
 
     async function adicionarProduto(event) {
       event.preventDefault();
+      limparMensagem();
 
       const produto = document.getElementById("novoProduto").value.trim();
       const variacao = document.getElementById("novaVariacao").value.trim();
       const codigo = document.getElementById("novoCodigo").value.trim().toUpperCase();
-      const estoque = Number(document.getElementById("novoEstoque").value);
+      const campoEstoque = document.getElementById("novoEstoque").value;
+      const estoque = Number(campoEstoque);
+      const botao = document.getElementById("btnAdicionarProduto");
 
-      if (!produto || !variacao || !codigo || estoque < 0) {
+      if (!produto || !variacao || !codigo || campoEstoque === "" || Number.isNaN(estoque) || estoque < 0) {
         mostrarMensagem("Preencha todos os campos do novo produto corretamente.", "erro");
         return;
       }
 
       mostrarLoading(true);
+      botao.disabled = true;
+      botao.textContent = "Adicionando produto...";
 
-      const { error } = await db.rpc("adicionar_produto_estoque", {
-        p_produto: produto,
-        p_variacao: variacao,
-        p_codigo: codigo,
-        p_estoque: estoque
-      });
+      try {
+        const { error } = await db.rpc("adicionar_produto_estoque", {
+          p_produto: produto,
+          p_variacao: variacao,
+          p_codigo: codigo,
+          p_estoque: estoque
+        });
 
-      if (error) {
-        mostrarMensagem("Erro ao adicionar produto: " + error.message, "erro");
+        if (error) {
+          throw new Error(error.message || "Falha desconhecida no Supabase.");
+        }
+
+        document.getElementById("novoProduto").value = "";
+        document.getElementById("novaVariacao").value = "";
+        document.getElementById("novoCodigo").value = "";
+        document.getElementById("novoEstoque").value = "";
+
+        await carregarDados();
+
+        mostrarMensagem("Produto adicionado com sucesso.", "sucesso");
+        efeitoSucesso();
+        trocarAba("estoque");
+      } catch (error) {
+        console.error("Falha ao adicionar produto:", error);
+        mostrarMensagem(
+          "Erro ao adicionar produto: " + (error?.message || "erro inesperado"),
+          "erro"
+        );
+      } finally {
+        botao.disabled = false;
+        botao.textContent = "Adicionar produto ao estoque";
         mostrarLoading(false);
-        return;
       }
-
-      document.getElementById("novoProduto").value = "";
-      document.getElementById("novaVariacao").value = "";
-      document.getElementById("novoCodigo").value = "";
-      document.getElementById("novoEstoque").value = "";
-
-      await carregarDados();
-
-      mostrarMensagem("Produto adicionado com sucesso.", "sucesso");
-      efeitoSucesso();
-      trocarAba("estoque");
-
-      mostrarLoading(false);
     }
 
     function mostrarMensagem(texto, tipo) {
@@ -2391,6 +2455,41 @@
 
     function limparMensagem() {
       const box = document.getElementById("mensagem");
+      box.classList.add("hidden");
+      box.innerText = "";
+    }
+
+    function mostrarMensagemModalFiscal(texto, tipo = "erro") {
+      const box = document.getElementById("mensagemModalFiscal");
+
+      if (!box) {
+        mostrarMensagem(texto, tipo);
+        return;
+      }
+
+      box.innerText = texto;
+      box.classList.remove(
+        "hidden",
+        "bg-red-500/10",
+        "text-red-200",
+        "border-red-500/25",
+        "bg-green-500/10",
+        "text-green-200",
+        "border-green-500/25"
+      );
+
+      if (tipo === "sucesso") {
+        box.classList.add("bg-green-500/10", "text-green-200", "border-green-500/25");
+      } else {
+        box.classList.add("bg-red-500/10", "text-red-200", "border-red-500/25");
+      }
+
+      box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function limparMensagemModalFiscal() {
+      const box = document.getElementById("mensagemModalFiscal");
+      if (!box) return;
       box.classList.add("hidden");
       box.innerText = "";
     }
@@ -2538,9 +2637,27 @@
     ativarRippleBotoes();
     ativarSparkMouse();
 
-    window.SellerProApp.ready
-      .then(() => carregarDados())
-      .catch(error => console.error('Falha na autenticação do estoque:', error));
+    function iniciarEstoqueSellerPro() {
+      const appReady = window.SellerProApp?.ready;
+
+      if (appReady && typeof appReady.then === "function") {
+        appReady
+          .then(() => carregarDados())
+          .catch(error => {
+            console.error("Falha na autenticação do estoque:", error);
+            mostrarMensagem("Não foi possível validar a sessão. Atualize a página ou entre novamente.", "erro");
+          });
+        return;
+      }
+
+      console.warn("SellerProApp.ready não foi encontrado. Iniciando o estoque em modo compatibilidade.");
+      carregarDados().catch(error => {
+        console.error("Falha ao iniciar o estoque:", error);
+        mostrarMensagem("Não foi possível iniciar o estoque: " + (error?.message || "erro inesperado"), "erro");
+      });
+    }
+
+    iniciarEstoqueSellerPro();
   </script>
 </body>
 </html>
