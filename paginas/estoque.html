@@ -1524,6 +1524,89 @@
       return cep.length === 8 ? cep.replace(/(\d{5})(\d{3})/, "$1-$2") : cep;
     }
 
+    let ultimoCepConsultado = "";
+
+    async function buscarEnderecoPorCep() {
+      const campoCep = document.getElementById("nfCep");
+      const campoEndereco = document.getElementById("nfEnderecoCompleto");
+
+      if (!campoCep || !campoEndereco) return;
+
+      const cep = somenteDigitos(campoCep.value).slice(0, 8);
+
+      // Mantém o CEP formatado enquanto o usuário digita.
+      campoCep.value = cep.length > 5
+        ? `${cep.slice(0, 5)}-${cep.slice(5)}`
+        : cep;
+
+      // A consulta só acontece quando os 8 números forem informados.
+      if (cep.length !== 8) {
+        ultimoCepConsultado = "";
+        return;
+      }
+
+      // Evita consultar o mesmo CEP repetidamente.
+      if (cep === ultimoCepConsultado) return;
+
+      ultimoCepConsultado = cep;
+
+      const placeholderOriginal = "Rua, número, complemento, bairro, cidade e estado";
+      campoEndereco.placeholder = "Buscando endereço pelo CEP...";
+      campoCep.setAttribute("aria-busy", "true");
+
+      try {
+        const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+
+        if (!resposta.ok) {
+          throw new Error(`Falha HTTP ${resposta.status}`);
+        }
+
+        const dados = await resposta.json();
+
+        if (dados.erro) {
+          ultimoCepConsultado = "";
+          campoEndereco.value = "";
+          campoEndereco.placeholder = "CEP não encontrado. Digite o endereço manualmente.";
+          mostrarMensagemModalFiscal(
+            "CEP não encontrado. Confira os números ou preencha o endereço manualmente.",
+            "erro"
+          );
+          return;
+        }
+
+        const partesEndereco = [
+          dados.logradouro,
+          dados.bairro,
+          dados.localidade,
+          dados.uf
+        ].filter(Boolean);
+
+        campoEndereco.value = partesEndereco.join(", ");
+        campoEndereco.placeholder = placeholderOriginal;
+
+        // Coloca o cursor no final para facilitar a inclusão do número e complemento.
+        campoEndereco.focus();
+        const fim = campoEndereco.value.length;
+        campoEndereco.setSelectionRange(fim, fim);
+      } catch (erro) {
+        console.error("Erro ao buscar endereço pelo CEP:", erro);
+        ultimoCepConsultado = "";
+        campoEndereco.placeholder = "Não foi possível consultar o CEP. Digite o endereço manualmente.";
+      } finally {
+        campoCep.removeAttribute("aria-busy");
+      }
+    }
+
+    function ativarBuscaAutomaticaCep() {
+      const campoCep = document.getElementById("nfCep");
+
+      if (!campoCep || campoCep.dataset.cepAutomaticoAtivo === "true") return;
+
+      campoCep.dataset.cepAutomaticoAtivo = "true";
+      campoCep.addEventListener("input", buscarEnderecoPorCep);
+      campoCep.addEventListener("blur", buscarEnderecoPorCep);
+    }
+
     function formatarDataHora(valor) {
       if (!valor) return "-";
 
@@ -2636,6 +2719,7 @@
     criarParticulas();
     ativarRippleBotoes();
     ativarSparkMouse();
+    ativarBuscaAutomaticaCep();
 
     function iniciarEstoqueSellerPro() {
       const appReady = window.SellerProApp?.ready;
