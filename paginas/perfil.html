@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Perfil profissional, indicadores e gestão de equipe Seller Pro.">
+  <meta name="theme-color" content="#070809">
+  <title>Meu Perfil | Seller Pro</title>
+  <script>document.documentElement.classList.add('sp-auth-pending');</script>
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+  <link rel="stylesheet" href="../assets/css/seller-pro.css?v=20260818-eng3">
+  <link rel="stylesheet" href="../assets/css/profile.css?v=20260818-eng3">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/config.js?v=20260818-eng3"></script>
+  <script src="../assets/js/file-session.js?v=20260818-eng3"></script>
+  <script src="../assets/js/app-core.js?v=20260818-eng3"></script>
+</head>
+<body class="sp-profile-page">
+  <main class="sp-profile-main">
+    <section class="sp-profile-loading" id="profileLoading" aria-live="polite">
+      <div class="sp-profile-loading__box">
+        <span class="sp-spinner" aria-hidden="true"></span>
+        <strong>Carregando seu perfil</strong>
+        <span>Validando sua sessão e preparando o ambiente.</span>
+      </div>
+    </section>
+
+    <div class="sp-profile-page-shell" id="profileApp" hidden>
+      <div class="sp-profile-layout">
+        <aside class="sp-profile-sidebar" aria-label="Resumo do perfil">
+          <section class="sp-panel sp-identity-card">
+            <div class="sp-avatar-editor" id="avatarEditor">
+              <img class="sp-avatar-editor__image" id="avatarImage" alt="Foto do perfil">
+              <div class="sp-avatar-editor__fallback" id="avatarFallback" aria-hidden="true">SP</div>
+              <button class="sp-avatar-editor__button" id="avatarButton" type="button" aria-label="Alterar foto do perfil" title="Alterar foto">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5H20a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5.5l1.5-2h2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </button>
+              <input id="avatarInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+            </div>
+
+            <div class="sp-identity-copy">
+              <h1 id="profileName">Suporte Seller Pro</h1>
+              <p id="profileEmail">Sessão autenticada</p>
+              <span class="sp-role-badge" id="profileRole">Suporte</span>
+            </div>
+
+            <div class="sp-level-block">
+              <div class="sp-level-row">
+                <strong id="levelTitle">Nível 1 · Iniciante</strong>
+                <span id="xpValue">0 XP</span>
+              </div>
+              <div class="sp-progress" role="progressbar" aria-label="Progresso para o próximo nível" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="levelProgress">
+                <div class="sp-progress__bar" id="levelProgressBar"></div>
+              </div>
+              <div class="sp-progress-copy"><span id="levelStartXp">0 XP</span><span id="nextLevelXp">250 XP</span></div>
+            </div>
+          </section>
+
+          <section class="sp-panel sp-completeness">
+            <div class="sp-completeness__top"><strong>Perfil completo</strong><span id="profileCompleteness">0%</span></div>
+            <div class="sp-progress" aria-hidden="true"><div class="sp-progress__bar" id="profileCompletenessBar"></div></div>
+            <p>Complete seus dados para facilitar a identificação da equipe e melhorar a personalização do sistema.</p>
+          </section>
+        </aside>
+
+        <div class="sp-profile-content">
+          <section class="sp-panel sp-profile-intro">
+            <div>
+              <h2>Seu espaço profissional</h2>
+              <p>Acompanhe sua evolução, mantenha seus dados atualizados e veja os marcos gerados pelas atividades do Hub.</p>
+            </div>
+          </section>
+
+          <section class="sp-metrics-block" aria-labelledby="profileMetricsTitle">
+            <div class="sp-metrics-header">
+              <div>
+                <h2 id="profileMetricsTitle">Indicadores</h2>
+                <p>Dados operacionais vinculados ao seu suporte.</p>
+              </div>
+              <div class="sp-metrics-state" id="profileMetricsState" data-state="loading" aria-live="polite">
+                <span class="sp-metrics-state__dot" aria-hidden="true"></span>
+                <span id="profileMetricsStateText">Atualizando indicadores...</span>
+                <button class="sp-metrics-retry" id="profileMetricsRetry" type="button" hidden>Tentar novamente</button>
+              </div>
+            </div>
+
+            <div class="sp-stat-grid" aria-label="Indicadores operacionais">
+              <article class="sp-stat" data-metric="stores">
+                <span class="sp-stat__icon"><svg viewBox="0 0 24 24"><path d="M4 9v11h16V9M3 9l2-6h14l2 6M8 20v-6h8v6"/></svg></span>
+                <strong id="deliveredStoresValue">—</strong><span>Lojas entregues</span>
+              </article>
+              <article class="sp-stat" data-metric="sales">
+                <span class="sp-stat__icon"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/><circle cx="12" cy="12" r="10"/></svg></span>
+                <strong id="finalizedSalesValue">—</strong><span>Vendas finalizadas</span>
+              </article>
+              <article class="sp-stat" data-metric="tasks">
+                <span class="sp-stat__icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+                <strong id="completedTasksValue">—</strong><span>Tarefas concluídas</span>
+              </article>
+              <article class="sp-stat" data-metric="sellers">
+                <span class="sp-stat__icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m7-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8m13 10v-2a4 4 0 0 0-3-3.9"/></svg></span>
+                <strong id="activeSellersValue">—</strong><span>Sellers ativos</span>
+              </article>
+            </div>
+          </section>
+
+          <section class="sp-panel sp-section">
+            <div class="sp-section__header">
+              <div><h2>Dados do suporte</h2><p>Informações internas utilizadas para identificação e personalização do Hub.</p></div>
+            </div>
+
+            <form class="sp-profile-form" id="profileForm">
+              <div class="sp-field"><label for="profileFullName">Nome completo</label><input id="profileFullName" name="nome" type="text" minlength="3" maxlength="90" required autocomplete="name"></div>
+              <div class="sp-field"><label for="profileEmailInput">E-mail</label><input id="profileEmailInput" name="email" type="email" readonly></div>
+              <div class="sp-field"><label for="profileRoleInput">Cargo</label><input id="profileRoleInput" name="cargo" type="text" maxlength="60" readonly><span class="sp-field__help">O cargo é controlado pela liderança.</span></div>
+              <div class="sp-field"><label for="profilePhone">Telefone</label><input id="profilePhone" name="telefone" type="tel" maxlength="24" autocomplete="tel" placeholder="(00) 00000-0000"></div>
+              <div class="sp-field"><label for="profileSpecialty">Especialidade</label><input id="profileSpecialty" name="especialidade" type="text" maxlength="80" placeholder="Ex.: FBA, Loja Pronta, Onboarding"></div>
+              <div class="sp-field"><label for="profileStartDate">Data de entrada</label><input id="profileStartDate" name="data_entrada" type="date"></div>
+              <div class="sp-field sp-field--full"><label for="profileBio">Sobre você</label><textarea id="profileBio" name="bio" maxlength="300" placeholder="Conte brevemente em quais processos você atua e como ajuda os sellers."></textarea><span class="sp-field__help"><span id="bioCount">0</span>/300 caracteres</span></div>
+              <div class="sp-form-actions"><button class="sp-button" id="resetProfileButton" type="button">Desfazer alterações</button><button class="sp-button sp-button--primary" id="saveProfileButton" type="submit">Salvar perfil</button></div>
+            </form>
+            <div class="sp-form-status" id="profileStatus" aria-live="polite"></div>
+          </section>
+
+          <section class="sp-panel sp-section">
+            <div class="sp-section__header">
+              <div><h2>Conquistas</h2><p>Marcos calculados a partir das atividades operacionais do seu suporte.</p></div>
+              <span class="sp-role-badge" id="streakBadge">0 dias de sequência</span>
+            </div>
+            <div class="sp-achievements" id="achievementsGrid"></div>
+          </section>
+
+          <div class="sp-data-note" id="profileDataNote">
+            <span aria-hidden="true">ⓘ</span>
+            <span><strong>Dados operacionais:</strong> os indicadores são atualizados com prazo máximo por fonte. Uma falha parcial não bloqueia o restante do perfil.</span>
+          </div>
+        </div>
+      </div>
+
+      <section class="sp-panel sp-leader-workspace" id="leaderWorkspace" hidden>
+        <div class="sp-leader-header">
+          <div>
+            <span class="sp-leader-eyebrow">Administração</span>
+            <h2>Gestão da equipe</h2>
+            <p>Gerencie suportes, acessos do Supabase Auth e responsáveis por sellers em um único espaço.</p>
+          </div>
+          <div class="sp-leader-actions"><button class="sp-leader-button" id="leaderRefreshButton" type="button">Atualizar dados</button></div>
+        </div>
+
+        <div class="sp-leader-stats" aria-label="Resumo da liderança">
+          <article class="sp-leader-stat"><span>Suportes</span><strong id="leaderSupportTotal">0</strong><small>cadastrados</small></article>
+          <article class="sp-leader-stat"><span>Ativos</span><strong id="leaderSupportActive">0</strong><small>disponíveis</small></article>
+          <article class="sp-leader-stat"><span>Vinculados</span><strong id="leaderUserLinked">0</strong><small>com usuário Auth</small></article>
+          <article class="sp-leader-stat"><span>Usuários Auth</span><strong id="leaderAuthTotal">0</strong><small>contas existentes</small></article>
+          <article class="sp-leader-stat"><span>Sellers</span><strong id="leaderSellerTotal">0</strong><small>na operação</small></article>
+          <article class="sp-leader-stat"><span>Menor fila</span><strong id="leaderLeastLoaded">—</strong><small>distribuição atual</small></article>
+        </div>
+
+        <div class="sp-leader-grid">
+          <section class="sp-leader-card sp-leader-card--wide">
+            <div class="sp-leader-card__top">
+              <div><h3>Acesso e vínculo com Supabase Auth</h3><p>Vincule um suporte a uma conta Auth já existente, remova o vínculo ou crie/atualize credenciais.</p></div>
+              <span class="sp-leader-chip sp-leader-chip--secure">Servidor protegido</span>
+            </div>
+
+            <div class="sp-access-layout">
+              <form class="sp-leader-form" id="leaderAuthLinkForm">
+                <div class="sp-leader-field sp-leader-field--full"><label for="leaderAccessSupport">Suporte</label><select class="sp-leader-select" id="leaderAccessSupport" required><option value="">Selecione um suporte</option></select></div>
+                <div class="sp-leader-field sp-leader-field--full"><label for="leaderAuthUser">Usuário existente no Auth</label><select class="sp-leader-select" id="leaderAuthUser"><option value="">Selecione um usuário Auth</option></select><span class="sp-leader-help" id="leaderAuthUserHelp">Usuários já vinculados a outro suporte ficam identificados e não podem ser usados novamente.</span></div>
+                <div class="sp-access-current" id="leaderCurrentAccess"><span class="sp-access-current__label">Vínculo atual</span><strong>Nenhum suporte selecionado</strong><small>Selecione um suporte para consultar o acesso.</small></div>
+                <div class="sp-leader-form-actions"><button class="sp-leader-button sp-leader-button--primary" id="leaderLinkAuthButton" type="submit">Vincular usuário Auth</button><button class="sp-leader-button sp-leader-button--danger" id="leaderUnlinkAuthButton" type="button" disabled>Desvincular</button></div>
+              </form>
+
+              <form class="sp-leader-form sp-access-credentials" id="leaderAccessForm">
+                <div class="sp-leader-card__subhead"><h4>Criar ou alterar credenciais</h4><p>Use quando o suporte ainda não tiver uma conta Auth ou quando for necessário alterar e-mail/senha.</p></div>
+                <div class="sp-leader-field"><label for="leaderAccessEmail">E-mail</label><input class="sp-leader-input" id="leaderAccessEmail" type="email" maxlength="160" placeholder="E-mail de login"></div>
+                <div class="sp-leader-field"><label for="leaderAccessPassword">Senha temporária</label><input class="sp-leader-input" id="leaderAccessPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Mínimo de 8 caracteres"></div>
+                <div class="sp-leader-field sp-leader-field--full"><span class="sp-leader-help" id="leaderAccessHelp">Selecione um suporte para consultar o acesso atual.</span></div>
+                <div class="sp-leader-form-actions"><button class="sp-leader-button" id="leaderSaveAccessButton" type="submit">Criar / atualizar acesso</button></div>
+              </form>
+            </div>
+            <div class="sp-leader-status" id="leaderAccessStatus" role="status"></div>
+          </section>
+
+          <section class="sp-leader-card">
+            <div class="sp-leader-card__top"><div><h3 id="leaderSupportFormTitle">Cadastrar suporte</h3><p>Crie ou edite o cadastro operacional do integrante.</p></div></div>
+            <form class="sp-leader-form" id="leaderSupportForm">
+              <input id="leaderSupportId" type="hidden">
+              <div class="sp-leader-field"><label for="leaderSupportName">Nome</label><input class="sp-leader-input" id="leaderSupportName" type="text" required maxlength="90"></div>
+              <div class="sp-leader-field"><label for="leaderSupportEmail">E-mail</label><input class="sp-leader-input" id="leaderSupportEmail" type="email" required maxlength="160"></div>
+              <div class="sp-leader-field"><label for="leaderSupportPhone">Telefone</label><input class="sp-leader-input" id="leaderSupportPhone" type="tel" maxlength="30"></div>
+              <div class="sp-leader-field"><label for="leaderSupportRole">Cargo</label><select class="sp-leader-select" id="leaderSupportRole"><option value="suporte">Suporte</option><option value="lider_suporte">Líder suporte</option><option value="admin">Administrador</option></select></div>
+              <div class="sp-leader-field"><label for="leaderSupportState">Status</label><select class="sp-leader-select" id="leaderSupportState"><option value="ativo">Ativo</option><option value="inativo">Inativo</option></select></div>
+              <div class="sp-leader-field"><label for="leaderSupportTempPassword">Senha ao criar acesso</label><input class="sp-leader-input" id="leaderSupportTempPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Opcional"></div>
+              <div class="sp-leader-field sp-leader-field--full"><span class="sp-leader-help">Se informar uma senha ao cadastrar um suporte novo, a conta Auth também será criada e vinculada.</span></div>
+              <div class="sp-leader-form-actions"><button class="sp-leader-button sp-leader-button--primary" id="leaderSaveSupportButton" type="submit">Salvar suporte</button><button class="sp-leader-button" id="leaderClearSupportButton" type="button">Limpar</button></div>
+            </form>
+            <div class="sp-leader-status" id="leaderSupportStatus" role="status"></div>
+          </section>
+
+          <section class="sp-leader-card">
+            <div class="sp-leader-card__top"><div><h3>Novo seller</h3><p>Cadastre e distribua para um suporte ativo.</p></div></div>
+            <form class="sp-leader-form" id="leaderSellerForm">
+              <div class="sp-leader-field"><label for="leaderSellerName">Nome</label><input class="sp-leader-input" id="leaderSellerName" required maxlength="120"></div>
+              <div class="sp-leader-field"><label for="leaderSellerEmail">E-mail</label><input class="sp-leader-input" id="leaderSellerEmail" type="email" maxlength="160"></div>
+              <div class="sp-leader-field"><label for="leaderSellerPhone">Telefone</label><input class="sp-leader-input" id="leaderSellerPhone" maxlength="30"></div>
+              <div class="sp-leader-field"><label for="leaderSellerMcid">MCID</label><input class="sp-leader-input" id="leaderSellerMcid" maxlength="80"></div>
+              <div class="sp-leader-field"><label for="leaderSellerState">Status</label><select class="sp-leader-select" id="leaderSellerState"><option value="ativo">Ativo</option><option value="em_andamento">Em andamento</option><option value="pendente">Pendente</option><option value="inativo">Inativo</option></select></div>
+              <div class="sp-leader-field"><label for="leaderSellerSupport">Suporte responsável</label><select class="sp-leader-select" id="leaderSellerSupport"><option value="__auto__">Automático: menor fila</option></select></div>
+              <div class="sp-leader-field sp-leader-field--full"><span class="sp-leader-help" id="leaderAutomaticSupportPreview">Calculando distribuição...</span></div>
+              <div class="sp-leader-form-actions"><button class="sp-leader-button sp-leader-button--primary" id="leaderSaveSellerButton" type="submit">Adicionar seller</button><button class="sp-leader-button" id="leaderClearSellerButton" type="button">Limpar</button></div>
+            </form>
+            <div class="sp-leader-status" id="leaderSellerStatus" role="status"></div>
+          </section>
+
+          <section class="sp-leader-card sp-leader-card--wide">
+            <div class="sp-leader-card__top"><div><h3>Suportes cadastrados</h3><p>Veja vínculo Auth, carga, cargo e status de toda a equipe.</p></div></div>
+            <div class="sp-leader-toolbar"><input class="sp-leader-input" id="leaderSupportSearch" type="search" placeholder="Buscar por nome, e-mail ou cargo..."><button class="sp-leader-button" id="leaderClearSearchButton" type="button">Limpar</button></div>
+            <div class="sp-leader-table-wrap"><table class="sp-leader-table"><thead><tr><th>Suporte</th><th>Contato</th><th>Cargo</th><th>Status</th><th>Auth</th><th>Sellers</th><th>Ações</th></tr></thead><tbody id="leaderSupportTableBody"><tr><td colspan="7">Carregando dados...</td></tr></tbody></table></div>
+          </section>
+
+          <section class="sp-leader-card sp-leader-card--wide">
+            <div class="sp-leader-card__top"><div><h3>Sellers e responsáveis</h3><p>Altere o responsável sem recriar o cadastro do seller.</p></div></div>
+            <div class="sp-leader-toolbar"><input class="sp-leader-input" id="leaderSellerSearch" type="search" placeholder="Buscar seller, MCID ou suporte..."></div>
+            <div class="sp-leader-table-wrap"><table class="sp-leader-table"><thead><tr><th>Seller</th><th>MCID</th><th>Status</th><th>Suporte atual</th><th>Novo suporte</th><th>Ação</th></tr></thead><tbody id="leaderSellerTableBody"><tr><td colspan="6">Carregando dados...</td></tr></tbody></table></div>
+          </section>
+        </div>
+
+        <div class="sp-leader-status" id="leaderGlobalStatus" role="status">Área administrativa pronta.</div>
+      </section>
+    </div>
+  </main>
+
+  <script src="../assets/js/gamification.js?v=20260818-eng3"></script>
+  <script src="../assets/js/profile.js?v=20260818-eng3"></script>
+  <script src="../assets/js/leader-workspace.js?v=20260818-eng3"></script>
+</body>
+</html>

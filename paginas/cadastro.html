@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Criação de conta de suporte Seller Pro.">
+  <meta name="theme-color" content="#070809">
+  <title>Criar Conta | Seller Pro</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
+  <link rel="stylesheet" href="../assets/css/auth.css?v=20260720">
+  <script src="../assets/js/config.js?v=20260818-eng3"></script>
+  <script src="../assets/js/file-session.js?v=20260729-final"></script>
+  <script src="../assets/js/app-core.js?v=20260818-eng3"></script>
+  <script src="../assets/js/auth-errors.js?v=20260729-final"></script>
+</head>
+<body class="auth-page">
+  <main class="auth-shell">
+    <section class="auth-brand" aria-label="Cadastro Seller Pro">
+      <a class="auth-logo" href="../index.html"><span class="auth-logo__mark">SP</span><span class="auth-logo__copy"><strong>Seller Pro</strong><small>Central de operações</small></span></a>
+      <div class="auth-brand__content">
+        <h1>Crie seu acesso de <span>suporte</span>.</h1>
+        <p>O cadastro cria uma conta básica. Cargos administrativos e permissões especiais continuam sob controle da liderança.</p>
+        <div class="auth-points">
+          <div class="auth-point"><span class="auth-point__icon"><svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/></svg></span>Conta criada inicialmente como suporte</div>
+          <div class="auth-point"><span class="auth-point__icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg></span>Permissões efetivas controladas por RLS</div>
+          <div class="auth-point"><span class="auth-point__icon"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span>Confirmação de e-mail conforme configuração do Supabase</div>
+        </div>
+      </div>
+      <div class="auth-brand__footer">Não compartilhe senhas. Cada colaborador deve utilizar sua própria conta.</div>
+    </section>
+
+    <section class="auth-panel">
+      <div class="auth-card">
+        <h2>Criar conta</h2>
+        <p>Preencha os dados abaixo. A liderança poderá ajustar seu cargo depois.</p>
+        <form class="auth-form" id="signupForm" autocomplete="on">
+          <input type="hidden" name="cargo" value="suporte">
+          <div class="auth-field"><label for="nome">Nome completo</label><input id="nome" name="nome" type="text" minlength="3" maxlength="90" autocomplete="name" required placeholder="Seu nome completo"></div>
+          <div class="auth-field"><label for="email">E-mail</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="nome@empresa.com"></div>
+          <div class="auth-field">
+            <label for="senha">Senha</label>
+            <div class="auth-input-wrap"><input id="senha" name="senha" type="password" minlength="8" autocomplete="new-password" required placeholder="Mínimo de 8 caracteres"><button class="auth-password-toggle" type="button" data-toggle-password="senha" aria-label="Mostrar senha"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+            <div class="auth-strength"><div class="auth-strength__bar" id="strengthBar"></div></div><div class="auth-strength-copy"><span>Força da senha</span><span id="strengthLabel">Muito fraca</span></div>
+          </div>
+          <div class="auth-field"><label for="confirmarSenha">Confirmar senha</label><input id="confirmarSenha" type="password" minlength="8" autocomplete="new-password" required></div>
+          <button class="auth-submit" id="signupButton" type="submit">Criar conta</button>
+          <div class="auth-message" id="signupMessage" aria-live="polite"><span class="auth-message__dot"></span><span></span></div>
+        </form>
+        <div class="auth-note"><strong>Segurança:</strong> esta tela não permite escolher cargo de líder ou administrador. A autorização precisa ser ajustada pela gestão e protegida por RLS.</div>
+        <div class="auth-back">Já possui uma conta? <a class="auth-link" href="../index.html">Voltar ao login</a></div>
+      </div>
+    </section>
+  </main>
+  <script src="../assets/js/signup.js?v=20260729-final"></script>
+</body>
+</html>

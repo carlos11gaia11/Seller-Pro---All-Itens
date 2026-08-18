@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Gestão | Seller Pro</title>
+  <script>document.documentElement.classList.add('sp-auth-pending');</script>
+  <link rel="stylesheet" href="../assets/css/seller-pro.css?v=20260818-eng3">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../assets/js/config.js?v=20260818-eng3"></script>
+  <script src="../assets/js/file-session.js?v=20260720-loginfix2"></script>
+  <script src="../assets/js/app-core.js?v=20260818-eng3"></script>
+</head>
+<body class="sp-app">
+  <main style="min-height:60vh;display:grid;place-items:center;padding:32px;color:var(--sp-text);font-family:var(--sp-font)">
+    <p id="leaderRedirectStatus">Abrindo a área de gestão...</p>
+  </main>
+  <script>
+    (async () => {
+      try {
+        const SellerProApp = await window.SellerProApp.ready;
+        if (!SellerProApp.isLeader(SellerProApp.profile)) {
+          document.getElementById('leaderRedirectStatus').textContent = 'Acesso restrito à liderança. Redirecionando para o perfil.';
+          await SellerProApp.navigate("./perfil.html", { replace: true });
+          return;
+        }
+        await SellerProApp.navigate("./perfil.html#leaderWorkspace", { replace: true });
+      } catch (error) {
+        document.getElementById('leaderRedirectStatus').textContent = error?.message || 'Não foi possível abrir a gestão.';
+      }
+    })();
+  </script>
+</body>
+</html>
