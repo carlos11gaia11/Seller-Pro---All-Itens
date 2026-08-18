@@ -720,7 +720,17 @@
           return;
         }
 
-        await app.ready;
+        try {
+          await Promise.race([
+            app.ready,
+            new Promise((_, reject) => {
+              window.setTimeout(() => reject(new Error("Tempo excedido ao iniciar o SellerProApp.")), 10000);
+            })
+          ]);
+        } catch (error) {
+          console.error("SellerProApp não concluiu a inicialização:", error);
+          return;
+        }
 
         const profile = app.profile || {};
         const allowed = typeof app.isLeader === "function"
@@ -742,6 +752,31 @@
       }
 
       void initializeLeaderWorkspace();
+    })();
+  </script>
+
+  <script>
+    (() => {
+      // Evita spinner infinito quando algum arquivo essencial não carrega ou a sessão não inicializa.
+      window.setTimeout(() => {
+        const loading = document.getElementById("profileLoading");
+        const profileApp = document.getElementById("profileApp");
+        if (!loading || !profileApp || !profileApp.hidden) return;
+
+        const missing = [];
+        if (!window.supabase?.createClient) missing.push("Supabase JS");
+        if (!window.SellerProApp) missing.push("SellerProApp / app-core.js");
+        if (window.SellerProApp && !window.SellerProApp.ready) missing.push("SellerProApp.ready");
+
+        const box = loading.querySelector(".sp-profile-loading__box");
+        if (!box) return;
+
+        const detail = missing.length
+          ? ` Arquivo(s) não inicializado(s): ${missing.join(", ")}. Verifique se este HTML está na mesma pasta do perfil original e se os caminhos ../assets/js/ continuam válidos.`
+          : " A inicialização do perfil não terminou. Verifique o Console do navegador e a sessão do Supabase.";
+
+        box.innerHTML = `<div style="max-width:720px;line-height:1.55"><strong>Não foi possível carregar o perfil.</strong><br><span>${detail}</span></div>`;
+      }, 12000);
     })();
   </script>
 
