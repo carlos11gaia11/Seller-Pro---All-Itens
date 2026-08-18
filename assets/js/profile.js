@@ -7,6 +7,19 @@
   }
   const { calculateGamification } = gamificationApi;
 
+
+function withTimeout(promise, timeoutMs, message) {
+  let timer = null;
+  const timeout = new Promise((_, reject) => {
+    timer = window.setTimeout(() => reject(new Error(message)), timeoutMs);
+  });
+
+  return Promise.race([Promise.resolve(promise), timeout])
+    .finally(() => {
+      if (timer !== null) window.clearTimeout(timer);
+    });
+}
+
 const app = await window.SellerProApp.ready;
 const client = app.supabase;
 const user = app.user;
@@ -100,7 +113,11 @@ function getDateValues(record) {
 
 async function fetchOptionalTable(table) {
   try {
-    const { data, error } = await client.from(table).select('*');
+    const { data, error } = await withTimeout(
+      client.from(table).select('*'),
+      7000,
+      `Tempo excedido ao consultar ${table}.`
+    );
     if (error) throw error;
     return { table, rows: data || [], error: null };
   } catch (error) {
@@ -387,10 +404,13 @@ function resetForm() {
 async function initialize() {
   loadLocalFallbacks();
   populateForm();
-  const stats = await loadOperationalStats();
-  renderGamification(stats);
+
+  // O perfil principal não depende de métricas opcionais para ser exibido.
   elements.loading.hidden = true;
   elements.app.hidden = false;
+
+  const stats = await loadOperationalStats();
+  renderGamification(stats);
 }
 
 elements.bio.addEventListener('input', () => {
