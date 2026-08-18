@@ -268,7 +268,7 @@
               <div class="sp-leader-status" id="leaderSellerStatus" role="status"></div>
             </section>
             <section class="sp-leader-card">
-              <div class="sp-leader-card__top"><div><h3>Suportes cadastrados</h3><p>Visualize carga, vínculo de login, cargo e status.</p></div></div>
+              <div class="sp-leader-card__top"><div><h3>Suportes cadastrados</h3><p>Visualize todos os suportes, carga, vínculo de login, cargo e status. Você pode editar, alterar o acesso ou excluir um suporte.</p></div></div>
               <div class="sp-leader-toolbar"><input class="sp-leader-input" id="leaderSupportSearch" type="search" placeholder="Buscar suporte..."><button class="sp-leader-button" id="leaderClearSearchButton" type="button">Limpar busca</button></div>
               <div class="sp-leader-table-wrap"><table class="sp-leader-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Telefone</th><th>Cargo</th><th>Status</th><th>Acesso</th><th>Sellers</th><th>Ações</th></tr></thead><tbody id="leaderSupportTableBody"><tr><td colspan="8">Carregando...</td></tr></tbody></table></div>
             </section>
@@ -489,7 +489,7 @@
             <td><span class="sp-leader-chip${isActive(row.status) ? " sp-leader-chip--ok" : " sp-leader-chip--warn"}">${escapeHtml(row.status || "ativo")}</span></td>
             <td>${row.user_id ? `<span class="sp-leader-chip sp-leader-chip--ok">Vinculado</span>` : `<span class="sp-leader-chip sp-leader-chip--warn">Sem login</span>`}</td>
             <td><strong>${getSupportCount(row)}</strong></td>
-            <td><div class="sp-leader-row-actions"><button class="sp-leader-button" type="button" data-edit-support="${escapeHtml(supportId(row))}">Editar</button><button class="sp-leader-button" type="button" data-access-support="${escapeHtml(supportId(row))}">Acesso</button></div></td>
+            <td><div class="sp-leader-row-actions"><button class="sp-leader-button" type="button" data-edit-support="${escapeHtml(supportId(row))}">Editar</button><button class="sp-leader-button" type="button" data-access-support="${escapeHtml(supportId(row))}">Acesso</button><button class="sp-leader-button sp-leader-button--danger" type="button" data-delete-support="${escapeHtml(supportId(row))}" data-support-name="${escapeHtml(supportName(row))}">Excluir</button></div></td>
           </tr>`).join("") : `<tr><td colspan="8">Nenhum suporte encontrado.</td></tr>`;
       }
 
@@ -637,17 +637,49 @@
         }
       });
 
-      $("#leaderSupportTableBody").addEventListener("click", event => {
+      $("#leaderSupportTableBody").addEventListener("click", async event => {
         const editButton = event.target.closest("[data-edit-support]");
         const accessButton = event.target.closest("[data-access-support]");
+        const deleteButton = event.target.closest("[data-delete-support]");
+
         if (editButton) {
           const row = supports.find(item => supportId(item) === editButton.dataset.editSupport);
           if (row) fillSupportForm(row);
+          return;
         }
+
         if (accessButton) {
           $("#leaderAccessSupport").value = accessButton.dataset.accessSupport;
           updateAccessHelp();
           $("#leaderAccessEmail").focus();
+          return;
+        }
+
+        if (deleteButton) {
+          const support_id = deleteButton.dataset.deleteSupport;
+          const row = supports.find(item => supportId(item) === support_id);
+          const name = row ? supportName(row) : (deleteButton.dataset.supportName || "este suporte");
+          const linkedSellers = row ? getSupportCount(row) : 0;
+
+          const warning = linkedSellers > 0
+            ? `O suporte ${name} possui ${linkedSellers} seller(s) vinculado(s). Para evitar sellers sem responsável, a exclusão deve ser validada pelo servidor. Deseja solicitar a exclusão mesmo assim?`
+            : `Tem certeza que deseja excluir o suporte ${name}? Esta ação não pode ser desfeita.`;
+
+          if (!window.confirm(warning)) return;
+
+          setButtonBusy(deleteButton, true, "Excluindo...", "Excluir");
+          try {
+            await invokeLeader("delete_support", { support_id });
+            setStatus("#leaderGlobalStatus", `Suporte ${name} excluído com sucesso.`, "success");
+            clearSupportForm();
+            await loadDashboard();
+          } catch (error) {
+            setStatus("#leaderGlobalStatus", error.message, "error");
+          } finally {
+            if (document.body.contains(deleteButton)) {
+              setButtonBusy(deleteButton, false, "", "Excluir");
+            }
+          }
         }
       });
 
