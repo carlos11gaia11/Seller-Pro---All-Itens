@@ -23,6 +23,20 @@
 
   const pageFile = window.location.pathname.split('/').pop() || 'index.html';
   const isProtectedPage = config.protectedFiles.includes(pageFile);
+
+
+  function withTimeout(promise, timeoutMs, message) {
+    let timer = null;
+    const timeout = new Promise((_, reject) => {
+      timer = window.setTimeout(() => reject(new Error(message)), timeoutMs);
+    });
+
+    return Promise.race([Promise.resolve(promise), timeout])
+      .finally(() => {
+        if (timer !== null) window.clearTimeout(timer);
+      });
+  }
+  app.withTimeout = withTimeout;
   const legacyStorageKeys = [
     'logado', 'autenticado', 'redirectLiberado', 'acessoTemporario',
     'usuarioLogado', 'usuario', 'currentUser', 'sellerProUsuario', 'dadosUsuario',
@@ -231,7 +245,11 @@
 
   async function safeMaybeSingle(queryFactory) {
     try {
-      const { data, error } = await queryFactory();
+      const { data, error } = await withTimeout(
+        queryFactory(),
+        8000,
+        'Tempo excedido ao consultar uma fonte de perfil.'
+      );
       if (error) return null;
       return data || null;
     } catch (error) {
@@ -399,14 +417,26 @@
     try {
       const client = await ensureSupabase();
       await restoreTransferredSession(client);
-      const { data: sessionData, error: sessionError } = await client.auth.getSession();
+      const { data: sessionData, error: sessionError } = await withTimeout(
+        client.auth.getSession(),
+        10000,
+        'Tempo excedido ao validar a sessão do Supabase.'
+      );
       if (sessionError || !sessionData?.session?.user) return authFailure('sessao');
 
-      const { data: userData, error: userError } = await client.auth.getUser();
+      const { data: userData, error: userError } = await withTimeout(
+        client.auth.getUser(),
+        10000,
+        'Tempo excedido ao validar o usuário do Supabase.'
+      );
       if (userError || !userData?.user) return authFailure('token');
 
       app.user = userData.user;
-      app.profile = await loadProfile(userData.user);
+      app.profile = await withTimeout(
+        loadProfile(userData.user),
+        12000,
+        'Tempo excedido ao carregar o perfil do usuário.'
+      );
       saveCompatibilitySession(app.user, app.profile);
       createShell(app.user, app.profile);
       installFileNavigationBridge();
