@@ -13,7 +13,7 @@
     sellers: new URL('paginas/lista-treinamento.html', projectRoot).href,
     inventory: new URL('paginas/estoque.html', projectRoot).href,
     profile: new URL('paginas/perfil.html', projectRoot).href,
-    leader: new URL('paginas/perfil-lider.html', projectRoot).href
+    leader: new URL('paginas/perfil.html#leaderWorkspace', projectRoot).href
   });
 
   global.SellerProConfig = Object.freeze({
