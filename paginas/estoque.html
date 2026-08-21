@@ -905,8 +905,8 @@
       </button>
 
       <button onclick="trocarAba('nfPendente')" id="btnNfPendente" class="tab-btn aba-inativa">
-        NF pendente
-        <span id="badgeNfPendente" class="tab-badge">0</span>
+        Notas Fiscais
+        <span id="badgeNfPendente" class="tab-badge hidden" title="Notas aguardando PDF">0</span>
       </button>
 
       <button onclick="trocarAba('historico')" id="btnHistorico" class="tab-btn aba-inativa">
@@ -996,7 +996,7 @@
       <div class="card lg:col-span-2">
         <h2 class="font-black mb-1">Registrar Coleta</h2>
         <p class="text-zinc-400 text-sm mb-4">
-          Ao registrar uma coleta, o estoque será descontado automaticamente.
+          Adicione um ou vários produtos à mesma coleta. O estoque será descontado automaticamente.
         </p>
 
         <form onsubmit="registrarSaida(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1013,25 +1013,46 @@
           </div>
 
           <div class="md:col-span-2">
-            <label class="block font-bold mb-2 text-orange-200">Produto com código</label>
-            <select id="produtoSaida" class="w-full rounded-2xl px-4 py-3">
-              <option value="">Selecione um produto</option>
+            <label class="block font-bold mb-2 text-orange-200">Tipo de retirada</label>
+            <select id="modoRetirada" onchange="atualizarModoRetirada()" class="w-full rounded-2xl px-4 py-3">
+              <option value="com_nf">Com Nota Fiscal</option>
+              <option value="sem_nf">Sem Nota Fiscal</option>
             </select>
+            <div id="ajudaModoRetirada" class="mt-2 rounded-2xl border border-orange-500/20 bg-orange-500/10 px-4 py-3 text-sm text-orange-100">
+              A coleta criará uma única NF pendente para todos os produtos adicionados.
+            </div>
           </div>
 
-          <div>
-            <label class="block font-bold mb-2 text-orange-200">Quantidade retirada</label>
-            <input id="quantidadeSaida" type="number" min="1" class="w-full rounded-2xl px-4 py-3" placeholder="Ex: 5" />
+          <div class="md:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div class="flex flex-col md:flex-row md:items-end gap-3">
+              <div class="flex-1">
+                <label class="block font-bold mb-2 text-orange-200">Produto com código</label>
+                <select id="produtoSaida" class="w-full rounded-2xl px-4 py-3">
+                  <option value="">Selecione um produto</option>
+                </select>
+              </div>
+
+              <div class="md:w-44">
+                <label class="block font-bold mb-2 text-orange-200">Quantidade</label>
+                <input id="quantidadeSaida" type="number" min="1" class="w-full rounded-2xl px-4 py-3" placeholder="Ex: 5" />
+              </div>
+
+              <button type="button" onclick="adicionarItemColeta()" class="btn-dark px-5 py-3 font-black md:mb-0">
+                + Adicionar
+              </button>
+            </div>
+
+            <div id="listaProdutosColeta" class="mt-4"></div>
           </div>
 
-          <div>
+          <div class="md:col-span-2">
             <label class="block font-bold mb-2 text-orange-200">Data da coleta</label>
             <input id="dataColeta" type="date" class="w-full rounded-2xl px-4 py-3" />
           </div>
 
           <div class="md:col-span-2">
             <button id="btnRegistrarColeta" type="submit" class="btn-primary w-full px-5 py-4">
-              Registrar coleta e descontar estoque
+              Continuar para dados fiscais
             </button>
           </div>
         </form>
@@ -1040,8 +1061,12 @@
       <div class="card">
         <h3 class="text-lg font-black mb-3">Controle automático</h3>
         <p class="text-sm text-zinc-400 leading-relaxed">
-          O sistema bloqueia a retirada quando a quantidade informada for maior que o estoque atual.
+          O sistema valida todos os itens antes de concluir a coleta e bloqueia qualquer retirada maior que o estoque disponível.
         </p>
+        <div class="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-zinc-300">
+          <strong class="text-white">Coleta multiproduto:</strong>
+          todos os produtos ficam agrupados na mesma retirada e, quando houver NF, compartilham a mesma pendência.
+        </div>
       </div>
     </section>
 
@@ -1135,9 +1160,9 @@
     <section id="abaNfPendente" class="hidden card section-animate">
       <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3 mb-5">
         <div>
-          <h2 class="font-black mb-1">Notas Fiscais Pendentes</h2>
+          <h2 class="font-black mb-1">Notas Fiscais</h2>
           <p class="text-zinc-400 text-sm">
-            Anexe o PDF da nota. Depois do envio, ele poderá ser baixado durante 24 horas.
+            Pendências aguardam o PDF. Depois do envio, a pendência desaparece e o arquivo fica disponível por 24 horas.
           </p>
         </div>
 
@@ -1166,7 +1191,7 @@
               <th class="text-left">Produto</th>
               <th class="text-left">Código</th>
               <th class="text-center">Quantidade</th>
-              <th class="text-left">NF enviada em</th>
+              <th class="text-left">NF / Situação</th>
             </tr>
           </thead>
 
@@ -1270,6 +1295,7 @@
     let saidas = [];
     let responsaveis = [];
     let solicitacoesNf = [];
+    let itensColeta = [];
     let coletaPendente = null;
     let intervaloContagemNf = null;
     let recarregandoExpiracaoNf = false;
@@ -1319,7 +1345,8 @@
                 status,
                 nf_enviada_em,
                 expira_em,
-                pdf_excluido_em
+                pdf_excluido_em,
+                coleta_id
               )
             `)
             .order("criado_em", { ascending: false }),
@@ -1642,13 +1669,6 @@
       return `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}:${String(segundos).padStart(2, "0")}`;
     }
 
-    function obterSolicitacaoDoHistorico(saida) {
-      const relacao = saida.solicitacoes_nf;
-
-      if (Array.isArray(relacao)) return relacao[0] || null;
-      return relacao || null;
-    }
-
     function nomeArquivoSeguro(nome) {
       const normalizado = String(nome || "nota-fiscal.pdf")
         .normalize("NFD")
@@ -1726,7 +1746,9 @@
 
     function renderizarSelectProdutos() {
       const select = document.getElementById("produtoSaida");
+      if (!select) return;
 
+      const valorAtual = select.value;
       select.innerHTML = `<option value="">Selecione um produto</option>`;
 
       produtos.forEach(item => {
@@ -1736,6 +1758,12 @@
           </option>
         `;
       });
+
+      if (valorAtual && produtos.some(item => String(item.id) === String(valorAtual))) {
+        select.value = valorAtual;
+      }
+
+      renderizarItensColeta();
     }
 
     function renderizarSelectEditarProdutos() {
@@ -1880,6 +1908,36 @@
       }
     }
 
+    function obterSolicitacaoDoHistorico(saida) {
+      const relacao = saida.solicitacoes_nf;
+      const direta = Array.isArray(relacao) ? (relacao[0] || null) : (relacao || null);
+
+      if (direta) return direta;
+
+      if (saida.coleta_id) {
+        return solicitacoesNf.find(item => String(item.coleta_id || "") === String(saida.coleta_id)) || null;
+      }
+
+      return null;
+    }
+
+    function obterItensDaSolicitacao(solicitacao) {
+      if (!solicitacao) return [];
+
+      if (solicitacao.coleta_id) {
+        const itens = saidas.filter(saida => String(saida.coleta_id || "") === String(solicitacao.coleta_id));
+        if (itens.length) return itens;
+      }
+
+      const saidaId = solicitacao.saida_id || solicitacao.saidas_estoque?.id;
+      if (saidaId) {
+        const saida = saidas.find(item => String(item.id) === String(saidaId));
+        if (saida) return [saida];
+      }
+
+      return solicitacao.saidas_estoque ? [solicitacao.saidas_estoque] : [];
+    }
+
     function renderizarHistorico() {
       const tabela = document.getElementById("tabelaHistorico");
 
@@ -1898,9 +1956,13 @@
 
       saidas.forEach(item => {
         const solicitacao = obterSolicitacaoDoHistorico(item);
-        const dataEnvio = solicitacao?.nf_enviada_em
-          ? formatarDataHora(solicitacao.nf_enviada_em)
-          : "Pendente";
+
+        let situacaoNf = "Pendente";
+        if (item.requer_nf === false) {
+          situacaoNf = "Sem NF";
+        } else if (solicitacao?.nf_enviada_em) {
+          situacaoNf = formatarDataHora(solicitacao.nf_enviada_em);
+        }
 
         tabela.innerHTML += `
           <tr>
@@ -1916,8 +1978,8 @@
             <td class="text-center">
               <span class="stock-pill">${escaparHTML(item.quantidade)}</span>
             </td>
-            <td class="text-zinc-300" title="${escaparHTML(dataEnvio)}">
-              ${escaparHTML(dataEnvio)}
+            <td class="text-zinc-300" title="${escaparHTML(situacaoNf)}">
+              ${escaparHTML(situacaoNf)}
             </td>
           </tr>
         `;
@@ -1934,39 +1996,200 @@
       renderizarEstoque();
     }
 
-    function registrarSaida(event) {
-      event.preventDefault();
+    function adicionarItemColeta() {
+      limparMensagem();
 
-      const lojaPronta = document.getElementById("lojaPronta").value.trim();
-      const responsavel = document.getElementById("responsavel").value.trim();
       const produtoId = document.getElementById("produtoSaida").value;
       const quantidade = Number(document.getElementById("quantidadeSaida").value);
+      const produto = produtos.find(item => String(item.id) === String(produtoId));
+
+      if (!produtoId || !produto || !Number.isInteger(quantidade) || quantidade <= 0) {
+        mostrarMensagem("Selecione um produto e informe uma quantidade válida.", "erro");
+        return;
+      }
+
+      const existente = itensColeta.find(item => String(item.produtoId) === String(produtoId));
+      const quantidadeFinal = quantidade + Number(existente?.quantidade || 0);
+      const estoqueDisponivel = Number(produto.estoque_atual || 0);
+
+      if (quantidadeFinal > estoqueDisponivel) {
+        mostrarMensagem(
+          `A quantidade total de ${produto.codigo} seria ${quantidadeFinal}, mas há apenas ${estoqueDisponivel} em estoque.`,
+          "erro"
+        );
+        return;
+      }
+
+      if (existente) {
+        existente.quantidade = quantidadeFinal;
+      } else {
+        itensColeta.push({
+          produtoId: produto.id,
+          quantidade,
+          produto
+        });
+      }
+
+      document.getElementById("produtoSaida").value = "";
+      document.getElementById("quantidadeSaida").value = "";
+      renderizarItensColeta();
+    }
+
+    function removerItemColeta(produtoId) {
+      itensColeta = itensColeta.filter(item => String(item.produtoId) !== String(produtoId));
+      renderizarItensColeta();
+    }
+
+    function renderizarItensColeta() {
+      const lista = document.getElementById("listaProdutosColeta");
+      if (!lista) return;
+
+      if (itensColeta.length === 0) {
+        lista.innerHTML = `
+          <div class="rounded-2xl border border-dashed border-white/10 bg-black/20 px-4 py-5 text-center text-sm text-zinc-500">
+            Nenhum produto adicionado à coleta.
+          </div>
+        `;
+        return;
+      }
+
+      const totalUnidades = itensColeta.reduce((total, item) => total + Number(item.quantidade || 0), 0);
+
+      lista.innerHTML = `
+        <div class="flex items-center justify-between gap-3 mb-2">
+          <strong class="text-white">${itensColeta.length} produto(s) diferente(s)</strong>
+          <span class="text-xs text-zinc-400">${totalUnidades} unidade(s) no total</span>
+        </div>
+        <div class="space-y-2">
+          ${itensColeta.map(item => `
+            <div class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div class="min-w-0">
+                <div class="font-black text-white truncate">
+                  ${escaparHTML(item.produto.codigo)} - ${escaparHTML(item.produto.produto)}
+                </div>
+                <div class="text-xs text-zinc-400 mt-1">
+                  ${escaparHTML(item.produto.variacao)} · Retirar: <strong class="text-orange-200">${escaparHTML(item.quantidade)}</strong> · Estoque atual: ${escaparHTML(item.produto.estoque_atual)}
+                </div>
+              </div>
+              <button type="button" onclick="removerItemColeta('${escaparHTML(item.produtoId)}')" class="btn-dark px-4 py-2 font-bold shrink-0">
+                Remover
+              </button>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function atualizarModoRetirada() {
+      const modo = document.getElementById("modoRetirada")?.value || "com_nf";
+      const ajuda = document.getElementById("ajudaModoRetirada");
+      const botao = document.getElementById("btnRegistrarColeta");
+
+      if (modo === "sem_nf") {
+        ajuda.innerHTML = "<strong>Sem Nota Fiscal:</strong> o estoque será baixado e a saída ficará registrada no histórico, sem criar pendência de NF.";
+        botao.textContent = "Registrar retirada sem Nota Fiscal";
+      } else {
+        ajuda.innerHTML = "<strong>Com Nota Fiscal:</strong> a coleta criará uma única NF pendente para todos os produtos adicionados.";
+        botao.textContent = "Continuar para dados fiscais";
+      }
+    }
+
+    function obterColetaDoFormulario() {
+      const lojaPronta = document.getElementById("lojaPronta").value.trim();
+      const responsavel = document.getElementById("responsavel").value.trim();
       const dataColeta = document.getElementById("dataColeta").value;
-      const produtoSelecionado = produtos.find(item => String(item.id) === String(produtoId));
+      const modoRetirada = document.getElementById("modoRetirada")?.value || "com_nf";
 
-      if (!lojaPronta || !responsavel || !produtoId || !quantidade || quantidade <= 0 || !dataColeta) {
-        mostrarMensagem("Preencha todos os campos da coleta.", "erro");
-        return;
+      if (!lojaPronta || !responsavel || !dataColeta) {
+        mostrarMensagem("Preencha loja pronta, responsável e data da coleta.", "erro");
+        return null;
       }
 
-      if (!produtoSelecionado) {
-        mostrarMensagem("O produto selecionado não foi encontrado.", "erro");
-        return;
+      if (itensColeta.length === 0) {
+        mostrarMensagem("Adicione pelo menos um produto à coleta.", "erro");
+        return null;
       }
 
-      if (quantidade > Number(produtoSelecionado.estoque_atual || 0)) {
-        mostrarMensagem("Quantidade maior que o estoque disponível.", "erro");
-        return;
+      const itensValidados = itensColeta.map(item => {
+        const produtoAtual = produtos.find(produto => String(produto.id) === String(item.produtoId));
+        return {
+          ...item,
+          produto: produtoAtual || item.produto
+        };
+      });
+
+      const itemInvalido = itensValidados.find(item => {
+        const estoque = Number(item.produto?.estoque_atual || 0);
+        return !item.produto || !Number.isInteger(Number(item.quantidade)) || Number(item.quantidade) <= 0 || Number(item.quantidade) > estoque;
+      });
+
+      if (itemInvalido) {
+        mostrarMensagem("Um dos produtos da coleta não possui estoque suficiente. Atualize os dados e tente novamente.", "erro");
+        return null;
       }
 
-      abrirModalDadosFiscais({
+      return {
         lojaPronta,
         responsavel,
-        produtoId,
-        quantidade,
         dataColeta,
-        produto: produtoSelecionado
-      });
+        modoRetirada,
+        itens: itensValidados
+      };
+    }
+
+    async function registrarSaida(event) {
+      event.preventDefault();
+      limparMensagem();
+
+      const coleta = obterColetaDoFormulario();
+      if (!coleta) return;
+
+      if (coleta.modoRetirada === "sem_nf") {
+        await registrarColetaSemNota(coleta);
+        return;
+      }
+
+      abrirModalDadosFiscais(coleta);
+    }
+
+    async function registrarColetaSemNota(coleta) {
+      const botao = document.getElementById("btnRegistrarColeta");
+      mostrarLoading(true);
+      botao.disabled = true;
+      botao.textContent = "Registrando retirada...";
+
+      try {
+        const { error } = await db.rpc("registrar_coleta_multiproduto_sem_nf", {
+          p_loja_pronta: coleta.lojaPronta,
+          p_responsavel: coleta.responsavel,
+          p_itens: coleta.itens.map(item => ({
+            produto_id: item.produtoId,
+            quantidade: Number(item.quantidade)
+          })),
+          p_data_coleta: coleta.dataColeta
+        });
+
+        if (error) {
+          throw new Error(error.message || "Falha desconhecida no Supabase.");
+        }
+
+        limparFormularioSaida();
+        await carregarDados();
+
+        mostrarMensagem("Retirada sem Nota Fiscal registrada e estoque atualizado.", "sucesso");
+        efeitoSucesso();
+        trocarAba("historico");
+      } catch (error) {
+        console.error("Falha ao registrar retirada sem NF:", error);
+        mostrarMensagem(
+          "Não foi possível registrar a retirada sem NF: " + (error?.message || "erro inesperado"),
+          "erro"
+        );
+      } finally {
+        botao.disabled = false;
+        atualizarModoRetirada();
+        mostrarLoading(false);
+      }
     }
 
     function abrirModalDadosFiscais(coleta) {
@@ -1980,16 +2203,32 @@
       document.getElementById("nfIe").value = "";
       document.getElementById("nfEnderecoCompleto").value = "";
       document.getElementById("nfCep").value = "";
-      document.getElementById("nfProdutoVenda").value = `${coleta.produto.produto} / ${coleta.produto.variacao}`;
+
+      const descricaoProdutos = coleta.itens
+        .map(item => `${item.produto.produto} / ${item.produto.variacao} (${item.quantidade} un.)`)
+        .join("; ");
+
+      document.getElementById("nfProdutoVenda").value = descricaoProdutos;
 
       atualizarCampoDocumento();
 
+      const totalUnidades = coleta.itens.reduce((total, item) => total + Number(item.quantidade || 0), 0);
+
       document.getElementById("resumoColetaFiscal").innerHTML = `
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
           <div><span class="text-zinc-400">Loja:</span> <strong>${escaparHTML(coleta.lojaPronta)}</strong></div>
           <div><span class="text-zinc-400">Responsável:</span> <strong>${escaparHTML(coleta.responsavel)}</strong></div>
-          <div><span class="text-zinc-400">Produto:</span> <strong>${escaparHTML(coleta.produto.codigo)} - ${escaparHTML(coleta.produto.produto)} / ${escaparHTML(coleta.produto.variacao)}</strong></div>
-          <div><span class="text-zinc-400">Quantidade:</span> <strong>${escaparHTML(coleta.quantidade)}</strong></div>
+          <div><span class="text-zinc-400">Produtos diferentes:</span> <strong>${escaparHTML(coleta.itens.length)}</strong></div>
+          <div><span class="text-zinc-400">Total de unidades:</span> <strong>${escaparHTML(totalUnidades)}</strong></div>
+        </div>
+        <div class="space-y-2">
+          ${coleta.itens.map(item => `
+            <div class="rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+              <strong>${escaparHTML(item.produto.codigo)}</strong> ·
+              ${escaparHTML(item.produto.produto)} / ${escaparHTML(item.produto.variacao)} ·
+              ${escaparHTML(item.quantidade)} un.
+            </div>
+          `).join("")}
         </div>
       `;
 
@@ -2030,7 +2269,11 @@
       document.getElementById("responsavel").value = "";
       document.getElementById("produtoSaida").value = "";
       document.getElementById("quantidadeSaida").value = "";
+      document.getElementById("modoRetirada").value = "com_nf";
       document.getElementById("dataColeta").value = new Date().toISOString().split("T")[0];
+      itensColeta = [];
+      renderizarItensColeta();
+      atualizarModoRetirada();
     }
 
     async function confirmarRetiradaComDadosFiscais(event) {
@@ -2083,11 +2326,13 @@
       botao.textContent = "Registrando retirada...";
 
       try {
-        const { error } = await db.rpc("registrar_saida_com_nf_pendente", {
+        const { error } = await db.rpc("registrar_coleta_multiproduto_com_nf", {
           p_loja_pronta: coleta.lojaPronta,
           p_responsavel: coleta.responsavel,
-          p_produto_id: coleta.produtoId,
-          p_quantidade: coleta.quantidade,
+          p_itens: coleta.itens.map(item => ({
+            produto_id: item.produtoId,
+            quantidade: Number(item.quantidade)
+          })),
           p_data_coleta: coleta.dataColeta,
           p_nome_empresa: nomeEmpresa,
           p_nome_representante: nomeRepresentante,
@@ -2110,7 +2355,7 @@
 
         await carregarDados();
 
-        mostrarMensagem("Retirada registrada, estoque baixado e NF adicionada às pendências.", "sucesso");
+        mostrarMensagem("Coleta registrada, estoques baixados e uma única NF adicionada às pendências.", "sucesso");
         efeitoSucesso();
         trocarAba("nfPendente");
       } catch (error) {
@@ -2141,7 +2386,11 @@
       const pendentes = ativas.filter(item => item.status === "pendente").length;
       const disponiveis = ativas.filter(item => item.status === "disponivel").length;
 
-      badge.textContent = String(ativas.length);
+      badge.textContent = String(pendentes);
+      badge.classList.toggle("hidden", pendentes === 0);
+      badge.title = pendentes === 1
+        ? "1 Nota Fiscal aguardando PDF"
+        : `${pendentes} Notas Fiscais aguardando PDF`;
 
       resumo.innerHTML = `
         <div class="rounded-2xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3">
@@ -2170,8 +2419,22 @@
 
       lista.innerHTML = ativas.map(item => {
         const saida = item.saidas_estoque || {};
-        const produto = saida.produtos_estoque || {};
+        const itensDaColeta = obterItensDaSolicitacao(item);
         const tipoPessoa = String(item.tipo_pessoa || "").toUpperCase();
+
+        const produtosRetiradosHtml = itensDaColeta.length
+          ? itensDaColeta.map(saidaItem => {
+              const produtoItem = saidaItem.produtos_estoque || {};
+              const codigo = saidaItem.codigo || produtoItem.codigo || "-";
+              return `
+                <div class="mb-1 last:mb-0">
+                  <strong>${escaparHTML(codigo)}</strong> ·
+                  ${escaparHTML(produtoItem.produto || "-")} / ${escaparHTML(produtoItem.variacao || "-")}
+                  · ${escaparHTML(saidaItem.quantidade || "-")} un.
+                </div>
+              `;
+            }).join("")
+          : "<span>-</span>";
         const statusDisponivel = item.status === "disponivel";
         const statusClasse = statusDisponivel ? "status-disponivel" : "status-pendente";
         const statusTexto = statusDisponivel ? "NF disponível" : "Aguardando PDF";
@@ -2217,11 +2480,9 @@
               <dt>IE</dt><dd>${escaparHTML(item.ie || "Não informada")}</dd>
               <dt>Endereço</dt><dd>${escaparHTML(item.endereco_completo)}</dd>
               <dt>CEP</dt><dd>${escaparHTML(formatarCep(item.cep))}</dd>
-              <dt>Loja pronta</dt><dd>${escaparHTML(saida.loja_pronta || "-")}</dd>
-              <dt>Responsável</dt><dd>${escaparHTML(saida.responsavel || "-")}</dd>
-              <dt>Produto retirado</dt><dd>${escaparHTML(produto.produto || "-")} / ${escaparHTML(produto.variacao || "-")}</dd>
-              <dt>Código</dt><dd>${escaparHTML(saida.codigo || produto.codigo || "-")}</dd>
-              <dt>Quantidade</dt><dd>${escaparHTML(saida.quantidade || "-")}</dd>
+              <dt>Loja pronta</dt><dd>${escaparHTML(saida.loja_pronta || itensDaColeta[0]?.loja_pronta || "-")}</dd>
+              <dt>Responsável</dt><dd>${escaparHTML(saida.responsavel || itensDaColeta[0]?.responsavel || "-")}</dd>
+              <dt>Produtos retirados</dt><dd>${produtosRetiradosHtml}</dd>
               <dt>Produto que venderá</dt><dd>${escaparHTML(item.produto_venda)}</dd>
               <dt>Produto baixado?</dt><dd class="text-green-300 font-black">${item.produto_baixado ? "Sim" : "Não"}</dd>
               ${statusDisponivel ? `<dt>NF enviada em</dt><dd>${formatarDataHora(item.nf_enviada_em)}</dd>` : ""}
@@ -2720,6 +2981,8 @@
     ativarRippleBotoes();
     ativarSparkMouse();
     ativarBuscaAutomaticaCep();
+    renderizarItensColeta();
+    atualizarModoRetirada();
 
     function iniciarEstoqueSellerPro() {
       const appReady = window.SellerProApp?.ready;
