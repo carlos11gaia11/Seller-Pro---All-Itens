@@ -586,6 +586,26 @@
       background: rgba(34, 197, 94, 0.12);
     }
 
+    .measure-pill {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 2px;
+      max-width: 100%;
+      padding: 6px 9px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      background: rgba(255, 255, 255, 0.045);
+      color: #e4e4e7;
+      font-size: 11px;
+      line-height: 1.25;
+      white-space: normal;
+    }
+
+    .measure-pill strong {
+      color: #ffcf9a;
+      font-size: 11px;
+    }
+
     @keyframes lowStockPulse {
       0%, 100% {
         box-shadow: 0 0 0 rgba(239, 68, 68, 0);
@@ -830,7 +850,7 @@
       }
 
       table {
-        min-width: 860px;
+        min-width: 980px;
         table-layout: auto;
       }
 
@@ -982,6 +1002,7 @@
               <th class="text-left">Produto</th>
               <th class="text-left">Variação / Cor</th>
               <th class="text-left">Código</th>
+              <th class="text-left">Medidas / Peso</th>
               <th class="text-center">Estoque Atual</th>
               <th class="text-center">Ações</th>
             </tr>
@@ -1097,6 +1118,26 @@
           <input id="novoEstoque" type="number" min="0" class="w-full rounded-2xl px-4 py-3" placeholder="Ex: 50" />
         </div>
 
+        <div>
+          <label class="block font-bold mb-2 text-orange-200">Largura (cm)</label>
+          <input id="novaLargura" type="number" min="0.01" step="0.01" inputmode="decimal" class="w-full rounded-2xl px-4 py-3" placeholder="Ex: 20" />
+        </div>
+
+        <div>
+          <label class="block font-bold mb-2 text-orange-200">Comprimento (cm)</label>
+          <input id="novoComprimento" type="number" min="0.01" step="0.01" inputmode="decimal" class="w-full rounded-2xl px-4 py-3" placeholder="Ex: 30" />
+        </div>
+
+        <div>
+          <label class="block font-bold mb-2 text-orange-200">Altura (cm)</label>
+          <input id="novaAltura" type="number" min="0.01" step="0.01" inputmode="decimal" class="w-full rounded-2xl px-4 py-3" placeholder="Ex: 15" />
+        </div>
+
+        <div>
+          <label class="block font-bold mb-2 text-orange-200">Peso (g)</label>
+          <input id="novoPeso" type="number" min="0.01" step="0.01" inputmode="decimal" class="w-full rounded-2xl px-4 py-3" placeholder="Ex: 850" />
+        </div>
+
         <div class="md:col-span-2">
           <button id="btnAdicionarProduto" type="submit" class="btn-primary w-full px-5 py-4">
             Adicionar produto ao estoque
@@ -1139,6 +1180,26 @@
         <div>
           <label class="block font-bold mb-2 text-orange-200">Quantidade em estoque</label>
           <input id="editEstoque" type="number" min="0" class="w-full rounded-2xl px-4 py-3" placeholder="Ex: 50" />
+        </div>
+
+        <div>
+          <label class="block font-bold mb-2 text-orange-200">Largura (cm)</label>
+          <input id="editLargura" type="number" min="0.01" step="0.01" inputmode="decimal" class="w-full rounded-2xl px-4 py-3" placeholder="Ex: 20" />
+        </div>
+
+        <div>
+          <label class="block font-bold mb-2 text-orange-200">Comprimento (cm)</label>
+          <input id="editComprimento" type="number" min="0.01" step="0.01" inputmode="decimal" class="w-full rounded-2xl px-4 py-3" placeholder="Ex: 30" />
+        </div>
+
+        <div>
+          <label class="block font-bold mb-2 text-orange-200">Altura (cm)</label>
+          <input id="editAltura" type="number" min="0.01" step="0.01" inputmode="decimal" class="w-full rounded-2xl px-4 py-3" placeholder="Ex: 15" />
+        </div>
+
+        <div>
+          <label class="block font-bold mb-2 text-orange-200">Peso (g)</label>
+          <input id="editPeso" type="number" min="0.01" step="0.01" inputmode="decimal" class="w-full rounded-2xl px-4 py-3" placeholder="Ex: 850" />
         </div>
 
         <div id="resumoEdicao" class="md:col-span-2 hidden rounded-2xl px-4 py-3 border border-orange-500/20 bg-orange-500/10 text-orange-100 text-sm"></div>
@@ -1682,6 +1743,44 @@
         : `${normalizado || "nota-fiscal"}.pdf`;
     }
 
+    function obterNumeroPositivoOpcional(campoId) {
+      const campo = document.getElementById(campoId);
+      const valor = String(campo?.value ?? "").trim();
+
+      if (valor === "") return null;
+
+      const numero = Number(valor);
+      return Number.isFinite(numero) && numero > 0 ? numero : Number.NaN;
+    }
+
+    function formatarNumeroFisico(valor) {
+      if (valor === null || valor === undefined || valor === "") return "-";
+
+      const numero = Number(valor);
+      if (!Number.isFinite(numero)) return "-";
+
+      return new Intl.NumberFormat("pt-BR", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }).format(numero);
+    }
+
+    function formatarDadosFisicosProduto(item) {
+      const largura = formatarNumeroFisico(item.largura_cm);
+      const comprimento = formatarNumeroFisico(item.comprimento_cm);
+      const altura = formatarNumeroFisico(item.altura_cm);
+      const peso = formatarNumeroFisico(item.peso_g);
+
+      const possuiAlgumaMedida = [item.largura_cm, item.comprimento_cm, item.altura_cm]
+        .some(valor => valor !== null && valor !== undefined && valor !== "");
+      const possuiPeso = item.peso_g !== null && item.peso_g !== undefined && item.peso_g !== "";
+
+      return {
+        dimensoes: possuiAlgumaMedida ? `${largura} × ${comprimento} × ${altura} cm` : "Medidas não informadas",
+        peso: possuiPeso ? `${peso} g` : "Peso não informado"
+      };
+    }
+
     function obterProdutosFiltrados() {
       const filtroProduto = document.getElementById("filtroProduto").value.toLowerCase().trim();
       const filtroVariacao = document.getElementById("filtroVariacao").value.toLowerCase().trim();
@@ -1712,7 +1811,7 @@
       if (lista.length === 0) {
         tabela.innerHTML = `
           <tr>
-            <td colspan="5" class="p-5 text-center text-zinc-400">
+            <td colspan="6" class="p-5 text-center text-zinc-400">
               Nenhum produto encontrado.
             </td>
           </tr>
@@ -1723,6 +1822,7 @@
       lista.forEach(item => {
         const estoqueAtual = Number(item.estoque_atual || 0);
         const classeEstoque = estoqueAtual <= 10 ? "stock-low" : "stock-ok";
+        const dadosFisicos = formatarDadosFisicosProduto(item);
 
         tabela.innerHTML += `
           <tr>
@@ -1730,6 +1830,12 @@
             <td class="text-zinc-300" title="${escaparHTML(item.variacao)}">${escaparHTML(item.variacao)}</td>
             <td>
               <span class="code-pill">${escaparHTML(item.codigo)}</span>
+            </td>
+            <td title="${escaparHTML(dadosFisicos.dimensoes + ' • ' + dadosFisicos.peso)}">
+              <span class="measure-pill">
+                <strong>${escaparHTML(dadosFisicos.dimensoes)}</strong>
+                <span>${escaparHTML(dadosFisicos.peso)}</span>
+              </span>
             </td>
             <td class="text-center">
               <span class="stock-pill ${classeEstoque}">${estoqueAtual}</span>
@@ -1824,13 +1930,19 @@
       document.getElementById("editVariacao").value = item.variacao || "";
       document.getElementById("editCodigo").value = item.codigo || "";
       document.getElementById("editEstoque").value = Number(item.estoque_atual || 0);
+      document.getElementById("editLargura").value = item.largura_cm ?? "";
+      document.getElementById("editComprimento").value = item.comprimento_cm ?? "";
+      document.getElementById("editAltura").value = item.altura_cm ?? "";
+      document.getElementById("editPeso").value = item.peso_g ?? "";
 
       const resumo = document.getElementById("resumoEdicao");
       resumo.classList.remove("hidden");
+      const dadosFisicos = formatarDadosFisicosProduto(item);
       resumo.innerHTML = `
         Editando: <strong>${escaparHTML(item.codigo)}</strong> —
         ${escaparHTML(item.produto)} / ${escaparHTML(item.variacao)}.
-        Estoque atual: <strong>${escaparHTML(item.estoque_atual)}</strong>
+        Estoque atual: <strong>${escaparHTML(item.estoque_atual)}</strong> ·
+        ${escaparHTML(dadosFisicos.dimensoes)} · ${escaparHTML(dadosFisicos.peso)}
       `;
     }
 
@@ -1844,6 +1956,10 @@
       document.getElementById("editVariacao").value = "";
       document.getElementById("editCodigo").value = "";
       document.getElementById("editEstoque").value = "";
+      document.getElementById("editLargura").value = "";
+      document.getElementById("editComprimento").value = "";
+      document.getElementById("editAltura").value = "";
+      document.getElementById("editPeso").value = "";
 
       const resumo = document.getElementById("resumoEdicao");
       resumo.classList.add("hidden");
@@ -1860,6 +1976,10 @@
       const codigo = document.getElementById("editCodigo").value.trim().toUpperCase();
       const campoEstoque = document.getElementById("editEstoque").value;
       const estoque = Number(campoEstoque);
+      const larguraCm = obterNumeroPositivoOpcional("editLargura");
+      const comprimentoCm = obterNumeroPositivoOpcional("editComprimento");
+      const alturaCm = obterNumeroPositivoOpcional("editAltura");
+      const pesoG = obterNumeroPositivoOpcional("editPeso");
       const botao = document.getElementById("btnSalvarEdicao");
 
       if (!id) {
@@ -1869,6 +1989,11 @@
 
       if (!produto || !variacao || !codigo || campoEstoque === "" || Number.isNaN(estoque) || estoque < 0) {
         mostrarMensagem("Preencha produto, variação, código e quantidade corretamente.", "erro");
+        return;
+      }
+
+      if ([larguraCm, comprimentoCm, alturaCm, pesoG].some(valor => Number.isNaN(valor))) {
+        mostrarMensagem("Quando informadas, medidas e peso precisam ser números maiores que zero.", "erro");
         return;
       }
 
@@ -1887,6 +2012,18 @@
 
         if (error) {
           throw new Error(error.message || "Falha desconhecida no Supabase.");
+        }
+
+        const { error: erroDadosFisicos } = await db.rpc("definir_dados_fisicos_produto_por_id", {
+          p_id: id,
+          p_largura_cm: larguraCm,
+          p_comprimento_cm: comprimentoCm,
+          p_altura_cm: alturaCm,
+          p_peso_g: pesoG
+        });
+
+        if (erroDadosFisicos) {
+          throw new Error("Produto atualizado, mas houve falha ao salvar medidas/peso: " + erroDadosFisicos.message);
         }
 
         await carregarDados();
@@ -2730,10 +2867,19 @@
       const codigo = document.getElementById("novoCodigo").value.trim().toUpperCase();
       const campoEstoque = document.getElementById("novoEstoque").value;
       const estoque = Number(campoEstoque);
+      const larguraCm = obterNumeroPositivoOpcional("novaLargura");
+      const comprimentoCm = obterNumeroPositivoOpcional("novoComprimento");
+      const alturaCm = obterNumeroPositivoOpcional("novaAltura");
+      const pesoG = obterNumeroPositivoOpcional("novoPeso");
       const botao = document.getElementById("btnAdicionarProduto");
 
       if (!produto || !variacao || !codigo || campoEstoque === "" || Number.isNaN(estoque) || estoque < 0) {
-        mostrarMensagem("Preencha todos os campos do novo produto corretamente.", "erro");
+        mostrarMensagem("Preencha produto, variação, código e estoque corretamente.", "erro");
+        return;
+      }
+
+      if ([larguraCm, comprimentoCm, alturaCm, pesoG].some(valor => Number.isNaN(valor))) {
+        mostrarMensagem("Quando informadas, medidas e peso precisam ser números maiores que zero.", "erro");
         return;
       }
 
@@ -2753,10 +2899,26 @@
           throw new Error(error.message || "Falha desconhecida no Supabase.");
         }
 
+        const { error: erroDadosFisicos } = await db.rpc("definir_dados_fisicos_produto_por_codigo", {
+          p_codigo: codigo,
+          p_largura_cm: larguraCm,
+          p_comprimento_cm: comprimentoCm,
+          p_altura_cm: alturaCm,
+          p_peso_g: pesoG
+        });
+
+        if (erroDadosFisicos) {
+          throw new Error("Produto criado, mas houve falha ao salvar medidas/peso: " + erroDadosFisicos.message);
+        }
+
         document.getElementById("novoProduto").value = "";
         document.getElementById("novaVariacao").value = "";
         document.getElementById("novoCodigo").value = "";
         document.getElementById("novoEstoque").value = "";
+        document.getElementById("novaLargura").value = "";
+        document.getElementById("novoComprimento").value = "";
+        document.getElementById("novaAltura").value = "";
+        document.getElementById("novoPeso").value = "";
 
         await carregarDados();
 
@@ -2849,11 +3011,15 @@
       const lista = obterProdutosFiltrados();
 
       const linhas = [
-        ["Produto", "Variação", "Código", "Estoque Atual"],
+        ["Produto", "Variação", "Código", "Largura (cm)", "Comprimento (cm)", "Altura (cm)", "Peso (g)", "Estoque Atual"],
         ...lista.map(item => [
           item.produto,
           item.variacao,
           item.codigo,
+          item.largura_cm ?? "",
+          item.comprimento_cm ?? "",
+          item.altura_cm ?? "",
+          item.peso_g ?? "",
           item.estoque_atual
         ])
       ];
