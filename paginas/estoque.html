@@ -1776,7 +1776,7 @@
       const possuiPeso = item.peso_g !== null && item.peso_g !== undefined && item.peso_g !== "";
 
       return {
-        dimensoes: possuiAlgumaMedida ? `${largura} × ${comprimento} × ${altura} cm` : "Medidas não informadas",
+        dimensoes: possuiAlgumaMedida ? `C: ${comprimento} × L: ${largura} × A: ${altura} cm` : "Medidas não informadas",
         peso: possuiPeso ? `${peso} g` : "Peso não informado"
       };
     }
