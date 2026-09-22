@@ -1050,6 +1050,177 @@
     @media(prefers-reduced-motion:reduce){
       *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
     }
+
+
+    /* DAILY CHECKLIST */
+    .daily-checklist{
+      position:fixed;
+      right:18px;
+      bottom:18px;
+      z-index:240;
+      width:min(370px,calc(100vw - 36px));
+      overflow:hidden;
+      border:1px solid rgba(255,122,0,.34);
+      border-radius:18px;
+      background:color-mix(in srgb,var(--surface) 96%,transparent);
+      box-shadow:0 24px 70px rgba(0,0,0,.32);
+      backdrop-filter:blur(18px);
+      transition:.22s ease;
+    }
+    .daily-checklist.complete{border-color:rgba(34,197,94,.38)}
+    .daily-checklist.collapsed .daily-checklist-body{display:none}
+    .daily-checklist-head{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:14px 14px 13px;
+      background:
+        radial-gradient(circle at 92% 8%,rgba(255,122,0,.14),transparent 38%),
+        var(--surface-2);
+      border-bottom:1px solid var(--border);
+    }
+    .daily-checklist.complete .daily-checklist-head{
+      background:
+        radial-gradient(circle at 92% 8%,rgba(34,197,94,.13),transparent 38%),
+        var(--surface-2);
+    }
+    .daily-checklist-icon{
+      width:38px;height:38px;flex:0 0 auto;
+      display:grid;place-items:center;
+      border-radius:11px;
+      color:#201207;
+      background:linear-gradient(135deg,#ffbd73,var(--orange));
+      box-shadow:0 8px 24px rgba(255,122,0,.16);
+    }
+    .daily-checklist.complete .daily-checklist-icon{
+      color:#06150b;
+      background:linear-gradient(135deg,#86efac,var(--green));
+      box-shadow:0 8px 24px rgba(34,197,94,.14);
+    }
+    .daily-checklist-title{min-width:0;flex:1}
+    .daily-checklist-title strong{
+      display:block;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      font-size:.84rem;
+      letter-spacing:-.01em;
+    }
+    .daily-checklist-title span{
+      display:block;
+      margin-top:3px;
+      color:var(--muted);
+      font-size:.67rem;
+    }
+    .daily-checklist-toggle{
+      width:34px;height:34px;flex:0 0 auto;
+      display:grid;place-items:center;
+      color:var(--muted);
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:9px;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    .daily-checklist-toggle:hover{color:var(--text);border-color:var(--border-strong)}
+    .daily-checklist-toggle i{transition:.18s ease}
+    .daily-checklist.collapsed .daily-checklist-toggle i{transform:rotate(180deg)}
+    .daily-checklist-body{padding:13px 14px 14px}
+    .daily-checklist-progress-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:8px;
+      color:var(--muted);
+      font-size:.68rem;
+      font-weight:800;
+    }
+    .daily-checklist-progress-row strong{color:var(--orange-2);font-size:.7rem}
+    .daily-checklist.complete .daily-checklist-progress-row strong{color:var(--green)}
+    .daily-checklist-progress{
+      height:7px;
+      overflow:hidden;
+      margin-bottom:12px;
+      border-radius:99px;
+      background:var(--surface-3);
+      border:1px solid var(--border);
+    }
+    .daily-checklist-progress span{
+      display:block;
+      width:0;
+      height:100%;
+      border-radius:inherit;
+      background:linear-gradient(90deg,#ffb15d,var(--orange));
+      transition:width .24s ease;
+    }
+    .daily-checklist.complete .daily-checklist-progress span{
+      background:linear-gradient(90deg,#86efac,var(--green));
+    }
+    .daily-checklist-list{display:grid;gap:7px}
+    .daily-check-item{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      min-height:40px;
+      padding:9px 10px;
+      color:var(--text);
+      background:var(--bg-2);
+      border:1px solid var(--border);
+      border-radius:10px;
+      cursor:pointer;
+      user-select:none;
+      transition:.16s ease;
+    }
+    .daily-check-item:hover{border-color:rgba(255,122,0,.34);transform:translateX(-2px)}
+    .daily-check-item.checked{
+      color:var(--muted);
+      background:color-mix(in srgb,var(--green) 6%,var(--bg-2));
+      border-color:rgba(34,197,94,.24);
+    }
+    .daily-check-item input{
+      position:absolute;
+      opacity:0;
+      pointer-events:none;
+    }
+    .daily-check-box{
+      width:19px;height:19px;flex:0 0 auto;
+      display:grid;place-items:center;
+      margin-top:1px;
+      border:1px solid var(--border-strong);
+      border-radius:6px;
+      background:var(--surface);
+      color:transparent;
+      font-size:.62rem;
+      transition:.16s ease;
+    }
+    .daily-check-item.checked .daily-check-box{
+      color:#05170c;
+      background:var(--green);
+      border-color:var(--green);
+    }
+    .daily-check-text{font-size:.76rem;line-height:1.42;font-weight:720}
+    .daily-check-item.checked .daily-check-text{text-decoration:line-through;text-decoration-thickness:1px}
+    .daily-checklist-done{
+      display:none;
+      align-items:center;
+      gap:8px;
+      margin-top:11px;
+      padding:9px 10px;
+      color:#9df0b9;
+      background:rgba(34,197,94,.08);
+      border:1px solid rgba(34,197,94,.20);
+      border-radius:9px;
+      font-size:.7rem;
+      font-weight:850;
+    }
+    .daily-checklist.complete .daily-checklist-done{display:flex}
+
+    @media(max-width:720px){
+      .daily-checklist{right:10px;bottom:10px;width:calc(100vw - 20px)}
+      .daily-checklist-body{max-height:58vh;overflow:auto}
+    }
+
   </style>
 </head>
 
@@ -1373,6 +1544,33 @@
     </main>
   </div>
 
+
+  <!-- Checklist diário individual -->
+  <aside class="daily-checklist" id="dailyChecklist" aria-label="Checklist diário">
+    <div class="daily-checklist-head">
+      <div class="daily-checklist-icon"><i class="fa-solid fa-list-check"></i></div>
+      <div class="daily-checklist-title">
+        <strong id="dailyChecklistGreeting">Bom dia, Usuário</strong>
+        <span id="dailyChecklistDate">Vamos fazer o seu checklist de hoje.</span>
+      </div>
+      <button class="daily-checklist-toggle" id="dailyChecklistToggle" type="button" aria-label="Recolher checklist" aria-expanded="true">
+        <i class="fa-solid fa-chevron-down"></i>
+      </button>
+    </div>
+    <div class="daily-checklist-body">
+      <div class="daily-checklist-progress-row">
+        <span>Progresso do dia</span>
+        <strong id="dailyChecklistProgressText">0 de 8</strong>
+      </div>
+      <div class="daily-checklist-progress" aria-hidden="true"><span id="dailyChecklistProgressBar"></span></div>
+      <div class="daily-checklist-list" id="dailyChecklistList"></div>
+      <div class="daily-checklist-done" id="dailyChecklistDone">
+        <i class="fa-solid fa-circle-check"></i>
+        Checklist de hoje concluído. Excelente trabalho!
+      </div>
+    </div>
+  </aside>
+
   <!-- Modal de novidades -->
   <div class="modal-backdrop" id="whatsNewModal">
     <section class="welcome-modal" role="dialog" aria-modal="true" aria-labelledby="whatsNewTitle">
@@ -1557,6 +1755,142 @@
       }
     }
     loadUser();
+
+
+    /* ----------------------------
+       Checklist diário individual
+    ---------------------------- */
+    const DAILY_CHECKLIST_ITEMS=[
+      "SLA das Lojas Prontas",
+      "Cards do ARES atualizados",
+      "Checar se há vendas nas Lojas Prontas",
+      "Checar planilha de lançamentos e alunos",
+      "Checar MCID dos sellers que abriram conta recentemente",
+      "Checar se há seller sem resposta",
+      "Checar celular carregado",
+      "Checar o Atlas"
+    ];
+
+    const dailyChecklist=$("#dailyChecklist");
+    const dailyChecklistGreeting=$("#dailyChecklistGreeting");
+    const dailyChecklistDate=$("#dailyChecklistDate");
+    const dailyChecklistList=$("#dailyChecklistList");
+    const dailyChecklistProgressText=$("#dailyChecklistProgressText");
+    const dailyChecklistProgressBar=$("#dailyChecklistProgressBar");
+    const dailyChecklistToggle=$("#dailyChecklistToggle");
+    let dailyChecklistRenderedDate="";
+
+    function localDateKey(date=new Date()){
+      const year=date.getFullYear();
+      const month=String(date.getMonth()+1).padStart(2,"0");
+      const day=String(date.getDate()).padStart(2,"0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function checklistUserId(){
+      const user=savedUser();
+      const profile=window.SellerProApp?.profile || {};
+      const email=(
+        profile.email || profile.user_email ||
+        user.email || user.user_email ||
+        (loggedUserEmail.textContent!=="Sessão ativa" ? loggedUserEmail.textContent : "") ||
+        savedValue(["email","userEmail","usuarioEmail","loginEmail","sellerProEmail"])
+      ).trim().toLowerCase();
+
+      if(email) return email;
+      return String(loggedUserName.textContent || "usuario").trim().toLowerCase();
+    }
+
+    function checklistStorageKey(){
+      return `sellerProChecklistDiario:${encodeURIComponent(checklistUserId())}:${localDateKey()}`;
+    }
+
+    function loadChecklistState(){
+      try{
+        const raw=localStorage.getItem(checklistStorageKey());
+        const parsed=raw ? JSON.parse(raw) : {};
+        return parsed && typeof parsed==="object" ? parsed : {};
+      }catch{
+        return {};
+      }
+    }
+
+    function saveChecklistState(state){
+      localStorage.setItem(checklistStorageKey(),JSON.stringify(state));
+    }
+
+    function firstName(value){
+      const clean=String(value || "Usuário").trim();
+      return clean.split(/\s+/)[0] || "Usuário";
+    }
+
+    function formatChecklistDate(){
+      return new Intl.DateTimeFormat("pt-BR",{
+        weekday:"long",day:"2-digit",month:"2-digit"
+      }).format(new Date());
+    }
+
+    function updateChecklistProgress(state){
+      const total=DAILY_CHECKLIST_ITEMS.length;
+      const completed=DAILY_CHECKLIST_ITEMS.reduce((sum,_,index)=>sum+(state[index] ? 1 : 0),0);
+      const percent=Math.round((completed/total)*100);
+
+      dailyChecklistProgressText.textContent=`${completed} de ${total} • ${percent}%`;
+      dailyChecklistProgressBar.style.width=`${percent}%`;
+      dailyChecklist.classList.toggle("complete",completed===total);
+    }
+
+    function renderDailyChecklist(){
+      if(!dailyChecklist) return;
+
+      const state=loadChecklistState();
+      const name=firstName(loggedUserName.textContent);
+      dailyChecklistRenderedDate=localDateKey();
+      dailyChecklistGreeting.textContent=`Bom dia, ${name}!`;
+      dailyChecklistDate.textContent=`Vamos fazer o seu checklist de hoje • ${formatChecklistDate()}`;
+      dailyChecklistList.innerHTML="";
+
+      DAILY_CHECKLIST_ITEMS.forEach((item,index)=>{
+        const label=document.createElement("label");
+        label.className=`daily-check-item${state[index] ? " checked" : ""}`;
+        label.innerHTML=`
+          <input type="checkbox" ${state[index] ? "checked" : ""} data-check-index="${index}">
+          <span class="daily-check-box"><i class="fa-solid fa-check"></i></span>
+          <span class="daily-check-text">${escapeHtml(item)}</span>
+        `;
+
+        const input=label.querySelector("input");
+        input.addEventListener("change",()=>{
+          const next=loadChecklistState();
+          next[index]=input.checked;
+          saveChecklistState(next);
+          label.classList.toggle("checked",input.checked);
+          updateChecklistProgress(next);
+        });
+
+        dailyChecklistList.appendChild(label);
+      });
+
+      updateChecklistProgress(state);
+    }
+
+    dailyChecklistToggle.addEventListener("click",()=>{
+      const collapsed=dailyChecklist.classList.toggle("collapsed");
+      dailyChecklistToggle.setAttribute("aria-expanded",String(!collapsed));
+      dailyChecklistToggle.setAttribute("aria-label",collapsed ? "Abrir checklist" : "Recolher checklist");
+    });
+
+    // Mantém o checklist sincronizado entre abas e reinicia automaticamente ao virar o dia.
+    addEventListener("storage",event=>{
+      if(event.key?.startsWith("sellerProChecklistDiario:")) renderDailyChecklist();
+    });
+
+    setInterval(()=>{
+      if(dailyChecklistRenderedDate!==localDateKey()) renderDailyChecklist();
+    },60000);
+
+    renderDailyChecklist();
+
 
     userArea.addEventListener("click",(e)=>{
       e.stopPropagation();
@@ -1885,6 +2219,7 @@
       configureRoleUI();
       renderNotifications();
       loadUser();
+      renderDailyChecklist();
     },{once:true});
   </script>
 
