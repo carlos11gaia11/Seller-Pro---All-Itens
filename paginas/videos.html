@@ -116,7 +116,8 @@
           2) Informe data-video com o link embed do YouTube ou Drive
           3) Informe data-thumb com a URL da thumbnail
           4) Troque título, descrição, data-category e data-search
-          5) No botão externo, coloque o link original do vídeo.
+          5) Em data-download, coloque um link DIRETO para o arquivo do vídeo (.mp4 ou link de download do Drive).
+             Observação: link normal do YouTube não funciona como download direto.
         -->
         <section class="video-grid" id="videoGrid">
           <article
@@ -125,141 +126,7 @@
             data-search="variacao nova seller central criar variacao parent child pai filho"
             data-video="https://www.youtube.com/embed/XttK4_QpPPM?autoplay=1&rel=0"
             data-thumb="capas/variacao.png"
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Como fazer variação na Nova Seller Central">
-                <img src="../capas/variacao.png" alt="Thumbnail do vídeo Como fazer variação na Nova Seller Central">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0d12">
-  <title>Vídeos Rápidos • Seller Pro</title>
-
-  <script>
-    (() => {
-      const saved = localStorage.getItem("sellerProTema");
-      if (saved === "claro") document.documentElement.classList.add("theme-light-preload");
-    })();
-  </script>
-
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
-  <link rel="stylesheet" href="../assets/css/seller-pro.css?v=20260720">
-  <script>document.documentElement.classList.add("sp-auth-pending");</script>
-  <script src="../assets/js/config.js?v=20260818-eng3"></script>
-  <script src="../assets/js/file-session.js?v=20260720-loginfix2"></script>
-  <script src="../assets/js/app-core.js?v=20260818-eng3"></script>
-
-  <style>
-    :root{
-      --orange:#ff7a00;--orange-2:#ff9b3d;--orange-soft:rgba(255,122,0,.12);
-      --bg:#0b0d12;--bg-2:#10131a;--surface:#141821;--surface-2:#1a1f2a;
-      --surface-3:#202633;--border:#292f3b;--border-strong:#353d4b;
-      --text:#f6f7f9;--muted:#a2a9b5;--soft:#707887;--green:#22c55e;
-      --shadow:0 22px 70px rgba(0,0,0,.28);--sidebar:286px;--radius:18px;
-    }
-    html.theme-light-preload body,body.theme-light{
-      --bg:#f4f6f8;--bg-2:#edf0f3;--surface:#fff;--surface-2:#f6f7f9;
-      --surface-3:#eef1f4;--border:#dfe4ea;--border-strong:#cbd2dc;
-      --text:#171a1f;--muted:#5f6875;--soft:#8a929e;--shadow:0 20px 55px rgba(26,34,46,.10);
-    }
-    *{box-sizing:border-box} html{scroll-behavior:smooth}
-    body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:radial-gradient(circle at 82% 0,rgba(255,122,0,.08),transparent 32%),var(--bg)}
-    button,input,select{font:inherit} a{color:inherit} [hidden]{display:none!important}
-    .app{min-height:100vh;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr)}
-    .sidebar{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:18px 14px;background:color-mix(in srgb,var(--bg-2) 96%,transparent);border-right:1px solid var(--border);overflow:auto}
-    .brand{display:flex;align-items:center;gap:12px;padding:7px 8px 20px;text-decoration:none;border-bottom:1px solid var(--border)}
-    .brand-mark{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;color:#131313;background:linear-gradient(145deg,#ffc27c,var(--orange));font-weight:950;box-shadow:0 10px 30px rgba(255,122,0,.18)}
-    .brand strong{display:block;font-size:.98rem}.brand small{display:block;margin-top:3px;color:var(--muted);font-size:.72rem}
-    .nav-label{margin:18px 10px 8px;color:var(--soft);font-size:.64rem;font-weight:900;text-transform:uppercase;letter-spacing:.12em}.nav{display:grid;gap:4px}
-    .nav-link{min-height:42px;display:flex;align-items:center;gap:11px;padding:0 11px;color:var(--muted);text-decoration:none;border:1px solid transparent;border-radius:11px;font-size:.84rem;font-weight:760;transition:.18s ease}
-    .nav-link i{width:18px;text-align:center}.nav-link:hover{color:var(--text);background:var(--surface);border-color:var(--border);transform:translateX(2px)}
-    .nav-link.active{color:var(--text);background:linear-gradient(135deg,rgba(255,122,0,.14),rgba(255,122,0,.06));border-color:rgba(255,122,0,.30)}.nav-link.active i{color:var(--orange)}
-    .sidebar-bottom{margin-top:auto;padding-top:14px;border-top:1px solid var(--border)}
-    .theme-btn{width:100%;min-height:46px;display:flex;align-items:center;gap:10px;padding:0 11px;color:var(--text);background:transparent;border:1px solid var(--border);border-radius:11px;cursor:pointer;font-weight:800}.theme-btn i{color:var(--orange)}
-    .main{min-width:0;padding:0 30px 40px}.topbar{position:sticky;top:0;z-index:30;margin:0 -30px;padding:14px 30px;display:flex;align-items:center;gap:10px;background:color-mix(in srgb,var(--bg) 92%,transparent);border-bottom:1px solid var(--border);backdrop-filter:blur(16px)}
-    .back-btn{width:44px;height:44px;display:grid;place-items:center;color:var(--text);text-decoration:none;background:var(--surface);border:1px solid var(--border);border-radius:12px}
-    .search{position:relative;flex:1}.search i{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--soft)}
-    .search input{width:100%;min-height:44px;padding:10px 42px;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:12px;outline:none}.search input:focus{border-color:rgba(255,122,0,.75);box-shadow:0 0 0 4px rgba(255,122,0,.09)}
-    .page{width:min(1420px,100%);margin:0 auto}.hero{position:relative;overflow:hidden;margin:30px 0 22px;padding:clamp(28px,4vw,48px);border:1px solid rgba(255,122,0,.22);border-radius:24px;background:radial-gradient(circle at 88% 16%,rgba(255,122,0,.18),transparent 28%),linear-gradient(135deg,var(--surface),var(--surface-2));box-shadow:var(--shadow)}
-    .hero-kicker{display:flex;align-items:center;gap:8px;color:var(--orange-2);font-size:.72rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.hero h1{margin:10px 0 10px;font-size:clamp(2.5rem,6vw,5rem);line-height:.95;letter-spacing:-.06em}.hero h1 span{color:var(--orange)}.hero p{max-width:760px;margin:0;color:var(--muted);line-height:1.65}
-    .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 18px}.filter-btn{min-height:38px;padding:0 12px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:.75rem;font-weight:850}.filter-btn.active,.filter-btn:hover{color:var(--text);border-color:rgba(255,122,0,.42);background:var(--orange-soft)}
-    .counter{margin-left:auto;color:var(--muted);font-size:.75rem;font-weight:800}
-    .video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.video-card{overflow:hidden;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);transition:.18s ease}.video-card:hover{transform:translateY(-3px);border-color:var(--border-strong);box-shadow:0 16px 38px rgba(0,0,0,.12)}
-    .player-wrap{position:relative;aspect-ratio:16/9;background:#050608;border-bottom:1px solid var(--border);overflow:hidden}.player-wrap iframe{width:100%;height:100%;display:block;border:0;background:#050608}.video-thumb{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;display:grid;place-items:center;cursor:pointer;background:#050608}.video-thumb img{width:100%;height:100%;display:block;object-fit:cover;opacity:.9;transition:.2s ease}.video-thumb:hover img{transform:scale(1.025);opacity:1}.thumb-play{position:absolute;width:66px;height:66px;display:grid;place-items:center;border:0;border-radius:50%;color:#211306;background:linear-gradient(135deg,#ffbd73,var(--orange));box-shadow:0 14px 34px rgba(0,0,0,.28);font-size:1.25rem;cursor:pointer}.thumb-label{position:absolute;left:12px;bottom:12px;padding:7px 10px;border-radius:8px;color:#fff;background:rgba(0,0,0,.62);font-size:.68rem;font-weight:900;backdrop-filter:blur(6px)}.video-body{padding:16px}.video-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.pill{padding:5px 8px;border-radius:7px;color:#ffbb72;background:rgba(255,122,0,.09);border:1px solid rgba(255,122,0,.18);font-size:.63rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em}.duration{color:var(--soft);font-size:.68rem;font-weight:800}.video-card h2{margin:0 0 7px;font-size:1rem}.video-card p{min-height:58px;margin:0;color:var(--muted);font-size:.8rem;line-height:1.5}.video-actions{display:flex;gap:8px;margin-top:14px}.action{min-height:39px;display:inline-flex;align-items:center;justify-content:center;gap:7px;flex:1;padding:0 11px;color:var(--text);text-decoration:none;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;font-size:.74rem;font-weight:850}.action:hover{border-color:rgba(255,122,0,.42);background:var(--surface-3)}.action.primary{color:#211306;background:linear-gradient(135deg,#ffbd73,var(--orange));border-color:transparent}.empty{display:none;padding:34px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:var(--radius);background:var(--surface)}.empty.show{display:block}.footer{margin-top:26px;padding-top:18px;color:var(--soft);border-top:1px solid var(--border);font-size:.75rem}
-    @media(max-width:1180px){.video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media(max-width:900px){:root{--sidebar:100%}.app{display:block}.sidebar{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--border)}.nav{display:flex;overflow-x:auto}.nav-link{flex:0 0 auto}.main{padding:0 18px 28px}.topbar{margin:0 -18px;padding:12px 18px}}
-    @media(max-width:700px){.video-grid{grid-template-columns:1fr}.toolbar{align-items:stretch}.counter{width:100%;margin-left:0}.video-card p{min-height:auto}}
-  </style>
-</head>
-<body>
-  <div class="app">
-    <aside class="sidebar">
-      <a class="brand" href="index.html">
-        <span class="brand-mark">SP</span>
-        <span><strong>Seller Pro</strong><small>Central de operações</small></span>
-      </a>
-      <div class="nav-label">Principal</div>
-      <nav class="nav">
-        <a class="nav-link" href="index.html"><i class="fa-solid fa-house"></i><span>Início</span></a>
-        <a class="nav-link" href="ares.html"><i class="fa-solid fa-headset"></i><span>ARES</span></a>
-        <a class="nav-link" href="lojas-prontas.html"><i class="fa-solid fa-store"></i><span>Lojas prontas</span></a>
-        <a class="nav-link" href="lista-treinamento.html"><i class="fa-solid fa-users"></i><span>Sellers</span></a>
-        <a class="nav-link active" href="videos.html"><i class="fa-solid fa-circle-play"></i><span>Vídeos</span></a>
-      </nav>
-      <div class="sidebar-bottom">
-        <button class="theme-btn" id="themeToggle" type="button"><i class="fa-solid fa-sun"></i><span id="themeText">Tema claro</span></button>
-      </div>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <a class="back-btn" href="index.html" title="Voltar ao HUB"><i class="fa-solid fa-arrow-left"></i></a>
-        <div class="search">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input id="videoSearch" type="search" placeholder="Buscar vídeo: FBA, faturador, anúncio, Ads..." autocomplete="off">
-        </div>
-      </div>
-
-      <div class="page">
-        <section class="hero">
-          <div class="hero-kicker"><i class="fa-solid fa-bolt"></i> Base rápida do suporte</div>
-          <h1>Vídeos de <span>apoio</span></h1>
-          <p>Respostas rápidas para dúvidas recorrentes da equipe. Os vídeos podem ficar hospedados externamente, sem pesar no repositório do HUB. Clique na miniatura para assistir.</p>
-        </section>
-
-        <div class="toolbar" id="filters">
-          <button class="filter-btn active" data-filter="todos" type="button">Todos</button>
-          <button class="filter-btn" data-filter="amazon" type="button">Amazon</button>
-          <button class="filter-btn" data-filter="fba" type="button">FBA / DBA</button>
-          <button class="filter-btn" data-filter="faturador" type="button">Faturador</button>
-          <button class="filter-btn" data-filter="ads" type="button">Ads</button>
-          <button class="filter-btn" data-filter="conta" type="button">Conta</button>
-          <span class="counter" id="videoCounter"></span>
-        </div>
-
-        <!--
-          COMO ADICIONAR UM NOVO VÍDEO POR LINK:
-          1) Duplique um .video-card abaixo
-          2) Informe data-video com o link embed do YouTube ou Drive
-          3) Informe data-thumb com a URL da thumbnail
-          4) Troque título, descrição, data-category e data-search
-          5) No botão externo, coloque o link original do vídeo.
-        -->
-        <section class="video-grid" id="videoGrid">
-          <article
-            class="video-card"
-            data-category="amazon"
-            data-search="variacao nova seller central criar variacao parent child pai filho"
-            data-video="https://www.youtube.com/embed/XttK4_QpPPM?autoplay=1&rel=0"
-            data-thumb="capas/variacao.png"
+            data-download=""
           >
             <div class="player-wrap">
               <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Como fazer variação na Nova Seller Central">
@@ -279,9 +146,9 @@
                 <button class="action primary play-btn" type="button">
                   <i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <a class="action" href="https://youtu.be/XttK4_QpPPM" target="_blank" rel="noopener">
-                  <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir vídeo
-                </a>
+                <button class="action download-btn" type="button">
+                  <i class="fa-solid fa-download"></i> Baixar vídeo
+                </button>
               </div>
             </div>
           </article>
@@ -358,85 +225,26 @@
     $$(".play-btn").forEach(btn=>btn.addEventListener("click",()=>{
       playCard(btn.closest(".video-card"));
     }));
-    render();
-  </script>
-</body>
-</html>
-            </div>
-          </article>
-        </section>
 
-        <div class="empty" id="emptyState"><i class="fa-solid fa-video-slash"></i><p>Nenhum vídeo encontrado com esse termo ou filtro.</p></div>
-        <div class="footer">Seller Pro • Biblioteca interna de vídeos rápidos</div>
-      </div>
-    </main>
-  </div>
+    $$(".download-btn").forEach(btn=>btn.addEventListener("click",()=>{
+      const card=btn.closest(".video-card");
+      const url=(card.dataset.download||"").trim();
 
-  <script>
-    const $=(s,c=document)=>c.querySelector(s); const $$=(s,c=document)=>[...c.querySelectorAll(s)];
-    const normalize=v=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
-    const cards=$$(".video-card"); const search=$("#videoSearch"); const counter=$("#videoCounter"); const empty=$("#emptyState");
-    let activeFilter="todos";
+      if(!url){
+        alert("O link de download deste vídeo ainda não foi configurado.");
+        return;
+      }
 
-    function applyTheme(theme){
-      const light=theme==="claro";
-      document.body.classList.toggle("theme-light",light);
-      document.documentElement.classList.toggle("theme-light-preload",light);
-      $("#themeText").textContent=light?"Tema escuro":"Tema claro";
-      localStorage.setItem("sellerProTema",light?"claro":"escuro");
-      window.SellerProApp?.setTheme?.(light?"light":"dark");
-    }
-    const sharedTheme=localStorage.getItem("sellerProTheme");
-    applyTheme(sharedTheme==="light"||localStorage.getItem("sellerProTema")==="claro"?"claro":"escuro");
-    $("#themeToggle").addEventListener("click",()=>applyTheme(document.body.classList.contains("theme-light")?"escuro":"claro"));
-
-    function render(){
-      const term=normalize(search.value); let visible=0;
-      cards.forEach(card=>{
-        const categories=normalize(card.dataset.category);
-        const haystack=normalize(card.textContent+" "+(card.dataset.search||""));
-        const matchesFilter=activeFilter==="todos"||categories.split(/\s+/).includes(activeFilter);
-        const matchesSearch=!term||haystack.includes(term);
-        const show=matchesFilter&&matchesSearch;
-        card.hidden=!show; if(show) visible++;
-        if(!show) resetPlayer(card);
-      });
-      counter.textContent=`${visible} ${visible===1?"vídeo":"vídeos"}`;
-      empty.classList.toggle("show",visible===0);
-    }
-    search.addEventListener("input",render);
-    $$(".filter-btn").forEach(btn=>btn.addEventListener("click",()=>{
-      $$(".filter-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); activeFilter=btn.dataset.filter; render();
+      const a=document.createElement("a");
+      a.href=url;
+      a.download="";
+      a.target="_blank";
+      a.rel="noopener";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     }));
-    function resetPlayer(card){
-      const wrap=$(".player-wrap",card);
-      const iframe=$("iframe",wrap);
-      if(!iframe) return;
-      iframe.remove();
-      const thumb=document.createElement("button");
-      thumb.className="video-thumb";
-      thumb.type="button";
-      thumb.setAttribute("aria-label","Reproduzir vídeo");
-      thumb.innerHTML=`<img src="${card.dataset.thumb}" alt="Thumbnail do vídeo"><span class="thumb-play"><i class="fa-solid fa-play"></i></span><span class="thumb-label">Clique para assistir</span>`;
-      wrap.appendChild(thumb);
-      thumb.addEventListener("click",()=>playCard(card));
-    }
 
-    function playCard(card){
-      cards.forEach(other=>{ if(other!==card) resetPlayer(other); });
-      const wrap=$(".player-wrap",card);
-      wrap.innerHTML=`<iframe src="${card.dataset.video}" title="Player de vídeo" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
-      wrap.scrollIntoView({behavior:"smooth",block:"center"});
-    }
-
-    cards.forEach(card=>{
-      const thumb=$(".video-thumb",card);
-      thumb?.addEventListener("click",()=>playCard(card));
-    });
-
-    $$(".play-btn").forEach(btn=>btn.addEventListener("click",()=>{
-      playCard(btn.closest(".video-card"));
-    }));
     render();
   </script>
 </body>
