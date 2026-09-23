@@ -58,7 +58,7 @@
     .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 18px}.filter-btn{min-height:38px;padding:0 12px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:.75rem;font-weight:850}.filter-btn.active,.filter-btn:hover{color:var(--text);border-color:rgba(255,122,0,.42);background:var(--orange-soft)}
     .counter{margin-left:auto;color:var(--muted);font-size:.75rem;font-weight:800}
     .video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.video-card{overflow:hidden;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);transition:.18s ease}.video-card:hover{transform:translateY(-3px);border-color:var(--border-strong);box-shadow:0 16px 38px rgba(0,0,0,.12)}
-    .player-wrap{position:relative;aspect-ratio:16/9;background:#050608;border-bottom:1px solid var(--border)}.player-wrap video{width:100%;height:100%;display:block;background:#050608;object-fit:contain}.video-body{padding:16px}.video-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.pill{padding:5px 8px;border-radius:7px;color:#ffbb72;background:rgba(255,122,0,.09);border:1px solid rgba(255,122,0,.18);font-size:.63rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em}.duration{color:var(--soft);font-size:.68rem;font-weight:800}.video-card h2{margin:0 0 7px;font-size:1rem}.video-card p{min-height:58px;margin:0;color:var(--muted);font-size:.8rem;line-height:1.5}.video-actions{display:flex;gap:8px;margin-top:14px}.action{min-height:39px;display:inline-flex;align-items:center;justify-content:center;gap:7px;flex:1;padding:0 11px;color:var(--text);text-decoration:none;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;font-size:.74rem;font-weight:850}.action:hover{border-color:rgba(255,122,0,.42);background:var(--surface-3)}.action.primary{color:#211306;background:linear-gradient(135deg,#ffbd73,var(--orange));border-color:transparent}.empty{display:none;padding:34px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:var(--radius);background:var(--surface)}.empty.show{display:block}.footer{margin-top:26px;padding-top:18px;color:var(--soft);border-top:1px solid var(--border);font-size:.75rem}
+    .player-wrap{position:relative;aspect-ratio:16/9;background:#050608;border-bottom:1px solid var(--border);overflow:hidden}.player-wrap iframe{width:100%;height:100%;display:block;border:0;background:#050608}.video-thumb{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;display:grid;place-items:center;cursor:pointer;background:#050608}.video-thumb img{width:100%;height:100%;display:block;object-fit:cover;opacity:.9;transition:.2s ease}.video-thumb:hover img{transform:scale(1.025);opacity:1}.thumb-play{position:absolute;width:66px;height:66px;display:grid;place-items:center;border:0;border-radius:50%;color:#211306;background:linear-gradient(135deg,#ffbd73,var(--orange));box-shadow:0 14px 34px rgba(0,0,0,.28);font-size:1.25rem;cursor:pointer}.thumb-label{position:absolute;left:12px;bottom:12px;padding:7px 10px;border-radius:8px;color:#fff;background:rgba(0,0,0,.62);font-size:.68rem;font-weight:900;backdrop-filter:blur(6px)}.video-body{padding:16px}.video-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.pill{padding:5px 8px;border-radius:7px;color:#ffbb72;background:rgba(255,122,0,.09);border:1px solid rgba(255,122,0,.18);font-size:.63rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em}.duration{color:var(--soft);font-size:.68rem;font-weight:800}.video-card h2{margin:0 0 7px;font-size:1rem}.video-card p{min-height:58px;margin:0;color:var(--muted);font-size:.8rem;line-height:1.5}.video-actions{display:flex;gap:8px;margin-top:14px}.action{min-height:39px;display:inline-flex;align-items:center;justify-content:center;gap:7px;flex:1;padding:0 11px;color:var(--text);text-decoration:none;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;font-size:.74rem;font-weight:850}.action:hover{border-color:rgba(255,122,0,.42);background:var(--surface-3)}.action.primary{color:#211306;background:linear-gradient(135deg,#ffbd73,var(--orange));border-color:transparent}.empty{display:none;padding:34px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:var(--radius);background:var(--surface)}.empty.show{display:block}.footer{margin-top:26px;padding-top:18px;color:var(--soft);border-top:1px solid var(--border);font-size:.75rem}
     @media(max-width:1180px){.video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:900px){:root{--sidebar:100%}.app{display:block}.sidebar{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--border)}.nav{display:flex;overflow-x:auto}.nav-link{flex:0 0 auto}.main{padding:0 18px 28px}.topbar{margin:0 -18px;padding:12px 18px}}
     @media(max-width:700px){.video-grid{grid-template-columns:1fr}.toolbar{align-items:stretch}.counter{width:100%;margin-left:0}.video-card p{min-height:auto}}
@@ -97,7 +97,7 @@
         <section class="hero">
           <div class="hero-kicker"><i class="fa-solid fa-bolt"></i> Base rápida do suporte</div>
           <h1>Vídeos de <span>apoio</span></h1>
-          <p>Respostas rápidas para dúvidas recorrentes da equipe. Assista dentro do HUB ou baixe o arquivo para consultar e compartilhar internamente quando necessário.</p>
+          <p>Respostas rápidas para dúvidas recorrentes da equipe. Os vídeos podem ficar hospedados externamente, sem pesar no repositório do HUB. Clique na miniatura para assistir.</p>
         </section>
 
         <div class="toolbar" id="filters">
@@ -111,41 +111,44 @@
         </div>
 
         <!--
-          COMO ADICIONAR UM NOVO VÍDEO:
-          1) Coloque o .mp4 em ../assets/videos/
-          2) Duplique um .video-card abaixo
-          3) Troque src, href, título, descrição e data-category
-          O mesmo arquivo é usado no player e no botão de download.
+          COMO ADICIONAR UM NOVO VÍDEO POR LINK:
+          1) Duplique um .video-card abaixo
+          2) Informe data-video com o link embed do YouTube ou Drive
+          3) Informe data-thumb com a URL da thumbnail
+          4) Troque título, descrição, data-category e data-search
+          5) No botão externo, coloque o link original do vídeo.
         -->
         <section class="video-grid" id="videoGrid">
-          <article class="video-card" data-category="faturador amazon" data-search="configurar faturador certificado digital nota fiscal nf">
-            <div class="player-wrap"><video controls preload="metadata"><source src="../assets/videos/configurar-faturador.mp4" type="video/mp4">Seu navegador não suporta vídeo HTML5.</video></div>
-            <div class="video-body"><div class="video-meta"><span class="pill">Faturador</span><span class="duration">Guia rápido</span></div><h2>Como configurar o faturador</h2><p>Passo a passo para conferir dados, certificado digital e finalizar a configuração do faturador.</p><div class="video-actions"><button class="action primary play-btn" type="button"><i class="fa-solid fa-play"></i> Reproduzir</button><a class="action" href="../assets/videos/configurar-faturador.mp4" download><i class="fa-solid fa-download"></i> Baixar</a></div></div>
-          </article>
-
-          <article class="video-card" data-category="fba amazon" data-search="criar envio fba remessa etiqueta fnsku caixa master">
-            <div class="player-wrap"><video controls preload="metadata"><source src="../assets/videos/criar-envio-fba.mp4" type="video/mp4">Seu navegador não suporta vídeo HTML5.</video></div>
-            <div class="video-body"><div class="video-meta"><span class="pill">FBA</span><span class="duration">Guia rápido</span></div><h2>Como criar um envio FBA</h2><p>Fluxo rápido para criar a remessa, revisar quantidades e chegar às etiquetas do envio.</p><div class="video-actions"><button class="action primary play-btn" type="button"><i class="fa-solid fa-play"></i> Reproduzir</button><a class="action" href="../assets/videos/criar-envio-fba.mp4" download><i class="fa-solid fa-download"></i> Baixar</a></div></div>
-          </article>
-
-          <article class="video-card" data-category="fba amazon" data-search="dba ativar configurar delivery by amazon estoque">
-            <div class="player-wrap"><video controls preload="metadata"><source src="../assets/videos/configurar-dba.mp4" type="video/mp4">Seu navegador não suporta vídeo HTML5.</video></div>
-            <div class="video-body"><div class="video-meta"><span class="pill">DBA</span><span class="duration">Guia rápido</span></div><h2>Ativação e configuração do DBA</h2><p>Onde acessar o DBA e quais pontos conferir antes de ativar a operação logística.</p><div class="video-actions"><button class="action primary play-btn" type="button"><i class="fa-solid fa-play"></i> Reproduzir</button><a class="action" href="../assets/videos/configurar-dba.mp4" download><i class="fa-solid fa-download"></i> Baixar</a></div></div>
-          </article>
-
-          <article class="video-card" data-category="amazon" data-search="criar anuncio listing produto sku titulo bullet descricao imagens">
-            <div class="player-wrap"><video controls preload="metadata"><source src="../assets/videos/criar-anuncio-amazon.mp4" type="video/mp4">Seu navegador não suporta vídeo HTML5.</video></div>
-            <div class="video-body"><div class="video-meta"><span class="pill">Anúncio</span><span class="duration">Guia rápido</span></div><h2>Como criar um anúncio na Amazon</h2><p>Atalho para lembrar o fluxo de criação de listing e os principais campos que precisam ser revisados.</p><div class="video-actions"><button class="action primary play-btn" type="button"><i class="fa-solid fa-play"></i> Reproduzir</button><a class="action" href="../assets/videos/criar-anuncio-amazon.mp4" download><i class="fa-solid fa-download"></i> Baixar</a></div></div>
-          </article>
-
-          <article class="video-card" data-category="ads amazon" data-search="ads acos tacos campanha publicidade patrocinado">
-            <div class="player-wrap"><video controls preload="metadata"><source src="../assets/videos/acos-tacos-ads.mp4" type="video/mp4">Seu navegador não suporta vídeo HTML5.</video></div>
-            <div class="video-body"><div class="video-meta"><span class="pill">Ads</span><span class="duration">Guia rápido</span></div><h2>ACoS, TACoS e ajustes de campanha</h2><p>Consulta rápida para localizar métricas e revisar os pontos básicos de uma campanha de anúncios.</p><div class="video-actions"><button class="action primary play-btn" type="button"><i class="fa-solid fa-play"></i> Reproduzir</button><a class="action" href="../assets/videos/acos-tacos-ads.mp4" download><i class="fa-solid fa-download"></i> Baixar</a></div></div>
-          </article>
-
-          <article class="video-card" data-category="conta amazon" data-search="otp duas etapas login conta amazon codigo sms email">
-            <div class="player-wrap"><video controls preload="metadata"><source src="../assets/videos/otp-verificacao-conta.mp4" type="video/mp4">Seu navegador não suporta vídeo HTML5.</video></div>
-            <div class="video-body"><div class="video-meta"><span class="pill">Conta</span><span class="duration">Guia rápido</span></div><h2>Problemas com OTP e verificação</h2><p>Checklist rápido para orientar casos em que o código de verificação não chega por SMS ou e-mail.</p><div class="video-actions"><button class="action primary play-btn" type="button"><i class="fa-solid fa-play"></i> Reproduzir</button><a class="action" href="../assets/videos/otp-verificacao-conta.mp4" download><i class="fa-solid fa-download"></i> Baixar</a></div></div>
+          <article
+            class="video-card"
+            data-category="amazon"
+            data-search="variacao nova seller central criar variacao parent child pai filho"
+            data-video="https://www.youtube.com/embed/XttK4_QpPPM?autoplay=1&rel=0"
+            data-thumb="https://img.youtube.com/vi/XttK4_QpPPM/hqdefault.jpg"
+          >
+            <div class="player-wrap">
+              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Como fazer variação na Nova Seller Central">
+                <img src="https://img.youtube.com/vi/XttK4_QpPPM/hqdefault.jpg" alt="Thumbnail do vídeo Como fazer variação na Nova Seller Central">
+                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+                <span class="thumb-label">Clique para assistir</span>
+              </button>
+            </div>
+            <div class="video-body">
+              <div class="video-meta">
+                <span class="pill">Amazon</span>
+                <span class="duration">Nova Seller Central</span>
+              </div>
+              <h2>Como fazer variação</h2>
+              <p>Passo a passo para criar e configurar variações de produto dentro da Nova Seller Central.</p>
+              <div class="video-actions">
+                <button class="action primary play-btn" type="button">
+                  <i class="fa-solid fa-play"></i> Reproduzir
+                </button>
+                <a class="action" href="https://youtu.be/XttK4_QpPPM" target="_blank" rel="noopener">
+                  <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir vídeo
+                </a>
+              </div>
+            </div>
           </article>
         </section>
 
@@ -182,7 +185,7 @@
         const matchesSearch=!term||haystack.includes(term);
         const show=matchesFilter&&matchesSearch;
         card.hidden=!show; if(show) visible++;
-        if(!show){ const v=$("video",card); if(v&&!v.paused) v.pause(); }
+        if(!show) resetPlayer(card);
       });
       counter.textContent=`${visible} ${visible===1?"vídeo":"vídeos"}`;
       empty.classList.toggle("show",visible===0);
@@ -191,13 +194,34 @@
     $$(".filter-btn").forEach(btn=>btn.addEventListener("click",()=>{
       $$(".filter-btn").forEach(b=>b.classList.remove("active")); btn.classList.add("active"); activeFilter=btn.dataset.filter; render();
     }));
+    function resetPlayer(card){
+      const wrap=$(".player-wrap",card);
+      const iframe=$("iframe",wrap);
+      if(!iframe) return;
+      iframe.remove();
+      const thumb=document.createElement("button");
+      thumb.className="video-thumb";
+      thumb.type="button";
+      thumb.setAttribute("aria-label","Reproduzir vídeo");
+      thumb.innerHTML=`<img src="${card.dataset.thumb}" alt="Thumbnail do vídeo"><span class="thumb-play"><i class="fa-solid fa-play"></i></span><span class="thumb-label">Clique para assistir</span>`;
+      wrap.appendChild(thumb);
+      thumb.addEventListener("click",()=>playCard(card));
+    }
+
+    function playCard(card){
+      cards.forEach(other=>{ if(other!==card) resetPlayer(other); });
+      const wrap=$(".player-wrap",card);
+      wrap.innerHTML=`<iframe src="${card.dataset.video}" title="Player de vídeo" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
+      wrap.scrollIntoView({behavior:"smooth",block:"center"});
+    }
+
+    cards.forEach(card=>{
+      const thumb=$(".video-thumb",card);
+      thumb?.addEventListener("click",()=>playCard(card));
+    });
+
     $$(".play-btn").forEach(btn=>btn.addEventListener("click",()=>{
-      const video=$("video",btn.closest(".video-card"));
-      cards.forEach(card=>{ const other=$("video",card); if(other&&other!==video&&!other.paused) other.pause(); });
-      video?.play(); video?.scrollIntoView({behavior:"smooth",block:"center"});
-    }));
-    $$('video').forEach(video=>video.addEventListener('play',()=>{
-      $$('video').forEach(other=>{if(other!==video&&!other.paused) other.pause();});
+      playCard(btn.closest(".video-card"));
     }));
     render();
   </script>
