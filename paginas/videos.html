@@ -60,7 +60,10 @@
     @media(max-width:1180px){.video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:900px){:root{--sidebar:100%}.app{display:block}.sidebar{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--border)}.nav{display:flex;overflow-x:auto}.nav-link{flex:0 0 auto}.main{padding:0 18px 28px}.topbar{margin:0 -18px;padding:12px 18px}}
     @media(max-width:700px){.video-grid{grid-template-columns:1fr}.toolbar{align-items:stretch}.counter{width:100%;margin-left:0}.video-card p{min-height:auto}}
-  </style>
+  
+/* Player em modo cinema: os cards continuam 16:9 e o vídeo abre em tela grande. */
+.video-modal[hidden]{display:none!important}.video-modal{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:clamp(10px,2.5vw,32px);background:rgba(1,4,10,.94);backdrop-filter:blur(15px)}
+.video-dialog{width:min(1320px,100%);max-height:calc(100dvh - 20px);display:flex;flex-direction:column;gap:12px;min-height:0}.video-dialog-header{display:flex;align-items:center;gap:12px;color:#f9fafb}.video-dialog-title{flex:1;min-width:0;font-size:clamp(15px,1.5vw,21px);font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.video-modal-close,.video-expand{border:1px solid #46505b;background:#222a34;color:white;border-radius:10px;padding:10px 15px;cursor:pointer;font-size:14px}.video-modal-close:hover,.video-expand:hover{background:#3b4653}.video-screen{position:relative;width:100%;aspect-ratio:16/9;max-height:calc(100dvh - 115px);background:#000;overflow:hidden;border-radius:12px;box-shadow:0 20px 80px rgba(0,0,0,.5)}.video-screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}.video-dialog:fullscreen{width:100%;max-width:none;max-height:none;padding:12px;background:#000}.video-dialog:fullscreen .video-screen{flex:1;aspect-ratio:auto;max-height:none}.video-modal-footer{font-size:12px;color:#b6bdc7}.video-modal-open{overflow:hidden}@media(max-width:700px){.video-modal{padding:8px}.video-dialog{gap:7px}.video-screen{aspect-ratio:16/9;border-radius:7px}.video-modal-footer{font-size:11px}.video-modal-close,.video-expand{padding:9px 10px}}</style>
 </head>
 <body>
 <div class="app">
@@ -140,10 +143,10 @@
 </div>
 </div>
 </article>
-<article class="video-card" data-category="conta amazon" data-download="https://drive.google.com/uc?export=download&amp;id=1sLwAfGYw-iXRdlYJayz6xIUGOeE_ACbM" data-search="como logar com otp login codigo verificacao dois fatores amazon" data-thumb="../capas/variacao.png?v=1" data-video="https://drive.google.com/file/d/1sLwAfGYw-iXRdlYJayz6xIUGOeE_ACbM/preview">
+<article class="video-card" data-category="conta amazon" data-download="https://drive.google.com/uc?export=download&amp;id=1sLwAfGYw-iXRdlYJayz6xIUGOeE_ACbM" data-search="como logar com otp login codigo verificacao dois fatores amazon" data-thumb="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221280%22%20height%3D%22720%22%20viewBox%3D%220%200%201280%20720%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23101b2c%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23182f3e%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22a%22%3E%3Cstop%20stop-color%3D%22%23ffae55%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ff7500%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%221280%22%20height%3D%22720%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%221070%22%20cy%3D%22115%22%20r%3D%22280%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.08%22%2F%3E%3Crect%20x%3D%2285%22%20y%3D%2272%22%20width%3D%22205%22%20height%3D%2255%22%20rx%3D%2216%22%20fill%3D%22url%28%23a%29%22%2F%3E%3Ctext%20x%3D%22188%22%20y%3D%22109%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%22%20font-size%3D%2225%22%20font-weight%3D%22bold%22%20fill%3D%22%2317191c%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2290%22%20y%3D%22295%22%20font-family%3D%22Arial%22%20font-weight%3D%22bold%22%20font-size%3D%2274%22%20fill%3D%22%23f7f9ff%22%3ELOGIN%20COM%3C%2Ftext%3E%3Ctext%20x%3D%2288%22%20y%3D%22400%22%20font-family%3D%22Arial%22%20font-weight%3D%22bold%22%20font-size%3D%22114%22%20fill%3D%22%23ff9837%22%3EOTP%3C%2Ftext%3E%3Ctext%20x%3D%2291%22%20y%3D%22476%22%20font-family%3D%22Arial%22%20font-size%3D%2231%22%20fill%3D%22%23c5cfdb%22%3EVerifica%C3%A7%C3%A3o%20em%20duas%20etapas%3C%2Ftext%3E%3Crect%20x%3D%22815%22%20y%3D%22192%22%20width%3D%22332%22%20height%3D%22300%22%20rx%3D%2232%22%20fill%3D%22%2323384b%22%20stroke%3D%22%2350677a%22%20stroke-width%3D%224%22%2F%3E%3Crect%20x%3D%22855%22%20y%3D%22280%22%20width%3D%22252%22%20height%3D%2272%22%20rx%3D%2217%22%20fill%3D%22%23111b29%22%2F%3E%3Ctext%20x%3D%22980%22%20y%3D%22329%22%20font-family%3D%22Arial%22%20font-size%3D%2238%22%20letter-spacing%3D%227%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%3E%E2%80%A2%E2%80%A2%E2%80%A2%E2%80%A2%E2%80%A2%E2%80%A2%3C%2Ftext%3E%3Ccircle%20cx%3D%22981%22%20cy%3D%22236%22%20r%3D%2223%22%20fill%3D%22%23ff9235%22%2F%3E%3Cpath%20d%3D%22M973%20235v-6a8%208%200%200%201%2016%200v6m-17%200h18v16h-18z%22%20fill%3D%22none%22%20stroke%3D%22%23151e2c%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Crect%20x%3D%22902%22%20y%3D%22391%22%20width%3D%22158%22%20height%3D%2241%22%20rx%3D%2215%22%20fill%3D%22url%28%23a%29%22%2F%3E%3Ctext%20x%3D%22981%22%20y%3D%22418%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%22%20font-weight%3D%22bold%22%20font-size%3D%2220%22%20fill%3D%22%231c1c1c%22%3EVERIFICAR%3C%2Ftext%3E%3C%2Fsvg%3E" data-video="https://drive.google.com/file/d/1sLwAfGYw-iXRdlYJayz6xIUGOeE_ACbM/preview">
 <div class="player-wrap">
 <button aria-label="Reproduzir vídeo Como fazer login com OTP" class="video-thumb" type="button">
-<img alt="Capa do vídeo Como fazer login com OTP" decoding="async" loading="eager" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';" src="../capas/variacao.png?v=1"/>
+<img alt="Capa do vídeo Como fazer login com OTP" decoding="async" loading="eager" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%221280%22%20height%3D%22720%22%20viewBox%3D%220%200%201280%20720%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%23101b2c%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23182f3e%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22a%22%3E%3Cstop%20stop-color%3D%22%23ffae55%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ff7500%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%221280%22%20height%3D%22720%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%221070%22%20cy%3D%22115%22%20r%3D%22280%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.08%22%2F%3E%3Crect%20x%3D%2285%22%20y%3D%2272%22%20width%3D%22205%22%20height%3D%2255%22%20rx%3D%2216%22%20fill%3D%22url%28%23a%29%22%2F%3E%3Ctext%20x%3D%22188%22%20y%3D%22109%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%22%20font-size%3D%2225%22%20font-weight%3D%22bold%22%20fill%3D%22%2317191c%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2290%22%20y%3D%22295%22%20font-family%3D%22Arial%22%20font-weight%3D%22bold%22%20font-size%3D%2274%22%20fill%3D%22%23f7f9ff%22%3ELOGIN%20COM%3C%2Ftext%3E%3Ctext%20x%3D%2288%22%20y%3D%22400%22%20font-family%3D%22Arial%22%20font-weight%3D%22bold%22%20font-size%3D%22114%22%20fill%3D%22%23ff9837%22%3EOTP%3C%2Ftext%3E%3Ctext%20x%3D%2291%22%20y%3D%22476%22%20font-family%3D%22Arial%22%20font-size%3D%2231%22%20fill%3D%22%23c5cfdb%22%3EVerifica%C3%A7%C3%A3o%20em%20duas%20etapas%3C%2Ftext%3E%3Crect%20x%3D%22815%22%20y%3D%22192%22%20width%3D%22332%22%20height%3D%22300%22%20rx%3D%2232%22%20fill%3D%22%2323384b%22%20stroke%3D%22%2350677a%22%20stroke-width%3D%224%22%2F%3E%3Crect%20x%3D%22855%22%20y%3D%22280%22%20width%3D%22252%22%20height%3D%2272%22%20rx%3D%2217%22%20fill%3D%22%23111b29%22%2F%3E%3Ctext%20x%3D%22980%22%20y%3D%22329%22%20font-family%3D%22Arial%22%20font-size%3D%2238%22%20letter-spacing%3D%227%22%20text-anchor%3D%22middle%22%20fill%3D%22%23fff%22%3E%E2%80%A2%E2%80%A2%E2%80%A2%E2%80%A2%E2%80%A2%E2%80%A2%3C%2Ftext%3E%3Ccircle%20cx%3D%22981%22%20cy%3D%22236%22%20r%3D%2223%22%20fill%3D%22%23ff9235%22%2F%3E%3Cpath%20d%3D%22M973%20235v-6a8%208%200%200%201%2016%200v6m-17%200h18v16h-18z%22%20fill%3D%22none%22%20stroke%3D%22%23151e2c%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3Crect%20x%3D%22902%22%20y%3D%22391%22%20width%3D%22158%22%20height%3D%2241%22%20rx%3D%2215%22%20fill%3D%22url%28%23a%29%22%2F%3E%3Ctext%20x%3D%22981%22%20y%3D%22418%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%22%20font-weight%3D%22bold%22%20font-size%3D%2220%22%20fill%3D%22%231c1c1c%22%3EVERIFICAR%3C%2Ftext%3E%3C%2Fsvg%3E"/>
 <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
 <span class="thumb-label">Clique para assistir</span>
 </button>
@@ -496,7 +499,7 @@
 </div>
 </main>
 </div>
-<script>
+<div aria-label="Reprodutor de vídeo" aria-modal="true" class="video-modal" hidden="" id="videoModal" role="dialog"><div class="video-dialog" id="videoDialog"><div class="video-dialog-header"><div class="video-dialog-title" id="videoModalTitle">Vídeo</div><button class="video-expand" id="videoExpand" title="Expandir reprodutor" type="button"><i class="fa-solid fa-expand"></i> Expandir</button><button aria-label="Fechar vídeo" class="video-modal-close" id="videoModalClose" type="button"><i class="fa-solid fa-xmark"></i> Fechar</button></div><div class="video-screen" id="videoScreen"></div><div class="video-modal-footer">O Google Drive controla o enquadramento interno do arquivo. Use Expandir para assistir em tamanho maior.</div></div></div><script>
     const $=(s,c=document)=>c.querySelector(s); const $$=(s,c=document)=>[...c.querySelectorAll(s)];
     const normalize=v=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
     const cards=$$(".video-card"); const search=$("#videoSearch"); const counter=$("#videoCounter"); const empty=$("#emptyState");
@@ -546,17 +549,42 @@
       thumb.addEventListener("click",()=>playCard(card));
     }
 
+    const videoModal=$("#videoModal");
+    const videoScreen=$("#videoScreen");
+    const videoDialog=$("#videoDialog");
+    const videoModalTitle=$("#videoModalTitle");
+    let previousFocus=null;
+    function closeVideo(){
+      videoScreen.replaceChildren(); // Encerra também a reprodução do iframe
+      videoModal.hidden=true;
+      document.body.classList.remove("video-modal-open");
+      if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+      previousFocus?.focus?.();
+    }
     function playCard(card){
       const url=(card.dataset.video||"").trim();
-      if(!url){
-        alert("O link deste vídeo ainda não foi configurado.");
-        return;
-      }
-      cards.forEach(other=>{ if(other!==card) resetPlayer(other); });
-      const wrap=$(".player-wrap",card);
-      wrap.innerHTML=`<iframe src="${url}" title="Player de vídeo" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>`;
-      wrap.scrollIntoView({behavior:"smooth",block:"center"});
+      if(!url){alert("O link deste vídeo ainda não foi configurado.");return;}
+      previousFocus=document.activeElement;
+      videoModalTitle.textContent=$("h2",card)?.textContent||"Vídeo";
+      videoScreen.replaceChildren();
+      const iframe=document.createElement("iframe");
+      iframe.src=url;
+      iframe.title=videoModalTitle.textContent;
+      iframe.setAttribute("allow","autoplay; fullscreen; encrypted-media; picture-in-picture");
+      iframe.setAttribute("allowfullscreen","");
+      iframe.referrerPolicy="strict-origin-when-cross-origin";
+      videoScreen.appendChild(iframe);
+      videoModal.hidden=false;
+      document.body.classList.add("video-modal-open");
+      $("#videoModalClose").focus();
     }
+    $("#videoModalClose").addEventListener("click",closeVideo);
+    videoModal.addEventListener("click",e=>{if(e.target===videoModal)closeVideo();});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!videoModal.hidden)closeVideo();});
+    $("#videoExpand").addEventListener("click",()=>{
+      if(document.fullscreenElement) document.exitFullscreen();
+      else if(videoDialog.requestFullscreen) videoDialog.requestFullscreen().catch(()=>{});
+    });
 
     cards.forEach(card=>{
       const thumb=$(".video-thumb",card);
