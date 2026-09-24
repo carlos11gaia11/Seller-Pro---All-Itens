@@ -56,7 +56,7 @@
     .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 18px}.filter-btn{min-height:38px;padding:0 12px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:.75rem;font-weight:850}.filter-btn.active,.filter-btn:hover{color:var(--text);border-color:rgba(255,122,0,.42);background:var(--orange-soft)}
     .counter{margin-left:auto;color:var(--muted);font-size:.75rem;font-weight:800}
     .video-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.video-card{overflow:hidden;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);transition:.18s ease}.video-card:hover{transform:translateY(-3px);border-color:var(--border-strong);box-shadow:0 16px 38px rgba(0,0,0,.12)}
-    .player-wrap{position:relative;aspect-ratio:16/9;background:#050608;border-bottom:1px solid var(--border);overflow:hidden}.player-wrap iframe{width:100%;height:100%;display:block;border:0;background:#050608}.video-thumb{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;display:grid;place-items:center;cursor:pointer;background:#050608}.video-thumb img{width:100%;height:100%;display:block;object-fit:cover;opacity:.9;transition:.2s ease}.video-thumb:hover img{transform:scale(1.025);opacity:1}.thumb-play{position:absolute;width:66px;height:66px;display:grid;place-items:center;border:0;border-radius:50%;color:#211306;background:linear-gradient(135deg,#ffbd73,var(--orange));box-shadow:0 14px 34px rgba(0,0,0,.28);font-size:1.25rem;cursor:pointer}.thumb-label{position:absolute;left:12px;bottom:12px;padding:7px 10px;border-radius:8px;color:#fff;background:rgba(0,0,0,.62);font-size:.68rem;font-weight:900;backdrop-filter:blur(6px)}.video-body{padding:16px}.video-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.pill{padding:5px 8px;border-radius:7px;color:#ffbb72;background:rgba(255,122,0,.09);border:1px solid rgba(255,122,0,.18);font-size:.63rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em}.duration{color:var(--soft);font-size:.68rem;font-weight:800}.video-card h2{margin:0 0 7px;font-size:1rem}.video-card p{min-height:58px;margin:0;color:var(--muted);font-size:.8rem;line-height:1.5}.video-actions{display:flex;gap:8px;margin-top:14px}.action{min-height:39px;display:inline-flex;align-items:center;justify-content:center;gap:7px;flex:1;padding:0 11px;color:var(--text);text-decoration:none;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;font-size:.74rem;font-weight:850}.action:hover{border-color:rgba(255,122,0,.42);background:var(--surface-3)}.action.primary{color:#211306;background:linear-gradient(135deg,#ffbd73,var(--orange));border-color:transparent}.empty{display:none;padding:34px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:var(--radius);background:var(--surface)}.empty.show{display:block}.footer{margin-top:26px;padding-top:18px;color:var(--soft);border-top:1px solid var(--border);font-size:.75rem}
+    .player-wrap{position:relative;aspect-ratio:16/9;background:#050608;border-bottom:1px solid var(--border);overflow:hidden}.player-wrap iframe{width:100%;height:100%;display:block;border:0;background:#050608}.video-thumb{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;display:grid;place-items:center;cursor:pointer;background:#050608}.video-thumb img{width:100%;height:100%;display:block;object-fit:cover;opacity:.9;transition:.2s ease}.video-thumb:hover img{transform:scale(1.025);opacity:1}.thumb-play{position:absolute;width:66px;height:66px;display:grid;place-items:center;border:0;border-radius:50%;color:#211306;background:linear-gradient(135deg,#ffbd73,var(--orange));box-shadow:0 14px 34px rgba(0,0,0,.28);font-size:1.25rem;cursor:pointer}.thumb-label{position:absolute;left:12px;bottom:12px;padding:7px 10px;border-radius:8px;color:#fff;background:rgba(0,0,0,.62);font-size:.68rem;font-weight:900;backdrop-filter:blur(6px)}.video-body{padding:16px}.video-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}.pill{padding:5px 8px;border-radius:7px;color:#ffbb72;background:rgba(255,122,0,.09);border:1px solid rgba(255,122,0,.18);font-size:.63rem;font-weight:900;text-transform:uppercase;letter-spacing:.05em}.duration{color:var(--soft);font-size:.68rem;font-weight:800}.video-card h2{margin:0 0 7px;font-size:1rem}.video-card p{min-height:58px;margin:0;color:var(--muted);font-size:.8rem;line-height:1.5}.video-actions{display:flex;gap:8px;margin-top:14px}.action{min-height:39px;display:inline-flex;align-items:center;justify-content:center;gap:7px;flex:1;padding:0 11px;color:var(--text);text-decoration:none;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;font-size:.74rem;font-weight:850}.action:hover{border-color:rgba(255,122,0,.42);background:var(--surface-3)}.action:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.7)}.action.primary{color:#211306;background:linear-gradient(135deg,#ffbd73,var(--orange));border-color:transparent}.empty{display:none;padding:34px;text-align:center;color:var(--muted);border:1px dashed var(--border);border-radius:var(--radius);background:var(--surface)}.empty.show{display:block}.footer{margin-top:26px;padding-top:18px;color:var(--soft);border-top:1px solid var(--border);font-size:.75rem}
     @media(max-width:1180px){.video-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:900px){:root{--sidebar:100%}.app{display:block}.sidebar{position:relative;height:auto;border-right:0;border-bottom:1px solid var(--border)}.nav{display:flex;overflow-x:auto}.nav-link{flex:0 0 auto}.main{padding:0 18px 28px}.topbar{margin:0 -18px;padding:12px 18px}}
     @media(max-width:700px){.video-grid{grid-template-columns:1fr}.toolbar{align-items:stretch}.counter{width:100%;margin-left:0}.video-card p{min-height:auto}}
@@ -113,7 +113,7 @@
           2) Informe data-video com o link embed do YouTube ou Drive
           3) Informe data-thumb com a URL da thumbnail
           4) Troque título, descrição, data-category e data-search
-          5) Em data-download, coloque um link DIRETO para o arquivo do vídeo (.mp4 ou link de download do Drive).
+          5) Em data-download, coloque o link do arquivo autorizado para download (Drive ou MP4).
              6) Troque a imagem da capa no <img src> e em data-thumb.
              Observação: link normal do YouTube não funciona como download direto.
         -->
@@ -595,24 +595,59 @@
       playCard(btn.closest(".video-card"));
     }));
 
-    $$(".download-btn").forEach(btn=>btn.addEventListener("click",()=>{
-      const card=btn.closest(".video-card");
-      const url=(card.dataset.download||"").trim();
+    // Downloads do Google Drive devem abrir por navegação real: o atributo
+    // HTML download é ignorado para URLs de outros domínios.
+    // Arquivos grandes podem pedir confirmação do próprio Google Drive.
+    function driveFileId(value){
+      if(!value) return "";
+      const path=value.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+      if(path) return path[1];
+      try{
+        const parsed=new URL(value);
+        if(!/(^|\.)drive\.google\.com$/.test(parsed.hostname)) return "";
+        return parsed.searchParams.get("id") || "";
+      }catch{return "";}
+    }
 
-      if(!url){
-        alert("O link de download deste vídeo ainda não foi configurado.");
+    $$(".download-btn").forEach(btn=>{
+      const card=btn.closest(".video-card");
+      const id=driveFileId(card.dataset.download || card.dataset.video || "");
+      const custom=(card.dataset.download||"").trim();
+      const isYoutube=/(youtube\.com|youtu\.be)/i.test(card.dataset.video||"");
+
+      // Não exibir um botão que promete baixar vídeos sem arquivo configurado.
+      if(!custom && !id){
+        btn.disabled=true;
+        btn.title=isYoutube
+          ? "Vídeo do YouTube: configure um arquivo autorizado para download."
+          : "Adicione o link do arquivo para disponibilizar o download.";
+        btn.innerHTML='<i class="fa-solid fa-download"></i> Indisponível';
         return;
       }
 
-      const a=document.createElement("a");
-      a.href=url;
-      a.download="";
-      a.target="_blank";
-      a.rel="noopener";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    }));
+      btn.addEventListener("click",()=>{
+        if(id){
+          // Abre em outra aba sem solicitar o download de um domínio externo
+          // com <a download>, que muitos navegadores simplesmente ignoram.
+          const direct=`https://drive.google.com/uc?export=download&id=${encodeURIComponent(id)}`;
+          const opened=window.open(direct,"_blank","noopener");
+          if(!opened){
+            // Fallback caso o navegador bloqueie a nova aba.
+            window.location.assign(direct);
+          }
+        }else{
+          // Arquivo de outro host com URL direta informada pelo administrador.
+          const a=document.createElement("a");
+          a.href=custom;
+          a.target="_blank";
+          a.rel="noopener noreferrer";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+      });
+      btn.title="Baixar arquivo (o Drive pode solicitar confirmação em vídeos grandes)";
+    });
 
     render();
   </script>
