@@ -2601,6 +2601,16 @@ body[data-theme="light"] {
     }
 
   
+    /* Ao abrir um card, recolhe as barras superiores do Ares e do HUB.
+       As barras retornam automaticamente ao fechar os detalhes. */
+    body.detail-card-open .app > main > header,
+    body.detail-card-open .app > main > .board-area > .board-nav,
+    body.detail-card-open > header,
+    body.detail-card-open > nav,
+    body.detail-card-open :is(.sp-topbar, .sp-navbar, .seller-pro-topbar, .seller-pro-navbar, #spTopbar, #spNavbar, #global-navbar, #globalNavbar) {
+      display: none !important;
+    }
+
     /* Detalhes do card: o nome permanece legível, sem ficar atrás da barra. */
     #detailModal { z-index: 110; }
     #detailModal .detail-modal {
@@ -6239,6 +6249,7 @@ body[data-theme="light"] {
       const detailModal = document.getElementById('detailModal');
       detailModal.querySelector('.detail-modal').scrollTop = 0;
       document.getElementById('detailContent').scrollTop = 0;
+      document.body.classList.add('detail-card-open');
       detailModal.classList.add('show');
     }
 
@@ -6317,6 +6328,7 @@ body[data-theme="light"] {
 
     function closeTaskDetails() {
       document.getElementById('detailModal').classList.remove('show');
+      document.body.classList.remove('detail-card-open');
     }
 
     function resetFilters() {
