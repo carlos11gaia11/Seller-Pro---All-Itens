@@ -2600,6 +2600,44 @@ body[data-theme="light"] {
       .detail-print-btn.detail-print-placeholder { grid-template-columns: 72px minmax(0, 1fr); }
     }
 
+  
+    /* Detalhes do card: o nome permanece legível, sem ficar atrás da barra. */
+    #detailModal { z-index: 110; }
+    #detailModal .detail-modal {
+      display: flex;
+      flex-direction: column;
+      max-height: min(92dvh, 92vh);
+      overflow: hidden;
+    }
+    #detailModal .modal-header {
+      position: relative;
+      z-index: 3;
+      flex: 0 0 auto;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 14px;
+      padding: 4px 0 14px;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+    }
+    #detailModal #detailTitle {
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: 100%;
+      font-size: clamp(19px, 2.6vw, 26px);
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+    #detailModal .modal-header .close { flex-shrink: 0; }
+    #detailModal .detail-content {
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: none;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
   </style>
 
   <!-- Seller Pro: tema e autenticação compartilhados -->
@@ -2808,7 +2846,7 @@ body[data-theme="light"] {
       <div class="form-grid">
         <div class="field full">
           <div class="required-hint">
-            Para mover o card para <strong>Loja entregue</strong>, informe a data da entrega. Os dados de Seller Cont só são obrigatórios quando a caixinha abaixo estiver marcada.
+            Para mover o card para <strong>Loja entregue</strong>, é obrigatório preencher a data de entrega, a avaliação SPN e o <strong>MCID</strong>, mesmo que Seller Cont não esteja selecionado. Os demais dados de Seller Cont só são obrigatórios quando a caixinha abaixo estiver marcada.
           </div>
         </div>
 
@@ -2852,9 +2890,9 @@ body[data-theme="light"] {
           <input id="deliveryBillingDate" type="date" required />
         </div>
 
-        <div class="field seller-cont-only-field">
-          <label>MCID</label>
-          <input id="deliveryMcid" placeholder="MCID da loja" required />
+        <div class="field">
+          <label>MCID (obrigatório)</label>
+          <input id="deliveryMcid" placeholder="Informe o MCID para entregar a loja" required />
         </div>
 
         <div class="field full seller-cont-only-field">
@@ -3865,6 +3903,10 @@ body[data-theme="light"] {
 
     function getLastUpdateInfo(task) {
       const text = getLastUpdate(task);
+      // Após a primeira venda, o trabalho já foi concluído: não há atraso a contabilizar.
+      if (isVendaFinalizadaTask(task) || task?.saleFinalizedAt || task?.sale_finalized_at) {
+        return { text, dateISO: '', days: null, isStale: false };
+      }
       const dateISO = parseDateFromUpdateLine(text);
 
       if (!dateISO) {
@@ -4898,6 +4940,15 @@ body[data-theme="light"] {
         return;
       }
 
+      // Impede também a entrega pelo editor de cards sem um MCID preenchido.
+      const destinationStatus = document.getElementById('taskStatus').value;
+      const destinationMcid = document.getElementById('taskMcid').value.trim();
+      if (['Loja entregue', 'Venda finalizada'].includes(destinationStatus) && !destinationMcid) {
+        alert('O MCID é obrigatório para entregar ou finalizar uma loja. Preencha o MCID antes de continuar.');
+        document.getElementById('taskMcid').focus();
+        return;
+      }
+
       const updatesText = document.getElementById('taskUpdates').value.trim();
 
       const updates = updatesText
@@ -5804,6 +5855,12 @@ body[data-theme="light"] {
         spn_evaluation: document.getElementById('deliverySpnEvaluation').value
       };
 
+      if (!deliveryData.mcid) {
+        alert('O MCID é obrigatório. Preencha o MCID para entregar a loja.');
+        document.getElementById('deliveryMcid').focus();
+        return;
+      }
+
       const requiredFields = deliveryData.is_seller_cont
         ? [
             deliveryData.delivery_completed_at,
@@ -5816,7 +5873,7 @@ body[data-theme="light"] {
             deliveryData.product_sent,
             deliveryData.seller_cont_status
           ]
-        : [deliveryData.delivery_completed_at];
+        : [deliveryData.delivery_completed_at, deliveryData.mcid];
 
       requiredFields.push(deliveryData.spn_evaluation);
 
@@ -6179,7 +6236,10 @@ body[data-theme="light"] {
         </div>
       `;
 
-      document.getElementById('detailModal').classList.add('show');
+      const detailModal = document.getElementById('detailModal');
+      detailModal.querySelector('.detail-modal').scrollTop = 0;
+      document.getElementById('detailContent').scrollTop = 0;
+      detailModal.classList.add('show');
     }
 
     function editTaskFromDetails(taskId) {
