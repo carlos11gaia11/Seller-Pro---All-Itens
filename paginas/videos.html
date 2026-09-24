@@ -1,28 +1,26 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0b0d12">
-  <title>Vídeos Rápidos • Seller Pro</title>
-
-  <script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="#0b0d12" name="theme-color"/>
+<title>Vídeos Rápidos • Seller Pro</title>
+<script>
     (() => {
       const saved = localStorage.getItem("sellerProTema");
       if (saved === "claro") document.documentElement.classList.add("theme-light-preload");
     })();
   </script>
-
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg">
-  <link rel="stylesheet" href="../assets/css/seller-pro.css?v=20260720">
-  <script>document.documentElement.classList.add("sp-auth-pending");</script>
-  <script src="../assets/js/config.js?v=20260818-eng3"></script>
-  <script src="../assets/js/file-session.js?v=20260720-loginfix2"></script>
-  <script src="../assets/js/app-core.js?v=20260818-eng3"></script>
-
-  <style>
+<link href="https://cdnjs.cloudflare.com" rel="preconnect"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="../assets/icons/favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="../assets/css/seller-pro.css?v=20260720" rel="stylesheet"/>
+<script>document.documentElement.classList.add("sp-auth-pending");</script>
+<script src="../assets/js/config.js?v=20260818-eng3"></script>
+<script src="../assets/js/file-session.js?v=20260720-loginfix2"></script>
+<script src="../assets/js/app-core.js?v=20260818-eng3"></script>
+<style>
     :root{
       --orange:#ff7a00;--orange-2:#ff9b3d;--orange-soft:rgba(255,122,0,.12);
       --bg:#0b0d12;--bg-2:#10131a;--surface:#141821;--surface-2:#1a1f2a;
@@ -65,52 +63,48 @@
   </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <a class="brand" href="index.html">
-        <span class="brand-mark">SP</span>
-        <span><strong>Seller Pro</strong><small>Central de operações</small></span>
-      </a>
-      <div class="nav-label">Principal</div>
-      <nav class="nav">
-        <a class="nav-link" href="index.html"><i class="fa-solid fa-house"></i><span>Início</span></a>
-        <a class="nav-link" href="ares.html"><i class="fa-solid fa-headset"></i><span>ARES</span></a>
-        <a class="nav-link" href="lojas-prontas.html"><i class="fa-solid fa-store"></i><span>Lojas prontas</span></a>
-        <a class="nav-link" href="lista-treinamento.html"><i class="fa-solid fa-users"></i><span>Sellers</span></a>
-        <a class="nav-link active" href="videos.html"><i class="fa-solid fa-circle-play"></i><span>Vídeos</span></a>
-      </nav>
-      <div class="sidebar-bottom">
-        <button class="theme-btn" id="themeToggle" type="button"><i class="fa-solid fa-sun"></i><span id="themeText">Tema claro</span></button>
-      </div>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <a class="back-btn" href="index.html" title="Voltar ao HUB"><i class="fa-solid fa-arrow-left"></i></a>
-        <div class="search">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input id="videoSearch" type="search" placeholder="Buscar vídeo: FBA, faturador, anúncio, Ads..." autocomplete="off">
-        </div>
-      </div>
-
-      <div class="page">
-        <section class="hero">
-          <div class="hero-kicker"><i class="fa-solid fa-bolt"></i> Base rápida do suporte</div>
-          <h1>Vídeos de <span>apoio</span></h1>
-          <p>Respostas rápidas para dúvidas recorrentes da equipe. Os vídeos podem ficar hospedados externamente, sem pesar no repositório do HUB. Clique na miniatura para assistir.</p>
-        </section>
-
-        <div class="toolbar" id="filters">
-          <button class="filter-btn active" data-filter="todos" type="button">Todos</button>
-          <button class="filter-btn" data-filter="amazon" type="button">Amazon</button>
-          <button class="filter-btn" data-filter="fba" type="button">FBA / DBA</button>
-          <button class="filter-btn" data-filter="faturador" type="button">Faturador</button>
-          <button class="filter-btn" data-filter="ads" type="button">Ads</button>
-          <button class="filter-btn" data-filter="conta" type="button">Conta</button>
-          <span class="counter" id="videoCounter"></span>
-        </div>
-
-        <!--
+<div class="app">
+<aside class="sidebar">
+<a class="brand" href="index.html">
+<span class="brand-mark">SP</span>
+<span><strong>Seller Pro</strong><small>Central de operações</small></span>
+</a>
+<div class="nav-label">Principal</div>
+<nav class="nav">
+<a class="nav-link" href="index.html"><i class="fa-solid fa-house"></i><span>Início</span></a>
+<a class="nav-link" href="ares.html"><i class="fa-solid fa-headset"></i><span>ARES</span></a>
+<a class="nav-link" href="lojas-prontas.html"><i class="fa-solid fa-store"></i><span>Lojas prontas</span></a>
+<a class="nav-link" href="lista-treinamento.html"><i class="fa-solid fa-users"></i><span>Sellers</span></a>
+<a class="nav-link active" href="videos.html"><i class="fa-solid fa-circle-play"></i><span>Vídeos</span></a>
+</nav>
+<div class="sidebar-bottom">
+<button class="theme-btn" id="themeToggle" type="button"><i class="fa-solid fa-sun"></i><span id="themeText">Tema claro</span></button>
+</div>
+</aside>
+<main class="main">
+<div class="topbar">
+<a class="back-btn" href="index.html" title="Voltar ao HUB"><i class="fa-solid fa-arrow-left"></i></a>
+<div class="search">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input autocomplete="off" id="videoSearch" placeholder="Buscar vídeo: FBA, faturador, anúncio, Ads..." type="search"/>
+</div>
+</div>
+<div class="page">
+<section class="hero">
+<div class="hero-kicker"><i class="fa-solid fa-bolt"></i> Base rápida do suporte</div>
+<h1>Vídeos de <span>apoio</span></h1>
+<p>Tutoriais e exemplos de reuniões para a equipe. Clique na miniatura para assistir sem sair do HUB. Vídeos do Drive exigem permissão de visualização.</p>
+</section>
+<div class="toolbar" id="filters">
+<button class="filter-btn active" data-filter="todos" type="button">Todos</button>
+<button class="filter-btn" data-filter="amazon" type="button">Amazon</button>
+<button class="filter-btn" data-filter="fba" type="button">FBA / DBA</button>
+<button class="filter-btn" data-filter="faturador" type="button">Faturador</button>
+<button class="filter-btn" data-filter="ads" type="button">Ads</button>
+<button class="filter-btn" data-filter="conta" type="button">Conta</button>
+<button class="filter-btn" data-filter="calls" type="button">Calls</button><span class="counter" id="videoCounter"></span>
+</div>
+<!--
           COMO ADICIONAR UM NOVO VÍDEO POR LINK:
           1) Duplique um .video-card abaixo
           2) Informe data-video com o link embed do YouTube ou Drive
@@ -120,510 +114,389 @@
              6) Troque a imagem da capa no <img src> e em data-thumb.
              Observação: link normal do YouTube não funciona como download direto.
         -->
-        <section class="video-grid" id="videoGrid">
-          <article
-            class="video-card"
-            data-category="amazon"
-            data-search="variacao nova seller central criar variacao parent child pai filho"
-            data-video="https://www.youtube.com/embed/XttK4_QpPPM?autoplay=1&rel=0"
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Como fazer variação na Nova Seller Central">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Como fazer variação na Nova Seller Central" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">Amazon</span>
-                <span class="duration">Nova Seller Central</span>
-              </div>
-              <h2>Como fazer variação</h2>
-              <p>Passo a passo para criar e configurar variações de produto dentro da Nova Seller Central.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+<section class="video-grid" id="videoGrid">
+<article class="video-card" data-category="amazon" data-download="" data-search="variacao nova seller central criar variacao parent child pai filho" data-thumb="../capas/variacao.png?v=1" data-video="https://www.youtube.com/embed/XttK4_QpPPM?autoplay=1&amp;rel=0">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Como fazer variação na Nova Seller Central" class="video-thumb" type="button">
+<img alt="Thumbnail do vídeo Como fazer variação na Nova Seller Central" decoding="async" loading="eager" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';" src="../capas/variacao.png?v=1"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Amazon</span>
+<span class="duration">Nova Seller Central</span>
+</div>
+<h2>Como fazer variação</h2>
+<p>Passo a passo para criar e configurar variações de produto dentro da Nova Seller Central.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="amazon"
-            data-search="Como Logar com OTP"
-            data-video="https://drive.google.com/file/d/1sLwAfGYw-iXRdlYJayz6xIUGOeE_ACbM/preview"
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 02">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 02" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">Amazon</span>
-                <span class="duration">Faturador</span>
-              </div>
-              <h2>Exemplo de vídeo 02</h2>
-              <p>Substitua este card por um vídeo sobre faturador, certificado ou nota fiscal.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="conta amazon" data-download="https://drive.google.com/uc?export=download&amp;id=1sLwAfGYw-iXRdlYJayz6xIUGOeE_ACbM" data-search="como logar com otp login codigo verificacao dois fatores amazon" data-thumb="../capas/variacao.png?v=1" data-video="https://drive.google.com/file/d/1sLwAfGYw-iXRdlYJayz6xIUGOeE_ACbM/preview">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Como fazer login com OTP" class="video-thumb" type="button">
+<img alt="Capa do vídeo Como fazer login com OTP" decoding="async" loading="eager" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';" src="../capas/variacao.png?v=1"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Conta</span>
+<span class="duration">Login OTP</span>
+</div>
+<h2>Como fazer login com OTP</h2>
+<p>Tutorial de acesso à conta utilizando o código OTP.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="fba"
-            data-search="fba remessa etiquetas envio"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 03">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 03" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">FBA / DBA</span>
-                <span class="duration">FBA</span>
-              </div>
-              <h2>Exemplo de vídeo 03</h2>
-              <p>Substitua este card por um vídeo sobre criação de envio FBA, etiquetas ou remessa.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="faturador" data-download="https://drive.google.com/uc?export=download&amp;id=1BYWStUXtlkuJ8429-1oxC-d3CfCZdjAG" data-search="faturador configurar notas fiscais amazon" data-thumb="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2310131b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23252b38%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22847%22%20cy%3D%2278%22%20r%3D%22190%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.10%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%22500%22%20r%3D%22210%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.07%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2252%22%20width%3D%22168%22%20height%3D%2238%22%20rx%3D%2212%22%20fill%3D%22%23ff7a00%22%2F%3E%3Ctext%20x%3D%22144%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22bold%22%20fill%3D%22%23171717%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22245%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%3ECONFIGURAR%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22325%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ff9b3d%22%3EFATURADOR%3C%2Ftext%3E%3Crect%20x%3D%2262%22%20y%3D%22378%22%20width%3D%22470%22%20height%3D%223%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.75%22%2F%3E%3Ctext%20x%3D%2262%22%20y%3D%22430%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2228%22%20fill%3D%22%23c1c8d1%22%3EV%C3%8DDEO%20DE%20APOIO%3C%2Ftext%3E%3C%2Fsvg%3E" data-video="https://drive.google.com/file/d/1BYWStUXtlkuJ8429-1oxC-d3CfCZdjAG/preview">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Como configurar o faturador" class="video-thumb" type="button">
+<img alt="Capa do vídeo Como configurar o faturador" decoding="async" loading="eager" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2310131b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23252b38%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22847%22%20cy%3D%2278%22%20r%3D%22190%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.10%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%22500%22%20r%3D%22210%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.07%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2252%22%20width%3D%22168%22%20height%3D%2238%22%20rx%3D%2212%22%20fill%3D%22%23ff7a00%22%2F%3E%3Ctext%20x%3D%22144%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22bold%22%20fill%3D%22%23171717%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22245%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%3ECONFIGURAR%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22325%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ff9b3d%22%3EFATURADOR%3C%2Ftext%3E%3Crect%20x%3D%2262%22%20y%3D%22378%22%20width%3D%22470%22%20height%3D%223%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.75%22%2F%3E%3Ctext%20x%3D%2262%22%20y%3D%22430%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2228%22%20fill%3D%22%23c1c8d1%22%3EV%C3%8DDEO%20DE%20APOIO%3C%2Ftext%3E%3C%2Fsvg%3E"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Faturador</span>
+<span class="duration">Configuração</span>
+</div>
+<h2>Como configurar o faturador</h2>
+<p>Tutorial para configurar o faturador na sua conta Amazon.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="fba"
-            data-search="dba delivery by amazon configuracao"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 04">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 04" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">FBA / DBA</span>
-                <span class="duration">DBA</span>
-              </div>
-              <h2>Exemplo de vídeo 04</h2>
-              <p>Substitua este card por um vídeo sobre ativação, configuração ou operação de DBA.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="calls" data-download="https://drive.google.com/uc?export=download&amp;id=1EwD9XzDpViWyQWElDWHcW_gIgDdh9fvE" data-search="call onboarding onboard reunião boas vindas" data-thumb="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2310131b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23252b38%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22847%22%20cy%3D%2278%22%20r%3D%22190%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.10%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%22500%22%20r%3D%22210%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.07%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2252%22%20width%3D%22168%22%20height%3D%2238%22%20rx%3D%2212%22%20fill%3D%22%23ff7a00%22%2F%3E%3Ctext%20x%3D%22144%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22bold%22%20fill%3D%22%23171717%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22245%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%3ECALL%20DE%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22325%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ff9b3d%22%3EONBOARDING%3C%2Ftext%3E%3Crect%20x%3D%2262%22%20y%3D%22378%22%20width%3D%22470%22%20height%3D%223%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.75%22%2F%3E%3Ctext%20x%3D%2262%22%20y%3D%22430%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2228%22%20fill%3D%22%23c1c8d1%22%3EV%C3%8DDEO%20DE%20APOIO%3C%2Ftext%3E%3C%2Fsvg%3E" data-video="https://drive.google.com/file/d/1EwD9XzDpViWyQWElDWHcW_gIgDdh9fvE/preview">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Exemplo de call de onboarding" class="video-thumb" type="button">
+<img alt="Capa do vídeo Exemplo de call de onboarding" decoding="async" loading="eager" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2310131b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23252b38%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22847%22%20cy%3D%2278%22%20r%3D%22190%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.10%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%22500%22%20r%3D%22210%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.07%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2252%22%20width%3D%22168%22%20height%3D%2238%22%20rx%3D%2212%22%20fill%3D%22%23ff7a00%22%2F%3E%3Ctext%20x%3D%22144%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22bold%22%20fill%3D%22%23171717%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22245%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%3ECALL%20DE%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22325%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ff9b3d%22%3EONBOARDING%3C%2Ftext%3E%3Crect%20x%3D%2262%22%20y%3D%22378%22%20width%3D%22470%22%20height%3D%223%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.75%22%2F%3E%3Ctext%20x%3D%2262%22%20y%3D%22430%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2228%22%20fill%3D%22%23c1c8d1%22%3EV%C3%8DDEO%20DE%20APOIO%3C%2Ftext%3E%3C%2Fsvg%3E"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Calls</span>
+<span class="duration">Onboarding</span>
+</div>
+<h2>Exemplo de call de onboarding</h2>
+<p>Exemplo de reunião de onboarding para orientação inicial do seller.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="amazon"
-            data-search="anuncio listing titulo bullet descricao"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 05">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 05" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">Amazon</span>
-                <span class="duration">Anúncio</span>
-              </div>
-              <h2>Exemplo de vídeo 05</h2>
-              <p>Substitua este card por um vídeo sobre criação de anúncio, título, bullet ou descrição.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="calls" data-download="https://drive.google.com/uc?export=download&amp;id=1aw9QTAPD3-8hVxzQTiQT9Os25herUSuM" data-search="call briefing alinhamento loja pronta" data-thumb="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2310131b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23252b38%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22847%22%20cy%3D%2278%22%20r%3D%22190%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.10%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%22500%22%20r%3D%22210%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.07%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2252%22%20width%3D%22168%22%20height%3D%2238%22%20rx%3D%2212%22%20fill%3D%22%23ff7a00%22%2F%3E%3Ctext%20x%3D%22144%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22bold%22%20fill%3D%22%23171717%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22245%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%3ECALL%20DE%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22325%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ff9b3d%22%3EBRIEFING%3C%2Ftext%3E%3Crect%20x%3D%2262%22%20y%3D%22378%22%20width%3D%22470%22%20height%3D%223%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.75%22%2F%3E%3Ctext%20x%3D%2262%22%20y%3D%22430%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2228%22%20fill%3D%22%23c1c8d1%22%3EV%C3%8DDEO%20DE%20APOIO%3C%2Ftext%3E%3C%2Fsvg%3E" data-video="https://drive.google.com/file/d/1aw9QTAPD3-8hVxzQTiQT9Os25herUSuM/preview">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Exemplo de call de briefing" class="video-thumb" type="button">
+<img alt="Capa do vídeo Exemplo de call de briefing" decoding="async" loading="eager" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2310131b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23252b38%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22847%22%20cy%3D%2278%22%20r%3D%22190%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.10%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%22500%22%20r%3D%22210%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.07%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2252%22%20width%3D%22168%22%20height%3D%2238%22%20rx%3D%2212%22%20fill%3D%22%23ff7a00%22%2F%3E%3Ctext%20x%3D%22144%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22bold%22%20fill%3D%22%23171717%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22245%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%3ECALL%20DE%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22325%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ff9b3d%22%3EBRIEFING%3C%2Ftext%3E%3Crect%20x%3D%2262%22%20y%3D%22378%22%20width%3D%22470%22%20height%3D%223%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.75%22%2F%3E%3Ctext%20x%3D%2262%22%20y%3D%22430%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2228%22%20fill%3D%22%23c1c8d1%22%3EV%C3%8DDEO%20DE%20APOIO%3C%2Ftext%3E%3C%2Fsvg%3E"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Calls</span>
+<span class="duration">Briefing</span>
+</div>
+<h2>Exemplo de call de briefing</h2>
+<p>Exemplo de reunião de briefing para alinhamento inicial da loja.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="ads"
-            data-search="ads acos tacos campanha"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 06">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 06" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">Ads</span>
-                <span class="duration">Ads</span>
-              </div>
-              <h2>Exemplo de vídeo 06</h2>
-              <p>Substitua este card por um vídeo sobre campanhas, ACOS, TACOS ou publicidade.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="ads" data-download="https://drive.google.com/uc?export=download&amp;id=1lMQ8JN1FX8lxupokG1EojBdUWoGVHkR2" data-search="ads campanha automatica geral amazon publicidade" data-thumb="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2310131b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23252b38%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22847%22%20cy%3D%2278%22%20r%3D%22190%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.10%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%22500%22%20r%3D%22210%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.07%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2252%22%20width%3D%22168%22%20height%3D%2238%22%20rx%3D%2212%22%20fill%3D%22%23ff7a00%22%2F%3E%3Ctext%20x%3D%22144%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22bold%22%20fill%3D%22%23171717%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22245%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%3EADS%20AUTOM%C3%81TICA%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22325%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ff9b3d%22%3EGERAL%3C%2Ftext%3E%3Crect%20x%3D%2262%22%20y%3D%22378%22%20width%3D%22470%22%20height%3D%223%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.75%22%2F%3E%3Ctext%20x%3D%2262%22%20y%3D%22430%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2228%22%20fill%3D%22%23c1c8d1%22%3EV%C3%8DDEO%20DE%20APOIO%3C%2Ftext%3E%3C%2Fsvg%3E" data-video="https://drive.google.com/file/d/1lMQ8JN1FX8lxupokG1EojBdUWoGVHkR2/preview">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Como criar campanha de Ads automática geral" class="video-thumb" type="button">
+<img alt="Capa do vídeo Como criar campanha de Ads automática geral" decoding="async" loading="eager" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2310131b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23252b38%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22847%22%20cy%3D%2278%22%20r%3D%22190%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.10%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%22500%22%20r%3D%22210%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.07%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2252%22%20width%3D%22168%22%20height%3D%2238%22%20rx%3D%2212%22%20fill%3D%22%23ff7a00%22%2F%3E%3Ctext%20x%3D%22144%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22bold%22%20fill%3D%22%23171717%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22245%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%3EADS%20AUTOM%C3%81TICA%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22325%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ff9b3d%22%3EGERAL%3C%2Ftext%3E%3Crect%20x%3D%2262%22%20y%3D%22378%22%20width%3D%22470%22%20height%3D%223%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.75%22%2F%3E%3Ctext%20x%3D%2262%22%20y%3D%22430%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2228%22%20fill%3D%22%23c1c8d1%22%3EV%C3%8DDEO%20DE%20APOIO%3C%2Ftext%3E%3C%2Fsvg%3E"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Ads</span>
+<span class="duration">Automática geral</span>
+</div>
+<h2>Como criar campanha de Ads automática geral</h2>
+<p>Passo a passo de criação de uma campanha automática geral.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="conta"
-            data-search="otp login verificacao conta"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 07">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 07" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">Conta</span>
-                <span class="duration">Conta</span>
-              </div>
-              <h2>Exemplo de vídeo 07</h2>
-              <p>Substitua este card por um vídeo sobre OTP, login, verificação ou recuperação de conta.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="conta" data-download="" data-search="otp login verificacao conta" data-thumb="../capas/variacao.png?v=1" data-video="">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Exemplo de vídeo 07" class="video-thumb" type="button">
+<img alt="Thumbnail do vídeo Exemplo de vídeo 07" decoding="async" loading="eager" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';" src="../capas/variacao.png?v=1"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Conta</span>
+<span class="duration">Conta</span>
+</div>
+<h2>Exemplo de vídeo 07</h2>
+<p>Substitua este card por um vídeo sobre OTP, login, verificação ou recuperação de conta.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="amazon"
-            data-search="catalogo vinculacao produto"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 08">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 08" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">Amazon</span>
-                <span class="duration">Catálogo</span>
-              </div>
-              <h2>Exemplo de vídeo 08</h2>
-              <p>Substitua este card por um vídeo sobre catálogo, vinculação ou edição de produto.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="amazon" data-download="" data-search="catalogo vinculacao produto" data-thumb="../capas/variacao.png?v=1" data-video="">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Exemplo de vídeo 08" class="video-thumb" type="button">
+<img alt="Thumbnail do vídeo Exemplo de vídeo 08" decoding="async" loading="eager" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';" src="../capas/variacao.png?v=1"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Amazon</span>
+<span class="duration">Catálogo</span>
+</div>
+<h2>Exemplo de vídeo 08</h2>
+<p>Substitua este card por um vídeo sobre catálogo, vinculação ou edição de produto.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="amazon"
-            data-search="precificacao oferta buy box"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 09">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 09" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">Amazon</span>
-                <span class="duration">Preço</span>
-              </div>
-              <h2>Exemplo de vídeo 09</h2>
-              <p>Substitua este card por um vídeo sobre precificação, oferta ou Buy Box.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="amazon" data-download="" data-search="precificacao oferta buy box" data-thumb="../capas/variacao.png?v=1" data-video="">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Exemplo de vídeo 09" class="video-thumb" type="button">
+<img alt="Thumbnail do vídeo Exemplo de vídeo 09" decoding="async" loading="eager" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';" src="../capas/variacao.png?v=1"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Amazon</span>
+<span class="duration">Preço</span>
+</div>
+<h2>Exemplo de vídeo 09</h2>
+<p>Substitua este card por um vídeo sobre precificação, oferta ou Buy Box.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="fba"
-            data-search="estoque reposicao capacidade"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 10">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 10" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">FBA / DBA</span>
-                <span class="duration">Estoque</span>
-              </div>
-              <h2>Exemplo de vídeo 10</h2>
-              <p>Substitua este card por um vídeo sobre estoque, reposição ou capacidade FBA.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="fba" data-download="" data-search="estoque reposicao capacidade" data-thumb="../capas/variacao.png?v=1" data-video="">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Exemplo de vídeo 10" class="video-thumb" type="button">
+<img alt="Thumbnail do vídeo Exemplo de vídeo 10" decoding="async" loading="eager" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';" src="../capas/variacao.png?v=1"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">FBA / DBA</span>
+<span class="duration">Estoque</span>
+</div>
+<h2>Exemplo de vídeo 10</h2>
+<p>Substitua este card por um vídeo sobre estoque, reposição ou capacidade FBA.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="amazon"
-            data-search="compliance aprovacao documentacao"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 11">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 11" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">Amazon</span>
-                <span class="duration">Compliance</span>
-              </div>
-              <h2>Exemplo de vídeo 11</h2>
-              <p>Substitua este card por um vídeo sobre compliance, aprovação ou documentação.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="amazon" data-download="" data-search="compliance aprovacao documentacao" data-thumb="../capas/variacao.png?v=1" data-video="">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Exemplo de vídeo 11" class="video-thumb" type="button">
+<img alt="Thumbnail do vídeo Exemplo de vídeo 11" decoding="async" loading="eager" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';" src="../capas/variacao.png?v=1"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Amazon</span>
+<span class="duration">Compliance</span>
+</div>
+<h2>Exemplo de vídeo 11</h2>
+<p>Substitua este card por um vídeo sobre compliance, aprovação ou documentação.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="amazon"
-            data-search="imagens variacoes visuais"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 12">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 12" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">Amazon</span>
-                <span class="duration">Imagens</span>
-              </div>
-              <h2>Exemplo de vídeo 12</h2>
-              <p>Substitua este card por um vídeo sobre imagens, variações visuais ou conteúdo do anúncio.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="amazon" data-download="" data-search="imagens variacoes visuais" data-thumb="../capas/variacao.png?v=1" data-video="">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Exemplo de vídeo 12" class="video-thumb" type="button">
+<img alt="Thumbnail do vídeo Exemplo de vídeo 12" decoding="async" loading="eager" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';" src="../capas/variacao.png?v=1"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Amazon</span>
+<span class="duration">Imagens</span>
+</div>
+<h2>Exemplo de vídeo 12</h2>
+<p>Substitua este card por um vídeo sobre imagens, variações visuais ou conteúdo do anúncio.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="conta"
-            data-search="atendimento chamados suporte"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 13">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 13" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">Conta</span>
-                <span class="duration">Atendimento</span>
-              </div>
-              <h2>Exemplo de vídeo 13</h2>
-              <p>Substitua este card por um vídeo sobre atendimento, chamados ou suporte Seller Central.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="conta amazon" data-download="https://drive.google.com/uc?export=download&amp;id=1WbGsVdVqI-qE8lGiDD-E3T1alDFeCg7T" data-search="amazon suporte chamado abrir atendimento seller central" data-thumb="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2310131b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23252b38%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22847%22%20cy%3D%2278%22%20r%3D%22190%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.10%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%22500%22%20r%3D%22210%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.07%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2252%22%20width%3D%22168%22%20height%3D%2238%22%20rx%3D%2212%22%20fill%3D%22%23ff7a00%22%2F%3E%3Ctext%20x%3D%22144%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22bold%22%20fill%3D%22%23171717%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22245%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%3EABRIR%20CHAMADO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22325%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ff9b3d%22%3ENA%20AMAZON%3C%2Ftext%3E%3Crect%20x%3D%2262%22%20y%3D%22378%22%20width%3D%22470%22%20height%3D%223%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.75%22%2F%3E%3Ctext%20x%3D%2262%22%20y%3D%22430%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2228%22%20fill%3D%22%23c1c8d1%22%3EV%C3%8DDEO%20DE%20APOIO%3C%2Ftext%3E%3C%2Fsvg%3E" data-video="https://drive.google.com/file/d/1WbGsVdVqI-qE8lGiDD-E3T1alDFeCg7T/preview">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Como abrir um chamado na Amazon" class="video-thumb" type="button">
+<img alt="Capa do vídeo Como abrir um chamado na Amazon" decoding="async" loading="eager" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2310131b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23252b38%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22847%22%20cy%3D%2278%22%20r%3D%22190%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.10%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%22500%22%20r%3D%22210%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.07%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2252%22%20width%3D%22168%22%20height%3D%2238%22%20rx%3D%2212%22%20fill%3D%22%23ff7a00%22%2F%3E%3Ctext%20x%3D%22144%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22bold%22%20fill%3D%22%23171717%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22245%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%3EABRIR%20CHAMADO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22325%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ff9b3d%22%3ENA%20AMAZON%3C%2Ftext%3E%3Crect%20x%3D%2262%22%20y%3D%22378%22%20width%3D%22470%22%20height%3D%223%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.75%22%2F%3E%3Ctext%20x%3D%2262%22%20y%3D%22430%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2228%22%20fill%3D%22%23c1c8d1%22%3EV%C3%8DDEO%20DE%20APOIO%3C%2Ftext%3E%3C%2Fsvg%3E"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Amazon</span>
+<span class="duration">Suporte</span>
+</div>
+<h2>Como abrir um chamado na Amazon</h2>
+<p>Aprenda como abrir um chamado de suporte na Amazon Seller Central.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="ads"
-            data-search="otimizacao analise campanhas"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 14">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 14" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">Ads</span>
-                <span class="duration">Campanhas</span>
-              </div>
-              <h2>Exemplo de vídeo 14</h2>
-              <p>Substitua este card por um vídeo sobre otimização e análise de campanhas.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="ads" data-download="https://drive.google.com/uc?export=download&amp;id=1BEiSBIjdTVkgKr5BaNWt-WzjA-GwnUIg" data-search="ads campanha automatica individual amazon publicidade" data-thumb="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2310131b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23252b38%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22847%22%20cy%3D%2278%22%20r%3D%22190%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.10%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%22500%22%20r%3D%22210%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.07%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2252%22%20width%3D%22168%22%20height%3D%2238%22%20rx%3D%2212%22%20fill%3D%22%23ff7a00%22%2F%3E%3Ctext%20x%3D%22144%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22bold%22%20fill%3D%22%23171717%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22245%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%3EADS%20AUTOM%C3%81TICA%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22325%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ff9b3d%22%3EINDIVIDUAL%3C%2Ftext%3E%3Crect%20x%3D%2262%22%20y%3D%22378%22%20width%3D%22470%22%20height%3D%223%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.75%22%2F%3E%3Ctext%20x%3D%2262%22%20y%3D%22430%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2228%22%20fill%3D%22%23c1c8d1%22%3EV%C3%8DDEO%20DE%20APOIO%3C%2Ftext%3E%3C%2Fsvg%3E" data-video="https://drive.google.com/file/d/1BEiSBIjdTVkgKr5BaNWt-WzjA-GwnUIg/preview">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Como criar campanha de Ads automática individual" class="video-thumb" type="button">
+<img alt="Capa do vídeo Como criar campanha de Ads automática individual" decoding="async" loading="eager" src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22bg%22%20x1%3D%220%22%20x2%3D%221%22%20y1%3D%220%22%20y2%3D%221%22%3E%3Cstop%20stop-color%3D%22%2310131b%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23252b38%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22url%28%23bg%29%22%2F%3E%3Ccircle%20cx%3D%22847%22%20cy%3D%2278%22%20r%3D%22190%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.10%22%2F%3E%3Ccircle%20cx%3D%2264%22%20cy%3D%22500%22%20r%3D%22210%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.07%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2252%22%20width%3D%22168%22%20height%3D%2238%22%20rx%3D%2212%22%20fill%3D%22%23ff7a00%22%2F%3E%3Ctext%20x%3D%22144%22%20y%3D%2278%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2219%22%20font-weight%3D%22bold%22%20fill%3D%22%23171717%22%3ESELLER%20PRO%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22245%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%3EADS%20AUTOM%C3%81TICA%3C%2Ftext%3E%3Ctext%20x%3D%2262%22%20y%3D%22325%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2259%22%20font-weight%3D%22bold%22%20fill%3D%22%23ff9b3d%22%3EINDIVIDUAL%3C%2Ftext%3E%3Crect%20x%3D%2262%22%20y%3D%22378%22%20width%3D%22470%22%20height%3D%223%22%20fill%3D%22%23ff7a00%22%20opacity%3D%22.75%22%2F%3E%3Ctext%20x%3D%2262%22%20y%3D%22430%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2228%22%20fill%3D%22%23c1c8d1%22%3EV%C3%8DDEO%20DE%20APOIO%3C%2Ftext%3E%3C%2Fsvg%3E"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Ads</span>
+<span class="duration">Automática individual</span>
+</div>
+<h2>Como criar campanha de Ads automática individual</h2>
+<p>Passo a passo de criação de uma campanha automática individual.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-
-          <article
-            class="video-card"
-            data-category="amazon"
-            data-search="video geral apoio hub"
-            data-video=""
-            data-thumb="../capas/variacao.png?v=1"
-            data-download=""
-          >
-            <div class="player-wrap">
-              <button class="video-thumb" type="button" aria-label="Reproduzir vídeo Exemplo de vídeo 15">
-                <img src="../capas/variacao.png?v=1" alt="Thumbnail do vídeo Exemplo de vídeo 15" loading="eager" decoding="async" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';">
-                <span class="thumb-play"><i class="fa-solid fa-play"></i></span>
-                <span class="thumb-label">Clique para assistir</span>
-              </button>
-            </div>
-            <div class="video-body">
-              <div class="video-meta">
-                <span class="pill">Amazon</span>
-                <span class="duration">Geral</span>
-              </div>
-              <h2>Exemplo de vídeo 15</h2>
-              <p>Substitua este card por qualquer vídeo geral de apoio do HUB.</p>
-              <div class="video-actions">
-                <button class="action primary play-btn" type="button">
-                  <i class="fa-solid fa-play"></i> Reproduzir
+</div>
+</div>
+</article>
+<article class="video-card" data-category="amazon" data-download="" data-search="video geral apoio hub" data-thumb="../capas/variacao.png?v=1" data-video="">
+<div class="player-wrap">
+<button aria-label="Reproduzir vídeo Exemplo de vídeo 15" class="video-thumb" type="button">
+<img alt="Thumbnail do vídeo Exemplo de vídeo 15" decoding="async" loading="eager" onerror="this.onerror=null;this.src=\'../capas/variacao.png?v=1\';" src="../capas/variacao.png?v=1"/>
+<span class="thumb-play"><i class="fa-solid fa-play"></i></span>
+<span class="thumb-label">Clique para assistir</span>
+</button>
+</div>
+<div class="video-body">
+<div class="video-meta">
+<span class="pill">Amazon</span>
+<span class="duration">Geral</span>
+</div>
+<h2>Exemplo de vídeo 15</h2>
+<p>Substitua este card por qualquer vídeo geral de apoio do HUB.</p>
+<div class="video-actions">
+<button class="action primary play-btn" type="button">
+<i class="fa-solid fa-play"></i> Reproduzir
                 </button>
-                <button class="action download-btn" type="button">
-                  <i class="fa-solid fa-download"></i> Baixar vídeo
+<button class="action download-btn" type="button">
+<i class="fa-solid fa-download"></i> Baixar vídeo
                 </button>
-              </div>
-            </div>
-          </article>
-        </section>
-
-        <div class="empty" id="emptyState"><i class="fa-solid fa-video-slash"></i><p>Nenhum vídeo encontrado com esse termo ou filtro.</p></div>
-        <div class="footer">Seller Pro • Biblioteca interna de vídeos rápidos</div>
-      </div>
-    </main>
-  </div>
-
-  <script>
+</div>
+</div>
+</article>
+</section>
+<div class="empty" id="emptyState"><i class="fa-solid fa-video-slash"></i><p>Nenhum vídeo encontrado com esse termo ou filtro.</p></div>
+<div class="footer">Seller Pro • Biblioteca interna de vídeos rápidos</div>
+</div>
+</main>
+</div>
+<script>
     const $=(s,c=document)=>c.querySelector(s); const $$=(s,c=document)=>[...c.querySelectorAll(s)];
     const normalize=v=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
     const cards=$$(".video-card"); const search=$("#videoSearch"); const counter=$("#videoCounter"); const empty=$("#emptyState");
