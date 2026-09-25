@@ -1312,21 +1312,64 @@
             <input id="nfIe" class="w-full rounded-2xl px-4 py-3" placeholder="Inscrição Estadual, quando aplicável" />
           </div>
 
+          <div class="md:col-span-2">
+            <label class="block font-bold mb-2 text-orange-200">Endereço frequente ou preenchimento manual</label>
+            <select id="nfEnderecoSalvo" onchange="selecionarEnderecoFiscal()" class="w-full rounded-2xl px-4 py-3">
+              <option value="">Preencher endereço manualmente</option>
+              <option value="campininha">Rua José Homero Roxo, 50 — Campininha, São Paulo</option>
+              <option value="bertioga">Rua Florianópolis, 198 — Vila Bertioga, São Paulo</option>
+            </select>
+            <p class="text-xs text-zinc-400 mt-2">Você pode selecionar um endereço e editar qualquer campo antes de enviar.</p>
+          </div>
           <div>
             <label class="block font-bold mb-2 text-orange-200">CEP</label>
             <input id="nfCep" required inputmode="numeric" maxlength="9" class="w-full rounded-2xl px-4 py-3" placeholder="00000-000" />
           </div>
-
-          <div class="md:col-span-2">
-            <label class="block font-bold mb-2 text-orange-200">Endereço completo</label>
-            <input id="nfEnderecoCompleto" required class="w-full rounded-2xl px-4 py-3" placeholder="Rua, número, complemento, bairro, cidade e estado" />
+          <div>
+            <label class="block font-bold mb-2 text-orange-200">Rua / logradouro</label>
+            <input id="nfRua" required class="w-full rounded-2xl px-4 py-3" placeholder="Nome completo da rua" />
           </div>
+          <div>
+            <label class="block font-bold mb-2 text-orange-200">Número</label>
+            <input id="nfNumero" required class="w-full rounded-2xl px-4 py-3" placeholder="Número ou S/N" />
+          </div>
+          <div>
+            <label class="block font-bold mb-2 text-orange-200">Complemento (opcional)</label>
+            <input id="nfComplemento" class="w-full rounded-2xl px-4 py-3" placeholder="Sala, bloco, apartamento..." />
+          </div>
+          <div>
+            <label class="block font-bold mb-2 text-orange-200">Bairro</label>
+            <input id="nfBairro" required class="w-full rounded-2xl px-4 py-3" placeholder="Bairro" />
+          </div>
+          <div>
+            <label class="block font-bold mb-2 text-orange-200">Cidade</label>
+            <input id="nfCidade" required class="w-full rounded-2xl px-4 py-3" placeholder="Cidade" />
+          </div>
+          <div>
+            <label class="block font-bold mb-2 text-orange-200">UF</label>
+            <select id="nfUf" required class="w-full rounded-2xl px-4 py-3">
+              <option value="">Selecione a UF</option>
+              <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
+              <option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option>
+              <option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+              <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option>
+              <option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option>
+              <option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+              <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+            </select>
+          </div>
+          <input id="nfEnderecoCompleto" type="hidden" />
 
           <div class="md:col-span-2">
             <label class="block font-bold mb-2 text-orange-200">Produto que irá vender</label>
             <input id="nfProdutoVenda" required class="w-full rounded-2xl px-4 py-3" placeholder="Produto destinado à empresa" />
           </div>
 
+          <div class="md:col-span-2 rounded-2xl border border-orange-500/25 bg-orange-500/5 p-4">
+            <div class="font-black text-orange-200 mb-2">Conferência: dados que serão enviados à NF</div>
+            <pre id="nfPrevia" class="text-xs leading-6 text-zinc-200 whitespace-pre-wrap break-words font-sans">Preencha os campos para conferir os dados.</pre>
+            <p class="text-xs text-yellow-200 mt-3">Confira especialmente o número, bairro, CEP, CNPJ/CPF e os produtos antes da confirmação.</p>
+          </div>
           <div class="md:col-span-2 rounded-2xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-100">
             <strong>Produto baixado?</strong> Sim, automaticamente após a confirmação e a validação do estoque.
           </div>
@@ -1612,87 +1655,118 @@
       return cep.length === 8 ? cep.replace(/(\d{5})(\d{3})/, "$1-$2") : cep;
     }
 
+    const ENDERECOS_FREQUENTES_NF = Object.freeze({
+      campininha: { rua: "Rua José Homero Roxo", numero: "50", complemento: "", bairro: "Campininha", cidade: "São Paulo", uf: "SP", cep: "04678105" },
+      bertioga: { rua: "Rua Florianópolis", numero: "198", complemento: "", bairro: "Vila Bertioga", cidade: "São Paulo", uf: "SP", cep: "03185050" }
+    });
     let ultimoCepConsultado = "";
+    let sequenciaBuscaCep = 0;
+    let ultimoCepPredefinido = "";
+
+    function selecionarEnderecoFiscal() {
+      const escolha = document.getElementById("nfEnderecoSalvo").value;
+      const dados = ENDERECOS_FREQUENTES_NF[escolha];
+      // A escolha manual não apaga um endereço já digitado.
+      if (!dados) return;
+      sequenciaBuscaCep++; // Invalida consultas pendentes, evitando sobrescrever o endereço escolhido.
+      ultimoCepConsultado = dados.cep;
+      ultimoCepPredefinido = dados.cep;
+      const campos = { nfRua: dados.rua, nfNumero: dados.numero, nfComplemento: dados.complemento,
+        nfBairro: dados.bairro, nfCidade: dados.cidade, nfUf: dados.uf, nfCep: formatarCep(dados.cep) };
+      Object.entries(campos).forEach(([id, valor]) => document.getElementById(id).value = valor);
+      atualizarPreviaFiscal();
+    }
+
+    function obterEnderecoFiscal() {
+      const ler = id => document.getElementById(id).value.trim();
+      return { rua: ler("nfRua"), numero: ler("nfNumero"), complemento: ler("nfComplemento"),
+        bairro: ler("nfBairro"), cidade: ler("nfCidade"), uf: ler("nfUf"), cep: somenteDigitos(ler("nfCep")) };
+    }
+
+    function comporEnderecoFiscal(dados) {
+      return `${dados.rua}, nº ${dados.numero}${dados.complemento ? ', ' + dados.complemento : ''}, ` +
+        `${dados.bairro}, ${dados.cidade}/${dados.uf}, CEP ${formatarCep(dados.cep)}`;
+    }
+
+    function coletarDadosFiscaisFormulario() {
+      const ler = id => document.getElementById(id).value.trim();
+      const endereco = obterEnderecoFiscal();
+      return { nomeEmpresa: ler("nfNomeEmpresa"), nomeRepresentante: ler("nfNomeRepresentante"),
+        tipoPessoa: ler("nfTipoPessoa"), documento: somenteDigitos(ler("nfDocumento")),
+        ie: ler("nfIe"), ...endereco, enderecoCompleto: comporEnderecoFiscal(endereco),
+        produtoVenda: ler("nfProdutoVenda") };
+    }
+
+    function textoConferenciaFiscal(dados) {
+      const coleta = coletaPendente;
+      const itens = coleta?.itens.map(item => `${item.produto.codigo} — ${item.produto.produto} / ${item.produto.variacao}: ${item.quantidade} un.`).join("\n") || "-";
+      return `EMPRESA: ${dados.nomeEmpresa || '-'}\nREPRESENTANTE: ${dados.nomeRepresentante || '-'}\n` +
+        `TIPO: ${(dados.tipoPessoa || '-').toUpperCase()}\nCPF/CNPJ: ${formatarDocumento(dados.documento, dados.tipoPessoa)}\n` +
+        `IE: ${dados.ie || 'Não informada'}\nRUA: ${dados.rua || '-'}\nNÚMERO: ${dados.numero || '-'}\n` +
+        `COMPLEMENTO: ${dados.complemento || 'Não informado'}\nBAIRRO: ${dados.bairro || '-'}\n` +
+        `CIDADE: ${dados.cidade || '-'}\nUF: ${dados.uf || '-'}\nCEP: ${formatarCep(dados.cep) || '-'}\n` +
+        `ENDEREÇO COMPLETO: ${dados.enderecoCompleto}\nPRODUTO QUE VENDERÁ: ${dados.produtoVenda || '-'}\n` +
+        `LOJA: ${coleta?.lojaPronta || '-'}\nRESPONSÁVEL: ${coleta?.responsavel || '-'}\n` +
+        `DATA DA COLETA: ${coleta?.dataColeta || '-'}\nPRODUTOS E QUANTIDADES:\n${itens}`;
+    }
+
+    function atualizarPreviaFiscal() {
+      const previa = document.getElementById("nfPrevia");
+      if (!previa) return;
+      const dados = coletarDadosFiscaisFormulario();
+      document.getElementById("nfEnderecoCompleto").value = dados.enderecoCompleto;
+      previa.textContent = textoConferenciaFiscal(dados);
+    }
 
     async function buscarEnderecoPorCep() {
       const campoCep = document.getElementById("nfCep");
-      const campoEndereco = document.getElementById("nfEnderecoCompleto");
-
-      if (!campoCep || !campoEndereco) return;
-
+      if (!campoCep) return;
       const cep = somenteDigitos(campoCep.value).slice(0, 8);
-
-      // Mantém o CEP formatado enquanto o usuário digita.
-      campoCep.value = cep.length > 5
-        ? `${cep.slice(0, 5)}-${cep.slice(5)}`
-        : cep;
-
-      // A consulta só acontece quando os 8 números forem informados.
-      if (cep.length !== 8) {
-        ultimoCepConsultado = "";
-        return;
-      }
-
-      // Evita consultar o mesmo CEP repetidamente.
+      campoCep.value = formatarCep(cep);
+      atualizarPreviaFiscal();
+      if (cep.length !== 8) { ultimoCepConsultado = ""; sequenciaBuscaCep++; return; }
       if (cep === ultimoCepConsultado) return;
-
       ultimoCepConsultado = cep;
-
-      const placeholderOriginal = "Rua, número, complemento, bairro, cidade e estado";
-      campoEndereco.placeholder = "Buscando endereço pelo CEP...";
+      const requisicao = ++sequenciaBuscaCep;
       campoCep.setAttribute("aria-busy", "true");
-
       try {
         const resposta = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-
-        if (!resposta.ok) {
-          throw new Error(`Falha HTTP ${resposta.status}`);
-        }
-
+        if (!resposta.ok) throw new Error(`Falha HTTP ${resposta.status}`);
         const dados = await resposta.json();
-
+        if (requisicao !== sequenciaBuscaCep || somenteDigitos(campoCep.value) !== cep) return;
         if (dados.erro) {
           ultimoCepConsultado = "";
-          campoEndereco.value = "";
-          campoEndereco.placeholder = "CEP não encontrado. Digite o endereço manualmente.";
-          mostrarMensagemModalFiscal(
-            "CEP não encontrado. Confira os números ou preencha o endereço manualmente.",
-            "erro"
-          );
+          mostrarMensagemModalFiscal("CEP não encontrado. Confira ou complete o endereço manualmente.", "erro");
           return;
         }
-
-        const partesEndereco = [
-          dados.logradouro,
-          dados.bairro,
-          dados.localidade,
-          dados.uf
-        ].filter(Boolean);
-
-        campoEndereco.value = partesEndereco.join(", ");
-        campoEndereco.placeholder = placeholderOriginal;
-
-        // Coloca o cursor no final para facilitar a inclusão do número e complemento.
-        campoEndereco.focus();
-        const fim = campoEndereco.value.length;
-        campoEndereco.setSelectionRange(fim, fim);
+        // Não substitui número e complemento digitados. Outros dados são preenchidos apenas
+        // quando o endereço ainda está vazio ou quando o usuário alterou o CEP selecionado.
+        const alterouCepPredefinido = !!ultimoCepPredefinido && cep !== ultimoCepPredefinido;
+        if (alterouCepPredefinido) document.getElementById("nfEnderecoSalvo").value = "";
+        const mapa = { nfRua: dados.logradouro, nfBairro: dados.bairro, nfCidade: dados.localidade, nfUf: dados.uf };
+        Object.entries(mapa).forEach(([id, valor]) => {
+          const input = document.getElementById(id);
+          if (valor && (!input.value.trim() || alterouCepPredefinido)) input.value = valor;
+        });
+        ultimoCepPredefinido = "";
+        atualizarPreviaFiscal();
       } catch (erro) {
         console.error("Erro ao buscar endereço pelo CEP:", erro);
-        ultimoCepConsultado = "";
-        campoEndereco.placeholder = "Não foi possível consultar o CEP. Digite o endereço manualmente.";
+        if (requisicao === sequenciaBuscaCep) ultimoCepConsultado = "";
+        // Falha de consulta não bloqueia o preenchimento manual.
       } finally {
-        campoCep.removeAttribute("aria-busy");
+        if (requisicao === sequenciaBuscaCep) campoCep.removeAttribute("aria-busy");
       }
     }
 
     function ativarBuscaAutomaticaCep() {
       const campoCep = document.getElementById("nfCep");
-
       if (!campoCep || campoCep.dataset.cepAutomaticoAtivo === "true") return;
-
       campoCep.dataset.cepAutomaticoAtivo = "true";
       campoCep.addEventListener("input", buscarEnderecoPorCep);
       campoCep.addEventListener("blur", buscarEnderecoPorCep);
+      document.getElementById("formDadosFiscais").addEventListener("input", atualizarPreviaFiscal);
+      document.getElementById("formDadosFiscais").addEventListener("change", atualizarPreviaFiscal);
     }
 
     function formatarDataHora(valor) {
@@ -2338,8 +2412,12 @@
       document.getElementById("nfTipoPessoa").value = "";
       document.getElementById("nfDocumento").value = "";
       document.getElementById("nfIe").value = "";
-      document.getElementById("nfEnderecoCompleto").value = "";
-      document.getElementById("nfCep").value = "";
+      ["nfEnderecoSalvo", "nfRua", "nfNumero", "nfComplemento", "nfBairro", "nfCidade", "nfUf", "nfEnderecoCompleto", "nfCep"].forEach(id => {
+        document.getElementById(id).value = "";
+      });
+      ultimoCepConsultado = "";
+      ultimoCepPredefinido = "";
+      sequenciaBuscaCep++;
 
       const descricaoProdutos = coleta.itens
         .map(item => `${item.produto.produto} / ${item.produto.variacao} (${item.quantidade} un.)`)
@@ -2369,6 +2447,7 @@
         </div>
       `;
 
+      atualizarPreviaFiscal();
       document.getElementById("modalDadosFiscais").classList.remove("hidden");
       document.body.style.overflow = "hidden";
       setTimeout(() => document.getElementById("nfNomeEmpresa").focus(), 80);
@@ -2413,6 +2492,33 @@
       atualizarModoRetirada();
     }
 
+    async function verificarPersistenciaFiscal(dados, desde) {
+      try {
+        const { data, error } = await db.from("solicitacoes_nf")
+          .select("id,nome_empresa,nome_representante,tipo_pessoa,documento,ie,endereco_completo,cep,produto_venda,criado_em")
+          .eq("documento", dados.documento)
+          .gte("criado_em", desde)
+          .order("criado_em", { ascending: false }).limit(5);
+        if (error) return { ok: false, aviso: "não foi possível consultar a gravação (" + error.message + ")." };
+        const registro = (data || []).find(item => item.nome_empresa === dados.nomeEmpresa &&
+          item.endereco_completo === dados.enderecoCompleto && item.produto_venda === dados.produtoVenda);
+        if (!registro) return { ok: false, aviso: "não localizamos um registro com o endereço e os produtos idênticos aos enviados." };
+        const comparacoes = [
+          ["empresa", registro.nome_empresa, dados.nomeEmpresa], ["representante", registro.nome_representante, dados.nomeRepresentante],
+          ["tipo de pessoa", registro.tipo_pessoa, dados.tipoPessoa], ["CPF/CNPJ", somenteDigitos(registro.documento), dados.documento],
+          ["IE", registro.ie || "", dados.ie], ["endereço", registro.endereco_completo, dados.enderecoCompleto],
+          ["CEP", somenteDigitos(registro.cep), dados.cep], ["produto que venderá", registro.produto_venda, dados.produtoVenda]
+        ];
+        const divergencias = comparacoes.filter(([nome, gravado, enviado]) => String(gravado ?? "") !== String(enviado ?? ""))
+          .map(([nome]) => nome);
+        return divergencias.length
+          ? { ok: false, aviso: "campos divergentes: " + divergencias.join(", ") + "." }
+          : { ok: true, aviso: "" };
+      } catch (erro) {
+        return { ok: false, aviso: "houve erro na conferência (" + (erro?.message || "erro inesperado") + ")." };
+      }
+    }
+
     async function confirmarRetiradaComDadosFiscais(event) {
       event.preventDefault();
       limparMensagemModalFiscal();
@@ -2424,16 +2530,11 @@
         return;
       }
 
-      const nomeEmpresa = document.getElementById("nfNomeEmpresa").value.trim();
-      const nomeRepresentante = document.getElementById("nfNomeRepresentante").value.trim();
-      const tipoPessoa = document.getElementById("nfTipoPessoa").value;
-      const documento = somenteDigitos(document.getElementById("nfDocumento").value);
-      const ie = document.getElementById("nfIe").value.trim();
-      const enderecoCompleto = document.getElementById("nfEnderecoCompleto").value.trim();
-      const cep = somenteDigitos(document.getElementById("nfCep").value);
-      const produtoVenda = document.getElementById("nfProdutoVenda").value.trim();
+      const dadosFiscais = coletarDadosFiscaisFormulario();
+      const { nomeEmpresa, nomeRepresentante, tipoPessoa, documento, ie, enderecoCompleto, cep, produtoVenda } = dadosFiscais;
 
-      if (!nomeEmpresa || !nomeRepresentante || !tipoPessoa || !documento || !enderecoCompleto || !cep || !produtoVenda) {
+      if (!nomeEmpresa || !nomeRepresentante || !tipoPessoa || !documento || !produtoVenda ||
+          !dadosFiscais.rua || !dadosFiscais.numero || !dadosFiscais.bairro || !dadosFiscais.cidade || !dadosFiscais.uf || !cep) {
         mostrarMensagemModalFiscal("Preencha todos os dados fiscais obrigatórios.", "erro");
         return;
       }
@@ -2463,6 +2564,7 @@
       botao.textContent = "Registrando retirada...";
 
       try {
+        const inicioEnvioFiscal = new Date(Date.now() - 5000).toISOString();
         const { error } = await db.rpc("registrar_coleta_multiproduto_com_nf", {
           p_loja_pronta: coleta.lojaPronta,
           p_responsavel: coleta.responsavel,
@@ -2485,6 +2587,10 @@
           throw new Error(error.message || "Falha desconhecida no Supabase.");
         }
 
+        // Confere a gravação da solicitação no banco: sucesso da RPC isoladamente não
+        // comprova que os campos chegaram íntegros à tabela solicitacoes_nf.
+        const verificacao = await verificarPersistenciaFiscal(dadosFiscais, inicioEnvioFiscal);
+
         document.getElementById("modalDadosFiscais").classList.add("hidden");
         document.body.style.overflow = "";
         coletaPendente = null;
@@ -2492,8 +2598,11 @@
 
         await carregarDados();
 
-        mostrarMensagem("Coleta registrada, estoques baixados e uma única NF adicionada às pendências.", "sucesso");
-        efeitoSucesso();
+        mostrarMensagem(verificacao.ok
+          ? "Coleta registrada e todos os campos fiscais conferidos no banco. NF adicionada às pendências."
+          : "Coleta registrada, mas ATENÇÃO: " + verificacao.aviso + " Confira a NF pendente antes da emissão.",
+          verificacao.ok ? "sucesso" : "erro");
+        if (verificacao.ok) efeitoSucesso();
         trocarAba("nfPendente");
       } catch (error) {
         console.error("Falha ao registrar retirada:", error);
@@ -2625,12 +2734,42 @@
               ${statusDisponivel ? `<dt>NF enviada em</dt><dd>${formatarDataHora(item.nf_enviada_em)}</dd>` : ""}
             </dl>
 
+            <button type="button" onclick="copiarDadosNf('${escaparHTML(item.id)}')" class="btn-dark w-full px-4 py-3 mt-4 font-bold">
+              Copiar dados completos para emissão
+            </button>
             ${acao}
           </article>
         `;
       }).join("");
 
       iniciarContagemNfs();
+    }
+
+    async function copiarDadosNf(id) {
+      const nf = solicitacoesNf.find(item => String(item.id) === String(id));
+      if (!nf) return mostrarMensagem("Solicitação não encontrada.", "erro");
+      const itens = obterItensDaSolicitacao(nf);
+      const saida = nf.saidas_estoque || itens[0] || {};
+      const texto = [
+        `Empresa: ${nf.nome_empresa || '-'}`, `Representante: ${nf.nome_representante || '-'}`,
+        `Tipo: ${(nf.tipo_pessoa || '-').toUpperCase()}`,
+        `CPF/CNPJ: ${formatarDocumento(nf.documento, nf.tipo_pessoa)}`,
+        `IE: ${nf.ie || 'Não informada'}`, `Endereço completo: ${nf.endereco_completo || '-'}`,
+        `CEP: ${formatarCep(nf.cep)}`, `Loja: ${saida.loja_pronta || '-'}`,
+        `Responsável: ${saida.responsavel || '-'}`, `Data da coleta: ${saida.data_coleta || '-'}`,
+        `Produto que venderá: ${nf.produto_venda || '-'}`, `Itens efetivamente retirados:`,
+        ...itens.map(item => `${item.codigo || item.produtos_estoque?.codigo || '-'} — ${item.produtos_estoque?.produto || '-'} / ${item.produtos_estoque?.variacao || '-'}: ${item.quantidade || 0} un.`)
+      ].join("\n");
+      try {
+        await navigator.clipboard.writeText(texto);
+        mostrarMensagem("Dados fiscais copiados, inclusive endereço, produtos e quantidades.", "sucesso");
+      } catch (erro) {
+        // Fallback em contextos HTTP ou navegadores com clipboard indisponível.
+        const campo = document.createElement("textarea");
+        campo.value = texto; document.body.appendChild(campo); campo.select();
+        const copiou = document.execCommand("copy"); campo.remove();
+        mostrarMensagem(copiou ? "Dados copiados." : "Não foi possível copiar automaticamente; use HTTPS e permita o acesso à área de transferência.", copiou ? "sucesso" : "erro");
+      }
     }
 
     function iniciarContagemNfs() {
