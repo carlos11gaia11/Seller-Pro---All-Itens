@@ -5,11 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0d12">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>ADS e informações • Seller Pro</title>
+  <meta name="description" content="Guia operacional de campanhas de ADS do projeto Loja Pronta: configuração, otimização, diagnóstico e campanhas individuais.">
+  <title>Estratégia de ADS • Seller Pro</title>
   <script>
-    document.documentElement.classList.add("sp-auth-pending");
-    if(localStorage.getItem("sellerProTema")==="claro" || localStorage.getItem("sellerProTheme")==="light")
-      document.documentElement.classList.add("theme-light-preload");
+    // Mantém a integração com a sessão e o tema já utilizados pelas outras páginas do HUB.
+    document.documentElement.classList.add('sp-auth-pending');
+    if (localStorage.getItem('sellerProTema') === 'claro' || localStorage.getItem('sellerProTheme') === 'light') {
+      document.documentElement.classList.add('theme-light-preload');
+    }
   </script>
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -19,132 +22,509 @@
   <script src="../assets/js/file-session.js?v=20260720-loginfix2"></script>
   <script src="../assets/js/app-core.js?v=20260818-eng3"></script>
   <style>
-    :root{--orange:#ff7a00;--orange-soft:rgba(255,122,0,.12);--green:#22c55e;
-      --bg:#0b0d12;--surface:#141821;--surface2:#1b202a;--border:#303642;
-      --text:#f6f7f9;--muted:#abb3c0;--shadow:0 22px 65px rgba(0,0,0,.22)}
-    html.theme-light-preload,body.theme-light{--bg:#f4f6f8;--surface:#fff;--surface2:#f0f3f7;--border:#dce2e8;--text:#191d24;--muted:#616c79;--shadow:0 20px 55px rgba(25,35,45,.1)}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;
-      background:radial-gradient(circle at 86% 0,rgba(255,122,0,.09),transparent 31%),var(--bg);
-      font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text);line-height:1.5}
+    :root {
+      --orange:#ff7a00; --orange-2:#ffab5a; --orange-bg:rgba(255,122,0,.10);
+      --green:#22c55e; --blue:#4d91ff; --purple:#a78bfa;
+      --bg:#0b0d12; --surface:#141821; --surface-2:#1b202b; --surface-3:#222b38;
+      --border:#303846; --text:#f6f7f9; --muted:#b3bece;
+      --shadow:0 24px 65px rgba(0,0,0,.25);
+    }
+    html.theme-light-preload, body.theme-light {
+      --bg:#f4f6fa; --surface:#fff; --surface-2:#f4f6fa; --surface-3:#e9edf4;
+      --border:#dbe2eb; --text:#1c2635; --muted:#5a6576;
+      --shadow:0 20px 50px rgba(35,49,71,.09);
+    }
+    *, *::before, *::after{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+      line-height:1.62;color:var(--text);background:radial-gradient(circle at 94% -4%,rgba(255,122,0,.10),transparent 25%),var(--bg)}
     a{color:inherit}button,input{font:inherit}button{cursor:pointer}
-    .header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:12px;
-      padding:13px max(22px,calc((100vw - 1200px)/2));background:color-mix(in srgb,var(--bg) 94%,transparent);
-      border-bottom:1px solid var(--border);backdrop-filter:blur(18px)}
-    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-size:.9rem;font-weight:950}
-    .logo{display:grid;place-items:center;width:37px;height:37px;border-radius:10px;
-      background:linear-gradient(135deg,#ffc37f,var(--orange));color:#231103}
-    .head-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .head-actions a,.head-actions button{display:inline-flex;align-items:center;gap:7px;min-height:37px;
-      border:1px solid var(--border);background:var(--surface);border-radius:9px;text-decoration:none;
-      padding:7px 12px;font-size:.76rem;font-weight:850;color:var(--text)}
-    .head-actions a.active{border-color:rgba(255,122,0,.43);background:var(--orange-soft)}
-    .head-actions i{color:var(--orange)}
-    .container{width:min(1200px,calc(100% - 40px));margin:0 auto;padding:28px 0 48px}
-    .hero{padding:clamp(24px,4vw,45px);border:1px solid rgba(255,122,0,.32);border-radius:22px;
-      background:radial-gradient(circle at 85% 16%,rgba(255,122,0,.16),transparent 38%),var(--surface);box-shadow:var(--shadow)}
-    .eyebrow{display:flex;align-items:center;gap:8px;color:#ffad61;font-size:.7rem;font-weight:950;text-transform:uppercase;letter-spacing:.11em}
-    .hero h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.08;letter-spacing:-.055em;margin:12px 0}
-    .hero h1 em{font-style:normal;color:#ff963c}
-    .hero p{color:var(--muted);max-width:760px;line-height:1.7;margin:0}
-    .quick-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border);
-      padding:10px 13px;text-decoration:none;background:var(--surface2);color:var(--text);
-      border-radius:10px;font-size:.79rem;font-weight:850;min-height:42px}
-    .btn.primary{color:#261404;border-color:transparent;background:linear-gradient(130deg,#ffc27b,var(--orange))}
-    .btn:hover{border-color:var(--orange);filter:brightness(1.05)}
-    .section-heading{margin:30px 0 14px;display:flex;justify-content:space-between;align-items:end;gap:12px}
-    .section-heading h2{margin:0;font-size:1.32rem;letter-spacing:-.035em}
-    .section-heading p{margin:0;font-size:.8rem;color:var(--muted)}
-    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
-    .card{padding:21px;border:1px solid var(--border);border-radius:16px;background:var(--surface)}
-    .card>i{display:grid;place-items:center;width:41px;height:41px;color:var(--orange);
-      background:var(--orange-soft);border-radius:11px;margin-bottom:13px}
-    .card h3{font-size:1.02rem;margin:0 0 8px;line-height:1.35}
-    .card p{font-size:.82rem;color:var(--muted);line-height:1.65;margin:0}
-    .card a:not(.btn){color:#ffa74e}
-    .hub-hint{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:20px;
-      padding:19px;border:1px solid rgba(255,122,0,.30);border-radius:15px;background:var(--surface)}
-    .hub-hint>div{display:flex;align-items:flex-start;gap:14px}
-    .hub-hint>div>i{color:var(--orange);font-size:1.35rem;margin-top:5px}
-    .hub-hint h2{font-size:.99rem;margin:0 0 5px}.hub-hint p{font-size:.8rem;color:var(--muted);margin:0;max-width:700px}
-    .hub-hint .btn{white-space:nowrap}
-    .pill{display:inline-flex;align-items:center;padding:4px 9px;border-radius:99px;color:#ffb76d;
-      border:1px solid rgba(255,122,0,.32);font-size:.67rem;font-weight:900}
-    .footer{margin-top:35px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.73rem}
-    @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:650px){.header{position:relative;padding:12px 16px;align-items:flex-start;flex-direction:column}
-      .container{width:min(100% - 24px,1200px);padding-top:15px}
-      .grid{grid-template-columns:1fr}
-      .section-heading{display:block}.section-heading p{margin-top:6px}
-      .hub-hint{flex-direction:column;align-items:stretch}}
-    
+    button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    .skip{position:absolute;left:12px;top:-80px;z-index:500;background:var(--orange);color:#201002;padding:10px 14px;border-radius:10px}
+    .skip:focus{top:8px}
+    [id]{scroll-margin-top:95px}
+    .shell{width:min(1240px,calc(100% - 40px));margin-inline:auto}
+    .header{position:sticky;top:0;z-index:90;border-bottom:1px solid var(--border);
+      background:color-mix(in srgb,var(--bg) 95%,transparent);backdrop-filter:blur(18px)}
+    .header-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:76px}
+    .brand{display:flex;align-items:center;gap:11px;text-decoration:none;min-width:168px}
+    .brand-icon{width:42px;height:42px;flex:none;display:grid;place-items:center;font-size:1.02rem;
+      color:#291303;font-weight:1000;border-radius:13px;background:linear-gradient(145deg,#ffcf8f,var(--orange));
+      box-shadow:0 10px 24px rgba(255,122,0,.2)}
+    .brand span:last-child{display:grid;gap:0;line-height:1.23}
+    .brand strong{font-size:.92rem;letter-spacing:-.03em}.brand small{font-size:.69rem;color:var(--muted)}
+    .nav{display:flex;align-items:center;gap:5px}
+    .nav a{display:inline-flex;align-items:center;gap:8px;min-height:39px;padding:8px 11px;text-decoration:none;
+      color:var(--muted);font-weight:800;font-size:.76rem;border-radius:10px;transition:.2s}
+    .nav a:hover{color:var(--text);background:var(--surface-2)}
+    .nav .back{color:var(--text);border:1px solid var(--border);background:var(--surface);margin-left:5px}
+    .nav .back i{color:var(--orange)}
+    .hero{position:relative;overflow:hidden;display:grid;grid-template-columns:1.03fr .97fr;
+      align-items:center;gap:30px;padding:clamp(27px,4.5vw,57px);margin-top:28px;border-radius:27px;
+      border:1px solid rgba(255,122,0,.30);background:
+      radial-gradient(circle at 75% 20%,rgba(255,122,0,.15),transparent 43%),
+      linear-gradient(135deg,var(--surface),var(--surface-2));box-shadow:var(--shadow)}
+    .hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+      background-image:linear-gradient(rgba(255,255,255,.017) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.017) 1px,transparent 1px);background-size:35px 35px}
+    .hero-copy,.hero-art{position:relative;z-index:1}
+    .eyebrow{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;font-size:.67rem;font-weight:950;
+      letter-spacing:.1em;text-transform:uppercase;color:#ffb66c;border:1px solid rgba(255,122,0,.3);
+      background:rgba(255,122,0,.09);border-radius:99px}
+    .hero h1{font-size:clamp(2.45rem,5.2vw,4.9rem);line-height:1.03;letter-spacing:-.067em;margin:19px 0 16px}
+    .hero h1 span{color:#ff9d41}
+    .hero p{color:var(--muted);max-width:575px;margin:0;font-size:.98rem}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}
+    .btn{min-height:43px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:9px 15px;text-decoration:none;font-size:.8rem;font-weight:900;
+      color:var(--text);background:var(--surface-2);border:1px solid var(--border);border-radius:11px;
+      transition:transform .18s ease,border-color .18s ease}
+    .btn:hover{transform:translateY(-2px);border-color:var(--orange)}
+    .btn.primary{background:linear-gradient(135deg,#ffbe77,var(--orange));color:#231201;border:0}
+    .hero-art{width:100%;filter:drop-shadow(0 25px 25px rgba(0,0,0,.10))}
+    .hero-art svg{width:100%;height:auto;display:block}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0 29px}
+    .metric{padding:17px 18px;border-radius:15px;border:1px solid var(--border);background:var(--surface)}
+    .metric small{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.71rem;font-weight:800}
+    .metric small i{color:var(--orange)}
+    .metric strong{display:block;margin-top:5px;font-size:clamp(1.28rem,2.6vw,1.84rem);letter-spacing:-.04em;line-height:1.3}
+    .metric span{font-size:.69rem;color:var(--muted)}
+    .golden{display:flex;align-items:flex-start;gap:13px;padding:17px 19px;border-radius:15px;
+      border:1px solid rgba(255,164,65,.35);background:linear-gradient(110deg,rgba(255,154,45,.11),rgba(255,154,45,.035));margin:0 0 34px}
+    .golden-icon{width:40px;height:40px;display:grid;place-items:center;flex:none;border-radius:12px;
+      background:rgba(255,163,62,.17);color:#ffab53;font-size:1.2rem}
+    .golden strong{display:block;font-size:.89rem}.golden p{margin:4px 0 0;color:var(--muted);font-size:.8rem}
+    .section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;margin:42px 0 17px}
+    .overline{display:inline-block;color:var(--orange-2);letter-spacing:.11em;text-transform:uppercase;font-size:.69rem;font-weight:950}
+    .section-title h2{margin:4px 0 0;font-size:clamp(1.45rem,2.7vw,2rem);line-height:1.18;letter-spacing:-.04em}
+    .section-title p{margin:0;max-width:490px;font-size:.82rem;color:var(--muted)}
+    .panel{background:var(--surface);border:1px solid var(--border);border-radius:19px;padding:24px}
+    .steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}
+    .step{position:relative;min-height:177px;padding:19px;border:1px solid var(--border);border-radius:16px;background:var(--surface)}
+    .step:not(:last-child)::after{content:"›";position:absolute;right:-13px;top:40px;z-index:2;color:#ffad60;
+      font-size:1.5rem;font-weight:900;background:var(--bg);width:22px;text-align:center;line-height:1}
+    .step-num{width:39px;height:39px;display:grid;place-items:center;border-radius:12px;color:#231201;
+      background:linear-gradient(145deg,#ffca87,var(--orange));font-weight:950}
+    .step h3{font-size:.95rem;line-height:1.3;margin:13px 0 6px}.step p{font-size:.76rem;color:var(--muted);margin:0}
+    .two-col{display:grid;grid-template-columns:.9fr 1.1fr;gap:14px}
+    .panel-head{display:flex;align-items:center;gap:11px;margin-bottom:17px}
+    .panel-head>i{width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:12px;
+      background:var(--orange-bg);color:var(--orange-2)}
+    .panel-head h3{margin:0;line-height:1.26;font-size:1.12rem;letter-spacing:-.018em}
+    .parameters{display:grid;gap:10px}
+    .parameter{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:13px 15px;
+      border:1px solid var(--border);border-radius:12px;background:var(--surface-2)}
+    .parameter span{font-size:.82rem;color:var(--muted)}.parameter strong{text-align:right;font-size:.96rem;line-height:1.3}
+    .parameter strong.accent{color:var(--orange-2);font-size:1.15rem}
+    .caption{font-size:.75rem;color:var(--muted);margin:13px 0 0}
+    .dashboard{border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--surface-2)}
+    .dash-title{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;
+      border-bottom:1px solid var(--border);font-size:.76rem;font-weight:850}
+    .dash-dots{display:flex;gap:4px}.dash-dots b{width:7px;height:7px;border-radius:100%;background:#ff9d70}
+    .dash-dots b:nth-child(2){background:#ffd472}.dash-dots b:nth-child(3){background:#70dda4}
+    .dash-body{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:15px}
+    .dash-block{padding:13px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+    .dash-block span{display:block;color:var(--muted);font-size:.69rem}.dash-block strong{font-size:1.22rem;letter-spacing:-.03em}
+    .dash-chart{grid-column:1/-1;display:block;width:100%;height:auto}
+    .budget-table{width:100%;border-collapse:collapse;font-size:.83rem;text-align:left}
+    .budget-table th{padding:12px 13px;font-size:.71rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;
+      background:var(--surface-2);border-bottom:1px solid var(--border)}
+    .budget-table td{padding:13px;border-bottom:1px solid var(--border)}
+    .budget-table tr:last-child td{border-bottom:0}.budget-table td:nth-child(2){font-weight:900;color:var(--orange-2)}
+    .table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:13px}
+    .budget-input{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:17px;padding:14px;
+      background:var(--surface-2);border:1px solid var(--border);border-radius:12px}
+    .budget-input label{font-size:.79rem;font-weight:900}.budget-input input{width:87px;min-height:40px;border:1px solid var(--border);
+      border-radius:9px;padding:7px 10px;color:var(--text);background:var(--surface);text-align:center;font-weight:850}
+    .budget-result{flex:1 1 200px;font-size:.81rem;line-height:1.45}.budget-result strong{color:var(--orange-2)}
+    .note{display:flex;gap:9px;padding:13px 14px;border:1px solid rgba(76,144,255,.24);
+      background:rgba(76,144,255,.075);border-radius:12px;margin-top:14px;color:var(--muted);font-size:.78rem}
+    .note i{color:#77abff;flex:none;margin-top:3px}
+    .priority{display:grid;grid-template-columns:1fr auto 1fr;gap:13px;align-items:stretch;margin-bottom:16px}
+    .priority-item{display:flex;align-items:center;gap:12px;padding:17px 18px;border-radius:14px;
+      border:1px solid var(--border);background:var(--surface)}
+    .priority-item i{display:grid;place-items:center;width:44px;height:44px;flex:none;border-radius:12px;
+      font-size:1.14rem;color:var(--orange-2);background:var(--orange-bg)}
+    .priority-item strong{display:block;font-size:.89rem}.priority-item small{color:var(--muted);font-size:.75rem}
+    .priority-arrow{display:grid;place-items:center;font-size:1.5rem;color:var(--orange-2)}
+    .diagnostic-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .diagnostic{position:relative;overflow:hidden;border:1px solid var(--border);border-radius:17px;background:var(--surface);padding:20px}
+    .diag-art{height:103px;display:flex;align-items:flex-end;justify-content:center;gap:11px;margin-bottom:17px;
+      padding:10px;border-radius:12px;background:var(--surface-2)}
+    .diag-art .bar{width:34px;min-height:7px;position:relative;border-radius:6px 6px 0 0;background:var(--blue)}
+    .diag-art .bar:nth-child(2){background:var(--orange)}.diag-art .bar:nth-child(3){background:var(--green)}
+    .diag-art .bar span{position:absolute;left:50%;bottom:-19px;transform:translateX(-50%);font-size:.6rem;color:var(--muted);white-space:nowrap}
+    .diag-art .bar{margin-bottom:18px}
+    .diagnostic .diag-label{font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;font-weight:950;color:var(--orange-2)}
+    .diagnostic h3{margin:7px 0;font-size:1.03rem;line-height:1.38}
+    .diagnostic p{margin:0;color:var(--muted);font-size:.79rem}
+    .diag-action{margin-top:15px;padding:12px;border-radius:10px;background:var(--surface-2);border:1px solid var(--border)}
+    .diag-action strong{display:block;font-size:.76rem}.diag-action span{display:block;margin-top:4px;color:var(--muted);font-size:.75rem}
+    .fifteen{display:flex;gap:18px;align-items:center;padding:20px;margin-top:16px;border-radius:16px;
+      border:1px solid rgba(34,197,94,.25);background:linear-gradient(110deg,rgba(34,197,94,.09),rgba(34,197,94,.025))}
+    .fifteen-badge{flex:none;display:grid;place-items:center;width:94px;height:94px;border-radius:21px;
+      background:linear-gradient(155deg,#5ce59a,#0d8956);color:#061c12;box-shadow:0 12px 28px rgba(34,197,94,.1);transform:rotate(-5deg)}
+    .fifteen-badge div{text-align:center;line-height:1}.fifteen-badge strong{display:block;font-size:2.1rem;letter-spacing:-.06em}
+    .fifteen-badge small{display:block;font-weight:1000;font-size:.65rem;margin-top:4px}
+    .fifteen h3{margin:0 0 5px;font-size:1.05rem}.fifteen p{margin:0;color:var(--muted);font-size:.8rem}
+    .timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-top:17px}
+    .week{position:relative;padding:17px 15px;border:1px solid var(--border);background:var(--surface);border-radius:15px}
+    .week:not(:last-child)::after{content:"";position:absolute;right:-13px;top:42px;width:13px;height:2px;background:#ff9144}
+    .week small{display:block;color:var(--muted);font-size:.73rem;font-weight:800}
+    .week strong{display:block;font-size:1.63rem;margin-top:8px;color:var(--orange-2);letter-spacing:-.05em;line-height:1.1}
+    .week p{font-size:.76rem;line-height:1.4;color:var(--muted);margin:8px 0 0}
+    .week .week-mark{display:inline-flex;align-items:center;gap:5px;margin-top:10px;padding:4px 7px;
+      font-size:.62rem;font-weight:900;border-radius:6px;background:var(--surface-2);color:var(--muted)}
+    .week.last{border-color:rgba(255,122,0,.38);background:linear-gradient(155deg,rgba(255,122,0,.11),var(--surface))}
+    .individual{display:grid;grid-template-columns:1.05fr .95fr;gap:19px;align-items:center;
+      padding:26px;border:1px solid rgba(167,139,250,.36);border-radius:20px;
+      background:radial-gradient(circle at 95% 20%,rgba(167,139,250,.14),transparent 40%),var(--surface)}
+    .individual h3{font-size:1.27rem;margin:4px 0 12px;line-height:1.3;letter-spacing:-.02em}
+    .individual p{font-size:.83rem;color:var(--muted);margin:0 0 11px}
+    .tag{display:inline-flex;align-items:center;gap:5px;border:1px solid rgba(167,139,250,.37);
+      border-radius:99px;background:rgba(167,139,250,.10);padding:5px 9px;font-size:.65rem;font-weight:950;color:#c6b5ff}
+    .individual-kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:15px 0}
+    .individual-kpis div{padding:14px 13px;border-radius:12px;border:1px solid var(--border);background:var(--surface-2)}
+    .individual-kpis strong{display:block;font-size:1.42rem;letter-spacing:-.04em;color:#bfaaff}
+    .individual-kpis span{font-size:.72rem;color:var(--muted)}
+    .mini-campaigns{display:grid;gap:10px}.mini-campaign{display:flex;gap:12px;align-items:center;
+      padding:13px;border:1px solid var(--border);background:var(--surface-2);border-radius:13px}
+    .mini-product{width:48px;height:48px;flex:none;display:grid;place-items:center;border-radius:11px;
+      background:rgba(167,139,250,.13);color:#c5b6ff;font-size:1.34rem}
+    .mini-campaign-copy{flex:1;min-width:0}.mini-campaign-copy strong{font-size:.77rem;display:block}
+    .mini-campaign-copy span{font-size:.69rem;color:var(--muted)}
+    .mini-pill{font-size:.64rem;font-weight:950;padding:5px 8px;color:#8be9b0;border-radius:99px;
+      border:1px solid rgba(34,197,94,.20);background:rgba(34,197,94,.09)}
+    .conflict{display:flex;gap:11px;align-items:flex-start;padding:16px 17px;margin-top:13px;
+      border-radius:13px;border:1px solid rgba(255,190,105,.43);background:rgba(255,166,65,.085)}
+    .conflict i{color:#ffb25c;margin-top:3px}.conflict strong{font-size:.82rem}.conflict p{margin:4px 0 0;color:var(--muted);font-size:.77rem}
+    .checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:16px}
+    .checkline{display:flex;gap:10px;align-items:flex-start;padding:15px;border-radius:12px;
+      background:var(--surface);border:1px solid var(--border);font-size:.81rem}
+    .checkline i{color:#2acb74;margin-top:3px}
+    .closing{display:flex;align-items:flex-start;gap:13px;margin-top:24px;padding:19px;border-radius:15px;
+      border:1px solid rgba(255,122,0,.32);background:var(--orange-bg)}
+    .closing i{color:var(--orange-2);font-size:1.22rem;margin-top:4px}
+    .closing strong{display:block;font-size:.86rem}.closing p{margin:4px 0 0;color:var(--muted);font-size:.79rem}
+    .footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;color:var(--muted);
+      font-size:.72rem;margin:46px 0 30px;padding-top:20px;border-top:1px solid var(--border)}
+    .footer a{color:var(--orange-2);text-decoration:none;font-weight:900}
+    @media(max-width:1050px){.nav a:not(.back){display:none}.hero{gap:12px}.diagnostic-grid{grid-template-columns:repeat(2,1fr)}
+      .diagnostic:last-child{grid-column:1/-1}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:800px){.hero{grid-template-columns:1fr}.hero-art{max-width:500px;margin:0 auto}
+      .two-col,.individual{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .step:not(:last-child)::after{display:none}.timeline{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .week::after{display:none!important}}
+    @media(max-width:560px){.shell{width:min(100% - 24px,1240px)}.header-inner{min-height:67px}.nav .back{font-size:0;min-height:40px;padding:10px 12px}
+      .nav .back i{font-size:.83rem}.hero{margin-top:12px;padding:26px 19px;border-radius:19px}
+      .hero h1{font-size:clamp(2.3rem,11vw,3.55rem)}.hero p{font-size:.88rem}.hero-art{margin-top:10px}
+      .metrics{gap:8px}.metric{padding:12px 13px}.metric strong{font-size:1.34rem}
+      .section-title{display:block;margin-top:34px}.section-title p{margin-top:7px}
+      .steps,.diagnostic-grid,.timeline,.checklist{grid-template-columns:1fr}.diagnostic:last-child{grid-column:auto}
+      .panel{padding:17px}.priority{grid-template-columns:1fr}.priority-arrow{transform:rotate(90deg)}
+      .fifteen{align-items:flex-start}.fifteen-badge{width:63px;height:63px;border-radius:14px}.fifteen-badge strong{font-size:1.5rem}
+      .fifteen-badge small{font-size:.49rem}.individual{padding:19px}.parameter{flex-direction:column;align-items:flex-start;gap:2px}
+      .parameter strong{text-align:left}.budget-table{min-width:480px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
   </style>
 </head>
 <body>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
   <header class="header">
-    <a class="brand" href="#" id="backHub"><span class="logo">SP</span><span>Seller Pro<br><small style="color:var(--muted);font-weight:600">Estratégia e apoio</small></span></a>
-    <div class="head-actions">
-      <a href="ads-informacoes.html" class="active"><i class="fa-solid fa-chart-line"></i> ADS e informações</a>
-      <a href="contatos-terceiros.html" class=""><i class="fa-solid fa-address-book"></i> Contatos</a>
-      <a href="videos.html"><i class="fa-solid fa-graduation-cap"></i> Academy Support</a>
-      <button id="backButton" type="button"><i class="fa-solid fa-arrow-left"></i> Voltar ao HUB</button>
+    <div class="header-inner shell">
+      <a class="brand" href="./" id="backHub" aria-label="Voltar ao HUB Seller Pro">
+        <span class="brand-icon">SP</span>
+        <span><strong>Seller Pro</strong><small>Playbook de campanhas</small></span>
+      </a>
+      <nav class="nav" aria-label="Navegação desta página">
+        <a href="#configuracao">Configuração</a>
+        <a href="#diagnostico">Diagnóstico</a>
+        <a href="#cpc">Otimização</a>
+        <a href="#individuais">Individuais</a>
+        <a class="back" href="./" id="backButton"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Voltar ao HUB</a>
+      </nav>
     </div>
   </header>
-  <main class="container">
-  
-<section class="hero">
-  <div class="eyebrow"><i class="fa-solid fa-bullseye"></i> Guia operacional • Loja Pronta</div>
-  <h1>ADS e <em>informações</em></h1>
-  <p>Guia operacional de campanhas para configurar a estratégia inicial e acompanhar os primeiros 15 dias. Os valores refletem o alinhamento interno informado para o projeto Loja Pronta; revise as diretrizes quando houver atualização.</p>
-  <div class="quick-links">
-    <a href="#inicio" class="btn primary"><i class="fa-solid fa-rocket"></i> Estratégia inicial</a>
-  </div>
-</section>
-<div class="section-heading" id="inicio"><h2>Estratégia de campanha • Loja Pronta</h2><p>Configuração e acompanhamento padrão</p></div>
-<section class="grid">
-  <article class="card"><i class="fa-solid fa-gears"></i><span class="pill">01 • Configuração</span><h3 style="margin-top:14px">Campanha automática geral</h3><p>Utilizar campanha automática geral na configuração inicial da Loja Pronta.</p></article>
-  <article class="card"><i class="fa-solid fa-wallet"></i><span class="pill">02 • Orçamento</span><h3 style="margin-top:14px">R$ 30,00 por dia</h3><p>Orçamento diário previsto no alinhamento inicial. Acompanhe os gastos e o desempenho.</p></article>
-  <article class="card"><i class="fa-solid fa-hand-pointer"></i><span class="pill">03 • Lance inicial</span><h3 style="margin-top:14px">CPC inicial: R$ 0,66</h3><p>Ponto de partida previsto para a campanha automática geral; realizar ajustes quando necessário.</p></article>
-  <article class="card"><i class="fa-solid fa-chart-column"></i><span class="pill">04 • Monitoramento</span><h3 style="margin-top:14px">Primeiros 15 dias</h3><p>Acompanhar a campanha e otimizar preço e CPC de acordo com os dados obtidos.</p></article>
-  <article class="card"><i class="fa-solid fa-magnifying-glass-chart"></i><span class="pill">05 • Sem vendas</span><h3 style="margin-top:14px">Plano de ação após 15 dias</h3><p>Se a loja ainda não tiver vendas após esse período, elaborar um plano de ação com base nos resultados observados.</p></article>
-</section>
-<section class="hub-hint" aria-label="Acesso aos materiais">
-  <div>
-    <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
-    <div><h2>Materiais de consulta no HUB principal</h2>
-    <p>Planilhas, documentos, calculadora, Academy Support e outros acessos ficam reunidos em <strong>Materiais e acessos relacionados</strong>, no HUB.</p></div>
-  </div>
-  <button class="btn primary" id="backMaterials" type="button"><i class="fa-solid fa-arrow-left"></i> Ir para o HUB</button>
-</section>
-  <footer class="footer">Seller Pro • Recurso interno • Setembro de 2026. Acesso a arquivos externos sujeito às permissões de cada serviço.</footer>
+
+  <main id="conteudo" class="shell">
+    <!-- Ilustração SVG integrada: não depende de imagens externas para renderizar. -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <span class="eyebrow"><i class="fa-solid fa-bullseye" aria-hidden="true"></i> Loja Pronta • Estratégia operacional</span>
+        <h1 id="hero-title">Campanhas de <span>ADS</span><br>com estratégia.</h1>
+        <p>Um roteiro visual para configurar, acompanhar e otimizar as campanhas das lojas do projeto Loja Pronta — desde o primeiro anúncio até uma eventual campanha individual.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#configuracao"><i class="fa-solid fa-rocket" aria-hidden="true"></i> Começar pela configuração</a>
+          <a class="btn" href="#diagnostico"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> Analisar resultados</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <svg viewBox="0 0 540 395" role="img" aria-label="Ilustração de um painel de publicidade com gráfico de crescimento, resultados e cartões de campanhas">
+          <defs>
+            <linearGradient id="back" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#242f49"/><stop offset="1" stop-color="#131d30"/></linearGradient>
+            <linearGradient id="chart" x1="0" x2="1"><stop stop-color="#ffae52"/><stop offset="1" stop-color="#ff7a00"/></linearGradient>
+            <linearGradient id="area" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#ff9835" stop-opacity=".34"/><stop offset="1" stop-color="#ff9835" stop-opacity="0"/></linearGradient>
+            <filter id="float"><feDropShadow dx="0" dy="13" stdDeviation="13" flood-opacity=".19"/></filter>
+          </defs>
+          <circle cx="460" cy="68" r="55" fill="#ff9e38" opacity=".10"/>
+          <circle cx="80" cy="320" r="68" fill="#5c83ff" opacity=".07"/>
+          <g filter="url(#float)">
+            <rect x="42" y="42" width="447" height="297" rx="22" fill="url(#back)" stroke="#55627e" stroke-opacity=".55"/>
+            <path d="M42 65 Q42 42 65 42H466Q489 42 489 65V91H42Z" fill="#29344b"/>
+            <circle cx="63" cy="67" r="5" fill="#ff855d"/><circle cx="80" cy="67" r="5" fill="#f4d26c"/><circle cx="97" cy="67" r="5" fill="#62dca0"/>
+            <rect x="124" y="60" width="135" height="13" rx="6.5" fill="#46546c"/>
+            <rect x="66" y="116" width="210" height="19" rx="7" fill="#fff" opacity=".93"/>
+            <rect x="66" y="144" width="162" height="9" rx="4.5" fill="#7f8fa9"/>
+            <path d="M71 274H454M71 237H454M71 200H454" stroke="#52627a" opacity=".38" stroke-dasharray="4 6"/>
+            <path d="M72 287 L121 262 L169 271 L223 214 L274 231 L327 179 L378 195 L447 139 L447 296 L72 296Z" fill="url(#area)"/>
+            <path d="M72 287 L121 262 L169 271 L223 214 L274 231 L327 179 L378 195 L447 139" fill="none" stroke="url(#chart)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <g fill="#ffc17b" stroke="#253148" stroke-width="4"><circle cx="121" cy="262" r="6"/><circle cx="223" cy="214" r="6"/><circle cx="327" cy="179" r="6"/><circle cx="447" cy="139" r="7"/></g>
+            <rect x="65" y="309" width="414" height="13" rx="6.5" fill="#394760"/>
+          </g>
+          <g filter="url(#float)">
+            <rect x="337" y="4" width="180" height="91" rx="14" fill="#fff"/>
+            <rect x="355" y="23" width="34" height="34" rx="10" fill="#eaf5ee"/>
+            <path d="M364 41L374 49L384 32" stroke="#15945d" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="398" y="27" width="102" height="10" rx="5" fill="#cfd9e9"/>
+            <rect x="398" y="47" width="75" height="8" rx="4" fill="#e5eaf2"/>
+            <rect x="355" y="67" width="144" height="8" rx="4" fill="#e5eaf2"/>
+          </g>
+          <g filter="url(#float)">
+            <rect x="4" y="238" width="152" height="107" rx="15" fill="#fff"/>
+            <rect x="18" y="253" width="55" height="9" rx="4.5" fill="#ced8e8"/>
+            <rect x="18" y="279" width="78" height="26" rx="5" fill="#f1f4f8"/>
+            <rect x="26" y="291" width="12" height="9" rx="3" fill="#9cc9f8"/>
+            <rect x="44" y="282" width="12" height="18" rx="3" fill="#77a9f9"/>
+            <rect x="62" y="287" width="12" height="13" rx="3" fill="#ffad64"/>
+            <rect x="106" y="276" width="36" height="36" rx="9" fill="#f0fff5"/>
+            <path d="M113 296l8 8 15-19" fill="none" stroke="#15a16b" stroke-width="4" stroke-linecap="round"/>
+            <rect x="18" y="323" width="118" height="7" rx="3.5" fill="#e3e9f1"/>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="metrics" aria-label="Parâmetros principais da campanha geral">
+      <div class="metric"><small><i class="fa-solid fa-layer-group" aria-hidden="true"></i> Tipo inicial</small><strong>Automática</strong><span>Campanha geral</span></div>
+      <div class="metric"><small><i class="fa-solid fa-wallet" aria-hidden="true"></i> Orçamento padrão</small><strong>R$ 30/dia</strong><span>Para até 5 produtos</span></div>
+      <div class="metric"><small><i class="fa-solid fa-arrow-pointer" aria-hidden="true"></i> CPC inicial</small><strong>R$ 0,66</strong><span>Ajustes conforme o desempenho</span></div>
+      <div class="metric"><small><i class="fa-solid fa-calendar-check" aria-hidden="true"></i> Janela de atenção</small><strong>15 dias</strong><span>Otimização durante o período</span></div>
+    </section>
+
+    <aside class="golden" aria-label="Regra principal">
+      <div class="golden-icon"><i class="fa-solid fa-lightbulb" aria-hidden="true"></i></div>
+      <div><strong>Regra de ouro: primeiro otimizamos o anúncio. Depois, a campanha.</strong>
+        <p>Não basta aumentar o CPC. Preço, imagem principal, título, imagens secundárias, descrição e bullet points podem ser determinantes para transformar visualizações em vendas.</p></div>
+    </aside>
+
+    <section aria-labelledby="fluxo-title" id="fluxo">
+      <div class="section-title"><div><span class="overline">Visão geral</span><h2 id="fluxo-title">Como a estratégia funciona</h2></div>
+        <p>Quatro momentos conectados: a campanha individual é uma alternativa, nunca o ponto de partida.</p></div>
+      <div class="steps">
+        <article class="step"><span class="step-num">01</span><h3>Iniciar a campanha geral</h3><p>Começar com R$ 30/dia para até 5 produtos e CPC de R$ 0,66.</p></article>
+        <article class="step"><span class="step-num">02</span><h3>Acompanhar e melhorar os anúncios</h3><p>Analisar impressões, cliques e conversões durante os primeiros 15 dias.</p></article>
+        <article class="step"><span class="step-num">03</span><h3>Ajustar o CPC se necessário</h3><p>Sem vendas, realizar aumentos condicionais de R$ 0,10 por semana até R$ 0,90.</p></article>
+        <article class="step"><span class="step-num">04</span><h3>Avaliar campanhas individuais</h3><p>Somente se a geral continuar sem resultado após as otimizações e alcançar o teto de CPC.</p></article>
+      </div>
+    </section>
+
+    <section id="configuracao" aria-labelledby="config-title">
+      <div class="section-title"><div><span class="overline">Etapa 01</span><h2 id="config-title">Configuração automática geral</h2></div>
+        <p>Uma única campanha para iniciar a operação, com orçamento adequado à quantidade de produtos.</p></div>
+      <div class="two-col">
+        <article class="panel">
+          <div class="panel-head"><i class="fa-solid fa-sliders" aria-hidden="true"></i><h3>Parâmetros de lançamento</h3></div>
+          <div class="parameters">
+            <div class="parameter"><span>Tipo de campanha</span><strong>Automática geral</strong></div>
+            <div class="parameter"><span>Orçamento diário inicial</span><strong class="accent">R$ 30,00</strong></div>
+            <div class="parameter"><span>CPC inicial</span><strong class="accent">R$ 0,66</strong></div>
+            <div class="parameter"><span>Referência de produtos</span><strong>Até 5</strong></div>
+          </div>
+          <p class="caption">Use esses números como padrão de partida para a Loja Pronta e acompanhe o desempenho antes de alterar os lances.</p>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><i class="fa-solid fa-chart-line" aria-hidden="true"></i><h3>Exemplo visual do acompanhamento</h3></div>
+          <div class="dashboard" role="img" aria-label="Painel ilustrativo de acompanhamento de impressões, cliques e vendas, com valores fictícios apenas para demonstrar os indicadores">
+            <div class="dash-title"><span>Painel de desempenho <span style="color:var(--muted);font-weight:500">• valores ilustrativos</span></span><span class="dash-dots"><b></b><b></b><b></b></span></div>
+            <div class="dash-body">
+              <div class="dash-block"><span>Impressões</span><strong>8.420</strong></div>
+              <div class="dash-block"><span>Cliques</span><strong>186</strong></div>
+              <svg class="dash-chart" viewBox="0 0 520 160" aria-hidden="true">
+                <defs><linearGradient id="dash-fill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#ff963f" stop-opacity=".25"/><stop offset="1" stop-color="#ff963f" stop-opacity="0"/></linearGradient></defs>
+                <path d="M10 126H510M10 86H510M10 46H510" stroke="var(--border)" stroke-dasharray="5 6" fill="none"/>
+                <path d="M10 127L76 101L138 114L202 62L268 79L332 38L397 50L466 16L505 30L505 135H10Z" fill="url(#dash-fill)"/>
+                <path d="M10 127L76 101L138 114L202 62L268 79L332 38L397 50L466 16L505 30" stroke="#ff8b36" fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+                <circle cx="202" cy="62" r="5" fill="#ffbd76"/><circle cx="332" cy="38" r="5" fill="#ffbd76"/><circle cx="466" cy="16" r="5" fill="#ffbd76"/>
+              </svg>
+            </div>
+          </div>
+          <p class="caption">O gráfico é ilustrativo. A tomada de decisão deve usar os dados reais de cada campanha e produto.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="orcamento" aria-labelledby="budget-title">
+      <div class="section-title"><div><span class="overline">Planejamento</span><h2 id="budget-title">Orçamento conforme os produtos</h2></div>
+        <p>Com mais produtos, a campanha pode precisar de um orçamento maior para distribuir a entrega.</p></div>
+      <div class="panel">
+        <div class="table-wrap">
+          <table class="budget-table">
+            <thead><tr><th>Produtos na campanha geral</th><th>Orçamento diário</th><th>Orientação</th></tr></thead>
+            <tbody>
+              <tr><td>Até 5 produtos</td><td>R$ 30,00</td><td>Configuração padrão inicial</td></tr>
+              <tr><td>De 6 a 19 produtos</td><td>Ajustar gradualmente</td><td>Avaliar desempenho e necessidade, sem ultrapassar R$ 50/dia</td></tr>
+              <tr><td>20 produtos</td><td>Máximo R$ 50,00</td><td>Teto sugerido para a mesma campanha</td></tr>
+              <tr><td>Acima de 20 produtos</td><td>Separar campanhas</td><td>Evitar concentrar tudo em uma única campanha</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="budget-input">
+          <label for="productCount"><i class="fa-solid fa-calculator" style="color:var(--orange-2)" aria-hidden="true"></i> Quantos produtos?</label>
+          <input id="productCount" type="number" min="1" max="999" step="1" value="5" inputmode="numeric">
+          <div id="budgetResult" class="budget-result" role="status" aria-live="polite"><strong>R$ 30,00/dia.</strong> Configuração padrão para até 5 produtos.</div>
+        </div>
+        <div class="note"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><span><strong>Orçamento não é gasto garantido.</strong> O limite diário disponível não significa que a campanha gastará, necessariamente, todo esse valor todos os dias. A simulação acima apresenta diretrizes, não uma previsão de gastos.</span></div>
+      </div>
+    </section>
+
+    <section id="diagnostico" aria-labelledby="diag-title">
+      <div class="section-title"><div><span class="overline">Etapa 02</span><h2 id="diag-title">Acompanhar e diagnosticar</h2></div>
+        <p>Interprete os sinais da campanha para decidir o que otimizar antes de aumentar o CPC.</p></div>
+      <div class="priority" aria-label="Ordem correta de otimização">
+        <div class="priority-item"><i class="fa-solid fa-rectangle-ad" aria-hidden="true"></i>
+          <div><strong>1º: otimizar o anúncio</strong><small>Título, imagens, preço, descrição e bullet points.</small></div></div>
+        <div class="priority-arrow"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></div>
+        <div class="priority-item"><i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+          <div><strong>2º: otimizar a campanha</strong><small>Ajustar CPC somente quando os dados justificarem.</small></div></div>
+      </div>
+      <div class="diagnostic-grid">
+        <article class="diagnostic">
+          <div class="diag-art" aria-hidden="true"><div class="bar" style="height:77px"><span>Impressões</span></div><div class="bar" style="height:20px"><span>Cliques</span></div><div class="bar" style="height:9px"><span>Vendas</span></div></div>
+          <span class="diag-label">Cenário 01</span><h3>Muitas impressões e poucos cliques</h3>
+          <p>A campanha está aparecendo, mas a oferta pode não estar suficientemente atrativa para o cliente clicar.</p>
+          <div class="diag-action"><strong><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i> Revisar antes de investir mais</strong><span>Preço, título e imagem principal (foto de capa).</span></div>
+        </article>
+        <article class="diagnostic">
+          <div class="diag-art" aria-hidden="true"><div class="bar" style="height:77px"><span>Impressões</span></div><div class="bar" style="height:57px"><span>Cliques</span></div><div class="bar" style="height:10px"><span>Vendas</span></div></div>
+          <span class="diag-label">Cenário 02</span><h3>Muitos cliques e poucas vendas</h3>
+          <p>O cliente demonstra interesse inicial, mas pode não encontrar motivos suficientes para finalizar a compra.</p>
+          <div class="diag-action"><strong><i class="fa-solid fa-list-check" aria-hidden="true"></i> Revisar o conteúdo interno</strong><span>Imagens secundárias, descrição, bullet points e preço.</span></div>
+        </article>
+        <article class="diagnostic">
+          <div class="diag-art" aria-hidden="true"><div class="bar" style="height:77px"><span>Impressões</span></div><div class="bar" style="height:50px"><span>Cliques</span></div><div class="bar" style="height:33px"><span>Vendas</span></div></div>
+          <span class="diag-label">Cenário 03</span><h3>Impressões, cliques e vendas</h3>
+          <p>A campanha apresenta entrega e conversões. O próximo passo é acompanhar se o resultado é sustentável.</p>
+          <div class="diag-action"><strong><i class="fa-solid fa-chart-pie" aria-hidden="true"></i> Monitorar os resultados</strong><span>Avaliar o custo dos anúncios e a evolução das vendas antes de alterar o lance.</span></div>
+        </article>
+      </div>
+      <div class="fifteen">
+        <div class="fifteen-badge" aria-hidden="true"><div><strong>15</strong><small>DIAS</small></div></div>
+        <div><h3>Os primeiros 15 dias são de acompanhamento ativo.</h3>
+          <p>Não aguarde o período terminar para começar a trabalhar. Faça melhorias nos anúncios, monitore a entrega e analise o CPC durante toda a janela inicial. Se ainda não houver venda no 15º dia, revise os resultados e defina o plano de ação — a migração para campanhas individuais depende também das etapas de otimização e do teto de CPC.</p></div>
+      </div>
+    </section>
+
+    <section id="cpc" aria-labelledby="cpc-title">
+      <div class="section-title"><div><span class="overline">Etapa 03</span><h2 id="cpc-title">Escalonamento do CPC geral</h2></div>
+        <p>Se não houver vendas mesmo após revisar o anúncio, os aumentos são semanais e condicionais.</p></div>
+      <div class="panel">
+        <div class="panel-head"><i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i><h3>Do lance inicial até o teto de R$ 0,90</h3></div>
+        <p style="font-size:.83rem;color:var(--muted);margin:0">O aumento padrão é de R$ 0,10 por semana, somente se a ausência de vendas e os dados justificarem o ajuste. O último aumento é menor para não ultrapassar o limite estabelecido.</p>
+        <div class="timeline" aria-label="Linha do tempo de ajustes de CPC">
+          <div class="week"><small>Lançamento</small><strong>R$ 0,66</strong><p>Início da campanha automática geral.</p><span class="week-mark">Dia 0</span></div>
+          <div class="week"><small>1º ajuste</small><strong>R$ 0,76</strong><p>Se seguir sem vendas após otimizar o anúncio.</p><span class="week-mark">Após 7 dias</span></div>
+          <div class="week"><small>2º ajuste</small><strong>R$ 0,86</strong><p>Nova avaliação dos resultados antes de aumentar.</p><span class="week-mark">Após 14 dias</span></div>
+          <div class="week last"><small>3º ajuste • teto</small><strong>R$ 0,90</strong><p>Aumento final de apenas R$ 0,04.</p><span class="week-mark">Após 21 dias</span></div>
+        </div>
+        <div class="note"><i class="fa-solid fa-clock" aria-hidden="true"></i><span><strong>15 dias não significam migração automática.</strong> A primeira revisão formal acontece após 15 dias, mas o teto de R$ 0,90 pode ser alcançado somente após o ajuste da terceira semana, caso os aumentos continuem necessários.</span></div>
+      </div>
+    </section>
+
+    <section id="individuais" aria-labelledby="individual-title">
+      <div class="section-title"><div><span class="overline">Etapa 04 • Plano alternativo</span><h2 id="individual-title">Campanhas automáticas individuais</h2></div>
+        <p>Separar os produtos para controlar melhor orçamento e desempenho somente quando a estratégia geral não funcionar.</p></div>
+      <div class="individual">
+        <div>
+          <span class="tag"><i class="fa-solid fa-lock-open" aria-hidden="true"></i> Usar apenas depois de esgotar a estratégia geral</span>
+          <h3>Uma campanha para cada produto. Mais controle sobre cada resultado.</h3>
+          <p>Se a campanha geral seguir sem vendas após as otimizações do anúncio e os ajustes de CPC até R$ 0,90, avalie a criação de campanhas separadas para os produtos.</p>
+          <div class="individual-kpis">
+            <div><strong>R$ 15/dia</strong><span>Orçamento para cada produto</span></div>
+            <div><strong>R$ 0,99*</strong><span>CPC se for 10% acima de R$ 0,90</span></div>
+          </div>
+          <p style="font-size:.74rem">Cada produto terá orçamento e desempenho acompanhados separadamente. O limite diário não representa gasto obrigatório.</p>
+        </div>
+        <div class="mini-campaigns" role="img" aria-label="Ilustração de três produtos em campanhas automáticas separadas, cada um com seu próprio orçamento diário de quinze reais">
+          <div class="mini-campaign"><div class="mini-product"><i class="fa-solid fa-box-open" aria-hidden="true"></i></div><div class="mini-campaign-copy"><strong>Campanha • Produto 01</strong><span>Orçamento próprio: R$ 15/dia</span></div><span class="mini-pill">Individual</span></div>
+          <div class="mini-campaign"><div class="mini-product"><i class="fa-solid fa-bag-shopping" aria-hidden="true"></i></div><div class="mini-campaign-copy"><strong>Campanha • Produto 02</strong><span>Orçamento próprio: R$ 15/dia</span></div><span class="mini-pill">Individual</span></div>
+          <div class="mini-campaign"><div class="mini-product"><i class="fa-solid fa-kitchen-set" aria-hidden="true"></i></div><div class="mini-campaign-copy"><strong>Campanha • Produto 03</strong><span>Orçamento próprio: R$ 15/dia</span></div><span class="mini-pill">Individual</span></div>
+        </div>
+      </div>
+      <aside class="conflict" aria-label="Valor de CPC individual a confirmar">
+        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+        <div><strong>* Atenção: confirmar o CPC individual com a gestão antes de configurar.</strong>
+          <p>A diretriz informada pede CPC individual <strong>10% maior que o da campanha geral</strong>, mas também menciona <strong>R$ 0,66</strong>. Como a migração ocorre após o CPC geral alcançar R$ 0,90, a conta de 10% resulta em <strong>R$ 0,99</strong>. Se a referência for o CPC inicial de R$ 0,66, o resultado arredondado será R$ 0,73. O valor exibido acima é o cálculo sobre o CPC final, ainda sujeito à confirmação interna.</p></div>
+      </aside>
+    </section>
+
+    <section id="resumo" aria-labelledby="resumo-title">
+      <div class="section-title"><div><span class="overline">Aplicação prática</span><h2 id="resumo-title">Checklist rápido da estratégia</h2></div>
+        <p>Uma sequência de conferência para consultar durante as configurações e análises.</p></div>
+      <div class="checklist" aria-label="Etapas de execução">
+        <div class="checkline"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Criar a campanha automática geral com CPC inicial de R$ 0,66 e orçamento adequado à quantidade de produtos.</span></div>
+        <div class="checkline"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Observar diariamente as impressões, os cliques e as vendas, com atenção especial aos primeiros 15 dias.</span></div>
+        <div class="checkline"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Revisar os anúncios antes de aumentar o CPC: preço, título, fotos, descrição e bullet points.</span></div>
+        <div class="checkline"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Sem vendas, avaliar os ajustes semanais de CPC: R$ 0,76, R$ 0,86 e, por último, R$ 0,90.</span></div>
+        <div class="checkline"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Após 15 dias sem venda, preparar um plano de ação com base no diagnóstico dos anúncios e da campanha.</span></div>
+        <div class="checkline"><i class="fa-solid fa-circle-check" aria-hidden="true"></i><span>Se a geral continuar sem resultado após alcançar o teto, validar o CPC individual e avaliar campanhas de R$ 15/dia por produto.</span></div>
+      </div>
+      <div class="closing"><i class="fa-solid fa-bullseye" aria-hidden="true"></i><div>
+        <strong>Objetivo: melhorar a conversão antes de ampliar o investimento.</strong>
+        <p>Otimização é um processo contínuo: cada aumento de lance deve vir acompanhado de análise. O plano individual é usado quando a campanha geral já passou pelas oportunidades de melhoria.</p></div></div>
+    </section>
+
+    <footer class="footer"><span>Seller Pro • Guia interno de ADS • Setembro/2026</span><a href="#conteudo"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i> Voltar ao topo</a></footer>
   </main>
   <script>
-    (()=>{
-      const applyTheme=()=>document.body.classList.toggle("theme-light",
-        localStorage.getItem("sellerProTema")==="claro"||localStorage.getItem("sellerProTheme")==="light");
+    (() => {
+      const applyTheme = () => document.body.classList.toggle('theme-light',
+        localStorage.getItem('sellerProTema') === 'claro' || localStorage.getItem('sellerProTheme') === 'light');
       applyTheme();
-      document.addEventListener("sellerpro:theme",()=>setTimeout(applyTheme,0));
-      const goBack=e=>{
-        e.preventDefault();
-        if(document.referrer){
-          try{const prev=new URL(document.referrer);if(prev.origin===location.origin){history.back();return;}}catch{}
-        }
-        location.href="./";
-      };
-      document.getElementById("backButton").addEventListener("click",goBack);
-      document.getElementById("backHub").addEventListener("click",goBack);
-      document.getElementById("backMaterials").addEventListener("click",(e)=>{
-        e.preventDefault();
-        try{
-          if(document.referrer){
-            const prev=new URL(document.referrer);
-            if(prev.origin===location.origin && /(?:hub|index)[^/]*\.html$/i.test(prev.pathname)){
-              location.assign(prev.pathname+prev.search+"#materiais");return;
+      document.addEventListener('sellerpro:theme', () => setTimeout(applyTheme, 0));
+      window.addEventListener('storage', applyTheme);
+
+      const goBack = event => {
+        event.preventDefault();
+        if (document.referrer) {
+          try {
+            const previous = new URL(document.referrer);
+            if (previous.origin === location.origin && previous.pathname !== location.pathname) {
+              history.back(); return;
             }
-          }
-        }catch{}
-        location.assign("./#materiais");
-      });
+          } catch (error) { /* Referrer indisponível; usar rota do HUB. */ }
+        }
+        location.assign('./');
+      };
+      document.getElementById('backButton').addEventListener('click', goBack);
+      document.getElementById('backHub').addEventListener('click', goBack);
+
+      // Orientação de orçamento sem fabricar uma fórmula de investimento para 6–19 produtos.
+      const count = document.getElementById('productCount');
+      const result = document.getElementById('budgetResult');
+      function updateBudget() {
+        const amount = Number(count.value);
+        if (!Number.isInteger(amount) || amount < 1 || amount > 999) {
+          result.textContent = 'Informe uma quantidade inteira de 1 a 999 produtos.';
+          return;
+        }
+        if (amount <= 5) result.innerHTML = '<strong>R$ 30,00/dia.</strong> Configuração padrão para até 5 produtos.';
+        else if (amount < 20) result.innerHTML = '<strong>Orçamento gradual.</strong> Ajuste conforme o desempenho, entre o padrão de R$ 30 e o teto de R$ 50/dia.';
+        else if (amount === 20) result.innerHTML = '<strong>Máximo R$ 50,00/dia.</strong> Teto recomendado para até 20 produtos na mesma campanha.';
+        else result.innerHTML = '<strong>Divida as campanhas.</strong> Mais de 20 produtos em uma única campanha não é o ideal.';
+      }
+      count.addEventListener('input', updateBudget);
+      updateBudget();
     })();
   </script>
 </body>
