@@ -1997,6 +1997,140 @@
     @keyframes localConfettiFall {
       to { transform: translate3d(var(--fall-x), 108vh, 0) rotate(720deg); opacity: 0.2; }
     }
+
+    /* Histórico independente de entregas: cards agrupados pelo mês real da entrega. */
+    .delivery-panel {
+      margin: 4px 0 26px;
+      overflow: visible;
+    }
+    .delivery-title-line {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .delivery-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .delivery-title-icon {
+      display: grid;
+      place-items: center;
+      height: 46px;
+      width: 46px;
+      flex: 0 0 46px;
+      border-radius: 15px;
+      background: linear-gradient(135deg, #fff7ed, #ffedd5);
+      font-size: 22px;
+      box-shadow: inset 0 0 0 1px #fed7aa;
+    }
+    .delivery-title h2 { margin: 0 0 4px; font-size: 21px; letter-spacing: -.02em; }
+    .delivery-title p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.55; }
+    .delivery-badge {
+      border: 1px solid rgba(22, 163, 74, .23);
+      border-radius: 999px;
+      background: rgba(34, 197, 94, .10);
+      color: #15803d;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 8px 12px;
+      white-space: nowrap;
+    }
+    .delivery-summary {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .delivery-summary-tile {
+      padding: 15px 17px;
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      background: linear-gradient(140deg, rgba(249, 115, 22, .06), rgba(255,255,255,.02));
+    }
+    .delivery-summary-tile:nth-child(2) { background: linear-gradient(140deg, rgba(34, 197, 94, .08), rgba(255,255,255,.02)); }
+    .delivery-summary-tile:nth-child(3) { background: linear-gradient(140deg, rgba(59, 130, 246, .07), rgba(255,255,255,.02)); }
+    .delivery-summary-label { display: block; font-size: 12px; font-weight: 800; color: var(--muted); margin-bottom: 7px; }
+    .delivery-summary-number { font-size: 28px; line-height: 1; font-weight: 900; color: var(--text); }
+    .delivery-filters {
+      display: grid;
+      grid-template-columns: minmax(110px, 0.7fr) minmax(145px, 1fr) minmax(155px, 1fr) minmax(195px, 1.5fr) auto;
+      gap: 11px;
+      align-items: end;
+      margin-bottom: 13px;
+    }
+    .delivery-filters .field { min-width: 0; }
+    .delivery-filters .field input, .delivery-filters .field select { width: 100%; }
+    .delivery-reset { margin-bottom: 1px; white-space: nowrap; }
+    .delivery-results-line { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 14px; align-items: center; margin-bottom: 13px; }
+    .delivery-results-line span { color: var(--muted); font-size: 12px; font-weight: 750; }
+    .delivery-results-line strong { color: var(--text); }
+    .delivery-months-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 405px), 1fr));
+      gap: 15px;
+      align-items: start;
+    }
+    .delivery-month-card {
+      min-width: 0;
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-radius: 19px;
+      box-shadow: 0 8px 23px rgba(15, 23, 42, .045);
+      overflow: hidden;
+      transition: box-shadow .2s ease, border-color .2s ease;
+    }
+    .delivery-month-card[open] { border-color: rgba(249,115,22,.4); box-shadow: 0 10px 30px rgba(249, 115, 22, .08); }
+    .delivery-month-header {
+      list-style: none;
+      padding: 17px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      user-select: none;
+    }
+    .delivery-month-header::-webkit-details-marker { display: none; }
+    .delivery-month-header:focus-visible { outline: 3px solid rgba(249, 115, 22, .4); outline-offset: -3px; }
+    .delivery-month-label { display: block; font-size: 17px; font-weight: 900; color: var(--text); line-height: 1.25; }
+    .delivery-month-subtitle { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); }
+    .delivery-month-actions { display: flex; align-items: center; gap: 9px; flex: 0 0 auto; }
+    .delivery-month-total { display: grid; place-items: center; min-width: 39px; height: 39px; padding: 0 9px; border-radius: 12px; font-weight: 900; font-size: 16px; color: #c2410c; background: #fff7ed; border: 1px solid #fed7aa; }
+    .delivery-chevron { font-size: 20px; color: var(--muted); transition: transform .2s ease; }
+    .delivery-month-card[open] .delivery-chevron { transform: rotate(180deg); }
+    .delivery-month-content { border-top: 1px solid var(--line); }
+    .delivery-support-breakdown { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; padding: 11px 15px; border-bottom: 1px solid var(--line); }
+    .delivery-support-breakdown small { font-weight: 900; font-size: 11px; color: var(--muted); margin-right: 2px; }
+    .delivery-support-pill { font-size: 11px; font-weight: 850; padding: 6px 8px; background: rgba(249,115,22,.085); color: var(--text); border: 1px solid var(--line); border-radius: 999px; overflow-wrap: anywhere; }
+    .delivery-rows { max-height: 440px; overflow-y: auto; padding: 3px 15px 5px; scrollbar-color: var(--muted) transparent; scrollbar-width: thin; }
+    .delivery-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 13px 0; border-bottom: 1px dashed var(--line); }
+    .delivery-row:last-child { border-bottom: none; }
+    .delivery-store-name { font-size: 13px; font-weight: 900; color: var(--text); line-height: 1.35; overflow-wrap: anywhere; }
+    .delivery-store-detail { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 7px; }
+    .delivery-mcid { display: inline-block; border-radius: 8px; padding: 5px 7px; font-size: 11px; background: var(--blue-soft); color: var(--text); border: 1px solid var(--line); font-family: ui-monospace, Consolas, monospace; font-weight: 800; word-break: break-all; }
+    .delivery-copy {
+      background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 8px;
+      padding: 4px 7px; cursor: pointer; font-weight: 800; font-size: 11px;
+    }
+    .delivery-copy:hover { color: var(--primary); border-color: var(--primary); }
+    .delivery-row-date { color: var(--muted); font-size: 11px; font-weight: 750; }
+    .delivery-row-side { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; min-width: 0; }
+    .delivery-responsible-label { font-size: 10px; color: var(--muted); font-weight: 800; }
+    .delivery-responsible { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text); font-weight: 850; max-width: 200px; overflow-wrap: anywhere; text-align: right; }
+    .delivery-responsible-avatar { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #ffedd5; color: #9a3412; font-size: 9px; flex-shrink: 0; }
+    .delivery-empty { padding: 26px 16px; text-align: center; border: 1px dashed var(--line); border-radius: 14px; color: var(--muted); font-weight: 800; line-height: 1.5; grid-column: 1/-1; }
+    body.theme-dark .delivery-title-icon, body.theme-dark .delivery-month-total, body.theme-dark .delivery-responsible-avatar { background: rgba(249, 115, 22, .18); color: #fdba74; border-color: rgba(249, 115, 22, .33); }
+    body.theme-dark .delivery-badge { color: #86efac; border-color: rgba(34,197,94,.29); }
+    body.theme-dark .delivery-summary-tile { background: rgba(249, 115, 22, .06); }
+    body.theme-dark .delivery-month-card { background: #101010; }
+    body.theme-dark .delivery-mcid { color: #ffedd5; }
+    @media(max-width: 1020px) { .delivery-filters { grid-template-columns: repeat(2, minmax(0,1fr)); } .delivery-search-field { grid-column: 1 / -1; } .delivery-reset { width: 100%; } }
+    @media(max-width: 600px) { .delivery-summary { grid-template-columns: 1fr 1fr; } .delivery-summary-tile:first-child { grid-column: 1 / -1; } .delivery-row { flex-direction: column; align-items: stretch; gap: 8px; } .delivery-row-side { flex-direction: row; align-items: center; justify-content: space-between; } .delivery-filters { grid-template-columns: 1fr 1fr; } }
+
   </style>
 
   <!-- Seller Pro: tema e autenticação compartilhados -->
@@ -2197,6 +2331,63 @@
         <div class="overview-value" id="totalCallOnboard">0</div>
       </div>
 
+    </section>
+
+
+    <!-- Histórico completo: separado do painel de lojas pendentes. -->
+    <section class="panel delivery-panel" id="deliveryPanel" aria-label="Histórico mensal de lojas entregues">
+      <div class="delivery-title-line">
+        <div class="delivery-title">
+          <div class="delivery-title-icon" aria-hidden="true">🏆</div>
+          <div>
+            <h2>Lojas entregues · mês a mês</h2>
+            <p>Histórico das lojas com MCID, organizadas pela data de entrega e pelo suporte responsável.</p>
+          </div>
+        </div>
+        <span class="delivery-badge">✓ MCID obrigatório</span>
+      </div>
+
+      <div class="delivery-summary" aria-label="Resumo das entregas">
+        <div class="delivery-summary-tile">
+          <span class="delivery-summary-label">Total histórico com MCID</span>
+          <strong class="delivery-summary-number" id="deliveryTotalHistorical">0</strong>
+        </div>
+        <div class="delivery-summary-tile">
+          <span class="delivery-summary-label">Entregues neste mês</span>
+          <strong class="delivery-summary-number" id="deliveryCurrentMonth">0</strong>
+        </div>
+        <div class="delivery-summary-tile">
+          <span class="delivery-summary-label">Meses com entregas</span>
+          <strong class="delivery-summary-number" id="deliveryMonthsTotal">0</strong>
+        </div>
+      </div>
+
+      <div class="delivery-filters" aria-label="Filtros do histórico de entregas">
+        <div class="field">
+          <label for="deliveryYearFilter">Ano da entrega</label>
+          <select id="deliveryYearFilter"><option value="">Todos os anos</option></select>
+        </div>
+        <div class="field">
+          <label for="deliveryMonthFilter">Mês da entrega</label>
+          <select id="deliveryMonthFilter"><option value="">Todos os meses</option></select>
+        </div>
+        <div class="field">
+          <label for="deliverySupportFilter">Suporte responsável</label>
+          <select id="deliverySupportFilter"><option value="">Todos os suportes</option></select>
+        </div>
+        <div class="field delivery-search-field">
+          <label for="deliverySearchInput">Buscar entrega</label>
+          <input id="deliverySearchInput" type="search" placeholder="Nome da loja, MCID ou suporte..." />
+        </div>
+        <button class="btn btn-light delivery-reset" id="deliveryResetButton" type="button">Limpar</button>
+      </div>
+      <div class="delivery-results-line">
+        <span id="deliveryResultsCount" role="status" aria-live="polite">Carregando histórico...</span>
+        <span id="deliveryDataNotice">Histórico independente dos filtros de lojas pendentes · Clique em um mês para expandir ou recolher.</span>
+      </div>
+      <div class="delivery-months-grid" id="deliveryMonthsGrid">
+        <div class="delivery-empty">Carregando entregas...</div>
+      </div>
     </section>
 
     <div class="section-title">
@@ -2442,6 +2633,8 @@
     let allSupports = [];
     let allProjects = [];
     let allDeliveredRecords = [];
+    let deliveryHistoryRows = [];
+    let deliveryArchiveUnavailable = false;
     let supportLookup = new Map();
     let currentTab = "andamento";
     let activeOverviewMode = "";
@@ -2618,6 +2811,17 @@
     const clearTableFiltersButton = document.getElementById("clearTableFiltersButton");
     const toggleTableButton = document.getElementById("toggleTableButton");
     const tableCard = document.querySelector(".table-card");
+
+    const deliveryYearFilter = document.getElementById("deliveryYearFilter");
+    const deliveryMonthFilter = document.getElementById("deliveryMonthFilter");
+    const deliverySupportFilter = document.getElementById("deliverySupportFilter");
+    const deliverySearchInput = document.getElementById("deliverySearchInput");
+    const deliveryResetButton = document.getElementById("deliveryResetButton");
+    const deliveryMonthsGrid = document.getElementById("deliveryMonthsGrid");
+    const deliveryResultsCount = document.getElementById("deliveryResultsCount");
+    const deliveryTotalHistorical = document.getElementById("deliveryTotalHistorical");
+    const deliveryCurrentMonth = document.getElementById("deliveryCurrentMonth");
+    const deliveryMonthsTotal = document.getElementById("deliveryMonthsTotal");
 
     const storesTable = document.getElementById("storesTable");
     const supportCards = document.getElementById("supportCards");
@@ -3200,9 +3404,11 @@
     }
 
     async function fetchDeliveredRecords() {
+      deliveryArchiveUnavailable = false;
       try {
         return await fetchAll("sp_lojas_entregues");
       } catch (error) {
+        deliveryArchiveUnavailable = true;
         // A tabela é complementar. O painel continua funcionando mesmo que
         // a política RLS ainda não permita a leitura dela.
         console.warn(
@@ -4318,6 +4524,262 @@ return matchMonth && matchSupport && matchStatus && matchSearch;
         .join("");
     }
 
+
+    // O histórico é calculado separadamente: vendas concluídas saem do painel
+    // de pendências, mas continuam sendo contabilizadas como lojas entregues.
+    const DELIVERY_MONTH_FORMAT = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" });
+    const DELIVERY_MONTH_NAMES = Array.from({ length: 12 }, (_, i) =>
+      new Intl.DateTimeFormat("pt-BR", { month: "long" }).format(new Date(2026, i, 1))
+    );
+
+    function normalizedMcid(value) {
+      const mcid = String(value ?? "").trim();
+      const invalid = ["", "-", "null", "undefined", "nao informado", "sem mcid", "pendente", "a preencher", "n/a"];
+      return invalid.includes(normalizeKey(mcid)) ? "" : mcid;
+    }
+
+    function getArchiveDeliveryDate(record) {
+      // Não misturar mês do projeto com mês da entrega.
+      const official = parseDateSafely(getPossibleValue(record, [
+        "delivery_completed_at", "deliveryCompletedAt", "delivered_at",
+        "delivery_date", "data_entrega", "data_loja_entregue", "entregue_em"
+      ]));
+      if (official) return { timestamp: official.getTime(), isRecordDate: false };
+
+      // Para registros antigos, usa-se a data de inserção no histórico.
+      const recordDate = parseDateSafely(record.created_at);
+      return { timestamp: recordDate ? recordDate.getTime() : 0, isRecordDate: true };
+    }
+
+    function archiveResponsibleName(record, linkedTask) {
+      const explicitFields = [
+        "delivered_by_name", "delivered_support_name", "delivery_support_name",
+        "suporte_entrega", "entregue_por_nome", "nome_responsavel_entrega",
+        "suporte_nome", "nome_suporte", "support_name", "suporte",
+        "support", "responsavel", "responsável", "owner", "assigned_to"
+      ];
+      const archivedValues = [];
+      explicitFields.forEach((field) => {
+        if (record && record[field] != null && record[field] !== "") {
+          collectComparableValues(record[field], archivedValues);
+        }
+      });
+
+      const actorIds = collectComparableValues(getPossibleValue(record, [
+        "delivered_by", "delivered_by_id", "delivered_user_id", "support_id", "owner_id"
+      ]));
+
+      for (const value of [...archivedValues, ...actorIds]) {
+        const matched = supportLookup.get(normalizeKey(value));
+        if (matched) return matched;
+      }
+      // Texto de nome livre gravado no histórico da entrega.
+      for (const value of archivedValues) {
+        const name = String(value).trim();
+        if (/[a-záàâãéêíóôõúç]{2,}/i.test(name) &&
+            !name.includes("@") && !/^[0-9a-f-]{18,}$/i.test(name) &&
+            normalizeKey(name) !== "sem suporte") return formatSupportName(name);
+      }
+
+      // Se o histórico não guarda o nome de quem entregou, recorre ao suporte
+      // vinculado à loja. Não se atribui nome quando não há correspondência.
+      if (linkedTask) {
+        const taskSupport = getSupportName(linkedTask);
+        if (taskSupport && taskSupport !== "Sem suporte" &&
+            !/^[0-9a-f-]{18,}$/i.test(taskSupport)) return taskSupport;
+      }
+      return "Não informado";
+    }
+
+    function buildDeliveryHistory(tasks, archive) {
+      const availableTasks = tasks || [];
+      const activeArchive = (archive || []).filter((record) => !record.deleted_at);
+      const byTaskId = new Map(availableTasks
+        .filter((task) => task.id != null)
+        .map((task) => [String(task.id).trim(), task]));
+      const byMcid = buildUniqueDeliveredLookup(availableTasks,
+        (task) => normalizedMcid(getMCID(task)));
+      const byName = buildUniqueDeliveredLookup(availableTasks, (task) => getStoreName(task));
+      const deliveries = new Map();
+
+      function addDelivery(candidate) {
+        const mcid = normalizedMcid(candidate.mcid);
+        if (!mcid) return;
+        const key = mcid.toUpperCase();
+        const current = deliveries.get(key);
+        // O mesmo MCID pode existir em mais de um registro: conta-se uma única
+        // loja e prioriza-se o histórico oficial em relação ao fallback da tarefa.
+        if (!current || (candidate.fromArchive && !current.fromArchive) ||
+            (candidate.fromArchive === current.fromArchive &&
+              ((candidate.timestamp && !current.timestamp) ||
+               (candidate.timestamp && candidate.timestamp > current.timestamp)))) {
+          deliveries.set(key, { ...candidate, mcid });
+        }
+      }
+
+      activeArchive.forEach((record) => {
+        const taskId = String(record.task_id || "").trim();
+        const mcidArchive = normalizedMcid(getMCID(record));
+        const archiveName = getStoreName(record);
+        const task = byTaskId.get(taskId) ||
+          (mcidArchive ? byMcid.get(normalizeLookupValue(mcidArchive)) : null) ||
+          (archiveName !== "Sem nome" ? byName.get(normalizeLookupValue(archiveName)) : null) || null;
+        const mcid = mcidArchive || normalizedMcid(task && getMCID(task));
+        if (!mcid) return;
+        const { timestamp, isRecordDate } = getArchiveDeliveryDate(record);
+        const archiveStoreName = getStoreName(record);
+        addDelivery({
+          mcid,
+          loja: archiveStoreName !== "Sem nome" ? archiveStoreName : (task ? getStoreName(task) : "Loja sem nome"),
+          suporte: archiveResponsibleName(record, task),
+          timestamp,
+          isRecordDate,
+          fromArchive: true
+        });
+      });
+
+      availableTasks.forEach((task) => {
+        const mcid = normalizedMcid(getMCID(task));
+        if (!mcid || deliveries.has(mcid.toUpperCase())) return;
+        const status = getStatusName(task);
+        // Cancelamentos não são inferidos como entregas. Para vendas concluídas,
+        // exige-se uma data de entrega registrada ou movimentação histórica.
+        if (!isDeliveredStatus(status) && !isSaleFinalizedStatus(status)) return;
+        const info = getStatusStartInfo(task);
+        const supportedSource = [
+          "sp_tasks.delivery_completed_at", "sp_lojas_entregues.delivery_completed_at",
+          "entrada em sp_lojas_entregues", "histórico de movimentação"
+        ].includes(info.source);
+        if (!info.timestamp || info.estimated || !supportedSource) return;
+        addDelivery({
+          mcid,
+          loja: getStoreName(task),
+          suporte: archiveResponsibleName({}, task),
+          timestamp: info.timestamp,
+          isRecordDate: info.source === "entrada em sp_lojas_entregues",
+          fromArchive: false
+        });
+      });
+
+      return [...deliveries.values()].sort((a, b) =>
+        (b.timestamp || 0) - (a.timestamp || 0) || a.loja.localeCompare(b.loja, "pt-BR")
+      );
+    }
+
+    function getDeliveryMonthKey(timestamp) {
+      if (!timestamp) return "undated";
+      const date = new Date(timestamp);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+    }
+
+    function fillDeliveryFilters() {
+      const oldYear = deliveryYearFilter.value;
+      const oldMonth = deliveryMonthFilter.value;
+      const oldSupport = deliverySupportFilter.value;
+      const dates = deliveryHistoryRows.filter((row) => row.timestamp).map((row) => new Date(row.timestamp));
+      const years = [...new Set(dates.map((date) => String(date.getFullYear())))].sort((a,b) => Number(b)-Number(a));
+      const months = [...new Set(dates.map((date) => date.getMonth() + 1))].sort((a,b) => a-b);
+      const supports = [...new Set(deliveryHistoryRows.map((row) => row.suporte))].sort((a,b) => a.localeCompare(b,"pt-BR"));
+
+      const write = (select, label, options) => {
+        select.innerHTML = "";
+        select.add(new Option(label, ""));
+        options.forEach(([value, caption]) => select.add(new Option(caption, value)));
+      };
+      write(deliveryYearFilter, "Todos os anos", years.map((year) => [year, year]));
+      write(deliveryMonthFilter, "Todos os meses", months.map((month) => [String(month),
+        DELIVERY_MONTH_NAMES[month - 1].charAt(0).toUpperCase() + DELIVERY_MONTH_NAMES[month - 1].slice(1)]));
+      write(deliverySupportFilter, "Todos os suportes", supports.map((support) => [support, support]));
+      deliveryYearFilter.value = years.includes(oldYear) ? oldYear : "";
+      deliveryMonthFilter.value = months.some((month) => String(month) === oldMonth) ? oldMonth : "";
+      deliverySupportFilter.value = supports.includes(oldSupport) ? oldSupport : "";
+    }
+
+    function renderDeliveryHistory() {
+      const now = new Date();
+      const currentMonthKey = getDeliveryMonthKey(now.getTime());
+      const knownMonths = new Set(deliveryHistoryRows.filter((row) => row.timestamp)
+        .map((row) => getDeliveryMonthKey(row.timestamp)));
+      deliveryTotalHistorical.textContent = deliveryHistoryRows.length;
+      deliveryCurrentMonth.textContent = deliveryHistoryRows.filter((row) =>
+        getDeliveryMonthKey(row.timestamp) === currentMonthKey).length;
+      deliveryMonthsTotal.textContent = knownMonths.size;
+
+      const selectedYear = deliveryYearFilter.value;
+      const selectedMonth = deliveryMonthFilter.value;
+      const selectedSupport = deliverySupportFilter.value;
+      const search = normalizeKey(deliverySearchInput.value);
+      const visible = deliveryHistoryRows.filter((row) => {
+        const date = row.timestamp ? new Date(row.timestamp) : null;
+        if (selectedYear && (!date || String(date.getFullYear()) !== selectedYear)) return false;
+        if (selectedMonth && (!date || String(date.getMonth() + 1) !== selectedMonth)) return false;
+        if (selectedSupport && !valuesMatchSelected(row.suporte, selectedSupport)) return false;
+        return !search || normalizeKey(`${row.loja} ${row.mcid} ${row.suporte}`).includes(search);
+      });
+      const grouped = new Map();
+      visible.forEach((row) => {
+        const key = getDeliveryMonthKey(row.timestamp);
+        if (!grouped.has(key)) grouped.set(key, []);
+        grouped.get(key).push(row);
+      });
+      const keys = [...grouped.keys()].sort((a,b) =>
+        a === "undated" ? 1 : b === "undated" ? -1 : b.localeCompare(a));
+      deliveryResultsCount.innerHTML = `<strong>${visible.length}</strong> loja${visible.length === 1 ? "" : "s"} em <strong>${keys.length}</strong> grupo${keys.length === 1 ? "" : "s"}`;
+      const deliveryDataNotice = document.getElementById("deliveryDataNotice");
+      deliveryDataNotice.textContent = deliveryArchiveUnavailable
+        ? "⚠️ Histórico de entregas indisponível: exibindo apenas datas confirmadas nas tarefas. Verifique o acesso à tabela sp_lojas_entregues."
+        : "Histórico independente dos filtros de lojas pendentes · Clique em um mês para expandir ou recolher.";
+
+      if (!keys.length) {
+        deliveryMonthsGrid.innerHTML = `<div class="delivery-empty">Nenhuma loja entregue com MCID encontrada${deliveryHistoryRows.length ? " para os filtros selecionados" : " no histórico disponível"}.</div>`;
+        return;
+      }
+
+      // Preserva as abas mensais que o usuário abriu ou fechou durante pesquisas.
+      const previous = new Map([...deliveryMonthsGrid.querySelectorAll("details[data-delivery-month]")]
+        .map((node) => [node.dataset.deliveryMonth, node.open]));
+      deliveryMonthsGrid.innerHTML = keys.map((key, index) => {
+        const rows = grouped.get(key);
+        const date = rows.find((row) => row.timestamp)?.timestamp;
+        const title = key === "undated" ? "Sem data registrada" :
+          DELIVERY_MONTH_FORMAT.format(new Date(date)).replace(/^./, (letter) => letter.toUpperCase());
+        const bySupport = new Map();
+        rows.forEach((row) => bySupport.set(row.suporte, (bySupport.get(row.suporte) || 0) + 1));
+        const supportChips = [...bySupport].sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0],"pt-BR"))
+          .map(([name,count]) => `<span class="delivery-support-pill">${escapeHtml(name)} · ${count}</span>`).join("");
+        const detailsOpen = previous.has(key) ? previous.get(key) : index < 2;
+        const rowHtml = rows.map((row) => {
+          const dateText = row.timestamp ? formatDateFromTimestamp(row.timestamp) : "Data não informada";
+          return `<div class="delivery-row">
+            <div class="delivery-row-main">
+              <div class="delivery-store-name">${escapeHtml(row.loja)}</div>
+              <div class="delivery-store-detail">
+                <span class="delivery-mcid" title="MCID: ${escapeHtml(row.mcid)}">MCID: ${escapeHtml(row.mcid)}</span>
+                <button class="delivery-copy" type="button" data-copy-mcid="${escapeHtml(row.mcid)}" title="Copiar MCID">Copiar</button>
+                <span class="delivery-row-date" title="${row.isRecordDate ? "Data de inserção no histórico (sem data oficial de entrega)" : "Data de entrega"}">
+                  ${row.isRecordDate ? "Registrado" : "Entregue"}: ${escapeHtml(dateText)}</span>
+              </div>
+            </div>
+            <div class="delivery-row-side"><span class="delivery-responsible-label">Suporte responsável</span>
+              <span class="delivery-responsible"><span class="delivery-responsible-avatar">${escapeHtml(getInitials(row.suporte))}</span>${escapeHtml(row.suporte)}</span>
+            </div>
+          </div>`;
+        }).join("");
+        return `<details class="delivery-month-card" data-delivery-month="${escapeHtml(key)}" ${detailsOpen ? "open" : ""}>
+          <summary class="delivery-month-header">
+            <span><span class="delivery-month-label">${escapeHtml(title)}</span>
+              <span class="delivery-month-subtitle">${rows.length} loja${rows.length === 1 ? "" : "s"} entregue${rows.length === 1 ? "" : "s"}</span>
+            </span>
+            <span class="delivery-month-actions"><span class="delivery-month-total">${rows.length}</span><span class="delivery-chevron" aria-hidden="true">⌄</span></span>
+          </summary>
+          <div class="delivery-month-content">
+            <div class="delivery-support-breakdown"><small>Por suporte</small>${supportChips}</div>
+            <div class="delivery-rows">${rowHtml}</div>
+          </div>
+        </details>`;
+      }).join("");
+    }
+
     function render() {
       const rowsWithoutTab = sortRowsByValue(
         getRowsAfterFiltersWithoutTab(),
@@ -4348,6 +4810,7 @@ return matchMonth && matchSupport && matchStatus && matchSearch;
           <td colspan="8" class="empty">Carregando dados...</td>
         </tr>
       `;
+      deliveryResultsCount.textContent = "Atualizando histórico...";
 
       refreshButton.disabled = true;
       refreshButton.textContent = "Atualizando...";
@@ -4373,7 +4836,10 @@ return matchMonth && matchSupport && matchStatus && matchSearch;
         );
 
         allRows = buildRows(tasksWithDeliveryDates);
+        deliveryHistoryRows = buildDeliveryHistory(tasksWithDeliveryDates, allDeliveredRecords);
 
+        fillDeliveryFilters();
+        renderDeliveryHistory();
         populateFilters(allRows);
         render();
       } catch (error) {
@@ -4389,6 +4855,8 @@ return matchMonth && matchSupport && matchStatus && matchSearch;
             <td colspan="8" class="empty">Erro ao carregar dados.</td>
           </tr>
         `;
+        deliveryResultsCount.textContent = "Falha ao atualizar histórico.";
+        deliveryMonthsGrid.innerHTML = `<div class="delivery-empty">Não foi possível carregar as entregas. Tente atualizar os dados.</div>`;
       } finally {
         refreshButton.disabled = false;
         refreshButton.textContent = "Atualizar dados";
@@ -4570,6 +5038,45 @@ return matchMonth && matchSupport && matchStatus && matchSearch;
         applyTheme(event.detail === "light" ? "light" : "dark", false);
       });
     }
+
+    // Estes filtros não interferem no acompanhamento de lojas pendentes.
+    [deliveryYearFilter, deliveryMonthFilter, deliverySupportFilter].forEach((control) =>
+      control.addEventListener("change", renderDeliveryHistory));
+    deliverySearchInput.addEventListener("input", renderDeliveryHistory);
+    deliveryResetButton.addEventListener("click", () => {
+      deliveryYearFilter.value = "";
+      deliveryMonthFilter.value = "";
+      deliverySupportFilter.value = "";
+      deliverySearchInput.value = "";
+      renderDeliveryHistory();
+    });
+    deliveryMonthsGrid.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-copy-mcid]");
+      if (!button) return;
+      const mcid = button.dataset.copyMcid;
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(mcid);
+        } else {
+          const temp = document.createElement("textarea");
+          temp.value = mcid;
+          temp.style.position = "fixed";
+          temp.style.opacity = "0";
+          document.body.appendChild(temp);
+          temp.select();
+          const copied = document.execCommand("copy");
+          temp.remove();
+          if (!copied) throw new Error("Cópia bloqueada pelo navegador");
+        }
+        button.textContent = "Copiado ✓";
+      } catch (error) {
+        button.textContent = "Copie o MCID";
+        window.prompt("Copie o MCID:", mcid);
+      }
+      window.setTimeout(() => {
+        if (button.isConnected) button.textContent = "Copiar";
+      }, 1600);
+    });
 
     monthFilter.addEventListener("change", render);
     supportFilter.addEventListener("change", render);
