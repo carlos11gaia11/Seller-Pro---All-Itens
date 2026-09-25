@@ -2168,7 +2168,34 @@
     @media(max-width:920px) { .delivery-filters {grid-template-columns:repeat(2,minmax(0,1fr));} .delivery-search-field {grid-column:1/-1;} .delivery-reset {grid-column:1/-1;} .delivery-month-header {grid-template-columns:minmax(115px,1fr) minmax(46px,.6fr) auto;} .delivery-month-supports {display:none;} }
     @media(max-width:670px) { .delivery-header {display:block;padding:20px 17px;} .delivery-status-pill {margin-top:14px;}  .delivery-title-copy h2 {font-size:20px;} .delivery-summary {grid-template-columns:repeat(2,minmax(0,1fr));padding:0 5px;} .delivery-summary-tile {padding:15px;} .delivery-summary-tile:nth-child(2)::after {display:none;} .delivery-summary-tile:nth-child(-n+2) {border-bottom:1px solid var(--delivery-border)!important;} .delivery-workspace-main {padding:19px 14px;} .delivery-month-header {gap:8px;padding:12px 10px;} .delivery-table-head {display:none;} .delivery-row {grid-template-columns:minmax(0,1fr) minmax(0,.75fr);gap:7px;} .delivery-row-date {grid-column:2;grid-row:1;} .delivery-responsible {grid-column:1/-1;} .delivery-audit-strip {padding:13px 15px;} .delivery-trend {grid-template-columns:repeat(2,minmax(0,1fr));} .delivery-review-card .delivery-month-header {grid-template-columns:minmax(145px,1fr) minmax(42px,.5fr) auto;} }
     @media(max-width:430px) { .delivery-month-bar {display:none;} .delivery-month-header,.delivery-review-card .delivery-month-header {grid-template-columns:minmax(0,1fr) auto;} .delivery-month-actions {grid-column:2;} .delivery-trend {grid-template-columns:1fr;} }
-  </style>
+  
+    /* Conferência diária e exportação Excel — refinamento v3 */
+    .delivery-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .delivery-filters .delivery-day-field {min-width:0;}
+    .delivery-filters .delivery-search-field {grid-column:span 2;}
+    .delivery-filters .delivery-reset {grid-column:auto;align-self:end;}
+    .delivery-date-wrap {min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:3px;}
+    .delivery-date-source {color:var(--delivery-dim);font-size:10px;line-height:1.25;white-space:normal;}
+    .delivery-recovery-badge {font-size:10px;font-weight:750;color:#28635a;background:#e5f7ef;border:1px solid #bce6d4;border-radius:7px;padding:2px 5px;}
+    .delivery-days {margin:0 0 12px;padding:10px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+      background:linear-gradient(110deg,rgba(244,248,250,.92),rgba(251,253,255,.97));border:1px solid #e5eaed;border-radius:11px;}
+    .delivery-inline-caption {font-size:10px;font-weight:850;letter-spacing:.06em;color:#728292;margin-right:6px;}
+    .delivery-day-badge {display:inline-flex;align-items:center;gap:7px;border:1px solid #dfe7ed;border-radius:8px;padding:5px 9px;
+      font-size:11px;font-variant-numeric:tabular-nums;color:#34495e;font-weight:700;background:#fff;}
+    .delivery-day-badge strong {font-size:11px;color:#b64f1b;border-radius:5px;padding:1px 5px;background:#fff1e8;}
+    .delivery-filter-context {margin-left:10px;color:var(--delivery-dim);font-weight:500;}
+    .delivery-export {background:#1f594c!important;color:#fff!important;border:1px solid #1f594c!important;border-radius:10px!important;padding:10px 15px!important;
+      font-weight:850!important;box-shadow:0 6px 14px rgba(31,89,76,.12)!important;min-height:38px;transition:.18s ease;cursor:pointer;}
+    .delivery-export:hover {background:#164b40!important;transform:translateY(-1px);}
+    body.theme-dark .delivery-days {background:#292621;border-color:#514336;}
+    body.theme-dark .delivery-day-badge {background:#332c25;border-color:#644d3a;color:#ffe3c4;}
+    body.theme-dark .delivery-date-source {color:#dab38e;}
+    body.theme-dark .delivery-recovery-badge {background:#1b4234;border-color:#427b61;color:#c9f9de;}
+    @media(max-width:1100px){.delivery-filters{grid-template-columns:repeat(3,minmax(0,1fr));}.delivery-filters .delivery-search-field{grid-column:span 2;}}
+    @media(max-width:720px){.delivery-filters{grid-template-columns:repeat(2,minmax(0,1fr));}.delivery-filters .delivery-search-field{grid-column:1/-1;}.delivery-filters .delivery-reset{grid-column:1/-1;}.delivery-results-line{align-items:flex-start;gap:11px;flex-wrap:wrap;}}
+    @media(max-width:670px){.delivery-row .delivery-date-wrap{grid-column:2;grid-row:1;justify-self:end;align-items:flex-end;text-align:right;}}
+    @media(max-width:430px){.delivery-filters{grid-template-columns:1fr;}.delivery-filters .delivery-search-field{grid-column:auto;}.delivery-date-wrap{align-items:flex-end;}}
+</style>
 
   <!-- Seller Pro: tema e autenticação compartilhados -->
   <script>document.documentElement.classList.add('sp-auth-pending');</script>
@@ -2393,12 +2420,12 @@
         <div class="delivery-summary-tile">
           <div class="delivery-summary-head"><span class="delivery-summary-icon" aria-hidden="true">▦</span>Identificadas com MCID</div>
           <strong class="delivery-summary-number" id="deliveryTotalHistorical">0</strong>
-          <span class="delivery-summary-caption">Lojas únicas em etapas entregues</span>
+          <span class="delivery-summary-caption">MCIDs distintos, sem duplicar registros</span>
         </div>
         <div class="delivery-summary-tile">
           <div class="delivery-summary-head"><span class="delivery-summary-icon" aria-hidden="true">✓</span>Com data confirmada</div>
           <strong class="delivery-summary-number" id="deliveryWithDatesTotal">0</strong>
-          <span class="delivery-summary-caption">Distribuídas pelos meses</span>
+          <span class="delivery-summary-caption">Entregas até hoje, distribuídas pelos meses</span>
         </div>
         <div class="delivery-summary-tile">
           <div class="delivery-summary-head"><span class="delivery-summary-icon" aria-hidden="true">↗</span>Entregues neste mês</div>
@@ -2414,24 +2441,25 @@
 
       <div class="delivery-workspace">
         <div class="delivery-workspace-main">
-          <div class="delivery-section-top"><h3 class="delivery-section-heading">Detalhamento de entregas</h3><span class="delivery-section-hint">MCID único por loja</span></div>
+          <div class="delivery-section-top"><h3 class="delivery-section-heading">Detalhamento de entregas</h3><span class="delivery-section-hint">Agrupado pela data real da entrega</span></div>
           <div class="delivery-filters" aria-label="Filtros independentes do relatório">
             <div class="field"><label for="deliveryYearFilter">Ano</label><select id="deliveryYearFilter"><option value="">Todos</option></select></div>
             <div class="field"><label for="deliveryMonthFilter">Mês</label><select id="deliveryMonthFilter"><option value="">Todos os meses</option></select></div>
             <div class="field"><label for="deliverySupportFilter">Suporte</label><select id="deliverySupportFilter"><option value="">Todos os suportes</option></select></div>
+            <div class="field delivery-day-field"><label for="deliveryDayFilter">Conferir dia</label><input id="deliveryDayFilter" type="date" aria-label="Buscar uma data específica de entrega" /></div>
             <div class="field delivery-search-field"><label for="deliverySearchInput">Busca rápida</label><input id="deliverySearchInput" type="search" placeholder="Loja, MCID ou suporte" /></div>
             <button class="delivery-reset" id="deliveryResetButton" type="button">Limpar</button>
           </div>
-          <div class="delivery-results-line"><span id="deliveryResultsCount" role="status" aria-live="polite">Carregando registros...</span><button type="button" class="delivery-export" id="deliveryExportButton" title="Exportar os registros atualmente filtrados">↓ Exportar CSV</button></div>
+          <div class="delivery-results-line"><span id="deliveryResultsCount" role="status" aria-live="polite">Carregando registros...</span><button type="button" class="delivery-export" id="deliveryExportButton" title="Exportar os registros atualmente filtrados">↓ Exportar Excel (.xlsx)</button></div>
           <div id="deliveryMonthsGrid" class="delivery-months-grid"><div class="delivery-empty">Carregando entregas...</div></div>
         </div>
         <aside class="delivery-aside" aria-label="Evolução das entregas">
-          <span class="delivery-aside-heading">Evolução mensal</span>
+          <span class="delivery-aside-heading">Evolução por data de entrega</span>
           <div class="delivery-aside-sub">Somente entregas com data confirmada. Gráfico acompanha os filtros.</div>
           <div class="delivery-trend" id="deliveryTrend"><div class="delivery-empty">Carregando evolução...</div></div>
           <div class="delivery-aside-note">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 11v6m0-10h.01"/></svg>
-            <p><strong>Critério do relatório</strong><br>Somente MCIDs com formato válido. Lojas finalizadas sem data permanecem identificadas, mas não são atribuídas a nenhum mês.</p>
+            <p><strong>Critério auditável</strong><br>Use a data efetiva da entrega (histórico oficial ou card), não o mês do projeto. MCIDs encontrados no campo ou identificados no nome; registros sem data e datas futuras aparecem separados.</p>
           </div>
         </aside>
       </div>
@@ -4576,30 +4604,54 @@ return matchMonth && matchSupport && matchStatus && matchSearch;
 
 
 
-    /* Entregas: não usar data de criação/atualização como data de entrega.
-       Consolida a tabela oficial + cards de lojas entregues ou com venda finalizada. */
+    /* Histórico v3: MCID estruturado OU explicitamente identificado no nome;
+       mês definido APENAS por data de entrega e nunca pela coluna do projeto,
+       data de criação, coleta, envio, faturador ou primeira venda. */
     const DELIVERY_MONTH_FORMAT = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" });
     const DELIVERY_MONTH_NAMES = Array.from({ length: 12 }, (_, i) =>
       new Intl.DateTimeFormat("pt-BR", { month: "long" }).format(new Date(2026, i, 1)));
-    let deliveryQuality = { invalidArchive: 0, duplicateMcid: 0 };
+    let deliveryQuality = { invalidArchive: 0, duplicateMcid: 0, recoveredTaggedMcid: 0,
+      dateConflicts: 0, archiveCancelled: 0, excludedRows: [] };
     let deliveryFilteredRows = [];
 
-    // Validação de formato (não confirma que o MCID existe na Amazon).
+    // Um texto como "xxxxxx" ou "teste" NÃO é um MCID. O formato não prova
+    // existência na Amazon; evita somente contar placeholders óbvios.
     function normalizedMcid(value) {
-      const mcid = String(value ?? "").trim().toUpperCase();
-      return /^A[A-Z0-9]{9,19}$/.test(mcid) ? mcid : "";
+      const candidate = String(value ?? "").trim().toUpperCase();
+      return /^A[A-Z0-9]{9,19}$/.test(candidate) ? candidate : "";
+    }
+
+    function taggedMcid(...values) {
+      for (const value of values) {
+        if (!value || typeof value !== "string") continue;
+        // Sem marcador MCID, não interpreta números ou ASINs de notas como MCID.
+        const match = value.toUpperCase().match(/(?:^|[^A-Z0-9])MCID\s*[:=#-]?\s*(A[A-Z0-9]{9,19})(?![A-Z0-9])/);
+        if (match && normalizedMcid(match[1])) return match[1];
+      }
+      return "";
+    }
+
+    function deliveryMcid(record, linkedTask) {
+      const byArchive = normalizedMcid(getMCID(record));
+      if (byArchive) return { mcid: byArchive, origin: "Campo MCID do histórico" };
+      const byTask = normalizedMcid(linkedTask && getMCID(linkedTask));
+      if (byTask) return { mcid: byTask, origin: "Campo MCID do card" };
+      const extracted = taggedMcid(
+        String(record?.nome || record?.name || ""),
+        String(linkedTask?.name || linkedTask?.title || "")
+      );
+      return extracted ? { mcid: extracted, origin: "MCID identificado no nome" } : { mcid: "", origin: "Não localizado" };
     }
 
     function archiveResponsibleName(record, linkedTask) {
-      const fields = ["responsavel", "suporte", "support", "delivered_by_name", "delivered_support_name",
-        "suporte_entrega", "entregue_por_nome", "support_name", "owner", "assigned_to"];
       const candidates = [];
-      for (const field of fields) {
+      for (const field of ["responsavel", "suporte", "support", "delivered_by_name",
+        "delivered_support_name", "suporte_entrega", "entregue_por_nome", "owner", "assigned_to"]) {
         if (record && record[field]) collectComparableValues(record[field], candidates);
       }
       for (const value of candidates) {
-        const match = supportLookup.get(normalizeKey(value));
-        if (match) return match;
+        const official = supportLookup.get(normalizeKey(value));
+        if (official) return official;
       }
       for (const value of candidates) {
         const name = String(value || "").trim();
@@ -4607,126 +4659,166 @@ return matchMonth && matchSupport && matchStatus && matchSearch;
             !/^[0-9a-f-]{18,}$/i.test(name)) return formatSupportName(name);
       }
       if (linkedTask) {
-        const support = getSupportName(linkedTask);
-        if (support && support !== "Sem suporte" && !/^[0-9a-f-]{18,}$/i.test(support)) return support;
+        const name = getSupportName(linkedTask);
+        if (name && name !== "Sem suporte" && !/^[0-9a-f-]{18,}$/i.test(name)) return name;
       }
       return "Não informado";
     }
 
-    function getConfirmedTaskDeliveryDate(task) {
-      const official = parseDateSafely(getPossibleValue(task, [
+    // Validação EXATA de DD/MM/AAAA e AAAA-MM-DD, sem correção automática do JS
+    // (por exemplo 31/02 não vira março e uma data ISO não sofre mudança de fuso).
+    function parseVerifiedDeliveryDate(value) {
+      if (value === undefined || value === null || value === "") return null;
+      if (value instanceof Date) return isNaN(value.getTime()) ? null : value;
+      if (typeof value === "number") return parseDateSafely(value);
+      const str = String(value).trim();
+      let year, month, day;
+      let m = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:$|[T ]\d{2}:\d{2})/);
+      if (m) [, year, month, day] = m;
+      else {
+        m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:$|\s\d{1,2}:\d{2})/);
+        if (m) [, day, month, year] = m;
+      }
+      if (m) {
+        const y = Number(year), mo = Number(month), d = Number(day);
+        if (y < 2000 || y > 2100) return null;
+        const date = new Date(y, mo - 1, d);
+        return date.getFullYear() === y && date.getMonth() === mo - 1 && date.getDate() === d ? date : null;
+      }
+      return parseDateSafely(str); // timestamps estruturados usados nos movimentos
+    }
+
+    function verifiedDateFromTask(task) {
+      const official = parseVerifiedDeliveryDate(getPossibleValue(task, [
         "delivery_completed_at", "deliveryCompletedAt", "delivered_at", "delivery_date",
         "data_entrega", "data_loja_entregue", "entregue_em"
       ]));
-      if (official) return official.getTime();
-      return getDeliveredMovementTimestamp(task) || 0;
+      if (official) return {timestamp: official.getTime(), source: "Data oficial do card"};
+      const movement = getDeliveredMovementTimestamp(task);
+      return movement ? {timestamp: movement, source: "Movimentação para loja entregue"} : {timestamp: 0, source: "Sem data"};
     }
 
     function buildDeliveryHistory(tasks, archive) {
       const availableTasks = tasks || [];
-      const activeArchive = (archive || []).filter((record) => !record.deleted_at);
-      const tasksById = new Map(availableTasks.filter((task) => task.id != null)
-        .map((task) => [String(task.id).trim(), task]));
-      const tasksByMcid = buildUniqueDeliveredLookup(availableTasks, (task) => normalizedMcid(getMCID(task)));
-      const consolidated = new Map();
-      deliveryQuality = { invalidArchive: 0, duplicateMcid: 0 };
-
-      function addDelivery(row) {
-        const key = normalizedMcid(row.mcid);
-        if (!key) return;
-        row.mcid = key;
-        const previous = consolidated.get(key);
-        if (!previous) { consolidated.set(key, row); return; }
-        deliveryQuality.duplicateMcid += 1;
-        // Preferência: histórico oficial > tarefa isolada; com data oficial > sem data.
-        // Em duplicidades de mesma origem, preserva a primeira data de entrega, não a última edição.
-        const sourceA = previous.fromArchive ? 2 : 1;
-        const sourceB = row.fromArchive ? 2 : 1;
-        if (sourceB > sourceA || (sourceB === sourceA && Boolean(row.timestamp) > Boolean(previous.timestamp)) ||
-            (sourceB === sourceA && row.timestamp && previous.timestamp && row.timestamp < previous.timestamp)) {
-          consolidated.set(key, row);
-        }
+      const activeArchive = (archive || []).filter(record => !record.deleted_at);
+      const tasksById = new Map(availableTasks.filter(t => t.id != null)
+        .map(task => [String(task.id).trim(), task]));
+      const byTaskMcid = new Map();
+      availableTasks.forEach(task => {
+        const match = deliveryMcid({}, task).mcid;
+        if (match && !byTaskMcid.has(match)) byTaskMcid.set(match, task);
+      });
+      const result = new Map();
+      const quality = {invalidArchive: 0, duplicateMcid: 0, recoveredTaggedMcid: 0,
+        dateConflicts: 0, archiveCancelled: 0, excludedRows: []};
+      function insert(row) {
+        if (!row.mcid) return;
+        const old = result.get(row.mcid);
+        if (!old) { result.set(row.mcid, row); return; }
+        quality.duplicateMcid++;
+        // Um MCID é UMA loja. Prioriza o arquivo de entregas (histórico),
+        // depois existência de data; empates por primeira data registrada.
+        const oldRank = (old.fromArchive ? 4 : 0) + (old.timestamp ? 2 : 0);
+        const newRank = (row.fromArchive ? 4 : 0) + (row.timestamp ? 2 : 0);
+        const replace = newRank > oldRank || (newRank === oldRank && row.timestamp && old.timestamp && row.timestamp < old.timestamp);
+        if (replace) result.set(row.mcid, row);
       }
 
       for (const record of activeArchive) {
         const taskId = String(record.task_id || "").trim();
-        // Correspondência por ID ou MCID único; jamais por nome semelhante.
-        const archiveMcid = normalizedMcid(getMCID(record));
-        const task = tasksById.get(taskId) || (archiveMcid ? tasksByMcid.get(normalizeKey(archiveMcid)) : null) || null;
-        const taskMcid = normalizedMcid(task && getMCID(task));
-        const mcid = archiveMcid || taskMcid;
-        if (!mcid) { deliveryQuality.invalidArchive += 1; continue; }
-        const officialDate = parseDateSafely(getPossibleValue(record, [
+        const candidate = normalizedMcid(getMCID(record)) || taggedMcid(String(record.nome || record.name || ""));
+        const task = tasksById.get(taskId) || (candidate && byTaskMcid.get(candidate)) || null;
+        const status = task ? getStatusName(task) : "";
+        if (task && isCancelledStatus(status)) { quality.archiveCancelled++; continue; }
+        const resolved = deliveryMcid(record, task);
+        if (!resolved.mcid) {
+          quality.invalidArchive++;
+          quality.excludedRows.push({
+            loja: String(getStoreName(record)), mcid: "", suporte: archiveResponsibleName(record, task),
+            timestamp: parseVerifiedDeliveryDate(record.delivery_completed_at)?.getTime() || 0,
+            issue: "Histórico sem MCID verificável", source: "sp_lojas_entregues"
+          });
+          continue;
+        }
+        if (resolved.origin === "MCID identificado no nome") quality.recoveredTaggedMcid++;
+        const official = parseVerifiedDeliveryDate(getPossibleValue(record, [
           "delivery_completed_at", "deliveryCompletedAt", "delivered_at", "delivery_date", "data_entrega"
         ]));
-        // Recuperação apenas pela data OFICIAL da tarefa, nunca pelo created_at do arquivo.
-        const timestamp = officialDate ? officialDate.getTime() : (task ? getConfirmedTaskDeliveryDate(task) : 0);
-        const title = getStoreName(record);
-        addDelivery({
-          mcid, loja: title !== "Sem nome" ? title : (task ? getStoreName(task) : "Loja sem nome"),
-          suporte: archiveResponsibleName(record, task),
-          timestamp, fromArchive: true, dateSource: officialDate ? "Histórico de entregas" : (timestamp ? "Data confirmada no card" : "Sem data")
-        });
+        const cardDate = task ? verifiedDateFromTask(task) : {timestamp: 0, source: "Sem data"};
+        const discrepancy = official && cardDate.timestamp &&
+          getDeliveryDayKey(official.getTime()) !== getDeliveryDayKey(cardDate.timestamp);
+        if (discrepancy) quality.dateConflicts++;
+        const timestamp = official ? official.getTime() : cardDate.timestamp;
+        let store = String(getStoreName(record));
+        if (store === "Sem nome" && task) store = String(getStoreName(task));
+        store = store.replace(/\s*\(?\s*MCID\s*[:=#-]?\s*A[A-Z0-9]{9,19}\s*\)?/gi," ").trim() || String(getStoreName(record));
+        insert({mcid: resolved.mcid, loja: store, suporte: archiveResponsibleName(record, task),
+          timestamp, dateSource: official ? "Histórico oficial" : cardDate.source,
+          mcidSource: resolved.origin, dateConflict: !!discrepancy,
+          cardTimestamp: cardDate.timestamp, fromArchive: true});
       }
 
       for (const task of availableTasks) {
-        const mcid = normalizedMcid(getMCID(task));
-        if (!mcid || consolidated.has(mcid)) continue;
         const status = getStatusName(task);
         if (isCancelledStatus(status) || (!isDeliveredStatus(status) && !isSaleFinalizedStatus(status))) continue;
-        // Incluir também as vendas finalizadas que nunca foram arquivadas: NÃO inventar seu mês.
-        // Quando houver uma data oficial ou histórico de movimentação, usá-los; caso contrário, separar.
-        const timestamp = getConfirmedTaskDeliveryDate(task);
-        addDelivery({mcid, loja:getStoreName(task),suporte:archiveResponsibleName({}, task),
-          timestamp, fromArchive:false, dateSource:timestamp ? "Data confirmada no card" : "Sem data"});
+        const resolved = deliveryMcid({}, task);
+        if (!resolved.mcid || result.has(resolved.mcid)) continue;
+        if (resolved.origin === "MCID identificado no nome") quality.recoveredTaggedMcid++;
+        const date = verifiedDateFromTask(task);
+        let store = String(getStoreName(task)).replace(/\s*\(?\s*MCID\s*[:=#-]?\s*A[A-Z0-9]{9,19}\s*\)?/gi," ").trim();
+        insert({mcid: resolved.mcid, loja: store || String(getStoreName(task)),
+          suporte: archiveResponsibleName({}, task), timestamp: date.timestamp,
+          dateSource: date.source, mcidSource: resolved.origin, dateConflict: false,
+          cardTimestamp: date.timestamp, fromArchive: false});
       }
 
       const today = new Date();
-      const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
-      const categorized = [...consolidated.values()].map((row) => {
-        const day = row.timestamp ? new Date(row.timestamp) : null;
-        const dayStart = day ? new Date(day.getFullYear(), day.getMonth(), day.getDate()).getTime() : 0;
-        const bucket = !row.timestamp ? "undated" : dayStart > todayStart ? "review" : "dated";
-        return { ...row, bucket };
+      const todayKey = getDeliveryDayKey(new Date(today.getFullYear(),today.getMonth(),today.getDate()).getTime());
+      deliveryQuality = quality;
+      return [...result.values()].map(row => ({...row,
+        bucket: !row.timestamp ? "undated" : getDeliveryDayKey(row.timestamp) > todayKey ? "review" : "dated"
+      })).sort((a,b) => {
+        const order = {dated:0,review:1,undated:2};
+        return order[a.bucket]-order[b.bucket] || (b.timestamp||0)-(a.timestamp||0) ||
+          a.loja.localeCompare(b.loja,"pt-BR");
       });
-      const order = { dated: 0, undated: 1, review: 2 };
-      return categorized.sort((a,b) => order[a.bucket]-order[b.bucket] ||
-        (b.timestamp||0)-(a.timestamp||0) || a.loja.localeCompare(b.loja,"pt-BR"));
     }
 
-    function getDeliveryMonthKey(timestamp) {
+    function getDeliveryDayKey(timestamp) {
       if (!timestamp) return "";
-      const date = new Date(timestamp);
-      return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}`;
+      const d = new Date(timestamp);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
     }
+    function getDeliveryMonthKey(timestamp) { return getDeliveryDayKey(timestamp).slice(0,7); }
 
     function fillDeliveryFilters() {
-      const oldYear = deliveryYearFilter.value, oldMonth = deliveryMonthFilter.value, oldSupport = deliverySupportFilter.value;
-      const dates = deliveryHistoryRows.filter((row) => row.bucket === "dated").map((row) => new Date(row.timestamp));
-      const years = [...new Set(dates.map((date) => String(date.getFullYear())))].sort((a,b) => Number(b)-Number(a));
-      const months = [...new Set(dates.map((date) => date.getMonth()+1))].sort((a,b) => a-b);
-      const supports = [...new Set(deliveryHistoryRows.map((row)=>row.suporte))].sort((a,b)=>a.localeCompare(b,"pt-BR"));
-      const write = (select, caption, options) => {
-        select.innerHTML = ""; select.add(new Option(caption,""));
-        options.forEach(([value,label]) => select.add(new Option(label,value)));
-      };
-      write(deliveryYearFilter,"Todos",years.map((y)=>[y,y]));
-      write(deliveryMonthFilter,"Todos os meses",months.map((m)=>[String(m),DELIVERY_MONTH_NAMES[m-1].replace(/^./,(x)=>x.toUpperCase())]));
-      write(deliverySupportFilter,"Todos os suportes",supports.map((s)=>[s,s]));
-      deliveryYearFilter.value = years.includes(oldYear) ? oldYear : "";
-      deliveryMonthFilter.value = months.some((m)=>String(m)===oldMonth) ? oldMonth : "";
-      deliverySupportFilter.value = supports.includes(oldSupport) ? oldSupport : "";
+      const savedYear = deliveryYearFilter.value, savedMonth = deliveryMonthFilter.value,
+        savedSupport = deliverySupportFilter.value;
+      const dates = deliveryHistoryRows.filter(r=>r.bucket==="dated").map(r=>new Date(r.timestamp));
+      const years = [...new Set(dates.map(d=>String(d.getFullYear())))].sort((a,b)=>b.localeCompare(a));
+      const months = [...new Set(dates.map(d=>d.getMonth()+1))].sort((a,b)=>a-b);
+      const supports = [...new Set(deliveryHistoryRows.map(r=>r.suporte))].sort((a,b)=>a.localeCompare(b,"pt-BR"));
+      const write = (element,title,items) => {element.innerHTML=`<option value="">${escapeHtml(title)}</option>`+
+        items.map(([value,label])=>`<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join("");};
+      write(deliveryYearFilter,"Todos os anos",years.map(y=>[y,y]));
+      write(deliveryMonthFilter,"Todos os meses",months.map(m=>[String(m),DELIVERY_MONTH_NAMES[m-1].replace(/^./,c=>c.toUpperCase())]));
+      write(deliverySupportFilter,"Todos os suportes",supports.map(s=>[s,s]));
+      deliveryYearFilter.value=years.includes(savedYear)?savedYear:"";
+      deliveryMonthFilter.value=months.some(m=>String(m)===savedMonth)?savedMonth:"";
+      deliverySupportFilter.value=supports.includes(savedSupport)?savedSupport:"";
     }
 
     function getFilteredDeliveryRows() {
-      const year = deliveryYearFilter.value, month = deliveryMonthFilter.value;
-      const support = deliverySupportFilter.value, search = normalizeKey(deliverySearchInput.value);
-      return deliveryHistoryRows.filter((row) => {
-        if (year || month) {
-          if (row.bucket !== "dated") return false; // mês desconhecido ou data futura não recebe mês fictício
-          const date = new Date(row.timestamp);
-          if (year && String(date.getFullYear()) !== year) return false;
-          if (month && String(date.getMonth()+1) !== month) return false;
+      const year=deliveryYearFilter.value, month=deliveryMonthFilter.value,
+        day=document.getElementById("deliveryDayFilter").value,
+        support=deliverySupportFilter.value, search=normalizeKey(deliverySearchInput.value);
+      return deliveryHistoryRows.filter(row=>{
+        if (year || month || day) {
+          if (row.bucket!=="dated") return false;
+          const key = getDeliveryDayKey(row.timestamp);
+          if (year && key.slice(0,4)!==year) return false;
+          if (month && String(Number(key.slice(5,7)))!==month) return false;
+          if (day && key!==day) return false;
         }
         return (!support || valuesMatchSelected(row.suporte,support)) &&
           (!search || normalizeKey(`${row.loja} ${row.mcid} ${row.suporte}`).includes(search));
@@ -4734,116 +4826,289 @@ return matchMonth && matchSupport && matchStatus && matchSearch;
     }
 
     function deliverySupportBreakdown(rows) {
-      const names = new Map();
-      rows.forEach((row)=>names.set(row.suporte,(names.get(row.suporte)||0)+1));
-      return [...names.entries()].sort((a,b)=>b[1]-a[1] || a[0].localeCompare(b[0],"pt-BR"));
+      const counts=new Map();
+      rows.forEach(r=>counts.set(r.suporte,(counts.get(r.suporte)||0)+1));
+      return [...counts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],"pt-BR"));
+    }
+
+    function deliveryDailySummary(rows) {
+      const counts=new Map();
+      rows.forEach(row=>{
+        if (!row.timestamp) return;
+        const key=getDeliveryDayKey(row.timestamp);
+        counts.set(key,(counts.get(key)||0)+1);
+      });
+      return [...counts.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
     }
 
     function renderDeliveryRows(rows) {
-      return `<div class="delivery-table-head" aria-hidden="true"><span>LOJA / MCID</span><span>DATA</span><span>SUPORTE</span></div>
-        <div class="delivery-rows">${rows.map((row)=>`
-          <div class="delivery-row"><div class="delivery-row-main"><div class="delivery-store-name" title="${escapeHtml(row.loja)}">${escapeHtml(row.loja)}</div>
+      const sorted=rows.slice().sort((a,b)=>(a.timestamp||0)-(b.timestamp||0)||a.loja.localeCompare(b.loja,"pt-BR"));
+      return `<div class="delivery-table-head" aria-hidden="true"><span>LOJA / MCID</span><span>DATA DA ENTREGA</span><span>SUPORTE</span></div>
+        <div class="delivery-rows">${sorted.map(row=>`
+          <div class="delivery-row"><div class="delivery-row-main">
+            <div class="delivery-store-name" title="${escapeHtml(row.loja)}">${escapeHtml(row.loja)}</div>
             <div class="delivery-store-detail"><span class="delivery-mcid">${escapeHtml(row.mcid)}</span>
-              <button class="delivery-copy" type="button" data-copy-mcid="${escapeHtml(row.mcid)}" title="Copiar MCID">Copiar</button></div></div>
-            <span class="delivery-row-date">${row.timestamp ? escapeHtml(formatDateFromTimestamp(row.timestamp)) : "Não informada"}</span>
+              <button class="delivery-copy" type="button" data-copy-mcid="${escapeHtml(row.mcid)}" title="Copiar MCID">Copiar</button>
+              ${row.mcidSource==="MCID identificado no nome"?'<span class="delivery-recovery-badge" title="MCID recuperado de anotação no nome da loja">Recuperado</span>':""}
+            </div></div>
+            <span class="delivery-date-wrap"><span class="delivery-row-date">${row.timestamp?escapeHtml(formatDateFromTimestamp(row.timestamp)):"Não informada"}</span>
+              <small class="delivery-date-source" title="${escapeHtml(row.dateSource)}">${escapeHtml(row.dateSource)}${row.dateConflict?' · datas divergentes':''}</small></span>
             <span class="delivery-responsible"><span class="delivery-responsible-avatar">${escapeHtml(getInitials(row.suporte))}</span>${escapeHtml(row.suporte)}</span></div>`).join("")}</div>`;
     }
 
-    function makeDeliveryMonthCard(key, rows, maxMonth, previousOpen, index) {
-      const review = key !== "undated" && key !== "review" ? false : true;
-      const monthDate = review ? null : new Date(Number(key.slice(0,4)),Number(key.slice(5,7))-1,1);
-      const label = key === "undated" ? "Sem data registrada" : key === "review" ? "Datas para revisar" :
-        DELIVERY_MONTH_FORMAT.format(monthDate).replace(/^./,(s)=>s.toUpperCase());
-      const badge = key === "undated" ? "--" : key === "review" ? "!" : String(monthDate.getMonth()+1).padStart(2,"0");
-      const subtitle = key === "undated" ? "Sem data oficial • Não entram nos meses" :
-        key === "review" ? "Data futura cadastrada • Verificar" : `${rows.length} entrega${rows.length===1?"":"s"} confirmada${rows.length===1?"":"s"}`;
-      const supports = deliverySupportBreakdown(rows);
-      const supportCaption = supports.slice(0,2).map(([name,count])=>`${name} (${count})`).join(" • ") +
-        (supports.length>2 ? ` +${supports.length-2}` : "");
-      const chips = supports.map(([name,count])=>`<span class="delivery-support-pill">${escapeHtml(name)} · ${count}</span>`).join("");
-      const pct = review ? 100 : Math.max(3,100*rows.length/Math.max(1,maxMonth));
-      const opened = previousOpen.has(key) ? previousOpen.get(key) : (index===0 && !review);
-      return `<details class="delivery-month-card ${review?"delivery-review-card":""}" data-delivery-month="${escapeHtml(key)}" ${opened?"open":""}>
+    function makeDeliveryMonthCard(key,rows,maxMonth,previousOpen,index) {
+      const review = key==="undated"||key==="review";
+      const monthDate = review?null:new Date(Number(key.slice(0,4)),Number(key.slice(5,7))-1,1);
+      const label = key==="undated" ? "Sem data registrada" : key==="review" ? "Datas futuras para conferir" :
+        DELIVERY_MONTH_FORMAT.format(monthDate).replace(/^./,c=>c.toUpperCase());
+      const badge=key==="undated" ? "--" : key==="review" ? "!" : String(monthDate.getMonth()+1).padStart(2,"0");
+      const subtitle=key==="undated"?"Sem mês comprovado • Fora dos totais mensais":key==="review"?
+        "Datas posteriores a hoje • Separadas para conferência":`${rows.length} entrega${rows.length!==1?"s":""} neste mês`;
+      const supports=deliverySupportBreakdown(rows);
+      const caption=supports.slice(0,2).map(([name,n])=>`${name} (${n})`).join(" • ")+
+        (supports.length>2?` +${supports.length-2} suportes`:"");
+      const supportPills=supports.map(([name,n])=>`<span class="delivery-support-pill">${escapeHtml(name)} <strong>${n}</strong></span>`).join("");
+      const days=deliveryDailySummary(rows);
+      const dayLine=days.length && key!=="review"?`<div class="delivery-days">
+        <span class="delivery-inline-caption">POR DIA</span>${days.map(([date,count])=>`<span class="delivery-day-badge">${date.slice(8,10)}/${date.slice(5,7)} <strong>${count}</strong></span>`).join("")}</div>`:"";
+      const percent=review?100:Math.max(3,100*rows.length/Math.max(1,maxMonth));
+      const open=previousOpen.has(key)?previousOpen.get(key):(index===0&&!review);
+      return `<details class="delivery-month-card ${review?"delivery-review-card":""}" data-delivery-month="${escapeHtml(key)}" ${open?"open":""}>
         <summary class="delivery-month-header"><span class="delivery-month-title"><span class="delivery-month-mark">${badge}</span><span>
           <span class="delivery-month-label">${escapeHtml(label)}</span><span class="delivery-month-subtitle">${escapeHtml(subtitle)}</span></span></span>
-          <span class="delivery-month-bar" aria-hidden="true"><span style="width:${pct.toFixed(1)}%"></span></span>
-          <span class="delivery-month-supports" title="${escapeHtml(supportCaption)}"><span class="delivery-mini-people">${escapeHtml(supportCaption)}</span></span>
+          <span class="delivery-month-bar" aria-hidden="true"><span style="width:${percent.toFixed(1)}%"></span></span>
+          <span class="delivery-month-supports" title="${escapeHtml(caption)}"><span class="delivery-mini-people">${escapeHtml(caption)}</span></span>
           <span class="delivery-month-actions"><span class="delivery-month-total">${rows.length}</span><span class="delivery-chevron">⌄</span></span></summary>
-          <div class="delivery-month-content"><div class="delivery-support-breakdown"><small>SUPORTES</small>${chips}</div>${renderDeliveryRows(rows)}</div>
+          <div class="delivery-month-content">${dayLine}<div class="delivery-support-breakdown"><small>POR SUPORTE</small>${supportPills}</div>${renderDeliveryRows(rows)}</div>
         </details>`;
     }
 
     function renderDeliveryTrend(datedRows) {
-      const holder = document.getElementById("deliveryTrend");
-      const months = new Map();
-      datedRows.forEach((row)=>{
-        const key=getDeliveryMonthKey(row.timestamp);
-        months.set(key,(months.get(key)||0)+1);
-      });
-      const ordered = [...months.entries()].sort((a,b)=>a[0].localeCompare(b[0])).slice(-12);
-      if (!ordered.length) {holder.innerHTML=`<div class="delivery-empty">Sem entregas datadas para os filtros atuais.</div>`;return;}
-      const max = Math.max(...ordered.map(([,count])=>count));
-      holder.innerHTML=ordered.map(([key,count])=>{
+      const holder=document.getElementById("deliveryTrend");
+      const months=new Map();
+      datedRows.forEach(row=>{const key=getDeliveryMonthKey(row.timestamp); months.set(key,(months.get(key)||0)+1);});
+      const ordered=[...months.entries()].sort((a,b)=>a[0].localeCompare(b[0])).slice(-12);
+      if (!ordered.length) {holder.innerHTML='<div class="delivery-empty">Sem entregas para os filtros atuais.</div>';return;}
+      const max=Math.max(...ordered.map(([,n])=>n));
+      holder.innerHTML=ordered.map(([key,n])=>{
         const dt=new Date(Number(key.slice(0,4)),Number(key.slice(5,7))-1,1);
         const short=new Intl.DateTimeFormat("pt-BR",{month:"short"}).format(dt).replace(".","");
-        return `<div class="delivery-trend-row"><span class="delivery-trend-month">${escapeHtml(short)}/${String(dt.getFullYear()).slice(2)}</span>
-          <span class="delivery-trend-track" role="img" aria-label="${count} entrega${count===1?"":"s"} em ${escapeHtml(key)}"><span class="delivery-trend-fill" style="width:${(100*count/max).toFixed(1)}%"></span></span>
-          <span class="delivery-trend-val">${count}</span></div>`;
+        return `<div class="delivery-trend-row"><span class="delivery-trend-month">${escapeHtml(short)}/${key.slice(2,4)}</span>
+          <span class="delivery-trend-track" role="img" aria-label="${n} entregas em ${escapeHtml(key)}"><span class="delivery-trend-fill" style="width:${(100*n/max).toFixed(1)}%"></span></span><span class="delivery-trend-val">${n}</span></div>`;
       }).join("");
     }
 
     function renderDeliveryHistory() {
-      const today=new Date(), currentMonth=getDeliveryMonthKey(today.getTime());
-      const dated=deliveryHistoryRows.filter((r)=>r.bucket==="dated");
-      const undated=deliveryHistoryRows.filter((r)=>r.bucket==="undated");
-      const review=deliveryHistoryRows.filter((r)=>r.bucket==="review");
+      const today=new Date(),currentMonth=getDeliveryMonthKey(today.getTime());
+      const dated=deliveryHistoryRows.filter(r=>r.bucket==="dated");
+      const undated=deliveryHistoryRows.filter(r=>r.bucket==="undated");
+      const review=deliveryHistoryRows.filter(r=>r.bucket==="review");
       deliveryTotalHistorical.textContent=String(deliveryHistoryRows.length);
       document.getElementById("deliveryWithDatesTotal").textContent=String(dated.length);
-      deliveryCurrentMonth.textContent=String(dated.filter((r)=>getDeliveryMonthKey(r.timestamp)===currentMonth).length);
+      deliveryCurrentMonth.textContent=String(dated.filter(r=>getDeliveryMonthKey(r.timestamp)===currentMonth).length);
       document.getElementById("deliveryWithoutDateTotal").textContent=String(undated.length);
       const notes=[];
-      if (deliveryArchiveUnavailable) notes.push("Histórico oficial inacessível; verifique a permissão de leitura de sp_lojas_entregues. Os totais exibem apenas as tarefas acessíveis.");
-      else notes.push("Períodos mensais usam somente a data oficial de entrega ou movimentação confirmada, nunca a data de cadastro.");
-      if (review.length) notes.push(`${review.length} registro${review.length===1?"":"s"} com data futura separado${review.length===1?"":"s"} para conferência.`);
-      if (deliveryQuality.invalidArchive) notes.push(`${deliveryQuality.invalidArchive} registro${deliveryQuality.invalidArchive===1?"":"s"} do histórico sem MCID de formato válido ficaram fora da contagem.`);
+      if (deliveryArchiveUnavailable) notes.push("ATENÇÃO: histórico de entregas indisponível; os totais podem estar incompletos.");
+      else notes.push("Mês definido pela data da entrega, NÃO pelo mês do projeto nem pela data de cadastro/coleta.");
+      if (deliveryQuality.recoveredTaggedMcid) notes.push(`${deliveryQuality.recoveredTaggedMcid} MCID(s) recuperado(s) de anotações nos nomes.`);
+      if (deliveryQuality.invalidArchive) notes.push(`${deliveryQuality.invalidArchive} histórico(s) sem MCID identificável: consultar a aba Conferência do Excel.`);
+      if (deliveryQuality.dateConflicts) notes.push(`${deliveryQuality.dateConflicts} divergência(s) entre data do histórico e data do card: prevalece o histórico oficial.`);
+      if (review.length) notes.push(`${review.length} data(s) futura(s) separada(s) para conferir.`);
       document.getElementById("deliveryDataNotice").textContent=notes.join("  •  ");
-
-      const visible=getFilteredDeliveryRows(); deliveryFilteredRows=visible;
+      const visible=getFilteredDeliveryRows();deliveryFilteredRows=visible;
       const grouped=new Map();
-      for (const row of visible) {
-        const key=row.bucket==="dated"?getDeliveryMonthKey(row.timestamp):row.bucket;
-        if (!grouped.has(key)) grouped.set(key,[]);
-        grouped.get(key).push(row);
-      }
-      const monthKeys=[...grouped.keys()].filter((k)=>k!=="undated"&&k!=="review").sort((a,b)=>b.localeCompare(a));
-      const keys=[...monthKeys,...["undated","review"].filter((k)=>grouped.has(k))];
-      const countLabel=`<strong>${visible.length}</strong> loja${visible.length===1?"":"s"} • <strong>${monthKeys.length}</strong> ${monthKeys.length===1?"mês":"meses"}`;
-      deliveryResultsCount.innerHTML=countLabel+(deliveryYearFilter.value||deliveryMonthFilter.value?" <span style=\"font-size:10px\">(sem data não integra filtros de período)</span>":"");
-      renderDeliveryTrend(visible.filter((r)=>r.bucket==="dated"));
-      if (!keys.length) {deliveryMonthsGrid.innerHTML=`<div class="delivery-empty">Nenhum registro encontrado para esses filtros.</div>`;return;}
+      visible.forEach(row=>{const key=row.bucket==="dated"?getDeliveryMonthKey(row.timestamp):row.bucket;
+        if (!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(row);});
+      const monthKeys=[...grouped.keys()].filter(k=>k!=="undated"&&k!=="review").sort((a,b)=>b.localeCompare(a));
+      const keys=[...monthKeys,...["review","undated"].filter(k=>grouped.has(k))];
+      const filtered=!!(deliveryYearFilter.value||deliveryMonthFilter.value||document.getElementById("deliveryDayFilter").value||deliverySupportFilter.value||deliverySearchInput.value);
+      deliveryResultsCount.innerHTML=`<strong>${visible.length}</strong> loja${visible.length!==1?"s":""} ${filtered?"encontrada(s) nos filtros":"no relatório"} <span class="delivery-filter-context">${monthKeys.length} mês${monthKeys.length!==1?"es":""} datado${monthKeys.length!==1?"s":""}</span>`;
+      renderDeliveryTrend(visible.filter(r=>r.bucket==="dated"));
+      if(!keys.length){deliveryMonthsGrid.innerHTML='<div class="delivery-empty">Nenhum registro localizado. Confira os filtros e a data.</div>';return;}
       const previous=new Map([...deliveryMonthsGrid.querySelectorAll("details[data-delivery-month]")]
-        .map((node)=>[node.dataset.deliveryMonth,node.open]));
-      const maxMonth=Math.max(1,...monthKeys.map((key)=>grouped.get(key).length));
-      deliveryMonthsGrid.innerHTML=keys.map((key,index)=>makeDeliveryMonthCard(key,grouped.get(key),maxMonth,previous,index)).join("");
+        .map(node=>[node.dataset.deliveryMonth,node.open]));
+      const max=Math.max(1,...monthKeys.map(k=>grouped.get(k).length));
+      deliveryMonthsGrid.innerHTML=keys.map((key,index)=>makeDeliveryMonthCard(key,grouped.get(key),max,previous,index)).join("");
     }
 
-    function exportDeliveryCsv() {
-      // Apenas linhas visíveis após os filtros; células neutralizadas contra fórmula no Excel.
-      const safeCell=(value)=>{
-        const string=String(value??"");
-        const guarded=/^[\s]*[=+\-@\t\r]/.test(string)?`'${string}`:string;
-        return '"'+guarded.replaceAll('"','""')+'"';
-      };
-      const header=["Loja","MCID","Suporte responsável","Data de entrega","Classificação","Origem"];
-      const body=deliveryFilteredRows.map((row)=>[
-        row.loja,row.mcid,row.suporte,row.timestamp?formatDateFromTimestamp(row.timestamp):"",
-        row.bucket==="dated"?"Datada":row.bucket==="review"?"Revisar data futura":"Sem data",row.dateSource
-      ]);
-      const csv="\ufeff"+[header,...body].map((line)=>line.map(safeCell).join(";")).join("\r\n");
-      const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
-      const link=document.createElement("a");const url=URL.createObjectURL(blob);
-      link.href=url;link.download="lojas_entregues_revisadas.csv";
-      document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
+    /* Exportação OOXML (Excel .xlsx real) sem dependência de CDN externa.
+       Arquivo ZIP armazenado (método 0) com CRC32 válido e planilhas formatadas.
+       Não existe arquivo .csv renomeado como .xlsx. */
+    function xlsxXmlEscape(value) {
+      return String(value??"").replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "")
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;").replace(/'/g,"&apos;");
+    }
+    function xlsxColumn(num) {
+      let s="";for(let v=num+1;v;v=Math.floor((v-1)/26)) s=String.fromCharCode(65+(v-1)%26)+s;return s;
+    }
+    function xlsxExcelDate(timestamp) {
+      if(!timestamp)return null;
+      const d=new Date(timestamp);
+      return Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(1899,11,30))/86400000);
+    }
+    function xlsxCellXml(cell, r, c,style=0) {
+      const ref=xlsxColumn(c)+r;
+      if (cell===undefined||cell===null||cell==="") return "";
+      if (typeof cell==="object" && cell.kind==="date") {
+        return `<c r="${ref}" s="2"><v>${Number(cell.serial)}</v></c>`;
+      }
+      if (typeof cell==="number" && Number.isFinite(cell)) {
+        return `<c r="${ref}" s="${style}"><v>${cell}</v></c>`;
+      }
+      // Textos de usuário são sempre inlineStr, NUNCA fórmula, mesmo começando "=".
+      return `<c r="${ref}" s="${style}" t="inlineStr"><is><t xml:space="preserve">${xlsxXmlEscape(cell)}</t></is></c>`;
+    }
+    function xlsxSheetXml(rows,widths,heading=true) {
+      const columns=widths.map((width,i)=>`<col min="${i+1}" max="${i+1}" width="${width}" customWidth="1"/>`).join("");
+      const sheetRows=rows.map((line,index)=>`<row r="${index+1}"${index===0?' ht="29" customHeight="1"':''}>`+
+        line.map((cell,c)=>xlsxCellXml(cell,index+1,c,index===0&&heading?1:0)).join("")+"</row>").join("");
+      const end=xlsxColumn(Math.max(0,widths.length-1))+Math.max(1,rows.length);
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`+
+        `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:${end}"/>`+
+        `<sheetViews><sheetView tabSelected="0" workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A2" sqref="A2"/></sheetView></sheetViews>`+
+        `<sheetFormatPr defaultRowHeight="19"/><cols>${columns}</cols><sheetData>${sheetRows}</sheetData>`+
+        (heading&&rows.length?`<autoFilter ref="A1:${end}"/>`:"")+`<pageMargins left="0.3" right="0.3" top="0.5" bottom="0.5" header="0.2" footer="0.2"/></worksheet>`;
+    }
+    function xlsxStyleXml() {
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`+
+        `<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">`+
+        `<numFmts count="1"><numFmt numFmtId="165" formatCode="dd/mm/yyyy"/></numFmts>`+
+        `<fonts count="2"><font><sz val="11"/><name val="Aptos"/><color rgb="FF263449"/></font>`+
+        `<font><b/><sz val="11"/><name val="Aptos"/><color rgb="FFFFFFFF"/></font></fonts>`+
+        `<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>`+
+        `<fill><patternFill patternType="solid"><fgColor rgb="FF203449"/><bgColor indexed="64"/></patternFill></fill></fills>`+
+        `<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>`+
+        `<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>`+
+        `<cellXfs count="3"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>`+
+        `<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"><alignment vertical="center"/></xf>`+
+        `<xf numFmtId="165" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs>`+
+        `<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+    }
+    function xlsxCrc32(bytes) {
+      let crc=0xffffffff;
+      for(let i=0;i<bytes.length;i++) {
+        crc^=bytes[i];for(let j=0;j<8;j++)crc=(crc>>>1)^((crc&1)?0xedb88320:0);
+      }
+      return (crc^0xffffffff)>>>0;
+    }
+    function xlsxMakeZip(files) {
+      const encoder=new TextEncoder(),local=[],central=[];
+      let offset=0;
+      const u16=(view,o,v)=>view.setUint16(o,v,true),u32=(view,o,v)=>view.setUint32(o,v,true);
+      const join=(chunks)=>{const out=new Uint8Array(chunks.reduce((sum,x)=>sum+x.length,0));let p=0;
+        for(const chunk of chunks){out.set(chunk,p);p+=chunk.length;}return out;};
+      for(const [name,contents] of Object.entries(files)) {
+        const filename=encoder.encode(name),data=encoder.encode(contents),crc=xlsxCrc32(data);
+        const lh=new Uint8Array(30+filename.length),lv=new DataView(lh.buffer);
+        u32(lv,0,0x04034b50);u16(lv,4,20);u16(lv,6,0x0800);u16(lv,8,0);u32(lv,14,crc);
+        u32(lv,18,data.length);u32(lv,22,data.length);u16(lv,26,filename.length);lh.set(filename,30);
+        local.push(lh,data);
+        const ch=new Uint8Array(46+filename.length),cv=new DataView(ch.buffer);
+        u32(cv,0,0x02014b50);u16(cv,4,20);u16(cv,6,20);u16(cv,8,0x0800);u16(cv,10,0);
+        u32(cv,16,crc);u32(cv,20,data.length);u32(cv,24,data.length);
+        u16(cv,28,filename.length);u32(cv,42,offset);ch.set(filename,46);central.push(ch);
+        offset+=lh.length+data.length;
+      }
+      const centralZip=join(central),end=new Uint8Array(22),ev=new DataView(end.buffer);
+      u32(ev,0,0x06054b50);u16(ev,8,central.length);u16(ev,10,central.length);
+      u32(ev,12,centralZip.length);u32(ev,16,offset);
+      return join([...local,centralZip,end]);
+    }
+    function xlsxBuildWorkbook(sheets) {
+      const files={};
+      const names=sheets.map(s=>s.name);
+      files["[Content_Types].xml"]=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`+
+        `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">`+
+        `<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>`+
+        `<Default Extension="xml" ContentType="application/xml"/>`+
+        `<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>`+
+        `<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>`+
+        `<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>`+
+        `<Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>`+
+        sheets.map((_,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join("")+`</Types>`;
+      files["_rels/.rels"]=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">`+
+        `<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>`+
+        `<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>`+
+        `<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>`;
+      files["docProps/core.xml"]=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`+
+        `<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:creator>Seller Pro</dc:creator><cp:lastModifiedBy>Seller Pro</cp:lastModifiedBy><dc:title>Relatório de entregas</dc:title></cp:coreProperties>`;
+      files["docProps/app.xml"]=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`+
+        `<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties" xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes"><Application>Seller Pro</Application></Properties>`;
+      files["xl/workbook.xml"]=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`+
+        `<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets>`+
+        names.map((name,i)=>`<sheet name="${xlsxXmlEscape(name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join("")+`</sheets></workbook>`;
+      files["xl/_rels/workbook.xml.rels"]=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`+
+        `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">`+
+        sheets.map((_,i)=>`<Relationship Id="rId${i+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join("")+`<Relationship Id="rId${sheets.length+1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
+      files["xl/styles.xml"]=xlsxStyleXml();
+      sheets.forEach((sheet,i)=>files[`xl/worksheets/sheet${i+1}.xml`]=xlsxSheetXml(sheet.rows,sheet.widths));
+      return xlsxMakeZip(files);
+    }
+
+    function exportDeliveryXlsx() {
+      const button=document.getElementById("deliveryExportButton");
+      const previous=button.textContent;
+      try {
+        const all=deliveryFilteredRows;
+        const monthCount=new Map(),supportCount=new Map();
+        all.forEach(row=>{
+          const month=row.bucket==="dated"?getDeliveryMonthKey(row.timestamp):row.bucket==="review"?"Data futura":"Sem data";
+          monthCount.set(month,(monthCount.get(month)||0)+1);
+          const key=month+"\u001f"+row.suporte;
+          supportCount.set(key,(supportCount.get(key)||0)+1);
+        });
+        const dateCell = timestamp => timestamp?{kind:"date",serial:xlsxExcelDate(timestamp)}:"";
+        const statusLabel = row=>row.bucket==="dated"?"Entrega confirmada":row.bucket==="review"?"Conferir data futura":"Sem data de entrega";
+        const details = [
+          ["Loja","MCID","Suporte","Data de entrega","Situação","Origem da data","Origem do MCID","Conferência"],
+          ...all.map(row=>[row.loja,row.mcid,row.suporte,dateCell(row.timestamp),statusLabel(row),
+            row.dateSource,row.mcidSource,row.dateConflict?"Data oficial e card divergentes":row.bucket==="review"?"Data futura":""])
+        ];
+        const sortedMonths=[...monthCount.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
+        const monthSheet = [["Mês de entrega","Quantidade","Critério"], ...sortedMonths.map(([m,n])=>[
+          m,n,m==="Sem data"?"Sem data verificada; não associado a um mês":m==="Data futura"?"Requer conferência":"Data oficial da entrega"
+        ])];
+        const supportSheet = [["Mês de entrega","Suporte","Lojas entregues"], ...[...supportCount.entries()]
+          .map(([k,n])=>{const [m,s]=k.split("\u001f");return [m,s,n]})
+          .sort((a,b)=>a[0].localeCompare(b[0])||a[1].localeCompare(b[1],"pt-BR"))];
+        const audit = [["Loja","MCID","Data","Suporte","Ponto de conferência","Origem"],
+          ...all.filter(row=>row.bucket!=="dated"||row.dateConflict||row.mcidSource==="MCID identificado no nome")
+            .map(row=>[row.loja,row.mcid,dateCell(row.timestamp),row.suporte,
+              row.dateConflict?"Data oficial e card divergentes":row.bucket==="review"?"Data futura":
+              row.bucket==="undated"?"Sem data de entrega":"MCID recuperado do nome",row.dateSource]),
+          ...deliveryQuality.excludedRows.map(row=>[row.loja,"",dateCell(row.timestamp),row.suporte,row.issue,row.source])
+        ];
+        const criteria=[["Assunto","Regra de apuração"],
+          ["Data mensal","Usar sp_lojas_entregues.delivery_completed_at; caso ausente, delivery_completed_at do card; ou registro da movimentação para Loja entregue."],
+          ["Data excluída","Nunca usar mês do projeto, data de criação do card, data do envio, da coleta, configuração do faturador ou data da primeira venda como data de entrega."],
+          ["MCID","Usar o campo MCID oficial do histórico ou do card. Recuperar MCID do nome apenas quando explicitamente precedido de MCID."],
+          ["Duplicados","A mesma loja (MCID) aparece uma vez; dados do arquivo oficial de entregas têm prioridade."],
+          ["Sem data","Lojas entregues ou com venda finalizada e MCID válido, mas sem data rastreável; fora dos meses."],
+          ["Data futura","Não se considera entrega passada. Exibida separadamente para conferência."],
+          ["Cancelamentos","Não entram como entrega quando o card vinculado está cancelado."],
+          ["Filtros aplicados","Entregas, resumo mensal e suportes refletem os filtros ativos do painel. A aba Conferência inclui também históricos sem MCID identificável."],
+          ["Geração",new Intl.DateTimeFormat("pt-BR",{dateStyle:"short",timeStyle:"short"}).format(new Date())]];
+        const sheets=[
+          {name:"Entregas",rows:details,widths:[37,23,25,18,24,34,30,38]},
+          {name:"Resumo mensal",rows:monthSheet,widths:[24,20,55]},
+          {name:"Por suporte",rows:supportSheet,widths:[24,30,22]},
+          {name:"Conferência",rows:audit,widths:[37,23,18,26,45,30]},
+          {name:"Critérios",rows:criteria,widths:[25,104]}
+        ];
+        const bytes=xlsxBuildWorkbook(sheets);
+        const blob=new Blob([bytes],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"});
+        const url=URL.createObjectURL(blob),link=document.createElement("a");
+        link.href=url;link.download=`relatorio_entregas_seller_pro_${getDeliveryDayKey(Date.now())}.xlsx`;
+        document.body.appendChild(link);link.click();link.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),15000);
+        button.textContent="✓ Excel gerado";
+        setTimeout(()=>{if(button.isConnected)button.textContent=previous;},1800);
+      } catch(e) {
+        console.error("Exportação XLSX falhou",e);
+        button.textContent="Falha ao exportar";
+        setTimeout(()=>{if(button.isConnected)button.textContent=previous;},2500);
+      }
     }
 
     function render() {
@@ -5106,17 +5371,18 @@ return matchMonth && matchSupport && matchStatus && matchSearch;
     }
 
     // Estes filtros não interferem no acompanhamento de lojas pendentes.
-    [deliveryYearFilter, deliveryMonthFilter, deliverySupportFilter].forEach((control) =>
+    [deliveryYearFilter, deliveryMonthFilter, deliverySupportFilter, document.getElementById("deliveryDayFilter")].forEach((control) =>
       control.addEventListener("change", renderDeliveryHistory));
     deliverySearchInput.addEventListener("input", renderDeliveryHistory);
     deliveryResetButton.addEventListener("click", () => {
       deliveryYearFilter.value = "";
       deliveryMonthFilter.value = "";
       deliverySupportFilter.value = "";
+      document.getElementById("deliveryDayFilter").value = "";
       deliverySearchInput.value = "";
       renderDeliveryHistory();
     });
-    document.getElementById("deliveryExportButton").addEventListener("click", exportDeliveryCsv);
+    document.getElementById("deliveryExportButton").addEventListener("click", exportDeliveryXlsx);
     deliveryMonthsGrid.addEventListener("click", async (event) => {
       const button = event.target.closest("[data-copy-mcid]");
       if (!button) return;
