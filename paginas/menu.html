@@ -1221,13 +1221,71 @@
       .daily-checklist-body{max-height:58vh;overflow:auto}
     }
 
+
+    /* Setembro/2026: novos cards, links e controle de leitura das planilhas */
+    .cover-icon{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+      background:radial-gradient(circle at 78% 18%,rgba(255,122,0,.18),transparent 35%),linear-gradient(135deg,#151922,#10141b);}
+    .cover-icon>i{font-size:2.35rem;color:#ff8d2d}
+    .cover-icon>span{font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#e5e9ef}
+    .links-divider{padding:12px 3px 3px;color:var(--orange-2);font-size:.7rem;font-weight:950;letter-spacing:.04em}
+    .links-divider:first-child{padding-top:3px}
+    .sheet-open-inline{width:100%;text-align:left;cursor:pointer}
+    .coupon-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 11px;
+      border:1px solid rgba(255,122,0,.28);border-radius:10px;background:var(--orange-soft)}
+    .coupon-row span{display:grid;gap:3px}.coupon-row small{color:var(--muted);font-size:.64rem}
+    .coupon-row strong{color:var(--text);font-size:.94rem;letter-spacing:.08em}
+    .coupon-copy{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border-radius:8px;cursor:pointer;
+      background:var(--surface);border:1px solid var(--border-strong);color:var(--text);font-size:.75rem;font-weight:850}
+    .coupon-copy:hover{border-color:var(--orange)}
+    .daily-checklist-list{max-height:min(48vh,380px);overflow-y:auto;padding-right:4px;scrollbar-width:thin}
+    .daily-checklist-heading{margin:7px 2px 0;padding:10px 2px 3px;color:var(--orange-2);
+      font-size:.7rem;font-weight:950;letter-spacing:.04em;border-top:1px solid var(--border)}
+    .sheet-reminder-trigger{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:38px;
+      margin-bottom:10px;padding:8px;border:1px solid rgba(255,122,0,.36);border-radius:9px;
+      background:var(--orange-soft);color:var(--text);cursor:pointer;font-size:.73rem;font-weight:850}
+    .sheet-reminder-trigger:hover{border-color:var(--orange)}
+    .daily-check-item.sheet{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;cursor:default}
+    .daily-sheet-check{min-width:0;display:flex;align-items:flex-start;gap:9px;cursor:pointer}
+    .daily-sheet-open{align-self:center;padding:5px 7px;color:var(--orange-2);font-size:.71rem;font-weight:850;
+      border:1px solid var(--border);border-radius:7px;text-decoration:none;white-space:nowrap}
+    .daily-sheet-open:hover{border-color:var(--orange)}
+    .welcome-modal{display:flex;flex-direction:column;max-height:90vh}
+    .welcome-head,.welcome-footer{flex:0 0 auto}
+    .change-list{min-height:0;overflow-y:auto;scrollbar-width:thin}
+    .sheet-reminder-backdrop{z-index:520}
+    .sheet-reminder-modal{width:min(760px,100%);max-height:90vh;overflow:auto;background:var(--surface);
+      border:1px solid rgba(255,122,0,.38);border-radius:20px;box-shadow:var(--shadow)}
+    .sheet-reminder-head{padding:22px 24px;border-bottom:1px solid var(--border);
+      background:radial-gradient(circle at 85% 12%,rgba(255,122,0,.14),transparent 38%),var(--surface-2)}
+    .sheet-reminder-head h2{margin:5px 0 8px;font-size:1.65rem;letter-spacing:-.04em}
+    .sheet-reminder-head p{margin:0;color:var(--muted);font-size:.85rem;line-height:1.6}
+    .sheet-reminder-head small{color:var(--orange-2);text-transform:uppercase;font-size:.64rem;letter-spacing:.1em;font-weight:950}
+    .sheet-reminder-list{display:grid;gap:10px;padding:18px 24px}
+    .sheet-review-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;
+      border:1px solid var(--border);border-radius:12px;background:var(--bg-2);padding:13px}
+    .sheet-review-row.checked{border-color:rgba(34,197,94,.42)}
+    .sheet-review-row strong{display:block;font-size:.84rem}
+    .sheet-review-row span{display:block;color:var(--muted);font-size:.7rem;margin-top:4px;line-height:1.4}
+    .sheet-review-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .sheet-review-actions>a{color:var(--orange-2);font-size:.75rem;font-weight:900;white-space:nowrap}
+    .sheet-review-actions label{display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text);font-size:.72rem;font-weight:820}
+    .sheet-review-actions input{accent-color:var(--green);width:16px;height:16px}
+    .sheet-reminder-bottom{display:flex;align-items:center;justify-content:space-between;gap:14px;
+      padding:12px 24px 20px;border-top:1px solid var(--border)}
+    .sheet-reminder-bottom p{font-size:.74rem;color:var(--muted);margin:0;line-height:1.5}
+    .sheet-reminder-bottom button{padding:11px 14px;border:0;border-radius:9px;
+      background:linear-gradient(135deg,#ffbd73,var(--orange));color:#211306;cursor:pointer;font-weight:900;white-space:nowrap}
+    @media(max-width:720px){
+      .sheet-reminder-head{padding:18px}.sheet-reminder-list{padding:12px 18px}
+      .sheet-review-row{grid-template-columns:1fr}.sheet-reminder-bottom{flex-direction:column;align-items:stretch;padding:14px 18px}
+    }
   </style>
 </head>
 
 <body>
   <script>
     (() => {
-      const key="hubNovaEraIntroV202609";
+      const key="hubNovaEraIntroV202609_25";
       if(!sessionStorage.getItem(key) && !matchMedia("(prefers-reduced-motion: reduce)").matches){
         document.body.classList.add("first-visit");
         sessionStorage.setItem(key,"1");
@@ -1259,7 +1317,9 @@
       <div class="nav-label">Hub</div>
       <nav class="nav">
         <a class="nav-link" href="#acessos"><i class="fa-solid fa-grid-2"></i><span>Acessos rápidos</span></a>
-        <a class="nav-link" href="videos.html"><i class="fa-solid fa-circle-play"></i><span>Vídeos</span></a>
+        <a class="nav-link" href="videos.html"><i class="fa-solid fa-circle-play"></i><span>Academy Support</span></a>
+        <a class="nav-link" href="ads-informacoes.html"><i class="fa-solid fa-chart-line"></i><span>ADS e informações</span></a>
+        <a class="nav-link" href="contatos-terceiros.html"><i class="fa-solid fa-address-book"></i><span>Contatos de terceiros</span></a>
         <a class="nav-link" href="#sellerproia"><i class="fa-solid fa-robot"></i><span>SellerPro IA</span></a>
       </nav>
 
@@ -1339,6 +1399,7 @@
               <a class="chip ripple-host" href="agenda.html"><i class="fa-solid fa-calendar-days"></i> Abrir Agenda</a>
               <a class="chip ripple-host" href="#acessos"><i class="fa-solid fa-grid-2"></i> Acessos rápidos</a>
               <a class="chip ripple-host" href="ares.html"><i class="fa-solid fa-headset"></i> Abrir ARES</a>
+              <a class="chip ripple-host" href="ads-informacoes.html"><i class="fa-solid fa-chart-line"></i> ADS e informações</a>
               <a class="chip ripple-host" href="https://portalsellerpro.com.br/" target="_blank" rel="noopener"><i class="fa-solid fa-circle-play"></i> Portal de Treinamento</a>
             </div>
           </div>
@@ -1359,7 +1420,7 @@
 
         <section class="stats" aria-label="Resumo do HUB">
           <div class="stat"><strong>8+</strong><span>categorias e ferramentas internas</span></div>
-          <div class="stat"><strong>Set/26</strong><span>formulários atualizados</span></div>
+          <div class="stat"><strong>Set/26</strong><span>planilhas e recursos atualizados</span></div>
           <div class="stat"><strong>1 clique</strong><span>para chegar às ferramentas principais</span></div>
           <div class="stat"><strong>Agenda</strong><span>página exclusiva para calendário</span></div>
         </section>
@@ -1381,13 +1442,13 @@
               linear-gradient(135deg, #151922, #0f1218);">
               <div style="text-align:center;">
                 <i class="fa-solid fa-play" style="font-size:2.7rem;color:#ff8d2d;"></i>
-                <div style="margin-top:10px;color:#dfe4eb;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;">Vídeos rápidos</div>
+                <div style="margin-top:10px;color:#dfe4eb;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;">Academy Support</div>
               </div>
             </div>
-            <h3>Vídeos</h3>
-            <p>Biblioteca rápida para dúvidas do suporte, com player interno e opção de baixar cada vídeo.</p>
+            <h3>Academy Support</h3>
+            <p>Academia interna de vídeos de apoio ao suporte, com player e opção de baixar os materiais.</p>
             <a class="card-toggle ripple-host" href="videos.html" style="text-decoration:none;">
-              <span>Abrir Vídeos</span>
+              <span>Abrir Academy</span>
               <i class="fa-solid fa-arrow-right"></i>
             </a>
           </article>
@@ -1420,9 +1481,16 @@
             </div>
             <div class="cover"><img src="../imagens/banners/planilhas-online.webp" alt="Planilhas Online" loading="lazy"></div>
             <h3>Planilhas Online</h3>
-            <p>Planilhas, formulários, respostas, comissões, indicações e consultas usadas na rotina operacional da Seller Pro.</p>
+            <p>Planilhas prioritárias de acompanhamento, formulários, comissões e consultas operacionais.</p>
             <button class="card-toggle ripple-host" type="button"><span>Ver opções</span><i class="fa-solid fa-chevron-down"></i></button>
             <div class="links">
+              <div class="links-divider"><i class="fa-solid fa-star"></i> Revisão diária</div>
+              <a class="link" href="https://docs.google.com/spreadsheets/d/1iuekCPQsH2KdIDQbyC33H0C4jO8c9wnIXYFUAmO9flw/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Seller Cont • situação do CNPJ <i class="fa-solid fa-table"></i></a>
+              <a class="link" href="https://docs.google.com/spreadsheets/d/1prBa9jFDiZRnzSSfsieEyfA0y6bLw9FicuX-UGUhFgw/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Primeira venda dos sellers <i class="fa-solid fa-table"></i></a>
+              <a class="link" href="https://docs.google.com/spreadsheets/d/1MrYrL3LkO-SFOZuvJdvObYBgyQ-Z4K5gMZtXsJzpTsg/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer">Contratos pendentes <i class="fa-solid fa-table"></i></a>
+              <a class="link" href="https://docs.google.com/spreadsheets/d/1dWUSzeLBjMkgR3Whs_irnFh2dL7OU7B2wo-lLWQA2nA/edit?gid=635477415#gid=635477415" target="_blank" rel="noopener noreferrer">Encaminhamento de lojas para mentoria <i class="fa-solid fa-table"></i></a>
+              <button type="button" class="link sheet-open-inline" id="openSheetFromCard"><span>Abrir lembrete das quatro planilhas</span><i class="fa-solid fa-list-check"></i></button>
+              <div class="links-divider">Outras planilhas e formulários</div>
               <a class="link" href="https://docs.google.com/spreadsheets/d/1xXvoZ1hHPz77E0NHXwV6hxXjAqBKUPYDgnU-P98E1NQ/edit?gid=897940405#gid=897940405" target="_blank" rel="noopener">Planilha de lançamentos <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
 
               <a class="link" href="https://docs.google.com/spreadsheets/d/1vaHiIlOC7W_slkoCDd7rjUl-TkQWVe5Tr-M1eTzzY5I/edit?gid=272235016#gid=272235016" target="_blank" rel="noopener">Comissões Loja Pronta <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
@@ -1539,6 +1607,48 @@
             </div>
           </article>
 
+
+          <!-- Recursos adicionados em setembro/2026 -->
+          <article class="hub-card">
+            <div class="card-top">
+              <div class="icon"><i class="fa-solid fa-globe"></i></div>
+              <span class="tag">Novos recursos</span>
+            </div>
+            <div class="cover cover-icon"><i class="fa-solid fa-laptop-file"></i><span>Materiais Online</span></div>
+            <h3>Ferramentas e materiais online</h3>
+            <p>Palavras-chave, projeções, fornecedores, documentos de Loja Pronta e agenda de eventos.</p>
+            <button class="card-toggle ripple-host" type="button"><span>Ver opções</span><i class="fa-solid fa-chevron-down"></i></button>
+            <div class="links">
+              <div class="links-divider">Ferramentas e pesquisa</div>
+              <a class="link" href="https://drive.google.com/drive/folders/1h-Esa_fDUushq0-M5sCn0OM99ERu5il-?usp=sharing" target="_blank" rel="noopener noreferrer">30 mil palavras-chave <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+              <a class="link" href="https://snow-ball-calc.vercel.app" target="_blank" rel="noopener noreferrer">Calculadora de projeção Amazon <i class="fa-solid fa-calculator"></i></a>
+              <a class="link" href="https://spxdistribuidora.com.br/login" target="_blank" rel="noopener noreferrer">Distribuidora SPX • acesso <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+              <a class="link" href="https://www.mindmeister.com/app/map/4077580369" target="_blank" rel="noopener noreferrer">Mapa mental Loja Pronta <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+              <div class="links-divider">Documentos e operação</div>
+              <a class="link" href="https://docs.google.com/document/d/1FWq00dXgC13CoIysQZOAXHe7HX0n8GfsxBDY_6CVx2c/edit?tab=t.0" target="_blank" rel="noopener noreferrer">Campanhas de ADS: números e estratégias <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+              <a class="link" href="https://chic-mandazi-4cf64a.netlify.app" target="_blank" rel="noopener noreferrer">Criar contrato de Loja Pronta <i class="fa-solid fa-file-signature"></i></a>
+              <a class="link" href="https://docs.google.com/document/d/11MjQzexp_X5G6cz8rvLO0hwCRcK67XBdMMNRBJ00K1g/edit?tab=t.0#heading=h.n8x5ciogc9gx" target="_blank" rel="noopener noreferrer">Bônus abertura CNPJ • setembro/2026 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+              <a class="link" href="https://docs.google.com/document/d/1GiiG3PvOyx2d2rs90GhfJi4ijmKkEx68hk6yaYVTV5I/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Resumo de ofertas Loja Pronta • setembro <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+              <a class="link" href="https://seller-pro-workspace.slack.com/docs/T0BBR330XPF/F0BEQF6A5EZ" target="_blank" rel="noopener noreferrer">Agenda de eventos Seller Pro <i class="fa-solid fa-calendar-days"></i></a>
+              <div class="coupon-row"><span><small>Cupom de ADS</small><strong>BRCR2SPHBN</strong></span><button class="coupon-copy ripple-host" type="button" data-copy="BRCR2SPHBN"><i class="fa-solid fa-copy"></i> Copiar</button></div>
+            </div>
+          </article>
+
+          <article class="hub-card">
+            <div class="card-top"><div class="icon"><i class="fa-solid fa-chart-line"></i></div><span class="tag">Guia interno</span></div>
+            <div class="cover cover-icon"><i class="fa-solid fa-bullseye"></i><span>ADS & Estratégia</span></div>
+            <h3>ADS e informações</h3>
+            <p>Guia de campanhas, acompanhamento inicial de 15 dias, números de referência e links de apoio.</p>
+            <a class="card-toggle ripple-host" href="ads-informacoes.html" style="text-decoration:none;"><span>Abrir guia de ADS</span><i class="fa-solid fa-arrow-right"></i></a>
+          </article>
+
+          <article class="hub-card">
+            <div class="card-top"><div class="icon"><i class="fa-solid fa-address-book"></i></div><span class="tag">Contatos</span></div>
+            <div class="cover cover-icon"><i class="fa-solid fa-address-card"></i><span>Contatos de terceiros</span></div>
+            <h3>Contatos de terceiros</h3>
+            <p>Telefones dos parceiros e serviços de apoio para copiar, compartilhar ou abrir no WhatsApp.</p>
+            <a class="card-toggle ripple-host" href="contatos-terceiros.html" style="text-decoration:none;"><span>Abrir contatos</span><i class="fa-solid fa-arrow-right"></i></a>
+          </article>
           <div class="empty" id="searchEmpty">
             <i class="fa-solid fa-magnifying-glass"></i><br><br>
             Nenhum resultado encontrado.
@@ -1582,9 +1692,10 @@
     <div class="daily-checklist-body">
       <div class="daily-checklist-progress-row">
         <span>Progresso do dia</span>
-        <strong id="dailyChecklistProgressText">0 de 8</strong>
+        <strong id="dailyChecklistProgressText">0 de 12</strong>
       </div>
       <div class="daily-checklist-progress" aria-hidden="true"><span id="dailyChecklistProgressBar"></span></div>
+      <button class="sheet-reminder-trigger" id="openSheetReminder" type="button"><i class="fa-solid fa-table-list"></i> Conferir as 4 planilhas do dia</button>
       <div class="daily-checklist-list" id="dailyChecklistList"></div>
       <div class="daily-checklist-done" id="dailyChecklistDone">
         <i class="fa-solid fa-circle-check"></i>
@@ -1598,36 +1709,25 @@
     <section class="welcome-modal" role="dialog" aria-modal="true" aria-labelledby="whatsNewTitle">
       <div class="welcome-head">
         <div class="welcome-icon"><i class="fa-solid fa-sparkles"></i></div>
-        <small>HUB Nova Era • Atualização Setembro</small>
-        <h2 id="whatsNewTitle">O HUB ficou mais simples, rápido e profissional.</h2>
-        <p>A navegação foi reorganizada para reduzir cliques, manter os acessos centralizados e trazer novas ferramentas diretamente para o HUB.</p>
+        <small>HUB Nova Era • Setembro de 2026</small>
+        <h2 id="whatsNewTitle">Novidades da operação Seller Pro</h2>
+        <p>Conheça as planilhas obrigatórias da rotina, novos recursos online, contatos de apoio e a Academy Support.</p>
       </div>
 
       <div class="change-list">
-        <div class="change">
-          <i class="fa-solid fa-calendar-days"></i>
-          <div><strong>Agenda em página própria</strong><span>A agenda ganhou uma página exclusiva, mais limpa e confortável para consulta.</span></div>
-        </div>
-        <div class="change">
-          <i class="fa-solid fa-file-signature"></i>
-          <div><strong>Planilhas Online atualizada</strong><span>Perguntas e respostas de setembro foram adicionadas dentro de Planilhas Online.</span></div>
-        </div>
-        <div class="change">
-          <i class="fa-solid fa-user-plus"></i>
-          <div><strong>Formulário de indicação</strong><span>O acesso também foi incluído dentro de Planilhas Online para manter tudo centralizado.</span></div>
-        </div>
-        <div class="change">
-          <i class="fa-solid fa-circle-play"></i>
-          <div><strong>Novo portal de treinamento</strong><span>O portal de vídeos do Bruno foi atualizado para portalsellerpro.com.br.</span></div>
-        </div>
-        <div class="change">
-          <i class="fa-solid fa-circle-play"></i>
-          <div><strong>Novo Aba de videos para apoio</strong><span>Temos agora videos para apoio dos suportes.</span></div>
-        </div>
-        <div class="change">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-          <div><strong>Nova experiência</strong><span>Visual renovado, busca melhor, animações e cards mais organizados.</span></div>
-        </div>
+        <div class="change"><i class="fa-solid fa-table"></i><div><strong>Planilha Seller Cont</strong><span>Verifique se o seller é Seller Cont e acompanhe a situação do CNPJ.</span></div></div>
+        <div class="change"><i class="fa-solid fa-chart-line"></i><div><strong>Acompanhamento de primeira venda</strong><span>Nova planilha para conferir a primeira venda de cada seller.</span></div></div>
+        <div class="change"><i class="fa-solid fa-file-signature"></i><div><strong>Contratos pendentes</strong><span>Consulta rápida aos contratos ainda pendentes.</span></div></div>
+        <div class="change"><i class="fa-solid fa-user-graduate"></i><div><strong>Encaminhamento à mentoria</strong><span>Registre os sellers que já têm loja e precisam seguir para a mentoria.</span></div></div>
+        <div class="change"><i class="fa-solid fa-list-check"></i><div><strong>Lembrete diário de planilhas</strong><span>As quatro planilhas ganharam um lembrete próprio e confirmação no checklist individual.</span></div></div>
+        <div class="change"><i class="fa-solid fa-magnifying-glass-chart"></i><div><strong>Pesquisa e projeções</strong><span>Acessos às 30 mil palavras-chave e à calculadora de projeção Amazon.</span></div></div>
+        <div class="change"><i class="fa-solid fa-boxes-stacked"></i><div><strong>Distribuidora SPX e mapa mental</strong><span>Acesso direto à Distribuidora SPX e ao mapa mental atualizado de Loja Pronta.</span></div></div>
+        <div class="change"><i class="fa-solid fa-bullseye"></i><div><strong>ADS: documentos e guia</strong><span>Novo HTML de ADS com estratégia inicial, campanha de Ads: números e estratégias e cupom BRCR2SPHBN.</span></div></div>
+        <div class="change"><i class="fa-solid fa-file-circle-check"></i><div><strong>Contrato e bônus CNPJ</strong><span>Incluídos o criador de contrato de Loja Pronta e o bônus de abertura de CNPJ de setembro/2026.</span></div></div>
+        <div class="change"><i class="fa-solid fa-calendar-days"></i><div><strong>Ofertas e agenda</strong><span>Resumo de ofertas de setembro e agenda de eventos Seller Pro disponíveis em um clique.</span></div></div>
+        <div class="change"><i class="fa-solid fa-address-book"></i><div><strong>Contatos de terceiros</strong><span>Página com dez contatos, botão para copiar e opções de WhatsApp.</span></div></div>
+        <div class="change"><i class="fa-solid fa-graduation-cap"></i><div><strong>Academy Support</strong><span>A antiga aba Vídeos agora se chama Academy Support, reunindo os novos vídeos de apoio.</span></div></div>
+        <div class="change"><i class="fa-solid fa-wand-magic-sparkles"></i><div><strong>Navegação e busca</strong><span>Novos cards, links atualizados e o HUB mantendo a busca e as opções de tema.</span></div></div>
       </div>
 
       <div class="welcome-footer">
@@ -1637,6 +1737,22 @@
     </section>
   </div>
 
+
+  <!-- Revisão diária das planilhas: confirmação individual, salva no mesmo checklist do usuário -->
+  <div class="modal-backdrop sheet-reminder-backdrop" id="sheetReminderModal" aria-hidden="true">
+    <section class="sheet-reminder-modal" role="dialog" aria-modal="true" aria-labelledby="sheetReminderTitle">
+      <div class="sheet-reminder-head">
+        <small><i class="fa-solid fa-list-check"></i> Revisão diária • Seller Pro</small>
+        <h2 id="sheetReminderTitle">Já conferiu as quatro planilhas?</h2>
+        <p>Abra os controles abaixo e marque cada um <strong>somente após conferir</strong>. As confirmações entram automaticamente no seu checklist diário deste navegador.</p>
+      </div>
+      <div class="sheet-reminder-list" id="sheetReminderList"></div>
+      <div class="sheet-reminder-bottom">
+        <p id="sheetReminderStatus" aria-live="polite">Nenhuma planilha confirmada hoje.</p>
+        <button id="closeSheetReminder" type="button">Voltar ao HUB</button>
+      </div>
+    </section>
+  </div>
   <!-- Modal de criação de notificação -->
   <div class="modal-backdrop" id="notificationModalBackdrop">
     <section class="compose-modal" role="dialog" aria-modal="true" aria-labelledby="notificationModalTitle">
@@ -1702,7 +1818,7 @@
     /* ----------------------------
        Modal O que mudou
     ---------------------------- */
-    const NEWS_KEY="hubNovaEraWhatsNew_2026_09_v4";
+    const NEWS_KEY="hubNovaEraWhatsNew_2026_09_v5";
     const whatsNewModal=$("#whatsNewModal");
     const dontShowAgain=$("#dontShowAgain");
 
@@ -1710,6 +1826,7 @@
     function closeWhatsNew(){
       if(dontShowAgain.checked) localStorage.setItem(NEWS_KEY,"hidden");
       whatsNewModal.classList.remove("open");
+      setTimeout(maybeShowDailySheetReminder,260);
     }
 
     if(localStorage.getItem(NEWS_KEY)!=="hidden"){
@@ -1786,15 +1903,22 @@
     /* ----------------------------
        Checklist diário individual
     ---------------------------- */
+    const SHEET_REVIEW_ITEMS=[
+      {id:"planilha-seller-cont",name:"Seller Cont • situação do CNPJ",url:"https://docs.google.com/spreadsheets/d/1iuekCPQsH2KdIDQbyC33H0C4jO8c9wnIXYFUAmO9flw/edit?usp=sharing"},
+      {id:"planilha-primeira-venda",name:"Primeira venda dos sellers",url:"https://docs.google.com/spreadsheets/d/1prBa9jFDiZRnzSSfsieEyfA0y6bLw9FicuX-UGUhFgw/edit?usp=sharing"},
+      {id:"planilha-contratos-pendentes",name:"Contratos pendentes",url:"https://docs.google.com/spreadsheets/d/1MrYrL3LkO-SFOZuvJdvObYBgyQ-Z4K5gMZtXsJzpTsg/edit?gid=0#gid=0"},
+      {id:"planilha-mentoria",name:"Encaminhamento de lojas para mentoria",url:"https://docs.google.com/spreadsheets/d/1dWUSzeLBjMkgR3Whs_irnFh2dL7OU7B2wo-lLWQA2nA/edit?gid=635477415#gid=635477415"}
+    ];
     const DAILY_CHECKLIST_ITEMS=[
-      "SLA das Lojas Prontas",
-      "Cards do ARES atualizados",
-      "Checar se há vendas nas Lojas Prontas",
-      "Checar planilha de lançamentos e alunos",
-      "Checar MCID dos sellers que abriram conta recentemente",
-      "Checar se há seller sem resposta",
-      "Checar celular carregado",
-      "Checar o Atlas"
+      {id:"sla-lojas",text:"SLA das Lojas Prontas"},
+      {id:"cards-ares",text:"Cards do ARES atualizados"},
+      {id:"vendas-lojas",text:"Checar se há vendas nas Lojas Prontas"},
+      {id:"lancamentos",text:"Checar planilha de lançamentos e alunos"},
+      {id:"mcid",text:"Checar MCID dos sellers que abriram conta recentemente"},
+      {id:"sem-resposta",text:"Checar se há seller sem resposta"},
+      {id:"celular",text:"Checar celular carregado"},
+      {id:"atlas",text:"Checar o Atlas"},
+      ...SHEET_REVIEW_ITEMS.map(item=>({id:item.id,text:`Conferir: ${item.name}`,url:item.url,sheet:true}))
     ];
 
     const dailyChecklist=$("#dailyChecklist");
@@ -1804,6 +1928,9 @@
     const dailyChecklistProgressText=$("#dailyChecklistProgressText");
     const dailyChecklistProgressBar=$("#dailyChecklistProgressBar");
     const dailyChecklistToggle=$("#dailyChecklistToggle");
+    const sheetReminderModal=$("#sheetReminderModal");
+    const sheetReminderList=$("#sheetReminderList");
+    const sheetReminderStatus=$("#sheetReminderStatus");
     let dailyChecklistRenderedDate="";
 
     function localDateKey(date=new Date()){
@@ -1822,100 +1949,155 @@
         (loggedUserEmail.textContent!=="Sessão ativa" ? loggedUserEmail.textContent : "") ||
         savedValue(["email","userEmail","usuarioEmail","loginEmail","sellerProEmail"])
       ).trim().toLowerCase();
-
-      if(email) return email;
-      return String(loggedUserName.textContent || "usuario").trim().toLowerCase();
+      return email || String(loggedUserName.textContent || "usuario").trim().toLowerCase();
     }
 
     function checklistStorageKey(){
       return `sellerProChecklistDiario:${encodeURIComponent(checklistUserId())}:${localDateKey()}`;
     }
-
+    function sheetModalStorageKey(){
+      return `sellerProAvisoPlanilhas:${encodeURIComponent(checklistUserId())}:${localDateKey()}`;
+    }
     function loadChecklistState(){
       try{
         const raw=localStorage.getItem(checklistStorageKey());
         const parsed=raw ? JSON.parse(raw) : {};
         return parsed && typeof parsed==="object" ? parsed : {};
-      }catch{
-        return {};
-      }
+      }catch{return {};}
     }
-
     function saveChecklistState(state){
       localStorage.setItem(checklistStorageKey(),JSON.stringify(state));
     }
-
+    // Conserva marcações da versão anterior (itens 0 a 7) mesmo após a atualização.
+    function isChecklistChecked(state,item,index){
+      if(Object.prototype.hasOwnProperty.call(state,item.id)) return Boolean(state[item.id]);
+      return index<8 && Boolean(state[index]);
+    }
     function firstName(value){
       const clean=String(value || "Usuário").trim();
       return clean.split(/\s+/)[0] || "Usuário";
     }
-
     function formatChecklistDate(){
-      return new Intl.DateTimeFormat("pt-BR",{
-        weekday:"long",day:"2-digit",month:"2-digit"
-      }).format(new Date());
+      return new Intl.DateTimeFormat("pt-BR",{weekday:"long",day:"2-digit",month:"2-digit"}).format(new Date());
     }
-
     function updateChecklistProgress(state){
       const total=DAILY_CHECKLIST_ITEMS.length;
-      const completed=DAILY_CHECKLIST_ITEMS.reduce((sum,_,index)=>sum+(state[index] ? 1 : 0),0);
+      const completed=DAILY_CHECKLIST_ITEMS.reduce((sum,item,index)=>sum+(isChecklistChecked(state,item,index)?1:0),0);
       const percent=Math.round((completed/total)*100);
-
       dailyChecklistProgressText.textContent=`${completed} de ${total} • ${percent}%`;
       dailyChecklistProgressBar.style.width=`${percent}%`;
       dailyChecklist.classList.toggle("complete",completed===total);
+      const sheetsDone=SHEET_REVIEW_ITEMS.filter(item=>state[item.id]).length;
+      $("#openSheetReminder").innerHTML=sheetsDone===4
+        ? '<i class="fa-solid fa-circle-check"></i> Planilhas revisadas hoje (4/4)'
+        : `<i class="fa-solid fa-table-list"></i> Conferir planilhas (${sheetsDone}/4)`;
+    }
+
+    function renderSheetReminder(){
+      const state=loadChecklistState();
+      sheetReminderList.innerHTML=SHEET_REVIEW_ITEMS.map(item=>{
+        const checked=Boolean(state[item.id]);
+        return `<div class="sheet-review-row ${checked?"checked":""}">
+          <div><strong>${escapeHtml(item.name)}</strong><span>Abra a planilha e confirme a revisão do dia.</span></div>
+          <div class="sheet-review-actions">
+            <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir planilha</a>
+            <label><input type="checkbox" data-sheet-id="${escapeHtml(item.id)}" ${checked?"checked":""}> Conferi</label>
+          </div>
+        </div>`;
+      }).join("");
+      const total=SHEET_REVIEW_ITEMS.filter(item=>state[item.id]).length;
+      sheetReminderStatus.textContent=total===4
+        ? "Tudo certo: as quatro planilhas foram conferidas hoje."
+        : `${total}/4 planilhas conferidas hoje. Você pode voltar depois pelo checklist.`;
     }
 
     function renderDailyChecklist(){
       if(!dailyChecklist) return;
-
       const state=loadChecklistState();
       const name=firstName(loggedUserName.textContent);
       dailyChecklistRenderedDate=localDateKey();
-      dailyChecklistGreeting.textContent=`Bom dia, ${name}!`;
-      dailyChecklistDate.textContent=`Vamos fazer o seu checklist de hoje • ${formatChecklistDate()}`;
+      dailyChecklistGreeting.textContent=`Olá, ${name}!`;
+      dailyChecklistDate.textContent=`Seu checklist de hoje • ${formatChecklistDate()}`;
       dailyChecklistList.innerHTML="";
-
       DAILY_CHECKLIST_ITEMS.forEach((item,index)=>{
-        const label=document.createElement("label");
-        label.className=`daily-check-item${state[index] ? " checked" : ""}`;
-        label.innerHTML=`
-          <input type="checkbox" ${state[index] ? "checked" : ""} data-check-index="${index}">
+        if(index===8){
+          const head=document.createElement("div");
+          head.className="daily-checklist-heading";
+          head.textContent="PLANILHAS: CONFIRMAR REVISÃO DIÁRIA";
+          dailyChecklistList.appendChild(head);
+        }
+        const checked=isChecklistChecked(state,item,index);
+        const row=document.createElement(item.sheet?"div":"label");
+        row.className=`daily-check-item${item.sheet?" sheet":""}${checked?" checked":""}`;
+        const checkboxHtml=`<input type="checkbox" ${checked?"checked":""} data-check-id="${escapeHtml(item.id)}">
           <span class="daily-check-box"><i class="fa-solid fa-check"></i></span>
-          <span class="daily-check-text">${escapeHtml(item)}</span>
-        `;
-
-        const input=label.querySelector("input");
+          <span class="daily-check-text">${escapeHtml(item.text)}</span>`;
+        row.innerHTML=item.sheet
+          ? `<label class="daily-sheet-check">${checkboxHtml}</label><a class="daily-sheet-open" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">Abrir <i class="fa-solid fa-up-right-from-square"></i></a>`
+          :checkboxHtml;
+        const input=row.querySelector("input");
         input.addEventListener("change",()=>{
           const next=loadChecklistState();
-          next[index]=input.checked;
+          next[item.id]=input.checked;
           saveChecklistState(next);
-          label.classList.toggle("checked",input.checked);
+          row.classList.toggle("checked",input.checked);
           updateChecklistProgress(next);
+          renderSheetReminder();
         });
-
-        dailyChecklistList.appendChild(label);
+        dailyChecklistList.appendChild(row);
       });
-
       updateChecklistProgress(state);
+      renderSheetReminder();
     }
 
+    sheetReminderList.addEventListener("change",event=>{
+      const input=event.target.closest("input[data-sheet-id]");
+      if(!input) return;
+      const next=loadChecklistState();
+      next[input.dataset.sheetId]=input.checked;
+      saveChecklistState(next);
+      renderDailyChecklist();
+    });
+    function openSheetReminder(){
+      renderSheetReminder();
+      sheetReminderModal.classList.add("open");
+      sheetReminderModal.setAttribute("aria-hidden","false");
+    }
+    function closeSheetReminder(){
+      sheetReminderModal.classList.remove("open");
+      sheetReminderModal.setAttribute("aria-hidden","true");
+    }
+    function maybeShowDailySheetReminder(){
+      if(localStorage.getItem(sheetModalStorageKey())==="shown") return;
+      const state=loadChecklistState();
+      if(SHEET_REVIEW_ITEMS.every(item=>state[item.id])) return;
+      if(whatsNewModal.classList.contains("open")) return;
+      localStorage.setItem(sheetModalStorageKey(),"shown");
+      openSheetReminder();
+    }
+    $("#openSheetReminder").addEventListener("click",openSheetReminder);
+    $("#openSheetFromCard").addEventListener("click",openSheetReminder);
+    $("#closeSheetReminder").addEventListener("click",closeSheetReminder);
+    sheetReminderModal.addEventListener("click",e=>{if(e.target===sheetReminderModal)closeSheetReminder();});
+    document.addEventListener("keydown",e=>{
+      if(e.key==="Escape" && sheetReminderModal.classList.contains("open")) closeSheetReminder();
+    });
     dailyChecklistToggle.addEventListener("click",()=>{
       const collapsed=dailyChecklist.classList.toggle("collapsed");
       dailyChecklistToggle.setAttribute("aria-expanded",String(!collapsed));
-      dailyChecklistToggle.setAttribute("aria-label",collapsed ? "Abrir checklist" : "Recolher checklist");
+      dailyChecklistToggle.setAttribute("aria-label",collapsed?"Abrir checklist":"Recolher checklist");
     });
-
-    // Mantém o checklist sincronizado entre abas e reinicia automaticamente ao virar o dia.
     addEventListener("storage",event=>{
       if(event.key?.startsWith("sellerProChecklistDiario:")) renderDailyChecklist();
     });
-
     setInterval(()=>{
-      if(dailyChecklistRenderedDate!==localDateKey()) renderDailyChecklist();
+      if(dailyChecklistRenderedDate!==localDateKey()){
+        renderDailyChecklist();
+        setTimeout(maybeShowDailySheetReminder,350);
+      }
     },60000);
-
     renderDailyChecklist();
+    setTimeout(maybeShowDailySheetReminder,900);
 
 
     userArea.addEventListener("click",(e)=>{
@@ -1996,14 +2178,31 @@
     $$(".hub-card").forEach((card,index)=>{
       card.style.setProperty("--i",index);
       const toggle=$(".card-toggle",card);
-      if(!toggle) return;
-
+      if(!toggle || toggle.tagName!=="BUTTON") return;
+      toggle.setAttribute("aria-expanded","false");
       toggle.addEventListener("click",()=>{
         const open=card.classList.toggle("open");
         toggle.querySelector("span").textContent=open ? "Ocultar opções" : "Ver opções";
         toggle.setAttribute("aria-expanded",String(open));
       });
     });
+
+
+    // Copia o cupom (com fallback para navegadores sem Clipboard API em contexto seguro).
+    async function copyHubValue(value){
+      if(navigator.clipboard && window.isSecureContext){await navigator.clipboard.writeText(value);return;}
+      const temp=document.createElement("textarea");
+      temp.value=value;temp.style.position="fixed";temp.style.opacity="0";
+      document.body.appendChild(temp);temp.select();
+      const worked=document.execCommand("copy");temp.remove();
+      if(!worked)throw new Error("Cópia não disponível");
+    }
+    $$("[data-copy]").forEach(btn=>btn.addEventListener("click",async()=>{
+      const before=btn.innerHTML;
+      try{await copyHubValue(btn.dataset.copy);btn.textContent="Copiado!";}
+      catch{window.prompt("Copie o cupom:",btn.dataset.copy);}
+      setTimeout(()=>btn.innerHTML=before,1800);
+    }));
 
     /* ----------------------------
        Busca
@@ -2069,7 +2268,7 @@
           count++;
           card.classList.add("open","search-match");
           const toggle=$(".card-toggle",card);
-          if(toggle){
+          if(toggle?.tagName==="BUTTON"){
             toggle.querySelector("span").textContent="Ocultar opções";
             toggle.setAttribute("aria-expanded","true");
           }
@@ -2246,6 +2445,7 @@
       renderNotifications();
       loadUser();
       renderDailyChecklist();
+      setTimeout(maybeShowDailySheetReminder,450);
     },{once:true});
   </script>
 
