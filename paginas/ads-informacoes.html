@@ -62,27 +62,21 @@
     .card h3{font-size:1.02rem;margin:0 0 8px;line-height:1.35}
     .card p{font-size:.82rem;color:var(--muted);line-height:1.65;margin:0}
     .card a:not(.btn){color:#ffa74e}
-    .links-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-    .resource{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px;
-      text-decoration:none;border:1px solid var(--border);border-radius:11px;background:var(--surface)}
-    .resource:hover{border-color:rgba(255,122,0,.5);background:var(--surface2)}
-    .resource strong{font-size:.82rem}.resource small{display:block;font-size:.72rem;color:var(--muted);margin-top:4px}
-    .resource>i{color:var(--orange)}
-    .callout{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:16px;padding:20px;
-      border:1px solid rgba(255,122,0,.36);border-radius:14px;background:var(--orange-soft)}
-    .callout h3{margin:0 0 4px;font-size:1rem}.callout p{margin:0;color:var(--muted);font-size:.79rem}
+    .hub-hint{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:20px;
+      padding:19px;border:1px solid rgba(255,122,0,.30);border-radius:15px;background:var(--surface)}
+    .hub-hint>div{display:flex;align-items:flex-start;gap:14px}
+    .hub-hint>div>i{color:var(--orange);font-size:1.35rem;margin-top:5px}
+    .hub-hint h2{font-size:.99rem;margin:0 0 5px}.hub-hint p{font-size:.8rem;color:var(--muted);margin:0;max-width:700px}
+    .hub-hint .btn{white-space:nowrap}
     .pill{display:inline-flex;align-items:center;padding:4px 9px;border-radius:99px;color:#ffb76d;
       border:1px solid rgba(255,122,0,.32);font-size:.67rem;font-weight:900}
     .footer{margin-top:35px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:.73rem}
-    .toast{position:fixed;right:20px;bottom:20px;z-index:50;display:none;padding:12px 17px;
-      border:1px solid rgba(34,197,94,.32);border-radius:10px;background:var(--surface);box-shadow:var(--shadow);font-size:.77rem}
-    .toast.show{display:block}
     @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:650px){.header{position:relative;padding:12px 16px;align-items:flex-start;flex-direction:column}
       .container{width:min(100% - 24px,1200px);padding-top:15px}
-      .grid,.links-list{grid-template-columns:1fr}
+      .grid{grid-template-columns:1fr}
       .section-heading{display:block}.section-heading p{margin-top:6px}
-      .callout{flex-direction:column;align-items:stretch}}
+      .hub-hint{flex-direction:column;align-items:stretch}}
     
   </style>
 </head>
@@ -101,11 +95,9 @@
 <section class="hero">
   <div class="eyebrow"><i class="fa-solid fa-bullseye"></i> Guia operacional • Loja Pronta</div>
   <h1>ADS e <em>informações</em></h1>
-  <p>Central de referência para configurar a campanha inicial, acompanhar os primeiros 15 dias e acessar documentos de apoio. Os valores abaixo refletem o alinhamento interno informado para o projeto Loja Pronta; revise as diretrizes quando houver atualização.</p>
+  <p>Guia operacional de campanhas para configurar a estratégia inicial e acompanhar os primeiros 15 dias. Os valores refletem o alinhamento interno informado para o projeto Loja Pronta; revise as diretrizes quando houver atualização.</p>
   <div class="quick-links">
     <a href="#inicio" class="btn primary"><i class="fa-solid fa-rocket"></i> Estratégia inicial</a>
-    <a href="#recursos" class="btn"><i class="fa-solid fa-book-open"></i> Materiais e documentos</a>
-    <a href="videos.html" class="btn"><i class="fa-solid fa-circle-play"></i> Academy Support</a>
   </div>
 </section>
 <div class="section-heading" id="inicio"><h2>Estratégia de campanha • Loja Pronta</h2><p>Configuração e acompanhamento padrão</p></div>
@@ -115,25 +107,17 @@
   <article class="card"><i class="fa-solid fa-hand-pointer"></i><span class="pill">03 • Lance inicial</span><h3 style="margin-top:14px">CPC inicial: R$ 0,66</h3><p>Ponto de partida previsto para a campanha automática geral; realizar ajustes quando necessário.</p></article>
   <article class="card"><i class="fa-solid fa-chart-column"></i><span class="pill">04 • Monitoramento</span><h3 style="margin-top:14px">Primeiros 15 dias</h3><p>Acompanhar a campanha e otimizar preço e CPC de acordo com os dados obtidos.</p></article>
   <article class="card"><i class="fa-solid fa-magnifying-glass-chart"></i><span class="pill">05 • Sem vendas</span><h3 style="margin-top:14px">Plano de ação após 15 dias</h3><p>Se a loja ainda não tiver vendas após esse período, elaborar um plano de ação com base nos resultados observados.</p></article>
-  <article class="card"><i class="fa-solid fa-book"></i><span class="pill">06 • Consulta</span><h3 style="margin-top:14px">Materiais centralizados</h3><p>Acesse o documento completo de números e estratégias e a Academy Support pelos links abaixo.</p></article>
 </section>
-<div class="section-heading" id="recursos"><h2>Materiais e acessos relacionados</h2><p>Abra os recursos em uma nova aba</p></div>
-<section class="links-list">
- <a class="resource" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1FWq00dXgC13CoIysQZOAXHe7HX0n8GfsxBDY_6CVx2c/edit?tab=t.0"><span><strong>Campanha de ADS: números e estratégias</strong><small>Documento de referência atualizado</small></span><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
- <a class="resource" href="videos.html"><span><strong>Academy Support</strong><small>Vídeos internos para acompanhamento do suporte</small></span><i class="fa-solid fa-arrow-right"></i></a>
- <a class="resource" target="_blank" rel="noopener noreferrer" href="https://snow-ball-calc.vercel.app"><span><strong>Calculadora de projeção Amazon</strong><small>Ferramenta externa para projeções</small></span><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
- <a class="resource" target="_blank" rel="noopener noreferrer" href="https://drive.google.com/drive/folders/1h-Esa_fDUushq0-M5sCn0OM99ERu5il-?usp=sharing"><span><strong>30 mil palavras-chave</strong><small>Biblioteca externa de pesquisa</small></span><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
- <a class="resource" target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1GiiG3PvOyx2d2rs90GhfJi4ijmKkEx68hk6yaYVTV5I/edit?usp=sharing"><span><strong>Resumo de ofertas • setembro de 2026</strong><small>Documento de ofertas Loja Pronta</small></span><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
- <a class="resource" target="_blank" rel="noopener noreferrer" href="https://seller-pro-workspace.slack.com/docs/T0BBR330XPF/F0BEQF6A5EZ"><span><strong>Agenda de eventos Seller Pro</strong><small>Acesso aos eventos da equipe</small></span><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
-</section>
-<section class="callout" aria-label="Cupom de ADS">
-  <div><span class="pill">Código informado</span><h3 style="margin-top:9px">Cupom de ADS: <strong id="couponCode" style="letter-spacing:.07em">BRCR2SPHBN</strong></h3>
-  <p>Copie o código para utilizar conforme as condições e elegibilidade aplicáveis; esta página não consulta validade do cupom.</p></div>
-  <button class="btn primary" id="copyCoupon" type="button"><i class="fa-solid fa-copy"></i> Copiar cupom</button>
+<section class="hub-hint" aria-label="Acesso aos materiais">
+  <div>
+    <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+    <div><h2>Materiais de consulta no HUB principal</h2>
+    <p>Planilhas, documentos, calculadora, Academy Support e outros acessos ficam reunidos em <strong>Materiais e acessos relacionados</strong>, no HUB.</p></div>
+  </div>
+  <button class="btn primary" id="backMaterials" type="button"><i class="fa-solid fa-arrow-left"></i> Ir para o HUB</button>
 </section>
   <footer class="footer">Seller Pro • Recurso interno • Setembro de 2026. Acesso a arquivos externos sujeito às permissões de cada serviço.</footer>
   </main>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script>
     (()=>{
       const applyTheme=()=>document.body.classList.toggle("theme-light",
@@ -149,21 +133,19 @@
       };
       document.getElementById("backButton").addEventListener("click",goBack);
       document.getElementById("backHub").addEventListener("click",goBack);
-      const toast=document.getElementById("toast");
-      let toastTimer;
-      window.notify=function(msg){toast.textContent=msg;toast.classList.add("show");
-        clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove("show"),2500)};
-      window.copyValue=async function(value){
-        if(navigator.clipboard && window.isSecureContext){await navigator.clipboard.writeText(value);return;}
-        const t=document.createElement("textarea");t.value=value;t.style.cssText="position:fixed;opacity:0";
-        document.body.appendChild(t);t.select();const done=document.execCommand("copy");t.remove();
-        if(!done)throw new Error("Copiar indisponível");
-      };
+      document.getElementById("backMaterials").addEventListener("click",(e)=>{
+        e.preventDefault();
+        try{
+          if(document.referrer){
+            const prev=new URL(document.referrer);
+            if(prev.origin===location.origin && /(?:hub|index)[^/]*\.html$/i.test(prev.pathname)){
+              location.assign(prev.pathname+prev.search+"#materiais");return;
+            }
+          }
+        }catch{}
+        location.assign("./#materiais");
+      });
     })();
-    document.getElementById("copyCoupon").addEventListener("click",async()=>{
-    try{await copyValue(document.getElementById("couponCode").textContent.trim());notify("Cupom copiado!");}
-    catch{prompt("Copie o código:",document.getElementById("couponCode").textContent.trim());}
-  });
   </script>
 </body>
 </html>
