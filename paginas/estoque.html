@@ -1239,14 +1239,15 @@
     <section id="abaHistorico" class="hidden card section-animate">
       <h2 class="font-black mb-1">Histórico de Coletas</h2>
       <p class="text-zinc-400 text-sm mb-4">
-        Registro de todas as saídas realizadas.
+        Registro de todas as saídas realizadas. Edite e salve a data de coleta diretamente no histórico.
+        Quando uma nota inclui vários produtos, a mesma data será aplicada a todos os itens dessa coleta.
       </p>
 
       <div class="table-wrapper">
         <table class="w-full text-sm">
           <thead>
             <tr>
-              <th class="text-left">Data</th>
+              <th class="text-left" style="width: 195px">Data da coleta</th>
               <th class="text-left">Loja pronta</th>
               <th class="text-left">Responsável</th>
               <th class="text-left">Produto</th>
@@ -2167,6 +2168,10 @@
 
       saidas.forEach(item => {
         const solicitacao = obterSolicitacaoDoHistorico(item);
+        const idSeguro = escaparHTML(String(item.id));
+        const dataAtual = /^\d{4}-\d{2}-\d{2}$/.test(String(item.data_coleta || ""))
+          ? String(item.data_coleta)
+          : "";
 
         let situacaoNf = "Pendente";
         if (item.requer_nf === false) {
@@ -2177,7 +2182,20 @@
 
         tabela.innerHTML += `
           <tr>
-            <td class="text-zinc-300">${formatarData(item.data_coleta)}</td>
+            <td class="text-zinc-300" style="white-space: normal;">
+              <div class="flex flex-col gap-1">
+                <input type="date" value="${escaparHTML(dataAtual)}"
+                  id="dataHistorico-${idSeguro}" aria-label="Data da coleta"
+                  onchange="marcarDataHistoricoAlterada('${idSeguro}')"
+                  class="w-full rounded-xl px-2 py-2" style="min-width: 0;" />
+                <button type="button" id="salvarDataHistorico-${idSeguro}"
+                  onclick="salvarDataColetaHistorico('${idSeguro}')"
+                  class="btn-dark px-2 py-1 text-xs font-bold" disabled
+                  title="Salvar a data desta coleta (e de todos os produtos da mesma NF)">
+                  Salvar data
+                </button>
+              </div>
+            </td>
             <td class="font-bold text-white" title="${escaparHTML(item.loja_pronta)}">${escaparHTML(item.loja_pronta)}</td>
             <td class="text-zinc-300" title="${escaparHTML(item.responsavel)}">${escaparHTML(item.responsavel)}</td>
             <td class="text-zinc-300" title="${escaparHTML((item.produtos_estoque?.produto || '-') + ' / ' + (item.produtos_estoque?.variacao || '-'))}">
@@ -2195,6 +2213,73 @@
           </tr>
         `;
       });
+    }
+
+    function marcarDataHistoricoAlterada(id) {
+      const campo = document.getElementById(`dataHistorico-${id}`);
+      const botao = document.getElementById(`salvarDataHistorico-${id}`);
+      const saida = saidas.find(item => String(item.id) === String(id));
+      if (campo && botao && saida) {
+        botao.disabled = !campo.value || campo.value === String(saida.data_coleta || "");
+        botao.classList.toggle("btn-primary", !botao.disabled);
+        botao.classList.toggle("btn-dark", botao.disabled);
+      }
+    }
+
+    async function salvarDataColetaHistorico(id) {
+      const saida = saidas.find(item => String(item.id) === String(id));
+      const campo = document.getElementById(`dataHistorico-${id}`);
+      const botao = document.getElementById(`salvarDataHistorico-${id}`);
+      if (!saida || !campo || !botao) return;
+
+      const novaData = campo.value;
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(novaData) ||
+          Number.isNaN(new Date(`${novaData}T12:00:00`).getTime())) {
+        mostrarMensagem("Escolha uma data de coleta válida.", "erro");
+        return;
+      }
+
+      // Uma NF pode conter vários produtos. Alterar a data deve abranger a
+      // coleta inteira, inclusive quando o botão usado for de outra linha.
+      const temColeta = saida.coleta_id !== null && saida.coleta_id !== undefined && String(saida.coleta_id) !== "";
+      const relacionados = temColeta
+        ? saidas.filter(item => String(item.coleta_id || "") === String(saida.coleta_id))
+        : [saida];
+
+      botao.disabled = true;
+      botao.textContent = "Salvando...";
+      mostrarLoading(true);
+      try {
+        let consulta = db.from("saidas_estoque")
+          .update({ data_coleta: novaData })
+          .select("id");
+        consulta = temColeta
+          ? consulta.eq("coleta_id", saida.coleta_id)
+          : consulta.eq("id", saida.id);
+        const { data: atualizados, error } = await consulta;
+        if (error) throw error;
+
+        // Não exibir sucesso se o banco não permitiu a edição via RLS.
+        const idsAtualizados = new Set((atualizados || []).map(item => String(item.id)));
+        if (!relacionados.every(item => idsAtualizados.has(String(item.id)))) {
+          throw new Error("O banco não confirmou a atualização de todos os itens. Verifique a permissão de UPDATE (RLS) da tabela saidas_estoque.");
+        }
+
+        await carregarDados();
+        mostrarMensagem(
+          relacionados.length > 1
+            ? `Data de coleta atualizada para ${formatarData(novaData)} em todos os ${relacionados.length} produtos desta coleta/NF.`
+            : `Data de coleta atualizada para ${formatarData(novaData)}.`,
+          "sucesso"
+        );
+      } catch (error) {
+        console.error("Erro ao editar data da coleta:", error);
+        mostrarMensagem("Não foi possível salvar a data: " + (error?.message || "erro inesperado"), "erro");
+        botao.disabled = false;
+      } finally {
+        botao.textContent = "Salvar data";
+        mostrarLoading(false);
+      }
     }
 
     function limparFiltros() {
