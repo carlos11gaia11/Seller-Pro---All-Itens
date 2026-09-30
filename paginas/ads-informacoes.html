@@ -250,7 +250,7 @@
     .legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.legend span{padding:6px 9px;border-radius:99px;font-size:.65rem;font-weight:900;border:1px solid var(--border);background:var(--surface-2)}.legend .g{color:#32d17d}.legend .y{color:#f0cd57}.legend .o{color:#ff9c43}.legend .r{color:#ff6868}
     .diagnostic-live{display:grid;gap:8px;margin-top:14px}.live-alert{display:flex;gap:10px;align-items:flex-start;padding:13px 14px;border-radius:11px;border:1px solid var(--border);background:var(--surface-2);font-size:.76rem}.live-alert i{margin-top:3px}.live-alert.warning{border-color:rgba(255,156,67,.35);background:rgba(255,156,67,.08)}.live-alert.warning i{color:#ff9c43}.live-alert.good{border-color:rgba(50,209,125,.28);background:rgba(50,209,125,.07)}.live-alert.good i{color:#32d17d}.live-alert strong{display:block}.live-alert span{display:block;color:var(--muted);margin-top:2px}
     .cpc-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}.cpc-box{border:1px solid var(--border);border-radius:11px;background:var(--surface-2);padding:11px}.cpc-box span{display:block;color:var(--muted);font-size:.63rem}.cpc-box strong{display:block;color:var(--orange-2);font-size:1rem;margin-top:2px}
-    .optimizer-table{width:100%;border-collapse:collapse;font-size:.72rem;min-width:1500px}.optimizer-table th{position:sticky;top:0;background:var(--surface-2);color:var(--muted);text-transform:uppercase;letter-spacing:.025em;font-size:.62rem;padding:10px;border-bottom:1px solid var(--border);white-space:nowrap}.optimizer-table td{padding:10px;border-bottom:1px solid var(--border);white-space:nowrap}.optimizer-table td:first-child{font-weight:900}.optimizer-table tr:last-child td{border-bottom:0}.mini-status{display:inline-block;padding:4px 7px;border-radius:99px;font-size:.61rem;font-weight:950;background:var(--surface-3)}.row-delete{border:0;background:transparent;color:#ff7777;font-size:.8rem;padding:5px}
+    .optimizer-table{width:100%;border-collapse:collapse;font-size:.72rem;min-width:2250px}.optimizer-table th{position:sticky;top:0;background:var(--surface-2);color:var(--muted);text-transform:uppercase;letter-spacing:.025em;font-size:.62rem;padding:10px;border-bottom:1px solid var(--border);white-space:nowrap}.optimizer-table td{padding:10px;border-bottom:1px solid var(--border);white-space:nowrap}.optimizer-table td:first-child{font-weight:900}.optimizer-table tr:last-child td{border-bottom:0}.mini-status{display:inline-block;padding:4px 7px;border-radius:99px;font-size:.61rem;font-weight:950;background:var(--surface-3)}.row-delete{border:0;background:transparent;color:#ff7777;font-size:.8rem;padding:5px}
     .formula-note{margin-top:12px;padding:12px 14px;border-radius:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--muted);font-size:.72rem}.formula-note b{color:var(--text)}
     @media(max-width:1050px){.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.calc-results{grid-template-columns:repeat(2,minmax(0,1fr))}.method-flow{grid-template-columns:repeat(3,minmax(0,1fr))}.cpc-strip{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:700px){.workspace-tabs{top:72px}.workspace-tab{flex:1 1 calc(50% - 8px);justify-content:center}.method-grid{grid-template-columns:1fr}.method-card.wide{grid-column:auto}.method-specs{grid-template-columns:1fr}.method-flow,.cpc-strip{grid-template-columns:1fr 1fr}.form-grid,.calc-results{grid-template-columns:1fr}.optimizer-hero,.method-hero{padding:20px 16px}.table-wrap.optimizer-responsive{border:0;overflow:visible}.optimizer-table{min-width:0;display:block}.optimizer-table thead{display:none}.optimizer-table tbody,.optimizer-table tr,.optimizer-table td{display:block;width:100%}.optimizer-table tr{border:1px solid var(--border);border-radius:13px;margin-bottom:10px;background:var(--surface);overflow:hidden}.optimizer-table td{display:grid;grid-template-columns:42% 58%;white-space:normal;padding:8px 11px}.optimizer-table td::before{content:attr(data-label);font-size:.62rem;font-weight:900;color:var(--muted);text-transform:uppercase}.optimizer-table td:last-child{display:flex;justify-content:flex-end}.optimizer-table td:last-child::before{display:none}}
@@ -544,24 +544,25 @@
 
     <section id="tab-otimizacao" class="tab-pane" role="tabpanel" aria-labelledby="tabBtnOtimizacao">
       <div class="optimizer-hero">
-        <span class="overline">Calculadora • Dados de otimização</span>
-        <h2>Calculadora de CPC e conversão</h2>
-        <p>Preencha os dados reais do produto e da campanha. A ferramenta calcula os lances pelo Método Seller Pro, ACOS, TACOS, MPA, CTR, conversão, CPC real e ROAS, além de gerar alertas para orientar a otimização do anúncio.</p>
+        <span class="overline">Calculadora • Modelo do CSV Seller Pro</span>
+        <h2>Calculadora de ADS e rentabilidade</h2>
+        <p>Preencha os mesmos dados-base utilizados na calculadora CSV. A ferramenta reconstrói as métricas de faturamento, CTR, conversão de ADS, ROAS, ACOS, TACOS, MPA, lucros e quantidade estimada de compras, mantendo também o cálculo de CPC do Método Seller Pro.</p>
       </div>
 
       <section class="panel" style="margin-top:16px" aria-labelledby="calc-title">
-        <div class="panel-head"><i class="fa-solid fa-calculator" aria-hidden="true"></i><h3 id="calc-title">Dados do produto e da campanha</h3></div>
+        <div class="panel-head"><i class="fa-solid fa-calculator" aria-hidden="true"></i><h3 id="calc-title">Dados de entrada</h3></div>
+
         <div class="form-grid">
           <div class="field"><label for="optName">Produto / ASIN</label><input id="optName" type="text" placeholder="Ex.: Kit de Ganchos"></div>
-          <div class="field"><label for="optPrice">Preço do produto (R$)</label><input id="optPrice" type="number" min="0" step="0.01" value="59.90"></div>
-          <div class="field"><label for="optMargin">Margem antes do ADS (%)</label><input id="optMargin" type="number" step="0.01" value="35"></div>
-          <div class="field"><label for="optInvestment">Valor investido / orçamento (R$)</label><input id="optInvestment" type="number" min="0" step="0.01" value="30"></div>
-          <div class="field"><label for="optSpend">Gasto real em ADS (R$)</label><input id="optSpend" type="number" min="0" step="0.01" value="20"></div>
-          <div class="field"><label for="optAdRevenue">Vendas atribuídas ao ADS (R$)</label><input id="optAdRevenue" type="number" min="0" step="0.01" value="100"></div>
-          <div class="field"><label for="optTotalRevenue">Vendas totais do produto (R$)</label><input id="optTotalRevenue" type="number" min="0" step="0.01" value="200"></div>
-          <div class="field"><label for="optImpressions">Impressões</label><input id="optImpressions" type="number" min="0" step="1" value="5000"></div>
-          <div class="field"><label for="optClicks">Cliques</label><input id="optClicks" type="number" min="0" step="1" value="80"></div>
-          <div class="field"><label for="optSales">Vendas / pedidos (quantidade)</label><input id="optSales" type="number" min="0" step="1" value="5"></div>
+          <div class="field"><label for="optMargin">Margem antes do ADS (%)</label><input id="optMargin" type="number" min="0" step="0.01" value="35.82"></div>
+          <div class="field"><label for="optTicket">Preço / Ticket médio (R$)</label><input id="optTicket" type="number" min="0" step="0.01" value="39.89"></div>
+          <div class="field"><label for="optCurrentCpc">CPC atual / lance (R$)</label><input id="optCurrentCpc" type="number" min="0" step="0.01" value="0.60"></div>
+
+          <div class="field"><label for="optImpressions">Impressões</label><input id="optImpressions" type="number" min="0" step="1" value="800000"></div>
+          <div class="field"><label for="optClicks">Cliques</label><input id="optClicks" type="number" min="0" step="1" value="18824"></div>
+          <div class="field"><label for="optOrganicRevenue">Vendas orgânicas (R$)</label><input id="optOrganicRevenue" type="number" min="0" step="0.01" value="50000"></div>
+          <div class="field"><label for="optAdRevenue">Vendas de ADS (R$)</label><input id="optAdRevenue" type="number" min="0" step="0.01" value="51357.59"></div>
+          <div class="field"><label for="optSpend">Gasto em ADS (R$)</label><input id="optSpend" type="number" min="0" step="0.01" value="11294.40"></div>
         </div>
 
         <div class="cpc-strip" aria-label="CPCs calculados pelo Método Seller Pro">
@@ -571,35 +572,81 @@
           <div class="cpc-box"><span>Produto indicado • 0,5%</span><strong id="cpcProduct">—</strong></div>
           <div class="cpc-box"><span>Categorias • 0,5%</span><strong id="cpcCategory">—</strong></div>
         </div>
-        <div class="formula-note"><b>Regra do CPC:</b> campanhas de 1% e 0,5% respeitam mínimo de R$ 0,40 e máximo de R$ 1,00. A automática geral começa em R$ 0,60. Quando o método indicar necessidade de aumento, o ajuste é de 20% sobre o lance vigente.</div>
 
-        <div class="calc-results">
-          <div class="calc-card"><span>ACOS</span><strong id="resAcos">—</strong><small>Gasto ÷ vendas de ADS</small></div>
-          <div class="calc-card"><span>TACOS</span><strong id="resTacos">—</strong><small>Gasto ÷ vendas totais</small></div>
-          <div class="calc-card"><span>MPA • margem pós ADS</span><strong id="resMpa">—</strong><small>Margem − ACOS • ideal ≥ 15%</small></div>
-          <div class="calc-card"><span>CTR</span><strong id="resCtr">—</strong><small>Cliques ÷ impressões</small></div>
-          <div class="calc-card"><span>Conversão</span><strong id="resConversion">—</strong><small>Vendas ÷ cliques</small></div>
-          <div class="calc-card"><span>CPC real</span><strong id="resRealCpc">—</strong><small>Gasto ÷ cliques</small></div>
-          <div class="calc-card"><span>ROAS</span><strong id="resRoas">—</strong><small>Vendas ADS ÷ gasto</small></div>
-          <div class="calc-card"><span>Uso do orçamento</span><strong id="resBudgetUse">—</strong><small>Gasto ÷ valor investido</small></div>
+        <div class="formula-note">
+          <b>Regra do CPC do Método Seller Pro:</b> 1% ou 0,5% do preço/ticket do produto, respeitando o mínimo de R$ 0,40 e o máximo de R$ 1,00. A campanha automática geral inicia em R$ 0,60.
         </div>
 
-        <div class="legend" aria-label="Faixas de ACOS"><span class="g">ACOS até 19% • verde</span><span class="y">20–24% • amarelo</span><span class="o">25–29% • laranja</span><span class="r">30% ou mais • vermelho</span></div>
+        <div class="calc-results">
+          <div class="calc-card"><span>Faturamento</span><strong id="resRevenue">—</strong><small>Vendas orgânicas + vendas de ADS</small></div>
+          <div class="calc-card"><span>CTR</span><strong id="resCtr">—</strong><small>Cliques ÷ impressões</small></div>
+          <div class="calc-card"><span>Conversão ADS</span><strong id="resConversion">—</strong><small>Compras de ADS ÷ cliques</small></div>
+          <div class="calc-card"><span>ROAS</span><strong id="resRoas">—</strong><small>Vendas de ADS ÷ gasto em ADS</small></div>
+
+          <div class="calc-card"><span>ACOS</span><strong id="resAcos">—</strong><small>Gasto em ADS ÷ vendas de ADS</small></div>
+          <div class="calc-card"><span>TACOS</span><strong id="resTacos">—</strong><small>Gasto em ADS ÷ faturamento total</small></div>
+          <div class="calc-card"><span>MPA • margem pós ADS</span><strong id="resMpa">—</strong><small>Margem − TACOS • ideal ≥ 15%</small></div>
+          <div class="calc-card"><span>CPC real</span><strong id="resRealCpc">—</strong><small>Gasto em ADS ÷ cliques</small></div>
+
+          <div class="calc-card"><span>Lucro bruto</span><strong id="resGrossProfit">—</strong><small>Faturamento × margem</small></div>
+          <div class="calc-card"><span>Lucro líquido pós ADS</span><strong id="resNetProfit">—</strong><small>Lucro bruto − gasto em ADS</small></div>
+          <div class="calc-card"><span>Compras ADS</span><strong id="resAdOrders">—</strong><small>Vendas de ADS ÷ ticket médio</small></div>
+          <div class="calc-card"><span>Compras orgânicas</span><strong id="resOrganicOrders">—</strong><small>Vendas orgânicas ÷ ticket médio</small></div>
+          <div class="calc-card"><span>Compras totais</span><strong id="resTotalOrders">—</strong><small>Compras ADS + compras orgânicas</small></div>
+        </div>
+
+        <div class="legend" aria-label="Faixas de ACOS">
+          <span class="g">ACOS até 19% • verde</span>
+          <span class="y">20–24% • amarelo</span>
+          <span class="o">25–29% • laranja</span>
+          <span class="r">30% ou mais • vermelho</span>
+        </div>
+
         <div id="liveDiagnostics" class="diagnostic-live" aria-live="polite"></div>
 
-        <div class="calc-actions"><button class="calc-btn primary" id="addOptimizationRow" type="button"><i class="fa-solid fa-plus"></i> Adicionar à tabela</button><button class="calc-btn" id="clearOptimizationForm" type="button"><i class="fa-solid fa-eraser"></i> Limpar campos</button></div>
+        <div class="formula-note">
+          <b>Fórmulas reproduzidas do modelo do CSV:</b>
+          Faturamento = Orgânico + ADS •
+          CTR = Cliques ÷ Impressões •
+          Compras ADS = Vendas ADS ÷ Ticket Médio •
+          Conversão ADS = Compras ADS ÷ Cliques •
+          ROAS = Vendas ADS ÷ Gasto ADS •
+          ACOS = Gasto ADS ÷ Vendas ADS •
+          TACOS = Gasto ADS ÷ Faturamento •
+          MPA = Margem − TACOS •
+          Lucro Bruto = Faturamento × Margem •
+          Lucro Líquido = Lucro Bruto − Gasto ADS •
+          Compras Orgânicas = Vendas Orgânicas ÷ Ticket Médio.
+        </div>
+
+        <div class="calc-actions">
+          <button class="calc-btn primary" id="addOptimizationRow" type="button"><i class="fa-solid fa-plus"></i> Adicionar à tabela</button>
+          <button class="calc-btn" id="clearOptimizationForm" type="button"><i class="fa-solid fa-eraser"></i> Limpar campos</button>
+        </div>
       </section>
 
       <section style="margin-top:20px" aria-labelledby="history-title">
-        <div class="section-title"><div><span class="overline">Acompanhamento</span><h2 id="history-title">Tabela de otimização</h2></div><p>Adicione produtos para comparar campanhas e manter um histórico rápido. Os dados ficam salvos neste navegador.</p></div>
+        <div class="section-title">
+          <div><span class="overline">Acompanhamento</span><h2 id="history-title">Tabela de otimização</h2></div>
+          <p>A tabela segue o mesmo raciocínio da calculadora CSV e salva os registros neste navegador.</p>
+        </div>
+
         <div class="table-wrap optimizer-responsive">
           <table class="optimizer-table">
-            <thead><tr><th>Produto</th><th>Preço</th><th>CPC 1%</th><th>CPC 0,5%</th><th>Investido</th><th>Gasto</th><th>Impressões</th><th>Cliques</th><th>Vendas</th><th>CTR</th><th>Conv.</th><th>ACOS</th><th>TACOS</th><th>MPA</th><th>ROAS</th><th>Diagnóstico</th><th></th></tr></thead>
+            <thead>
+              <tr>
+                <th>Produto</th><th>Margem</th><th>Ticket</th><th>CPC atual</th><th>CPC 1%</th><th>CPC 0,5%</th>
+                <th>Impressões</th><th>Cliques</th><th>Vendas Org.</th><th>Vendas ADS</th><th>Gasto ADS</th><th>Faturamento</th>
+                <th>CTR</th><th>Conv. ADS</th><th>ROAS</th><th>ACOS</th><th>TACOS</th><th>MPA</th>
+                <th>Lucro Bruto</th><th>Lucro Líquido</th><th>Compras ADS</th><th>Compras Org.</th><th>Compras</th><th>Diagnóstico</th><th></th>
+              </tr>
+            </thead>
             <tbody id="optimizationRows"></tbody>
           </table>
         </div>
+
         <div class="calc-actions"><button class="calc-btn danger" id="clearOptimizationTable" type="button"><i class="fa-solid fa-trash"></i> Limpar tabela</button></div>
-        <div class="formula-note"><b>Alertas de diagnóstico:</b> para tornar a leitura automática, a ferramenta sinaliza “muitas impressões e poucos cliques” quando houver pelo menos 1.000 impressões e CTR abaixo de 1%, e “muitos cliques e poucas vendas” quando houver pelo menos 20 cliques e conversão abaixo de 5%. Esses limites funcionam como gatilhos operacionais para revisão, não como regra fixa da Amazon.</div>
+        <div class="formula-note"><b>Diagnóstico automático:</b> muitas impressões com CTR abaixo de 1% sinalizam possível problema de imagem principal, preço ou título. Muitos cliques com conversão ADS abaixo de 5% sinalizam possível necessidade de melhorar título, fotos, preço, descrição e bullet points. Esses gatilhos são operacionais e não representam regra oficial da Amazon.</div>
       </section>
     </section>
 
@@ -665,60 +712,176 @@
       // Links do menu superior apontam para conteúdos da aba Loja Pronta.
       document.querySelectorAll('.nav a[href^="#"]').forEach(link => link.addEventListener('click', () => activateTab('tab-loja')));
 
-      // Calculadora do Método Seller Pro.
+      // Calculadora Seller Pro baseada no modelo do CSV.
       const $ = id => document.getElementById(id);
-      const inputs = ['optName','optPrice','optMargin','optInvestment','optSpend','optAdRevenue','optTotalRevenue','optImpressions','optClicks','optSales'];
+      const inputs = ['optName','optMargin','optTicket','optCurrentCpc','optImpressions','optClicks','optOrganicRevenue','optAdRevenue','optSpend'];
       const n = id => Math.max(0, Number($(id).value) || 0);
-      const money = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+      const money = v => Number.isFinite(v) ? v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '—';
       const pct = v => Number.isFinite(v) ? `${v.toFixed(2).replace('.',',')}%` : '—';
+      const num = (v, decimals=0) => Number.isFinite(v) ? v.toLocaleString('pt-BR',{minimumFractionDigits:decimals,maximumFractionDigits:decimals}) : '—';
       const clampBid = v => Math.min(1, Math.max(.40, v));
       const classForAcos = value => value >= 30 ? 'level-red' : value >= 25 ? 'level-orange' : value >= 20 ? 'level-yellow' : 'level-green';
       const classForMpa = value => value >= 15 ? 'level-green' : value >= 10 ? 'level-yellow' : value >= 5 ? 'level-orange' : 'level-red';
       const setMetric = (id, value, cls='level-neutral') => { const el=$(id); el.textContent=value; el.className=cls; };
 
       function calculateOptimization() {
-        const price=n('optPrice'), margin=n('optMargin'), investment=n('optInvestment'), spend=n('optSpend'), adRevenue=n('optAdRevenue'), totalRevenue=n('optTotalRevenue'), impressions=n('optImpressions'), clicks=n('optClicks'), sales=n('optSales');
-        const cpc1=clampBid(price*.01), cpc05=clampBid(price*.005);
-        $('cpcGeneral').textContent=money(.60); $('cpcIndividual').textContent=money(cpc1); $('cpcKeyword').textContent=money(cpc1); $('cpcProduct').textContent=money(cpc05); $('cpcCategory').textContent=money(cpc05);
-        const acos=adRevenue>0 ? spend/adRevenue*100 : NaN;
-        const tacos=totalRevenue>0 ? spend/totalRevenue*100 : NaN;
-        const mpa=Number.isFinite(acos) ? margin-acos : NaN;
-        const ctr=impressions>0 ? clicks/impressions*100 : NaN;
-        const conversion=clicks>0 ? sales/clicks*100 : NaN;
-        const realCpc=clicks>0 ? spend/clicks : NaN;
-        const roas=spend>0 ? adRevenue/spend : NaN;
-        const budgetUse=investment>0 ? spend/investment*100 : NaN;
-        setMetric('resAcos',pct(acos),Number.isFinite(acos)?classForAcos(acos):'level-neutral');
-        setMetric('resTacos',pct(tacos));
-        setMetric('resMpa',pct(mpa),Number.isFinite(mpa)?classForMpa(mpa):'level-neutral');
-        setMetric('resCtr',pct(ctr)); setMetric('resConversion',pct(conversion)); setMetric('resRealCpc',Number.isFinite(realCpc)?money(realCpc):'—'); setMetric('resRoas',Number.isFinite(roas)?`${roas.toFixed(2).replace('.',',')}x`:'—'); setMetric('resBudgetUse',pct(budgetUse));
+        const margin = n('optMargin');
+        const ticket = n('optTicket');
+        const currentCpc = n('optCurrentCpc');
+        const impressions = n('optImpressions');
+        const clicks = n('optClicks');
+        const organicRevenue = n('optOrganicRevenue');
+        const adRevenue = n('optAdRevenue');
+        const spend = n('optSpend');
 
-        const alerts=[];
-        if (impressions>=1000 && Number.isFinite(ctr) && ctr<1) alerts.push({type:'warning',icon:'fa-eye',title:'Muitas impressões e poucos cliques',text:'Provavelmente o anúncio não está chamativo o suficiente. Revise principalmente imagem principal, preço e título.'});
-        if (clicks>=20 && Number.isFinite(conversion) && conversion<5) alerts.push({type:'warning',icon:'fa-cart-shopping',title:'Muitos cliques e poucas vendas',text:'O cliente entra na página, mas converte pouco. Revise título, fotos, preço, descrição e bullet points.'});
-        if (Number.isFinite(acos) && acos>=30) alerts.push({type:'warning',icon:'fa-triangle-exclamation',title:'ACOS no limite crítico',text:'ACOS de 30% ou mais fica em vermelho. Revise rentabilidade, anúncio e campanha antes de ampliar investimento.'});
-        if (Number.isFinite(mpa) && mpa<15) alerts.push({type:'warning',icon:'fa-percent',title:'MPA abaixo do ideal',text:'A Margem Pós ADS está abaixo de 15%. O objetivo do método é manter MPA de 15% ou mais.'});
-        if (!alerts.length && (impressions||clicks||sales)) alerts.push({type:'good',icon:'fa-circle-check',title:'Sem alerta crítico pelos gatilhos atuais',text:'Continue acompanhando ACOS, TACOS, MPA, CTR, cliques e vendas antes de alterar o lance.'});
-        $('liveDiagnostics').innerHTML=alerts.map(a=>`<div class="live-alert ${a.type}"><i class="fa-solid ${a.icon}"></i><div><strong>${a.title}</strong><span>${a.text}</span></div></div>`).join('');
-        return {name:$('optName').value.trim()||'Produto sem nome',price,margin,investment,spend,adRevenue,totalRevenue,impressions,clicks,sales,cpc1,cpc05,acos,tacos,mpa,ctr,conversion,realCpc,roas,budgetUse,diagnostic:alerts.filter(a=>a.type==='warning').map(a=>a.title).join(' • ')||'Acompanhar'};
+        // CPCs do método.
+        const cpc1 = clampBid(ticket * .01);
+        const cpc05 = clampBid(ticket * .005);
+        $('cpcGeneral').textContent = money(.60);
+        $('cpcIndividual').textContent = money(cpc1);
+        $('cpcKeyword').textContent = money(cpc1);
+        $('cpcProduct').textContent = money(cpc05);
+        $('cpcCategory').textContent = money(cpc05);
+
+        // Fórmulas equivalentes às métricas do CSV.
+        const revenue = organicRevenue + adRevenue;
+        const ctr = impressions > 0 ? clicks / impressions * 100 : NaN;
+        const adOrders = ticket > 0 ? adRevenue / ticket : NaN;
+        const organicOrders = ticket > 0 ? organicRevenue / ticket : NaN;
+        const totalOrders = Number.isFinite(adOrders) && Number.isFinite(organicOrders) ? adOrders + organicOrders : NaN;
+        const conversion = clicks > 0 && Number.isFinite(adOrders) ? adOrders / clicks * 100 : NaN;
+        const roas = spend > 0 ? adRevenue / spend : NaN;
+        const acos = adRevenue > 0 ? spend / adRevenue * 100 : NaN;
+        const tacos = revenue > 0 ? spend / revenue * 100 : NaN;
+        const mpa = Number.isFinite(tacos) ? margin - tacos : NaN;
+        const grossProfit = revenue * (margin / 100);
+        const netProfit = grossProfit - spend;
+        const realCpc = clicks > 0 ? spend / clicks : NaN;
+
+        setMetric('resRevenue', money(revenue));
+        setMetric('resCtr', pct(ctr));
+        setMetric('resConversion', pct(conversion));
+        setMetric('resRoas', Number.isFinite(roas) ? `${roas.toFixed(2).replace('.',',')}x` : '—');
+        setMetric('resAcos', pct(acos), Number.isFinite(acos) ? classForAcos(acos) : 'level-neutral');
+        setMetric('resTacos', pct(tacos));
+        setMetric('resMpa', pct(mpa), Number.isFinite(mpa) ? classForMpa(mpa) : 'level-neutral');
+        setMetric('resRealCpc', money(realCpc));
+        setMetric('resGrossProfit', money(grossProfit));
+        setMetric('resNetProfit', money(netProfit), netProfit >= 0 ? 'level-green' : 'level-red');
+        setMetric('resAdOrders', num(adOrders, 2));
+        setMetric('resOrganicOrders', num(organicOrders, 2));
+        setMetric('resTotalOrders', num(totalOrders, 2));
+
+        const alerts = [];
+        if (impressions >= 1000 && Number.isFinite(ctr) && ctr < 1) {
+          alerts.push({type:'warning',icon:'fa-eye',title:'Muitas impressões e poucos cliques',text:'O anúncio está aparecendo, mas provavelmente não está chamando atenção. Revise imagem principal, preço e título.'});
+        }
+        if (clicks >= 20 && Number.isFinite(conversion) && conversion < 5) {
+          alerts.push({type:'warning',icon:'fa-cart-shopping',title:'Muitos cliques e poucas vendas de ADS',text:'Há interesse no anúncio, mas pouca conversão. Revise título, fotos, preço, descrição e bullet points.'});
+        }
+        if (Number.isFinite(acos) && acos >= 30) {
+          alerts.push({type:'warning',icon:'fa-triangle-exclamation',title:'ACOS no limite crítico',text:'ACOS de 30% ou mais fica em vermelho. Analise rentabilidade e a qualidade da campanha antes de aumentar o investimento.'});
+        }
+        if (Number.isFinite(mpa) && mpa < 15) {
+          alerts.push({type:'warning',icon:'fa-percent',title:'MPA abaixo do ideal',text:'A Margem Pós ADS está abaixo de 15%. Pelo método Seller Pro, o ideal é manter MPA em 15% ou mais.'});
+        }
+        if (Number.isFinite(realCpc) && currentCpc > 0 && realCpc > currentCpc * 1.20) {
+          alerts.push({type:'warning',icon:'fa-arrow-trend-up',title:'CPC real acima do lance informado',text:'O CPC efetivo está mais de 20% acima do CPC informado. Confira a configuração e os ajustes da campanha.'});
+        }
+        if (!alerts.length && (impressions || clicks || adRevenue || organicRevenue || spend)) {
+          alerts.push({type:'good',icon:'fa-circle-check',title:'Sem alerta crítico pelos gatilhos atuais',text:'Continue acompanhando CTR, conversão ADS, ACOS, TACOS, MPA e lucro líquido antes de alterar os lances.'});
+        }
+
+        $('liveDiagnostics').innerHTML = alerts.map(a =>
+          `<div class="live-alert ${a.type}"><i class="fa-solid ${a.icon}"></i><div><strong>${a.title}</strong><span>${a.text}</span></div></div>`
+        ).join('');
+
+        return {
+          name: $('optName').value.trim() || 'Produto sem nome',
+          margin, ticket, currentCpc, impressions, clicks, organicRevenue, adRevenue, spend,
+          cpc1, cpc05, revenue, ctr, adOrders, organicOrders, totalOrders, conversion,
+          roas, acos, tacos, mpa, grossProfit, netProfit, realCpc,
+          diagnostic: alerts.filter(a => a.type === 'warning').map(a => a.title).join(' • ') || 'Acompanhar'
+        };
       }
+
       inputs.forEach(id => $(id).addEventListener('input', calculateOptimization));
       calculateOptimization();
 
-      const storeKey='sellerProAdsOptimizationRowsV1';
-      let optimizationData=[];
-      try { optimizationData=JSON.parse(localStorage.getItem(storeKey)||'[]'); if(!Array.isArray(optimizationData)) optimizationData=[]; } catch { optimizationData=[]; }
-      function renderOptimizationRows(){
-        $('optimizationRows').innerHTML=optimizationData.map((r,i)=>`<tr>
-          <td data-label="Produto">${escapeHtml(r.name)}</td><td data-label="Preço">${money(r.price)}</td><td data-label="CPC 1%">${money(r.cpc1)}</td><td data-label="CPC 0,5%">${money(r.cpc05)}</td><td data-label="Investido">${money(r.investment)}</td><td data-label="Gasto">${money(r.spend)}</td><td data-label="Impressões">${r.impressions.toLocaleString('pt-BR')}</td><td data-label="Cliques">${r.clicks.toLocaleString('pt-BR')}</td><td data-label="Vendas">${r.sales.toLocaleString('pt-BR')}</td><td data-label="CTR">${pct(r.ctr)}</td><td data-label="Conversão">${pct(r.conversion)}</td><td data-label="ACOS"><span class="${Number.isFinite(r.acos)?classForAcos(r.acos):''}">${pct(r.acos)}</span></td><td data-label="TACOS">${pct(r.tacos)}</td><td data-label="MPA"><span class="${Number.isFinite(r.mpa)?classForMpa(r.mpa):''}">${pct(r.mpa)}</span></td><td data-label="ROAS">${Number.isFinite(r.roas)?r.roas.toFixed(2).replace('.',',')+'x':'—'}</td><td data-label="Diagnóstico"><span class="mini-status">${escapeHtml(r.diagnostic)}</span></td><td><button class="row-delete" type="button" data-remove="${i}" aria-label="Excluir linha"><i class="fa-solid fa-xmark"></i></button></td>
-        </tr>`).join('') || '<tr><td colspan="17" style="text-align:center;color:var(--muted);padding:22px">Nenhum produto adicionado ainda.</td></tr>';
+      // V2 evita misturar linhas salvas com o formato antigo da calculadora.
+      const storeKey = 'sellerProAdsOptimizationRowsV2';
+      let optimizationData = [];
+      try {
+        optimizationData = JSON.parse(localStorage.getItem(storeKey) || '[]');
+        if (!Array.isArray(optimizationData)) optimizationData = [];
+      } catch {
+        optimizationData = [];
       }
-      function escapeHtml(value){ return String(value).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
-      function saveOptimizationRows(){ localStorage.setItem(storeKey,JSON.stringify(optimizationData)); renderOptimizationRows(); }
-      $('addOptimizationRow').addEventListener('click',()=>{ optimizationData.unshift(calculateOptimization()); saveOptimizationRows(); });
-      $('optimizationRows').addEventListener('click',e=>{ const btn=e.target.closest('[data-remove]'); if(!btn)return; optimizationData.splice(Number(btn.dataset.remove),1); saveOptimizationRows(); });
-      $('clearOptimizationTable').addEventListener('click',()=>{ if(confirm('Limpar toda a tabela de otimização salva neste navegador?')){ optimizationData=[]; saveOptimizationRows(); } });
-      $('clearOptimizationForm').addEventListener('click',()=>{ $('optName').value=''; ['optPrice','optMargin','optInvestment','optSpend','optAdRevenue','optTotalRevenue','optImpressions','optClicks','optSales'].forEach(id=>$(id).value=''); calculateOptimization(); });
+
+      function renderOptimizationRows() {
+        $('optimizationRows').innerHTML = optimizationData.map((r,i) => `<tr>
+          <td data-label="Produto">${escapeHtml(r.name)}</td>
+          <td data-label="Margem">${pct(r.margin)}</td>
+          <td data-label="Ticket">${money(r.ticket)}</td>
+          <td data-label="CPC atual">${money(r.currentCpc)}</td>
+          <td data-label="CPC 1%">${money(r.cpc1)}</td>
+          <td data-label="CPC 0,5%">${money(r.cpc05)}</td>
+          <td data-label="Impressões">${Number(r.impressions||0).toLocaleString('pt-BR')}</td>
+          <td data-label="Cliques">${Number(r.clicks||0).toLocaleString('pt-BR')}</td>
+          <td data-label="Vendas Org.">${money(r.organicRevenue)}</td>
+          <td data-label="Vendas ADS">${money(r.adRevenue)}</td>
+          <td data-label="Gasto ADS">${money(r.spend)}</td>
+          <td data-label="Faturamento">${money(r.revenue)}</td>
+          <td data-label="CTR">${pct(r.ctr)}</td>
+          <td data-label="Conv. ADS">${pct(r.conversion)}</td>
+          <td data-label="ROAS">${Number.isFinite(r.roas) ? r.roas.toFixed(2).replace('.',',')+'x' : '—'}</td>
+          <td data-label="ACOS"><span class="${Number.isFinite(r.acos)?classForAcos(r.acos):''}">${pct(r.acos)}</span></td>
+          <td data-label="TACOS">${pct(r.tacos)}</td>
+          <td data-label="MPA"><span class="${Number.isFinite(r.mpa)?classForMpa(r.mpa):''}">${pct(r.mpa)}</span></td>
+          <td data-label="Lucro Bruto">${money(r.grossProfit)}</td>
+          <td data-label="Lucro Líquido"><span class="${Number(r.netProfit)>=0?'level-green':'level-red'}">${money(r.netProfit)}</span></td>
+          <td data-label="Compras ADS">${num(r.adOrders,2)}</td>
+          <td data-label="Compras Org.">${num(r.organicOrders,2)}</td>
+          <td data-label="Compras">${num(r.totalOrders,2)}</td>
+          <td data-label="Diagnóstico"><span class="mini-status">${escapeHtml(r.diagnostic)}</span></td>
+          <td><button class="row-delete" type="button" data-remove="${i}" aria-label="Excluir linha"><i class="fa-solid fa-xmark"></i></button></td>
+        </tr>`).join('') || '<tr><td colspan="25" style="text-align:center;color:var(--muted);padding:22px">Nenhum produto adicionado ainda.</td></tr>';
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+      }
+
+      function saveOptimizationRows() {
+        localStorage.setItem(storeKey, JSON.stringify(optimizationData));
+        renderOptimizationRows();
+      }
+
+      $('addOptimizationRow').addEventListener('click', () => {
+        optimizationData.unshift(calculateOptimization());
+        saveOptimizationRows();
+      });
+
+      $('optimizationRows').addEventListener('click', e => {
+        const btn = e.target.closest('[data-remove]');
+        if (!btn) return;
+        optimizationData.splice(Number(btn.dataset.remove), 1);
+        saveOptimizationRows();
+      });
+
+      $('clearOptimizationTable').addEventListener('click', () => {
+        if (confirm('Limpar toda a tabela de otimização salva neste navegador?')) {
+          optimizationData = [];
+          saveOptimizationRows();
+        }
+      });
+
+      $('clearOptimizationForm').addEventListener('click', () => {
+        $('optName').value = '';
+        ['optMargin','optTicket','optCurrentCpc','optImpressions','optClicks','optOrganicRevenue','optAdRevenue','optSpend'].forEach(id => $(id).value = '');
+        calculateOptimization();
+      });
+
       renderOptimizationRows();
     })();
   </script>
