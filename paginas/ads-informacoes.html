@@ -243,7 +243,7 @@
 
     .optimizer-hero{margin-top:18px;padding:27px;border:1px solid rgba(77,145,255,.26);border-radius:22px;background:radial-gradient(circle at 92% 0%,rgba(77,145,255,.12),transparent 31%),var(--surface)}
     .optimizer-hero h2{margin:7px 0 8px;font-size:clamp(1.65rem,3.2vw,2.45rem);letter-spacing:-.045em}.optimizer-hero p{margin:0;color:var(--muted);font-size:.84rem;max-width:860px}
-    .form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.field{display:grid;gap:6px}.field label{font-size:.7rem;font-weight:900;color:var(--muted)}.field input{width:100%;min-height:43px;border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:var(--surface-2);color:var(--text);font-weight:800}.field input:focus{border-color:var(--orange);outline:none;box-shadow:0 0 0 3px rgba(255,122,0,.10)}.money-field{position:relative}.money-field .currency-prefix{position:absolute;left:11px;bottom:10px;color:var(--muted);font-weight:900;font-size:.8rem;pointer-events:none}.money-field input{padding-left:38px}
+    .form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.field{display:grid;gap:6px}.field label{font-size:.7rem;font-weight:900;color:var(--muted)}.field input{width:100%;min-height:43px;border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:var(--surface-2);color:var(--text);font-weight:800}.field input:focus{border-color:var(--orange);outline:none;box-shadow:0 0 0 3px rgba(255,122,0,.10)}
     .calc-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:13px}.calc-btn{border:1px solid var(--border);border-radius:10px;min-height:42px;padding:9px 13px;background:var(--surface-2);color:var(--text);font-weight:900}.calc-btn.primary{border:0;background:linear-gradient(135deg,#ffbe77,var(--orange));color:#251301}.calc-btn.danger{color:#ffaaa2}.calc-btn:hover{border-color:var(--orange)}
     .calc-results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:15px}.calc-card{border:1px solid var(--border);border-radius:13px;background:var(--surface-2);padding:14px}.calc-card span{display:block;color:var(--muted);font-size:.67rem}.calc-card strong{display:block;font-size:1.23rem;letter-spacing:-.035em;margin-top:4px}.calc-card small{display:block;color:var(--muted);font-size:.63rem;margin-top:3px}
     .level-green{color:#32d17d!important}.level-yellow{color:#f0cd57!important}.level-orange{color:#ff9c43!important}.level-red{color:#ff6868!important}.level-neutral{color:var(--text)!important}
@@ -254,6 +254,19 @@
     .formula-note{margin-top:12px;padding:12px 14px;border-radius:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--muted);font-size:.72rem}.formula-note b{color:var(--text)}
     @media(max-width:1050px){.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.calc-results{grid-template-columns:repeat(2,minmax(0,1fr))}.method-flow{grid-template-columns:repeat(3,minmax(0,1fr))}.cpc-strip{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:700px){.workspace-tabs{top:72px}.workspace-tab{flex:1 1 calc(50% - 8px);justify-content:center}.method-grid{grid-template-columns:1fr}.method-card.wide{grid-column:auto}.method-specs{grid-template-columns:1fr}.method-flow,.cpc-strip{grid-template-columns:1fr 1fr}.form-grid,.calc-results{grid-template-columns:1fr}.optimizer-hero,.method-hero{padding:20px 16px}.table-wrap.optimizer-responsive{border:0;overflow:visible}.optimizer-table{min-width:0;display:block}.optimizer-table thead{display:none}.optimizer-table tbody,.optimizer-table tr,.optimizer-table td{display:block;width:100%}.optimizer-table tr{border:1px solid var(--border);border-radius:13px;margin-bottom:10px;background:var(--surface);overflow:hidden}.optimizer-table td{display:grid;grid-template-columns:42% 58%;white-space:normal;padding:8px 11px}.optimizer-table td::before{content:attr(data-label);font-size:.62rem;font-weight:900;color:var(--muted);text-transform:uppercase}.optimizer-table td:last-child{display:flex;justify-content:flex-end}.optimizer-table td:last-child::before{display:none}}
+
+  .money-field{position:relative}
+.money-field .currency-prefix{
+  position:absolute;
+  left:12px;
+  bottom:10px;
+  color:var(--muted);
+  font-weight:900;
+  font-size:.82rem;
+  pointer-events:none;
+  z-index:2
+}
+.money-field input{padding-left:42px!important}
 
   </style>
 </head>
@@ -555,18 +568,14 @@
         <div class="form-grid">
           <div class="field"><label for="optName">Produto / ASIN</label><input id="optName" type="text" placeholder="Ex.: Kit de Ganchos"></div>
           <div class="field"><label for="optMargin">Margem antes do ADS (%)</label><input id="optMargin" type="number" min="0" step="0.01" value="35.82"></div>
-
-          <div class="field money-field"><label for="optTicket">Preço do produto (R$)</label><span class="currency-prefix">R$</span><input id="optTicket" type="number" min="0" step="0.01" value="39.89"></div>
+          <div class="field money-field"><label for="optTicket">Preço / Ticket médio (R$)</label><span class="currency-prefix">R$</span><input id="optTicket" type="number" min="0" step="0.01" value="39.89"></div>
           <div class="field money-field"><label for="optCurrentCpc">CPC atual / lance (R$)</label><span class="currency-prefix">R$</span><input id="optCurrentCpc" type="number" min="0" step="0.01" value="0.60"></div>
 
           <div class="field"><label for="optImpressions">Impressões</label><input id="optImpressions" type="number" min="0" step="1" value="800000"></div>
           <div class="field"><label for="optClicks">Cliques</label><input id="optClicks" type="number" min="0" step="1" value="18824"></div>
-          <div class="field"><label for="optSales">Número de vendas</label><input id="optSales" type="number" min="0" step="1" value="2541"></div>
-          <div class="field"><label for="optUnits">Unidades vendidas</label><input id="optUnits" type="number" min="0" step="1" value="2541"></div>
-
           <div class="field money-field"><label for="optOrganicRevenue">Vendas orgânicas (R$)</label><span class="currency-prefix">R$</span><input id="optOrganicRevenue" type="number" min="0" step="0.01" value="50000"></div>
           <div class="field money-field"><label for="optAdRevenue">Vendas de ADS (R$)</label><span class="currency-prefix">R$</span><input id="optAdRevenue" type="number" min="0" step="0.01" value="51357.59"></div>
-          <div class="field money-field"><label for="optSpend">Valor em ADS (R$)</label><span class="currency-prefix">R$</span><input id="optSpend" type="number" min="0" step="0.01" value="11294.40"></div>
+          <div class="field money-field"><label for="optSpend">Gasto em ADS (R$)</label><span class="currency-prefix">R$</span><input id="optSpend" type="number" min="0" step="0.01" value="11294.40"></div>
         </div>
 
         <div class="cpc-strip" aria-label="CPCs calculados pelo Método Seller Pro">
@@ -583,19 +592,20 @@
 
         <div class="calc-results">
           <div class="calc-card"><span>Faturamento</span><strong id="resRevenue">—</strong><small>Vendas orgânicas + vendas de ADS</small></div>
-          <div class="calc-card"><span>Líq. do Marketplace</span><strong id="resMarketplaceNet">—</strong><small>Faturamento − lucro bruto</small></div>
-          <div class="calc-card"><span>Lucro Bruto</span><strong id="resGrossProfit">—</strong><small>Faturamento × margem</small></div>
-          <div class="calc-card"><span>Margem</span><strong id="resMargin">—</strong><small>Margem informada antes do ADS</small></div>
+          <div class="calc-card"><span>CTR</span><strong id="resCtr">—</strong><small>Cliques ÷ impressões</small></div>
+          <div class="calc-card"><span>Conversão ADS</span><strong id="resConversion">—</strong><small>Compras de ADS ÷ cliques</small></div>
+          <div class="calc-card"><span>ROAS</span><strong id="resRoas">—</strong><small>Vendas de ADS ÷ gasto em ADS</small></div>
 
-          <div class="calc-card"><span>Número de Vendas</span><strong id="resSales">—</strong><small>Total de pedidos/vendas informado</small></div>
-          <div class="calc-card"><span>Número de Unidades Vendidas</span><strong id="resUnits">—</strong><small>Total de unidades informado</small></div>
-          <div class="calc-card"><span>Ticket Médio</span><strong id="resAvgTicket">—</strong><small>Faturamento ÷ número de vendas</small></div>
-          <div class="calc-card"><span>Retorno Sobre Investimento</span><strong id="resRoi">—</strong><small>ROAS do CSV exibido em percentual</small></div>
+          <div class="calc-card"><span>ACOS</span><strong id="resAcos">—</strong><small>Gasto em ADS ÷ vendas de ADS</small></div>
+          <div class="calc-card"><span>TACOS</span><strong id="resTacos">—</strong><small>Gasto em ADS ÷ faturamento total</small></div>
+          <div class="calc-card"><span>MPA • margem pós ADS</span><strong id="resMpa">—</strong><small>Margem − TACOS • ideal ≥ 15%</small></div>
+          <div class="calc-card"><span>CPC real</span><strong id="resRealCpc">—</strong><small>Gasto em ADS ÷ cliques</small></div>
 
-          <div class="calc-card"><span>Valor em Ads</span><strong id="resSpend">—</strong><small>Gasto total em publicidade</small></div>
-          <div class="calc-card"><span>TACOS</span><strong id="resTacos">—</strong><small>Gasto ADS ÷ faturamento total</small></div>
-          <div class="calc-card"><span>Lucro bruto pós ADS</span><strong id="resNetProfit">—</strong><small>Lucro bruto − valor em ADS</small></div>
-          <div class="calc-card"><span>MPA</span><strong id="resMpa">—</strong><small>Margem − TACOS • ideal ≥ 15%</small></div>
+          <div class="calc-card"><span>Lucro bruto</span><strong id="resGrossProfit">—</strong><small>Faturamento × margem</small></div>
+          <div class="calc-card"><span>Lucro líquido pós ADS</span><strong id="resNetProfit">—</strong><small>Lucro bruto − gasto em ADS</small></div>
+          <div class="calc-card"><span>Compras ADS</span><strong id="resAdOrders">—</strong><small>Vendas de ADS ÷ ticket médio</small></div>
+          <div class="calc-card"><span>Compras orgânicas</span><strong id="resOrganicOrders">—</strong><small>Vendas orgânicas ÷ ticket médio</small></div>
+          <div class="calc-card"><span>Compras totais</span><strong id="resTotalOrders">—</strong><small>Compras ADS + compras orgânicas</small></div>
         </div>
 
         <div class="legend" aria-label="Faixas de ACOS">
@@ -608,19 +618,18 @@
         <div id="liveDiagnostics" class="diagnostic-live" aria-live="polite"></div>
 
         <div class="formula-note">
-          <b>Fórmulas utilizadas:</b>
-          Faturamento = Vendas Orgânicas + Vendas ADS •
-          Líq. do Marketplace = Faturamento − Lucro Bruto •
-          Lucro Bruto = Faturamento × Margem •
-          Ticket Médio = Faturamento ÷ Número de Vendas •
-          Retorno sobre investimento = ROAS × 100 •
-          ROAS = Vendas ADS ÷ Valor em ADS •
-          TACOS = Valor em ADS ÷ Faturamento •
-          Lucro bruto pós ADS = Lucro Bruto − Valor em ADS •
-          MPA = Margem − TACOS •
+          <b>Fórmulas reproduzidas do modelo do CSV:</b>
+          Faturamento = Orgânico + ADS •
           CTR = Cliques ÷ Impressões •
-          Compras ADS = Vendas ADS ÷ Preço do Produto •
-          Conversão ADS = Compras ADS ÷ Cliques.
+          Compras ADS = Vendas ADS ÷ Ticket Médio •
+          Conversão ADS = Compras ADS ÷ Cliques •
+          ROAS = Vendas ADS ÷ Gasto ADS •
+          ACOS = Gasto ADS ÷ Vendas ADS •
+          TACOS = Gasto ADS ÷ Faturamento •
+          MPA = Margem − TACOS •
+          Lucro Bruto = Faturamento × Margem •
+          Lucro Líquido = Lucro Bruto − Gasto ADS •
+          Compras Orgânicas = Vendas Orgânicas ÷ Ticket Médio.
         </div>
 
         <div class="calc-actions">
@@ -640,7 +649,7 @@
             <thead>
               <tr>
                 <th>Produto</th><th>Margem</th><th>Ticket</th><th>CPC atual</th><th>CPC 1%</th><th>CPC 0,5%</th>
-                <th>Impressões</th><th>Cliques</th><th>Nº Vendas</th><th>Unidades</th><th>Vendas Org.</th><th>Vendas ADS</th><th>Valor ADS</th><th>Faturamento</th><th>Líq. Marketplace</th><th>Ticket Médio</th>
+                <th>Impressões</th><th>Cliques</th><th>Vendas Org.</th><th>Vendas ADS</th><th>Gasto ADS</th><th>Faturamento</th>
                 <th>CTR</th><th>Conv. ADS</th><th>ROAS</th><th>ACOS</th><th>TACOS</th><th>MPA</th>
                 <th>Lucro Bruto</th><th>Lucro Líquido</th><th>Compras ADS</th><th>Compras Org.</th><th>Compras</th><th>Diagnóstico</th><th></th>
               </tr>
@@ -718,7 +727,7 @@
 
       // Calculadora Seller Pro baseada no modelo do CSV.
       const $ = id => document.getElementById(id);
-      const inputs = ['optName','optMargin','optTicket','optCurrentCpc','optImpressions','optClicks','optSales','optUnits','optOrganicRevenue','optAdRevenue','optSpend'];
+      const inputs = ['optName','optMargin','optTicket','optCurrentCpc','optImpressions','optClicks','optOrganicRevenue','optAdRevenue','optSpend'];
       const n = id => Math.max(0, Number($(id).value) || 0);
       const money = v => Number.isFinite(v) ? v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}) : '—';
       const pct = v => Number.isFinite(v) ? `${v.toFixed(2).replace('.',',')}%` : '—';
@@ -734,8 +743,6 @@
         const currentCpc = n('optCurrentCpc');
         const impressions = n('optImpressions');
         const clicks = n('optClicks');
-        const sales = n('optSales');
-        const units = n('optUnits');
         const organicRevenue = n('optOrganicRevenue');
         const adRevenue = n('optAdRevenue');
         const spend = n('optSpend');
@@ -761,24 +768,22 @@
         const tacos = revenue > 0 ? spend / revenue * 100 : NaN;
         const mpa = Number.isFinite(tacos) ? margin - tacos : NaN;
         const grossProfit = revenue * (margin / 100);
-        const marketplaceNet = revenue - grossProfit;
         const netProfit = grossProfit - spend;
-        const avgTicket = sales > 0 ? revenue / sales : NaN;
-        const roi = Number.isFinite(roas) ? roas * 100 : NaN;
         const realCpc = clicks > 0 ? spend / clicks : NaN;
 
         setMetric('resRevenue', money(revenue));
-        setMetric('resMarketplaceNet', money(marketplaceNet));
-        setMetric('resGrossProfit', money(grossProfit));
-        setMetric('resMargin', pct(margin));
-        setMetric('resSales', Math.round(sales).toLocaleString('pt-BR'));
-        setMetric('resUnits', Math.round(units).toLocaleString('pt-BR'));
-        setMetric('resAvgTicket', money(avgTicket));
-        setMetric('resRoi', pct(roi));
-        setMetric('resSpend', money(spend));
+        setMetric('resCtr', pct(ctr));
+        setMetric('resConversion', pct(conversion));
+        setMetric('resRoas', Number.isFinite(roas) ? `${roas.toFixed(2).replace('.',',')}x` : '—');
+        setMetric('resAcos', pct(acos), Number.isFinite(acos) ? classForAcos(acos) : 'level-neutral');
         setMetric('resTacos', pct(tacos));
-        setMetric('resNetProfit', money(netProfit), netProfit >= 0 ? 'level-green' : 'level-red');
         setMetric('resMpa', pct(mpa), Number.isFinite(mpa) ? classForMpa(mpa) : 'level-neutral');
+        setMetric('resRealCpc', money(realCpc));
+        setMetric('resGrossProfit', money(grossProfit));
+        setMetric('resNetProfit', money(netProfit), netProfit >= 0 ? 'level-green' : 'level-red');
+        setMetric('resAdOrders', num(adOrders, 2));
+        setMetric('resOrganicOrders', num(organicOrders, 2));
+        setMetric('resTotalOrders', num(totalOrders, 2));
 
         const alerts = [];
         if (impressions >= 1000 && Number.isFinite(ctr) && ctr < 1) {
@@ -806,9 +811,9 @@
 
         return {
           name: $('optName').value.trim() || 'Produto sem nome',
-          margin, ticket, currentCpc, impressions, clicks, sales, units, organicRevenue, adRevenue, spend,
+          margin, ticket, currentCpc, impressions, clicks, organicRevenue, adRevenue, spend,
           cpc1, cpc05, revenue, ctr, adOrders, organicOrders, totalOrders, conversion,
-          roas, roi, acos, tacos, mpa, grossProfit, marketplaceNet, netProfit, avgTicket, realCpc,
+          roas, acos, tacos, mpa, grossProfit, netProfit, realCpc,
           diagnostic: alerts.filter(a => a.type === 'warning').map(a => a.title).join(' • ') || 'Acompanhar'
         };
       }
@@ -836,14 +841,10 @@
           <td data-label="CPC 0,5%">${money(r.cpc05)}</td>
           <td data-label="Impressões">${Number(r.impressions||0).toLocaleString('pt-BR')}</td>
           <td data-label="Cliques">${Number(r.clicks||0).toLocaleString('pt-BR')}</td>
-          <td data-label="Nº Vendas">${Number(r.sales||0).toLocaleString('pt-BR')}</td>
-          <td data-label="Unidades">${Number(r.units||0).toLocaleString('pt-BR')}</td>
           <td data-label="Vendas Org.">${money(r.organicRevenue)}</td>
           <td data-label="Vendas ADS">${money(r.adRevenue)}</td>
           <td data-label="Gasto ADS">${money(r.spend)}</td>
           <td data-label="Faturamento">${money(r.revenue)}</td>
-          <td data-label="Líq. Marketplace">${money(r.marketplaceNet)}</td>
-          <td data-label="Ticket Médio">${money(r.avgTicket)}</td>
           <td data-label="CTR">${pct(r.ctr)}</td>
           <td data-label="Conv. ADS">${pct(r.conversion)}</td>
           <td data-label="ROAS">${Number.isFinite(r.roas) ? r.roas.toFixed(2).replace('.',',')+'x' : '—'}</td>
@@ -857,7 +858,7 @@
           <td data-label="Compras">${num(r.totalOrders,2)}</td>
           <td data-label="Diagnóstico"><span class="mini-status">${escapeHtml(r.diagnostic)}</span></td>
           <td><button class="row-delete" type="button" data-remove="${i}" aria-label="Excluir linha"><i class="fa-solid fa-xmark"></i></button></td>
-        </tr>`).join('') || '<tr><td colspan="29" style="text-align:center;color:var(--muted);padding:22px">Nenhum produto adicionado ainda.</td></tr>';
+        </tr>`).join('') || '<tr><td colspan="25" style="text-align:center;color:var(--muted);padding:22px">Nenhum produto adicionado ainda.</td></tr>';
       }
 
       function escapeHtml(value) {
@@ -890,7 +891,7 @@
 
       $('clearOptimizationForm').addEventListener('click', () => {
         $('optName').value = '';
-        ['optMargin','optTicket','optCurrentCpc','optImpressions','optClicks','optSales','optUnits','optOrganicRevenue','optAdRevenue','optSpend'].forEach(id => $(id).value = '');
+        ['optMargin','optTicket','optCurrentCpc','optImpressions','optClicks','optOrganicRevenue','optAdRevenue','optSpend'].forEach(id => $(id).value = '');
         calculateOptimization();
       });
 
