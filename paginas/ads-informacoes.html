@@ -441,7 +441,7 @@
         </article>
         <article class="diagnostic">
           <div class="diag-art" aria-hidden="true"><div class="bar" style="height:77px"><span>Impressões</span></div><div class="bar" style="height:57px"><span>Cliques</span></div><div class="bar" style="height:10px"><span>Vendas</span></div></div>
-          <span class="diag-label">Cenário 02</span><h3>Muitos cliques e poucas vendas de ADS</h3>
+          <span class="diag-label">Cenário 02</span><h3>Muitos cliques e poucas vendas</h3>
           <p>O cliente demonstra interesse inicial, mas pode não encontrar motivos suficientes para finalizar a compra.</p>
           <div class="diag-action"><strong><i class="fa-solid fa-list-check" aria-hidden="true"></i> Revisar o conteúdo interno</strong><span>Imagens secundárias, descrição, bullet points e preço.</span></div>
         </article>
@@ -546,7 +546,7 @@
       <div class="optimizer-hero">
         <span class="overline">Calculadora • Dados de otimização</span>
         <h2>Calculadora de CPC e conversão</h2>
-        <p>Preencha os dados reais do produto e da campanha. A ferramenta calcula os lances pelo Método Seller Pro, ACOS, TACOS, MPA, CTR, conversão de ADS, CPC real e ROAS, além de gerar alertas para orientar a otimização do anúncio.</p>
+        <p>Preencha os dados reais do produto e da campanha. A ferramenta calcula os lances pelo Método Seller Pro, ACOS, TACOS, MPA, CTR, conversão, CPC real e ROAS, além de gerar alertas para orientar a otimização do anúncio.</p>
       </div>
 
       <section class="panel" style="margin-top:16px" aria-labelledby="calc-title">
@@ -555,12 +555,13 @@
           <div class="field"><label for="optName">Produto / ASIN</label><input id="optName" type="text" placeholder="Ex.: Kit de Ganchos"></div>
           <div class="field"><label for="optPrice">Preço do produto (R$)</label><input id="optPrice" type="number" min="0" step="0.01" value="59.90"></div>
           <div class="field"><label for="optMargin">Margem antes do ADS (%)</label><input id="optMargin" type="number" step="0.01" value="35"></div>
+          <div class="field"><label for="optInvestment">Valor investido / orçamento (R$)</label><input id="optInvestment" type="number" min="0" step="0.01" value="30"></div>
           <div class="field"><label for="optSpend">Gasto real em ADS (R$)</label><input id="optSpend" type="number" min="0" step="0.01" value="20"></div>
           <div class="field"><label for="optAdRevenue">Vendas atribuídas ao ADS (R$)</label><input id="optAdRevenue" type="number" min="0" step="0.01" value="100"></div>
           <div class="field"><label for="optTotalRevenue">Vendas totais do produto (R$)</label><input id="optTotalRevenue" type="number" min="0" step="0.01" value="200"></div>
           <div class="field"><label for="optImpressions">Impressões</label><input id="optImpressions" type="number" min="0" step="1" value="5000"></div>
           <div class="field"><label for="optClicks">Cliques</label><input id="optClicks" type="number" min="0" step="1" value="80"></div>
-          <div class="field"><label for="optSales">Vendas de ADS / pedidos atribuídos (quantidade)</label><input id="optSales" type="number" min="0" step="1" value="5"></div>
+          <div class="field"><label for="optSales">Vendas / pedidos (quantidade)</label><input id="optSales" type="number" min="0" step="1" value="5"></div>
         </div>
 
         <div class="cpc-strip" aria-label="CPCs calculados pelo Método Seller Pro">
@@ -575,11 +576,12 @@
         <div class="calc-results">
           <div class="calc-card"><span>ACOS</span><strong id="resAcos">—</strong><small>Gasto ÷ vendas de ADS</small></div>
           <div class="calc-card"><span>TACOS</span><strong id="resTacos">—</strong><small>Gasto ÷ vendas totais</small></div>
-          <div class="calc-card"><span>MPA • margem pós ADS</span><strong id="resMpa">—</strong><small>(Margem em R$ − gasto ADS) ÷ faturamento • ideal ≥ 15%</small></div>
+          <div class="calc-card"><span>MPA • margem pós ADS</span><strong id="resMpa">—</strong><small>Margem − ACOS • ideal ≥ 15%</small></div>
           <div class="calc-card"><span>CTR</span><strong id="resCtr">—</strong><small>Cliques ÷ impressões</small></div>
-          <div class="calc-card"><span>Conversão ADS</span><strong id="resConversion">—</strong><small>Vendas de ADS ÷ cliques</small></div>
+          <div class="calc-card"><span>Conversão</span><strong id="resConversion">—</strong><small>Vendas ÷ cliques</small></div>
           <div class="calc-card"><span>CPC real</span><strong id="resRealCpc">—</strong><small>Gasto ÷ cliques</small></div>
           <div class="calc-card"><span>ROAS</span><strong id="resRoas">—</strong><small>Vendas ADS ÷ gasto</small></div>
+          <div class="calc-card"><span>Uso do orçamento</span><strong id="resBudgetUse">—</strong><small>Gasto ÷ valor investido</small></div>
         </div>
 
         <div class="legend" aria-label="Faixas de ACOS"><span class="g">ACOS até 19% • verde</span><span class="y">20–24% • amarelo</span><span class="o">25–29% • laranja</span><span class="r">30% ou mais • vermelho</span></div>
@@ -592,7 +594,7 @@
         <div class="section-title"><div><span class="overline">Acompanhamento</span><h2 id="history-title">Tabela de otimização</h2></div><p>Adicione produtos para comparar campanhas e manter um histórico rápido. Os dados ficam salvos neste navegador.</p></div>
         <div class="table-wrap optimizer-responsive">
           <table class="optimizer-table">
-            <thead><tr><th>Produto</th><th>Preço</th><th>CPC 1%</th><th>CPC 0,5%</th><th>Gasto</th><th>Impressões</th><th>Cliques</th><th>Vendas ADS</th><th>CTR</th><th>Conv. ADS</th><th>ACOS</th><th>TACOS</th><th>MPA</th><th>ROAS</th><th>Diagnóstico</th><th></th></tr></thead>
+            <thead><tr><th>Produto</th><th>Preço</th><th>CPC 1%</th><th>CPC 0,5%</th><th>Investido</th><th>Gasto</th><th>Impressões</th><th>Cliques</th><th>Vendas</th><th>CTR</th><th>Conv.</th><th>ACOS</th><th>TACOS</th><th>MPA</th><th>ROAS</th><th>Diagnóstico</th><th></th></tr></thead>
             <tbody id="optimizationRows"></tbody>
           </table>
         </div>
@@ -665,7 +667,7 @@
 
       // Calculadora do Método Seller Pro.
       const $ = id => document.getElementById(id);
-      const inputs = ['optName','optPrice','optMargin','optSpend','optAdRevenue','optTotalRevenue','optImpressions','optClicks','optSales'];
+      const inputs = ['optName','optPrice','optMargin','optInvestment','optSpend','optAdRevenue','optTotalRevenue','optImpressions','optClicks','optSales'];
       const n = id => Math.max(0, Number($(id).value) || 0);
       const money = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
       const pct = v => Number.isFinite(v) ? `${v.toFixed(2).replace('.',',')}%` : '—';
@@ -675,31 +677,30 @@
       const setMetric = (id, value, cls='level-neutral') => { const el=$(id); el.textContent=value; el.className=cls; };
 
       function calculateOptimization() {
-        const price=n('optPrice'), margin=n('optMargin'), spend=n('optSpend'), adRevenue=n('optAdRevenue'), totalRevenue=n('optTotalRevenue'), impressions=n('optImpressions'), clicks=n('optClicks'), sales=n('optSales');
+        const price=n('optPrice'), margin=n('optMargin'), investment=n('optInvestment'), spend=n('optSpend'), adRevenue=n('optAdRevenue'), totalRevenue=n('optTotalRevenue'), impressions=n('optImpressions'), clicks=n('optClicks'), sales=n('optSales');
         const cpc1=clampBid(price*.01), cpc05=clampBid(price*.005);
         $('cpcGeneral').textContent=money(.60); $('cpcIndividual').textContent=money(cpc1); $('cpcKeyword').textContent=money(cpc1); $('cpcProduct').textContent=money(cpc05); $('cpcCategory').textContent=money(cpc05);
         const acos=adRevenue>0 ? spend/adRevenue*100 : NaN;
         const tacos=totalRevenue>0 ? spend/totalRevenue*100 : NaN;
-        const grossMarginValue=totalRevenue>0 ? totalRevenue*(margin/100) : NaN;
-        const postAdsMarginValue=Number.isFinite(grossMarginValue) ? grossMarginValue-spend : NaN;
-        const mpa=totalRevenue>0 && Number.isFinite(postAdsMarginValue) ? postAdsMarginValue/totalRevenue*100 : NaN;
+        const mpa=Number.isFinite(acos) ? margin-acos : NaN;
         const ctr=impressions>0 ? clicks/impressions*100 : NaN;
         const conversion=clicks>0 ? sales/clicks*100 : NaN;
         const realCpc=clicks>0 ? spend/clicks : NaN;
         const roas=spend>0 ? adRevenue/spend : NaN;
+        const budgetUse=investment>0 ? spend/investment*100 : NaN;
         setMetric('resAcos',pct(acos),Number.isFinite(acos)?classForAcos(acos):'level-neutral');
         setMetric('resTacos',pct(tacos));
         setMetric('resMpa',pct(mpa),Number.isFinite(mpa)?classForMpa(mpa):'level-neutral');
-        setMetric('resCtr',pct(ctr)); setMetric('resConversion',pct(conversion)); setMetric('resRealCpc',Number.isFinite(realCpc)?money(realCpc):'—'); setMetric('resRoas',Number.isFinite(roas)?`${roas.toFixed(2).replace('.',',')}x`:'—');
+        setMetric('resCtr',pct(ctr)); setMetric('resConversion',pct(conversion)); setMetric('resRealCpc',Number.isFinite(realCpc)?money(realCpc):'—'); setMetric('resRoas',Number.isFinite(roas)?`${roas.toFixed(2).replace('.',',')}x`:'—'); setMetric('resBudgetUse',pct(budgetUse));
 
         const alerts=[];
         if (impressions>=1000 && Number.isFinite(ctr) && ctr<1) alerts.push({type:'warning',icon:'fa-eye',title:'Muitas impressões e poucos cliques',text:'Provavelmente o anúncio não está chamativo o suficiente. Revise principalmente imagem principal, preço e título.'});
-        if (clicks>=20 && Number.isFinite(conversion) && conversion<5) alerts.push({type:'warning',icon:'fa-cart-shopping',title:'Muitos cliques e poucas vendas de ADS',text:'O cliente entra na página pelo anúncio, mas gera poucas vendas atribuídas ao ADS. Revise título, fotos, preço, descrição e bullet points.'});
+        if (clicks>=20 && Number.isFinite(conversion) && conversion<5) alerts.push({type:'warning',icon:'fa-cart-shopping',title:'Muitos cliques e poucas vendas',text:'O cliente entra na página, mas converte pouco. Revise título, fotos, preço, descrição e bullet points.'});
         if (Number.isFinite(acos) && acos>=30) alerts.push({type:'warning',icon:'fa-triangle-exclamation',title:'ACOS no limite crítico',text:'ACOS de 30% ou mais fica em vermelho. Revise rentabilidade, anúncio e campanha antes de ampliar investimento.'});
         if (Number.isFinite(mpa) && mpa<15) alerts.push({type:'warning',icon:'fa-percent',title:'MPA abaixo do ideal',text:'A Margem Pós ADS está abaixo de 15%. O objetivo do método é manter MPA de 15% ou mais.'});
         if (!alerts.length && (impressions||clicks||sales)) alerts.push({type:'good',icon:'fa-circle-check',title:'Sem alerta crítico pelos gatilhos atuais',text:'Continue acompanhando ACOS, TACOS, MPA, CTR, cliques e vendas antes de alterar o lance.'});
         $('liveDiagnostics').innerHTML=alerts.map(a=>`<div class="live-alert ${a.type}"><i class="fa-solid ${a.icon}"></i><div><strong>${a.title}</strong><span>${a.text}</span></div></div>`).join('');
-        return {name:$('optName').value.trim()||'Produto sem nome',price,margin,spend,adRevenue,totalRevenue,impressions,clicks,sales,cpc1,cpc05,acos,tacos,mpa,ctr,conversion,realCpc,roas,diagnostic:alerts.filter(a=>a.type==='warning').map(a=>a.title).join(' • ')||'Acompanhar'};
+        return {name:$('optName').value.trim()||'Produto sem nome',price,margin,investment,spend,adRevenue,totalRevenue,impressions,clicks,sales,cpc1,cpc05,acos,tacos,mpa,ctr,conversion,realCpc,roas,budgetUse,diagnostic:alerts.filter(a=>a.type==='warning').map(a=>a.title).join(' • ')||'Acompanhar'};
       }
       inputs.forEach(id => $(id).addEventListener('input', calculateOptimization));
       calculateOptimization();
@@ -709,15 +710,15 @@
       try { optimizationData=JSON.parse(localStorage.getItem(storeKey)||'[]'); if(!Array.isArray(optimizationData)) optimizationData=[]; } catch { optimizationData=[]; }
       function renderOptimizationRows(){
         $('optimizationRows').innerHTML=optimizationData.map((r,i)=>`<tr>
-          <td data-label="Produto">${escapeHtml(r.name)}</td><td data-label="Preço">${money(r.price)}</td><td data-label="CPC 1%">${money(r.cpc1)}</td><td data-label="CPC 0,5%">${money(r.cpc05)}</td><td data-label="Gasto">${money(r.spend)}</td><td data-label="Impressões">${r.impressions.toLocaleString('pt-BR')}</td><td data-label="Cliques">${r.clicks.toLocaleString('pt-BR')}</td><td data-label="Vendas ADS">${r.sales.toLocaleString('pt-BR')}</td><td data-label="CTR">${pct(r.ctr)}</td><td data-label="Conversão ADS">${pct(r.conversion)}</td><td data-label="ACOS"><span class="${Number.isFinite(r.acos)?classForAcos(r.acos):''}">${pct(r.acos)}</span></td><td data-label="TACOS">${pct(r.tacos)}</td><td data-label="MPA"><span class="${Number.isFinite(r.mpa)?classForMpa(r.mpa):''}">${pct(r.mpa)}</span></td><td data-label="ROAS">${Number.isFinite(r.roas)?r.roas.toFixed(2).replace('.',',')+'x':'—'}</td><td data-label="Diagnóstico"><span class="mini-status">${escapeHtml(r.diagnostic)}</span></td><td><button class="row-delete" type="button" data-remove="${i}" aria-label="Excluir linha"><i class="fa-solid fa-xmark"></i></button></td>
-        </tr>`).join('') || '<tr><td colspan="16" style="text-align:center;color:var(--muted);padding:22px">Nenhum produto adicionado ainda.</td></tr>';
+          <td data-label="Produto">${escapeHtml(r.name)}</td><td data-label="Preço">${money(r.price)}</td><td data-label="CPC 1%">${money(r.cpc1)}</td><td data-label="CPC 0,5%">${money(r.cpc05)}</td><td data-label="Investido">${money(r.investment)}</td><td data-label="Gasto">${money(r.spend)}</td><td data-label="Impressões">${r.impressions.toLocaleString('pt-BR')}</td><td data-label="Cliques">${r.clicks.toLocaleString('pt-BR')}</td><td data-label="Vendas">${r.sales.toLocaleString('pt-BR')}</td><td data-label="CTR">${pct(r.ctr)}</td><td data-label="Conversão">${pct(r.conversion)}</td><td data-label="ACOS"><span class="${Number.isFinite(r.acos)?classForAcos(r.acos):''}">${pct(r.acos)}</span></td><td data-label="TACOS">${pct(r.tacos)}</td><td data-label="MPA"><span class="${Number.isFinite(r.mpa)?classForMpa(r.mpa):''}">${pct(r.mpa)}</span></td><td data-label="ROAS">${Number.isFinite(r.roas)?r.roas.toFixed(2).replace('.',',')+'x':'—'}</td><td data-label="Diagnóstico"><span class="mini-status">${escapeHtml(r.diagnostic)}</span></td><td><button class="row-delete" type="button" data-remove="${i}" aria-label="Excluir linha"><i class="fa-solid fa-xmark"></i></button></td>
+        </tr>`).join('') || '<tr><td colspan="17" style="text-align:center;color:var(--muted);padding:22px">Nenhum produto adicionado ainda.</td></tr>';
       }
       function escapeHtml(value){ return String(value).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
       function saveOptimizationRows(){ localStorage.setItem(storeKey,JSON.stringify(optimizationData)); renderOptimizationRows(); }
       $('addOptimizationRow').addEventListener('click',()=>{ optimizationData.unshift(calculateOptimization()); saveOptimizationRows(); });
       $('optimizationRows').addEventListener('click',e=>{ const btn=e.target.closest('[data-remove]'); if(!btn)return; optimizationData.splice(Number(btn.dataset.remove),1); saveOptimizationRows(); });
       $('clearOptimizationTable').addEventListener('click',()=>{ if(confirm('Limpar toda a tabela de otimização salva neste navegador?')){ optimizationData=[]; saveOptimizationRows(); } });
-      $('clearOptimizationForm').addEventListener('click',()=>{ $('optName').value=''; ['optPrice','optMargin','optSpend','optAdRevenue','optTotalRevenue','optImpressions','optClicks','optSales'].forEach(id=>$(id).value=''); calculateOptimization(); });
+      $('clearOptimizationForm').addEventListener('click',()=>{ $('optName').value=''; ['optPrice','optMargin','optInvestment','optSpend','optAdRevenue','optTotalRevenue','optImpressions','optClicks','optSales'].forEach(id=>$(id).value=''); calculateOptimization(); });
       renderOptimizationRows();
     })();
   </script>
