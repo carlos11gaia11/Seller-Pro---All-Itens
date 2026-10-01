@@ -241,6 +241,21 @@
     .method-card.wide{grid-column:1/-1}.method-num{width:39px;height:39px;border-radius:11px;display:grid;place-items:center;background:var(--orange-bg);color:var(--orange-2);font-weight:1000}.method-card h3{margin:11px 0 5px;font-size:1rem}.method-card>p{margin:0 0 13px;color:var(--muted);font-size:.78rem}.method-specs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.method-spec{padding:11px;border:1px solid var(--border);background:var(--surface-2);border-radius:10px}.method-spec span{display:block;color:var(--muted);font-size:.66rem}.method-spec strong{display:block;font-size:.84rem;margin-top:2px}
     .method-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:16px}.flow-chip{padding:12px 10px;text-align:center;border:1px solid var(--border);border-radius:11px;background:var(--surface-2);font-size:.71rem;font-weight:850}.flow-chip b{display:block;color:var(--orange-2);font-size:.65rem;margin-bottom:3px}
 
+    .health-section{margin-top:22px}
+    .health-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+    .health-card{border:1px solid var(--border);background:var(--surface);border-radius:17px;padding:19px;position:relative;overflow:hidden}
+    .health-card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--green),#75e6a6)}
+    .health-card .health-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+    .health-card .health-name{font-size:.69rem;letter-spacing:.09em;text-transform:uppercase;font-weight:950;color:var(--muted)}
+    .health-card .health-value{font-size:1.55rem;line-height:1.1;font-weight:1000;letter-spacing:-.045em;color:#55dc91;margin-top:5px}
+    .health-card .health-formula{display:inline-flex;margin-top:7px;padding:4px 7px;border-radius:7px;background:var(--surface-2);border:1px solid var(--border);font-size:.63rem;color:var(--muted);font-weight:850}
+    .health-card p{font-size:.76rem;color:var(--muted);margin:12px 0 0}
+    .health-actions{margin-top:13px;padding-top:12px;border-top:1px solid var(--border)}
+    .health-actions strong{display:block;font-size:.73rem;margin-bottom:6px}
+    .health-actions ul{margin:0;padding-left:17px;color:var(--muted);font-size:.72rem;display:grid;gap:4px}
+    .health-rule{margin-top:12px;padding:14px 15px;border-radius:12px;border:1px solid rgba(255,122,0,.28);background:var(--orange-bg);font-size:.76rem;color:var(--muted)}
+    .health-rule strong{color:var(--text)}
+
     .optimizer-hero{margin-top:18px;padding:27px;border:1px solid rgba(77,145,255,.26);border-radius:22px;background:radial-gradient(circle at 92% 0%,rgba(77,145,255,.12),transparent 31%),var(--surface)}
     .optimizer-hero h2{margin:7px 0 8px;font-size:clamp(1.65rem,3.2vw,2.45rem);letter-spacing:-.045em}.optimizer-hero p{margin:0;color:var(--muted);font-size:.84rem;max-width:860px}
     .form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.field{display:grid;gap:6px}.field label{font-size:.7rem;font-weight:900;color:var(--muted)}.field input{width:100%;min-height:43px;border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:var(--surface-2);color:var(--text);font-weight:800}.field input:focus{border-color:var(--orange);outline:none;box-shadow:0 0 0 3px rgba(255,122,0,.10)}
@@ -252,7 +267,7 @@
     .cpc-strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}.cpc-box{border:1px solid var(--border);border-radius:11px;background:var(--surface-2);padding:11px}.cpc-box span{display:block;color:var(--muted);font-size:.63rem}.cpc-box strong{display:block;color:var(--orange-2);font-size:1rem;margin-top:2px}
     .optimizer-table{width:100%;border-collapse:collapse;font-size:.72rem;min-width:2250px}.optimizer-table th{position:sticky;top:0;background:var(--surface-2);color:var(--muted);text-transform:uppercase;letter-spacing:.025em;font-size:.62rem;padding:10px;border-bottom:1px solid var(--border);white-space:nowrap}.optimizer-table td{padding:10px;border-bottom:1px solid var(--border);white-space:nowrap}.optimizer-table td:first-child{font-weight:900}.optimizer-table tr:last-child td{border-bottom:0}.mini-status{display:inline-block;padding:4px 7px;border-radius:99px;font-size:.61rem;font-weight:950;background:var(--surface-3)}.row-delete{border:0;background:transparent;color:#ff7777;font-size:.8rem;padding:5px}
     .formula-note{margin-top:12px;padding:12px 14px;border-radius:11px;background:var(--surface-2);border:1px solid var(--border);color:var(--muted);font-size:.72rem}.formula-note b{color:var(--text)}
-    @media(max-width:1050px){.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.calc-results{grid-template-columns:repeat(2,minmax(0,1fr))}.method-flow{grid-template-columns:repeat(3,minmax(0,1fr))}.cpc-strip{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:1050px){.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.calc-results{grid-template-columns:repeat(2,minmax(0,1fr))}.method-flow{grid-template-columns:repeat(3,minmax(0,1fr))}.cpc-strip{grid-template-columns:repeat(3,minmax(0,1fr))}.health-grid{grid-template-columns:1fr}}
     @media(max-width:700px){.workspace-tabs{top:72px}.workspace-tab{flex:1 1 calc(50% - 8px);justify-content:center}.method-grid{grid-template-columns:1fr}.method-card.wide{grid-column:auto}.method-specs{grid-template-columns:1fr}.method-flow,.cpc-strip{grid-template-columns:1fr 1fr}.form-grid,.calc-results{grid-template-columns:1fr}.optimizer-hero,.method-hero{padding:20px 16px}.table-wrap.optimizer-responsive{border:0;overflow:visible}.optimizer-table{min-width:0;display:block}.optimizer-table thead{display:none}.optimizer-table tbody,.optimizer-table tr,.optimizer-table td{display:block;width:100%}.optimizer-table tr{border:1px solid var(--border);border-radius:13px;margin-bottom:10px;background:var(--surface);overflow:hidden}.optimizer-table td{display:grid;grid-template-columns:42% 58%;white-space:normal;padding:8px 11px}.optimizer-table td::before{content:attr(data-label);font-size:.62rem;font-weight:900;color:var(--muted);text-transform:uppercase}.optimizer-table td:last-child{display:flex;justify-content:flex-end}.optimizer-table td:last-child::before{display:none}}
 
   .money-field{position:relative}
@@ -552,6 +567,77 @@
         <article class="method-card wide"><div class="method-num">05</div><h3>Campanha de Categorias Relacionadas</h3><p>Usar categorias diretamente relacionadas ao item para ampliar a presença sem abandonar a relevância.</p><div class="method-specs"><div class="method-spec"><span>Categorias</span><strong>Mínimo 2 • sem máximo definido</strong></div><div class="method-spec"><span>Segmentação</span><strong>Exata</strong></div><div class="method-spec"><span>Lance padrão</span><strong>0,5% do preço • R$ 0,40–1,00</strong></div><div class="method-spec"><span>Orçamento / ajuste</span><strong>R$ 10/dia • +20% se necessário</strong></div></div></article>
       </div>
 
+      <section class="health-section" aria-labelledby="health-title">
+        <div class="section-title">
+          <div><span class="overline">Indicadores de saúde</span><h2 id="health-title">ACOS, TACOS e MPA no Método Seller Pro</h2></div>
+          <p>Use os três indicadores em conjunto. ACOS mede a eficiência direta do ADS, TACOS mostra o peso da publicidade no faturamento total e MPA mostra quanto de margem permanece após o impacto do ADS.</p>
+        </div>
+
+        <div class="health-grid">
+          <article class="health-card">
+            <div class="health-top">
+              <div><span class="health-name">ACOS saudável</span><div class="health-value">15% a 20%</div></div>
+              <i class="fa-solid fa-bullseye" aria-hidden="true" style="color:var(--green);font-size:1.25rem"></i>
+            </div>
+            <span class="health-formula">Gasto em ADS ÷ Vendas de ADS</span>
+            <p>Indica quanto foi investido em publicidade para gerar as vendas atribuídas ao ADS. A partir de 30%, entra em zona de atenção no método.</p>
+            <div class="health-actions">
+              <strong>Como otimizar o ACOS</strong>
+              <ul>
+                <li>Identificar campanhas, palavras-chave e segmentações que gastam sem converter.</li>
+                <li>Reduzir CPC/lance onde o custo estiver alto e a conversão baixa.</li>
+                <li>Negativar termos de pesquisa irrelevantes ou com gasto sem venda.</li>
+                <li>Direcionar orçamento para campanhas e segmentações que convertem.</li>
+                <li>Antes de aumentar o lance, revisar preço, imagem, título e conversão do anúncio.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="health-card">
+            <div class="health-top">
+              <div><span class="health-name">TACOS saudável</span><div class="health-value">5% a 10%</div></div>
+              <i class="fa-solid fa-chart-pie" aria-hidden="true" style="color:var(--green);font-size:1.25rem"></i>
+            </div>
+            <span class="health-formula">Gasto em ADS ÷ Faturamento total</span>
+            <p>Mostra quanto o investimento em ADS representa em relação a todas as vendas, incluindo vendas orgânicas. Quanto maior a participação orgânica, menor tende a ser o TACOS.</p>
+            <div class="health-actions">
+              <strong>Como otimizar o TACOS</strong>
+              <ul>
+                <li>Melhorar a conversão do anúncio: imagem principal, título, preço, conteúdo e avaliações.</li>
+                <li>Reduzir desperdícios de ADS que não estejam gerando vendas.</li>
+                <li>Fortalecer vendas orgânicas e o posicionamento do produto.</li>
+                <li>Aumentar faturamento sem elevar o gasto publicitário na mesma proporção.</li>
+                <li>Analisar TACOS junto com ACOS e MPA antes de cortar investimento.</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="health-card">
+            <div class="health-top">
+              <div><span class="health-name">MPA saudável</span><div class="health-value">15% ou mais</div></div>
+              <i class="fa-solid fa-sack-dollar" aria-hidden="true" style="color:var(--green);font-size:1.25rem"></i>
+            </div>
+            <span class="health-formula">Margem antes do ADS − TACOS</span>
+            <p>Representa a margem que permanece depois do peso da publicidade. Abaixo de 15%, o produto entra em ponto de atenção dentro do método.</p>
+            <div class="health-actions">
+              <strong>Como otimizar o MPA</strong>
+              <ul>
+                <li>Reduzir TACOS por meio de campanhas mais eficientes.</li>
+                <li>Melhorar preço e margem quando houver espaço comercial.</li>
+                <li>Negociar custo de produto, frete, embalagem e demais custos operacionais.</li>
+                <li>Evitar manter campanhas que consomem margem sem retorno proporcional.</li>
+                <li>Buscar crescimento de vendas preservando rentabilidade.</li>
+              </ul>
+            </div>
+          </article>
+        </div>
+
+        <div class="health-rule">
+          <strong>Leitura rápida do método:</strong>
+          ACOS responde “meu ADS está eficiente?” • TACOS responde “quanto o ADS pesa na operação inteira?” • MPA responde “quanto de margem ainda sobra depois do ADS?”. Como referência: <strong>ACOS 15–20% • TACOS 5–10% • MPA ≥ 15%</strong>. A ordem de trabalho continua sendo <strong>anúncio → conversão → campanhas → CPC/orçamento</strong>.
+        </div>
+      </section>
+
       <div class="closing"><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><div><strong>Estratégia: aumento e redução conforme os dados.</strong><p>Os lances não devem ser alterados de forma automática ou isolada. Primeiro interprete impressões, cliques, vendas, ACOS, TACOS e MPA; depois ajuste a campanha.</p></div></div>
     </section>
 
@@ -596,8 +682,8 @@
           <div class="calc-card"><span>Conversão ADS</span><strong id="resConversion">—</strong><small>Compras de ADS ÷ cliques</small></div>
           <div class="calc-card"><span>ROAS</span><strong id="resRoas">—</strong><small>Vendas de ADS ÷ gasto em ADS</small></div>
 
-          <div class="calc-card"><span>ACOS</span><strong id="resAcos">—</strong><small>Gasto em ADS ÷ vendas de ADS</small></div>
-          <div class="calc-card"><span>TACOS</span><strong id="resTacos">—</strong><small>Gasto em ADS ÷ faturamento total</small></div>
+          <div class="calc-card"><span>ACOS</span><strong id="resAcos">—</strong><small>Saudável: 15–20% • atenção ≥ 30%</small></div>
+          <div class="calc-card"><span>TACOS</span><strong id="resTacos">—</strong><small>Saudável: 5–10%</small></div>
           <div class="calc-card"><span>MPA • margem pós ADS</span><strong id="resMpa">—</strong><small>Margem − TACOS • ideal ≥ 15%</small></div>
           <div class="calc-card"><span>CPC real</span><strong id="resRealCpc">—</strong><small>Gasto em ADS ÷ cliques</small></div>
 
@@ -608,11 +694,13 @@
           <div class="calc-card"><span>Compras totais</span><strong id="resTotalOrders">—</strong><small>Compras ADS + compras orgânicas</small></div>
         </div>
 
-        <div class="legend" aria-label="Faixas de ACOS">
-          <span class="g">ACOS até 19% • verde</span>
-          <span class="y">20–24% • amarelo</span>
-          <span class="o">25–29% • laranja</span>
-          <span class="r">30% ou mais • vermelho</span>
+        <div class="legend" aria-label="Faixas de saúde dos indicadores">
+          <span class="g">ACOS saudável • 15–20%</span>
+          <span class="r">ACOS atenção • ≥ 30%</span>
+          <span class="g">TACOS saudável • 5–10%</span>
+          <span class="o">TACOS atenção • &gt; 10%</span>
+          <span class="g">MPA saudável • ≥ 15%</span>
+          <span class="r">MPA atenção • &lt; 15%</span>
         </div>
 
         <div id="liveDiagnostics" class="diagnostic-live" aria-live="polite"></div>
@@ -734,6 +822,7 @@
       const num = (v, decimals=0) => Number.isFinite(v) ? v.toLocaleString('pt-BR',{minimumFractionDigits:decimals,maximumFractionDigits:decimals}) : '—';
       const clampBid = v => Math.min(1, Math.max(.40, v));
       const classForAcos = value => value >= 30 ? 'level-red' : value >= 25 ? 'level-orange' : value >= 20 ? 'level-yellow' : 'level-green';
+      const classForTacos = value => value <= 10 ? 'level-green' : value <= 15 ? 'level-yellow' : value <= 20 ? 'level-orange' : 'level-red';
       const classForMpa = value => value >= 15 ? 'level-green' : value >= 10 ? 'level-yellow' : value >= 5 ? 'level-orange' : 'level-red';
       const setMetric = (id, value, cls='level-neutral') => { const el=$(id); el.textContent=value; el.className=cls; };
 
@@ -776,7 +865,7 @@
         setMetric('resConversion', pct(conversion));
         setMetric('resRoas', Number.isFinite(roas) ? `${roas.toFixed(2).replace('.',',')}x` : '—');
         setMetric('resAcos', pct(acos), Number.isFinite(acos) ? classForAcos(acos) : 'level-neutral');
-        setMetric('resTacos', pct(tacos));
+        setMetric('resTacos', pct(tacos), Number.isFinite(tacos) ? classForTacos(tacos) : 'level-neutral');
         setMetric('resMpa', pct(mpa), Number.isFinite(mpa) ? classForMpa(mpa) : 'level-neutral');
         setMetric('resRealCpc', money(realCpc));
         setMetric('resGrossProfit', money(grossProfit));
@@ -849,7 +938,7 @@
           <td data-label="Conv. ADS">${pct(r.conversion)}</td>
           <td data-label="ROAS">${Number.isFinite(r.roas) ? r.roas.toFixed(2).replace('.',',')+'x' : '—'}</td>
           <td data-label="ACOS"><span class="${Number.isFinite(r.acos)?classForAcos(r.acos):''}">${pct(r.acos)}</span></td>
-          <td data-label="TACOS">${pct(r.tacos)}</td>
+          <td data-label="TACOS"><span class="${Number.isFinite(r.tacos)?classForTacos(r.tacos):''}">${pct(r.tacos)}</span></td>
           <td data-label="MPA"><span class="${Number.isFinite(r.mpa)?classForMpa(r.mpa):''}">${pct(r.mpa)}</span></td>
           <td data-label="Lucro Bruto">${money(r.grossProfit)}</td>
           <td data-label="Lucro Líquido"><span class="${Number(r.netProfit)>=0?'level-green':'level-red'}">${money(r.netProfit)}</span></td>
