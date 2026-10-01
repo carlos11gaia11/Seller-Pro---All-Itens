@@ -2307,9 +2307,15 @@
         <div class="overview-value" id="totalLojasPendentes">0</div>
       </div>
 
+      <div class="overview-card is-clickable" data-status-target="totalLojaEntregue" title="Ver lojas entregues">
+        <div class="overview-icon">✅</div>
+        <div class="overview-label">Loja entregue</div>
+        <div class="overview-value" id="totalLojaEntregue">0</div>
+      </div>
+
       <div class="overview-card is-clickable" data-status-target="totalLojaAguardandoVenda" title="Ver lojas aguardando venda">
-        <div class="overview-icon">📦</div>
-        <div class="overview-label">Loja aguardando venda</div>
+        <div class="overview-icon">🛍️</div>
+        <div class="overview-label">Aguardando venda</div>
         <div class="overview-value" id="totalLojaAguardandoVenda">0</div>
       </div>
 
@@ -2317,7 +2323,7 @@
         <div class="overview-icon">🔴</div>
         <div class="overview-label">Aguardando venda há 15+ dias</div>
         <div class="overview-value" id="totalAguardandoVendaMais15">0</div>
-        <div class="overview-note">Lojas com 15 dias ou mais desde a entrega</div>
+        <div class="overview-note">Lojas há 15 dias ou mais na etapa Aguardando Venda</div>
       </div>
 
       <div class="overview-card is-clickable" data-status-target="totalChamadosEspeciais" title="Ver chamados especiais">
@@ -2576,7 +2582,7 @@
               <th>Loja</th>
               <th>Suporte</th>
               <th>Situação</th>
-              <th>Dias aguardando venda</th>
+              <th>Dias em Aguardando Venda</th>
               <th>Etapa</th>
               <th>Mês</th>
               <th>Contato</th>
@@ -2777,8 +2783,12 @@
 
     const OVERVIEW_STAGE_METRICS = [
       {
+        elementId: "totalLojaEntregue",
+        aliases: ["loja entregue", "lojas entregues", "entregue", "entregues"]
+      },
+      {
         elementId: "totalLojaAguardandoVenda",
-        aliases: ["loja aguardando venda", "lojas aguardando venda", "aguardando venda", "loja entregue", "lojas entregues", "entregue", "entregues"]
+        aliases: ["aguardando venda", "loja aguardando venda", "lojas aguardando venda"]
       },
       {
         elementId: "totalChamadosEspeciais",
@@ -3260,11 +3270,16 @@
     }
 
     function formatStatusForDisplay(statusName) {
-      if (isDeliveredStatus(statusName)) {
-        return "Loja aguardando venda";
-      }
-
       return statusName || "Sem situação";
+    }
+
+    function isAwaitingSaleStatus(statusName) {
+      const normalizedStatus = normalizeKey(statusName);
+      return [
+        "aguardando venda",
+        "loja aguardando venda",
+        "lojas aguardando venda"
+      ].includes(normalizedStatus);
     }
 
     function readSellerContFlags() {
@@ -3924,6 +3939,79 @@
       return timestamps.length ? Math.max(...timestamps) : 0;
     }
 
+    function getAwaitingSaleMovementTimestamp(task) {
+      const timestamps = [];
+
+      getMovementHistoryItems(task).forEach((movement) => {
+        if (!movement || typeof movement !== "object") return;
+
+        const destinationValue = getPossibleValue(movement, [
+          "to_status", "toStatus", "new_status", "newStatus",
+          "to_column_name", "toColumnName", "column_name", "columnName",
+          "destination", "destino", "to", "status"
+        ]);
+
+        const destinationText = stringifyHistoryValue(destinationValue);
+        const fullMovementText = stringifyHistoryValue(movement);
+        const movedToAwaitingSale = destinationText
+          ? isAwaitingSaleStatus(destinationText)
+          : isAwaitingSaleStatus(fullMovementText);
+
+        if (!movedToAwaitingSale) return;
+
+        const dateValue = getPossibleValue(movement, [
+          "created_at", "createdAt", "occurred_at", "occurredAt",
+          "moved_at", "movedAt", "changed_at", "changedAt",
+          "timestamp", "date", "data"
+        ]);
+
+        const date = parseDateSafely(dateValue);
+        if (date) timestamps.push(date.getTime());
+      });
+
+      return timestamps.length ? Math.max(...timestamps) : 0;
+    }
+
+    function getAwaitingSaleStartInfo(task) {
+      // 1. Histórico do Ares: melhor fonte para saber quando o card entrou na coluna.
+      const movementTimestamp = getAwaitingSaleMovementTimestamp(task);
+      if (movementTimestamp) {
+        return { timestamp: movementTimestamp, source: "histórico do Ares", estimated: false };
+      }
+
+      // 2. Aceita campos dedicados caso sejam adicionados à base futuramente.
+      const directValue = getPossibleValue(task, [
+        "awaiting_sale_at", "awaitingSaleAt", "aguardando_venda_em",
+        "data_aguardando_venda", "loja_aguardando_venda_em"
+      ]);
+      const directDate = parseDateSafely(directValue);
+      if (directDate) {
+        return { timestamp: directDate.getTime(), source: "data de Aguardando Venda", estimated: false };
+      }
+
+      // 3. Sem histórico específico, a data de entrega é somente uma aproximação.
+      const deliveryValue = getPossibleValue(task, [
+        "delivery_completed_at", "deliveryCompletedAt", "delivered_at",
+        "delivery_date", "data_loja_entregue", "data_entrega", "entregue_em"
+      ]);
+      const deliveryDate = parseDateSafely(deliveryValue);
+      if (deliveryDate) {
+        return { timestamp: deliveryDate.getTime(), source: "data de entrega (estimativa)", estimated: true };
+      }
+
+      const archiveDeliveryDate = parseDateSafely(task.archive_delivery_completed_at);
+      if (archiveDeliveryDate) {
+        return { timestamp: archiveDeliveryDate.getTime(), source: "arquivo de entregas (estimativa)", estimated: true };
+      }
+
+      const createdDate = parseDateSafely(getPossibleValue(task, ["created_at", "data_criacao", "createdAt", "inserted_at"]));
+      if (createdDate) {
+        return { timestamp: createdDate.getTime(), source: "criação do card (estimativa)", estimated: true };
+      }
+
+      return { timestamp: 0, source: "sem data", estimated: false };
+    }
+
     function getStatusStartInfo(task) {
       // 1. Data oficial gravada diretamente na tarefa.
       const taskOfficialValue = getPossibleValue(task, [
@@ -4052,7 +4140,7 @@
     }
 
     function formatWaitingSaleDays(row) {
-      if (!row.entregue) return "-";
+      if (!row.aguardandoVenda) return "-";
       if (row.diasAguardandoVenda === null || row.diasAguardandoVenda === undefined) return "Sem data";
 
       const dias = row.diasAguardandoVenda;
@@ -4071,17 +4159,18 @@
         const vendaFinalizada = isSaleFinalizedStatus(situacaoOriginal);
         const cancelada = isCancelledStatus(situacaoOriginal);
         const entregue = isDeliveredStatus(situacaoOriginal);
+        const aguardandoVenda = isAwaitingSaleStatus(situacaoOriginal);
         const finalizada = isFinalizedStatus(situacaoOriginal);
         const emAndamento = isInProgressStatus(situacaoOriginal);
         const situacao = formatStatusForDisplay(situacaoOriginal);
         const sellerCont = isSellerContTask(task);
-        const aguardandoVendaInfo = entregue
-          ? getStatusStartInfo(task)
+        const aguardandoVendaInfo = aguardandoVenda
+          ? getAwaitingSaleStartInfo(task)
           : { timestamp: 0, source: "sem data", estimated: false };
         const aguardandoVendaDesdeTs = aguardandoVendaInfo.timestamp;
-        const diasAguardandoVenda = entregue ? getDaysSinceTimestamp(aguardandoVendaDesdeTs) : null;
+        const diasAguardandoVenda = aguardandoVenda ? getDaysSinceTimestamp(aguardandoVendaDesdeTs) : null;
         const aguardandoVendaMais15 =
-          entregue &&
+          aguardandoVenda &&
           diasAguardandoVenda !== null &&
           diasAguardandoVenda >= AGUARDANDO_VENDA_ALERT_DAYS;
 
@@ -4101,6 +4190,7 @@
           vendaFinalizada,
           cancelada,
           entregue,
+          aguardandoVenda,
           aguardandoVendaDesdeTs,
           aguardandoVendaDesde: formatDateFromTimestamp(aguardandoVendaDesdeTs),
           aguardandoVendaFonte: aguardandoVendaInfo.source,
@@ -4564,10 +4654,10 @@ return matchMonth && matchSupport && matchStatus && matchSearch;
           const color = getStatusColor(row.situacao);
           const waitingSaleClass = row.aguardandoVendaMais15 ? "waiting-sale-danger" : "";
           const waitingSaleLabel = formatWaitingSaleDays(row);
-          const waitingSaleSince = row.entregue && row.aguardandoVendaDesde !== "-"
+          const waitingSaleSince = row.aguardandoVenda && row.aguardandoVendaDesde !== "-"
             ? `${row.aguardandoVendaEstimado ? "Estimado desde" : "Desde"} ${row.aguardandoVendaDesde}`
             : "";
-          const waitingSaleSource = row.entregue && row.aguardandoVendaFonte && row.aguardandoVendaFonte !== "sem data"
+          const waitingSaleSource = row.aguardandoVenda && row.aguardandoVendaFonte && row.aguardandoVendaFonte !== "sem data"
             ? `Base: ${row.aguardandoVendaFonte}`
             : "";
 
