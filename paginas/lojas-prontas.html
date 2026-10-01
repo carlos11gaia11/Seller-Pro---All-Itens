@@ -2338,6 +2338,12 @@
         <div class="overview-value" id="totalEnvioFba">0</div>
       </div>
 
+      <div class="overview-card is-clickable" data-status-target="totalTransporteFba" title="Ver transporte FBA">
+        <div class="overview-icon">🚚</div>
+        <div class="overview-label">Transporte FBA</div>
+        <div class="overview-value" id="totalTransporteFba">0</div>
+      </div>
+
       <div class="overview-card is-clickable" data-status-target="totalCriacaoConta" title="Ver criação de conta">
         <div class="overview-icon">👤</div>
         <div class="overview-label">Criação de conta</div>
@@ -2785,6 +2791,17 @@
       {
         elementId: "totalEnvioFba",
         aliases: ["envio ao fba", "envio fba"]
+      },
+      {
+        elementId: "totalTransporteFba",
+        aliases: [
+          "transporte fba",
+          "transporte ao fba",
+          "transporte para fba",
+          "em transporte fba",
+          "em transporte ao fba",
+          "em transporte para fba"
+        ]
       },
       {
         elementId: "totalCriacaoConta",
