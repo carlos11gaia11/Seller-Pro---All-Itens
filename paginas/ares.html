@@ -2957,6 +2957,7 @@ body[data-theme="light"] {
         <div class="field full">
           <label>Data que chegou no FBA</label>
           <input id="fbaArrivalDate" type="date" required />
+          <small style="color:var(--muted);line-height:1.4;">Preencha manualmente a data real de chegada no FBA. O sistema não preenche esta data automaticamente.</small>
           <small style="color:var(--muted);line-height:1.4;">Essa data ficará registrada no card e será usada como início do período em Aguardando venda.</small>
         </div>
       </div>
@@ -5388,7 +5389,7 @@ body[data-theme="light"] {
       pendingFbaArrivalTaskId = taskId;
       pendingFbaArrivalStatus = status;
       const input = document.getElementById('fbaArrivalDate');
-      if (input) { input.value = task.fbaArrivalDate || todayLocalISO(); input.max = todayLocalISO(); }
+      if (input) { input.value = task.fbaArrivalDate || ''; input.max = todayLocalISO(); }
       const button = document.getElementById('confirmFbaArrivalButton');
       if (button) { button.disabled = false; button.textContent = 'Confirmar chegada no FBA'; }
       playSound('modal');
