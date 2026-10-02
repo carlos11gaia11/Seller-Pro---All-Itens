@@ -1402,56 +1402,15 @@ body[data-theme="light"] {
     }
 
     .fba-arrival-badge {
-      margin: 8px 0 6px;
-      padding: 10px 12px;
-      border-radius: 15px;
-      border: 1px solid rgba(56, 189, 248, .38);
-      background: linear-gradient(135deg, rgba(14, 165, 233, .18), rgba(37, 99, 235, .10));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 10px 26px rgba(14,165,233,.10);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      position: relative;
-      z-index: 1;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      margin:6px 0 9px;padding:10px 12px;border-radius:15px;
+      border:1px solid rgba(56,189,248,.40);
+      background:linear-gradient(135deg,rgba(14,165,233,.22),rgba(37,99,235,.12));
+      position:relative;z-index:1;
     }
-
-    .fba-arrival-badge small {
-      display: block;
-      color: #7dd3fc;
-      font-size: 9px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      margin-bottom: 3px;
-    }
-
-    .fba-arrival-badge strong {
-      color: var(--text);
-      font-size: 13px;
-      line-height: 1.2;
-    }
-
-    .fba-arrival-badge .fba-icon {
-      width: 30px;
-      height: 30px;
-      min-width: 30px;
-      border-radius: 10px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, #7dd3fc, #2563eb);
-      color: #071426;
-      font-weight: 950;
-    }
-
-    body[data-theme="light"] .fba-arrival-badge {
-      background: linear-gradient(135deg, rgba(224,242,254,.96), rgba(219,234,254,.92));
-      border-color: rgba(14,165,233,.24);
-    }
-
-    body[data-theme="light"] .fba-arrival-badge small {
-      color: #0369a1;
-    }
+    .fba-arrival-badge small {display:block;color:#7dd3fc;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
+    .fba-arrival-badge strong {color:var(--text);font-size:14px;}
+    .fba-arrival-badge span {padding:5px 8px;border-radius:10px;background:rgba(56,189,248,.15);color:#bae6fd;font-size:10px;font-weight:950;}
 
     .modal-backdrop {
       position: fixed;
@@ -2939,17 +2898,17 @@ body[data-theme="light"] {
 
         <div class="field seller-cont-only-field">
           <label>1° Data do 1° envio</label>
-          <input id="deliveryShipmentDate" type="date" />
+          <input id="deliveryShipmentDate" type="date" required />
         </div>
 
         <div class="field seller-cont-only-field">
           <label>2° Data da coleta</label>
-          <input id="deliveryPickupDate" type="date" />
+          <input id="deliveryPickupDate" type="date" required />
         </div>
 
         <div class="field seller-cont-only-field">
           <label>3° Data que conf faturador</label>
-          <input id="deliveryBillingDate" type="date" />
+          <input id="deliveryBillingDate" type="date" required />
         </div>
 
         <div class="field">
@@ -2959,22 +2918,22 @@ body[data-theme="light"] {
 
         <div class="field full seller-cont-only-field">
           <label>E-mail de criação de conta</label>
-          <input id="deliveryAccountEmail" type="email" placeholder="email@exemplo.com" />
+          <input id="deliveryAccountEmail" type="email" placeholder="email@exemplo.com" required />
         </div>
 
         <div class="field seller-cont-only-field">
           <label>Telefone</label>
-          <input id="deliveryPhone" type="tel" placeholder="Ex.: (11) 99999-9999" />
+          <input id="deliveryPhone" type="tel" placeholder="Ex.: (11) 99999-9999" required />
         </div>
 
         <div class="field seller-cont-only-field">
           <label>Status Seller Cont</label>
-          <input id="deliverySellerContStatus" placeholder="Ex.: Loja entregue" />
+          <input id="deliverySellerContStatus" placeholder="Ex.: Loja entregue" required />
         </div>
 
         <div class="field full seller-cont-only-field">
           <label>Produto que enviou</label>
-          <input id="deliveryProductSent" placeholder="Ex.: Kit banheiro, fruteira, gancho adesivo..." />
+          <input id="deliveryProductSent" placeholder="Ex.: Kit banheiro, fruteira, gancho adesivo..." required />
         </div>
       </div>
 
@@ -2991,21 +2950,16 @@ body[data-theme="light"] {
         <h3>Registrar chegada no FBA</h3>
         <button class="close" onclick="closeFbaArrivalModal()">×</button>
       </div>
-
       <div class="form-grid">
         <div class="field full">
-          <div class="required-hint">
-            Para mover o card para <strong>Aguardando venda</strong>, é obrigatório informar a data em que o produto chegou ao FBA da Amazon.
-          </div>
+          <div class="required-hint">Para mover o card para <strong>Aguardando venda</strong>, é obrigatório informar a data em que o produto chegou ao FBA da Amazon.</div>
         </div>
-
         <div class="field full">
           <label>Data que chegou no FBA</label>
           <input id="fbaArrivalDate" type="date" required />
-          <small style="color:var(--muted);line-height:1.4;">Esta data ficará registrada no card e será a referência do período em Aguardando venda.</small>
+          <small style="color:var(--muted);line-height:1.4;">Essa data ficará registrada no card e será usada como início do período em Aguardando venda.</small>
         </div>
       </div>
-
       <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
         <button class="btn secondary" onclick="closeFbaArrivalModal()">Cancelar</button>
         <button class="btn" id="confirmFbaArrivalButton" onclick="confirmFbaArrivalMove()">Confirmar chegada no FBA</button>
@@ -3193,6 +3147,7 @@ body[data-theme="light"] {
       'Configuração do faturador',
       'Criação do anúncio',
       'Envio ao FBA',
+      'Aguardando venda',
       'Call de onboard',
       'Loja entregue',
       'Venda finalizada',
@@ -3270,6 +3225,18 @@ body[data-theme="light"] {
         .trim()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');
+    }
+
+    function normalizeStageName(value) {
+      return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim()
+        .toLowerCase();
+    }
+
+    function isAwaitingSaleStatus(value) {
+      return normalizeStageName(value) === 'aguardando venda';
     }
 
     function escapeHTML(value) {
@@ -4036,8 +4003,6 @@ body[data-theme="light"] {
       if (!cleanText) return cleanText;
 
       const currentYear = new Date().getFullYear();
-
-      // Ex.: 10/09 - Texto -> 10/09/2026 - Texto
       const shortDateAtStart = cleanText.match(/^(\d{1,2})[\/-](\d{1,2})(?![\/-]\d)/);
       if (shortDateAtStart) {
         const day = String(shortDateAtStart[1]).padStart(2, '0');
@@ -4046,9 +4011,7 @@ body[data-theme="light"] {
         return `${day}/${month}/${currentYear}${rest}`;
       }
 
-      // Mantém datas completas já digitadas.
       if (parseDateFromUpdateLine(cleanText)) return cleanText;
-
       const todayBR = formatDateBR(todayLocalISO());
       return `${todayBR} - ${cleanText}`;
     }
@@ -4430,7 +4393,7 @@ body[data-theme="light"] {
         <div class="seller-cont-preview">
           <div class="seller-cont-preview-header">
             <span>Contabilidade Seller Cont</span>
-            <strong>${escapeHTML(task.deliverySellerContStatus || 'Não informado')}</strong>
+            <strong>${escapeHTML(task.deliverySellerContStatus || task.status || 'Não informado')}</strong>
           </div>
 
           <div class="seller-cont-date-grid">
@@ -4452,7 +4415,7 @@ body[data-theme="light"] {
               <small>Contabilidade</small>
               <strong>Seller Cont</strong>
             </div>
-            <span class="seller-cont-detail-status">${escapeHTML(task.deliverySellerContStatus || 'Não informado')}</span>
+            <span class="seller-cont-detail-status">${escapeHTML(task.deliverySellerContStatus || task.status || 'Não informado')}</span>
           </div>
 
           <div class="seller-cont-detail-grid">
@@ -4496,18 +4459,13 @@ body[data-theme="light"] {
     }
 
     function fbaArrivalBadgeTemplate(task) {
-      if (task?.status !== 'Aguardando venda') return '';
-
+      if (!isAwaitingSaleStatus(task?.status)) return '';
       const arrivalDate = task?.fbaArrivalDate || findStatusDateInUpdates(task?.updates, 'Chegada no FBA');
       if (!arrivalDate) return '';
-
       return `
         <div class="fba-arrival-badge">
-          <div>
-            <small>Chegada no FBA</small>
-            <strong>${escapeHTML(formatDateBR(arrivalDate))}</strong>
-          </div>
-          <span class="fba-icon">FBA</span>
+          <div><small>Chegada no FBA</small><strong>${escapeHTML(formatDateBR(arrivalDate))}</strong></div>
+          <span>FBA</span>
         </div>
       `;
     }
@@ -5068,16 +5026,6 @@ body[data-theme="light"] {
       // Impede também a entrega pelo editor de cards sem um MCID preenchido.
       const destinationStatus = document.getElementById('taskStatus').value;
       const destinationMcid = document.getElementById('taskMcid').value.trim();
-      const editingTask = currentEditingTaskId ? state.tasks.find(t => t.id === currentEditingTaskId) : null;
-      if (
-        destinationStatus === 'Aguardando venda' &&
-        editingTask?.status !== 'Aguardando venda' &&
-        !editingTask?.fbaArrivalDate
-      ) {
-        alert('Para mover a loja para Aguardando venda, arraste o card até essa coluna e confirme a data de chegada no FBA.');
-        return;
-      }
-
       if (['Loja entregue', 'Venda finalizada'].includes(destinationStatus) && !destinationMcid) {
         alert('O MCID é obrigatório para entregar ou finalizar uma loja. Preencha o MCID antes de continuar.');
         document.getElementById('taskMcid').focus();
@@ -5085,6 +5033,12 @@ body[data-theme="light"] {
       }
 
       const updatesText = document.getElementById('taskUpdates').value.trim();
+
+      const editingTask = currentEditingTaskId ? state.tasks.find(t => String(t.id) === String(currentEditingTaskId)) : null;
+      if (isAwaitingSaleStatus(destinationStatus) && !isAwaitingSaleStatus(editingTask?.status)) {
+        alert('Para colocar a loja em Aguardando venda, arraste o card para essa coluna e confirme a data de chegada no FBA.');
+        return;
+      }
 
       const updates = updatesText
         ? updatesText.split('\n').map(line => ensureUpdateHasDate(line)).filter(Boolean)
@@ -5203,7 +5157,6 @@ body[data-theme="light"] {
           spnConfirmed: Boolean(task.spnConfirmed),
           deliveryCompletedAt: statusDatePatch.deliveredAt || task.deliveryCompletedAt || '',
           saleFinalizedAt: statusDatePatch.finalizedAt || task.saleFinalizedAt || '',
-          fbaArrivalDate: task.fbaArrivalDate || findStatusDateInUpdates(updates, 'Chegada no FBA') || '',
           description: taskData.description,
           updates,
           attachments: uploadedAttachments
@@ -5245,7 +5198,6 @@ body[data-theme="light"] {
           spnConfirmed: false,
           deliveryCompletedAt: statusDatePatch.deliveredAt || '',
           saleFinalizedAt: statusDatePatch.finalizedAt || '',
-          fbaArrivalDate: findStatusDateInUpdates(updates, 'Chegada no FBA') || '',
           description: taskData.description,
           updates,
           attachments: uploadedAttachments
@@ -5356,11 +5308,11 @@ body[data-theme="light"] {
       event.currentTarget.classList.remove('drag-over');
 
       const taskId = event.dataTransfer.getData('taskId');
-      const task = state.tasks.find(t => t.id === taskId);
+      const task = state.tasks.find(t => String(t.id) === String(taskId));
 
-      if (!task || task.status === status) return;
+      if (!task || normalizeStageName(task.status) === normalizeStageName(status)) return;
 
-      if (status === 'Aguardando venda') {
+      if (isAwaitingSaleStatus(status)) {
         openFbaArrivalModal(taskId, status);
         return;
       }
@@ -5431,106 +5383,61 @@ body[data-theme="light"] {
     }
 
     function openFbaArrivalModal(taskId, status) {
-      const task = state.tasks.find(t => t.id === taskId);
+      const task = state.tasks.find(t => String(t.id) === String(taskId));
       if (!task) return;
-
       pendingFbaArrivalTaskId = taskId;
       pendingFbaArrivalStatus = status;
-
       const input = document.getElementById('fbaArrivalDate');
-      if (input) {
-        // Igual ao fluxo de Loja entregue: sugere hoje, mas a confirmação é obrigatória.
-        input.value = task.fbaArrivalDate || todayLocalISO();
-        input.max = todayLocalISO();
-      }
-
+      if (input) { input.value = task.fbaArrivalDate || todayLocalISO(); input.max = todayLocalISO(); }
       const button = document.getElementById('confirmFbaArrivalButton');
-      if (button) {
-        button.disabled = false;
-        button.textContent = 'Confirmar chegada no FBA';
-      }
-
+      if (button) { button.disabled = false; button.textContent = 'Confirmar chegada no FBA'; }
       playSound('modal');
-      document.getElementById('fbaArrivalModal').classList.add('show');
+      document.getElementById('fbaArrivalModal')?.classList.add('show');
     }
 
     function closeFbaArrivalModal() {
-      document.getElementById('fbaArrivalModal').classList.remove('show');
+      document.getElementById('fbaArrivalModal')?.classList.remove('show');
       pendingFbaArrivalTaskId = null;
       pendingFbaArrivalStatus = null;
-
       const input = document.getElementById('fbaArrivalDate');
       if (input) input.value = '';
     }
 
     async function confirmFbaArrivalMove() {
-      const task = state.tasks.find(t => t.id === pendingFbaArrivalTaskId);
+      const task = state.tasks.find(t => String(t.id) === String(pendingFbaArrivalTaskId));
       if (!task || !pendingFbaArrivalStatus) return;
-
-      const arrivalDate = document.getElementById('fbaArrivalDate')?.value || '';
-      const today = todayLocalISO();
-
+      const input = document.getElementById('fbaArrivalDate');
+      const arrivalDate = input?.value || '';
       if (!arrivalDate) {
-        alert('Informe a data em que o produto chegou no FBA para mover a loja para Aguardando venda.');
-        document.getElementById('fbaArrivalDate')?.focus();
+        alert('Informe a data em que o produto chegou no FBA. Essa data é obrigatória para entrar em Aguardando venda.');
+        input?.focus();
         return;
       }
-
-      if (arrivalDate > today) {
+      if (arrivalDate > todayLocalISO()) {
         alert('A data de chegada no FBA não pode ser futura.');
-        document.getElementById('fbaArrivalDate')?.focus();
+        input?.focus();
         return;
       }
-
-      const previousStatus = task.status;
-      const previousArrivalDate = task.fbaArrivalDate || '';
+      const targetStatus = pendingFbaArrivalStatus;
       const previousUpdates = Array.isArray(task.updates) ? [...task.updates] : [];
-
+      const updatesWithoutOldFba = previousUpdates.filter(update => !String(update || '').toLowerCase().includes('chegada no fba'));
+      const nextUpdates = appendStatusUpdate({ ...task, updates: updatesWithoutOldFba }, 'Chegada no FBA', arrivalDate);
       const button = document.getElementById('confirmFbaArrivalButton');
-      if (button) {
-        button.disabled = true;
-        button.textContent = 'Salvando...';
-      }
-
-      // Só altera visualmente após a data obrigatória existir.
-      task.status = pendingFbaArrivalStatus;
-      task.fbaArrivalDate = arrivalDate;
-
-      // Se já havia uma data antiga de Chegada no FBA, substitui pela nova.
-      const withoutOldFbaDate = (task.updates || []).filter(update =>
-        !String(update || '').toLowerCase().includes('chegada no fba')
-      );
-      task.updates = appendStatusUpdate({ ...task, updates: withoutOldFbaDate }, 'Chegada no FBA', arrivalDate);
-
-      renderBoard();
-
-      const { error } = await supabaseClient
-        .from('sp_tasks')
-        .update({
-          status: pendingFbaArrivalStatus,
-          updates: task.updates
-        })
-        .eq('id', task.id);
-
+      if (button) { button.disabled = true; button.textContent = 'Salvando...'; }
+      const { error } = await supabaseClient.from('sp_tasks').update({ status: targetStatus, updates: nextUpdates }).eq('id', task.id);
       if (error) {
-        task.status = previousStatus;
-        task.fbaArrivalDate = previousArrivalDate;
-        task.updates = previousUpdates;
-        renderBoard();
-
-        if (button) {
-          button.disabled = false;
-          button.textContent = 'Confirmar chegada no FBA';
-        }
-
-        showToast('Não consegui mover a loja para Aguardando venda.');
+        if (button) { button.disabled = false; button.textContent = 'Confirmar chegada no FBA'; }
+        showToast('Não consegui salvar a chegada no FBA. O card não foi movido.');
         console.error(error);
         return;
       }
-
+      task.status = targetStatus;
+      task.fbaArrivalDate = arrivalDate;
+      task.updates = nextUpdates;
       closeFbaArrivalModal();
       playSound('drop');
-      showToast(`Aguardando venda • chegou no FBA em ${formatDateBR(arrivalDate)}`);
+      renderBoard();
+      showToast(`Card movido para Aguardando venda • FBA em ${formatDateBR(arrivalDate)}`);
     }
 
     function openOnboardModal(taskId, status) {
@@ -5966,9 +5873,7 @@ body[data-theme="light"] {
 
     function syncDeliverySellerContFields() {
       const checked = Boolean(document.getElementById('deliverySellerContFlag')?.checked);
-
       document.querySelectorAll('.seller-cont-only-field').forEach(field => {
-        // Os campos ficam disponíveis para qualquer loja.
         field.classList.remove('is-hidden');
         field.style.display = '';
         field.querySelectorAll('input, select, textarea').forEach(input => {
@@ -6098,7 +6003,7 @@ body[data-theme="light"] {
         phone: document.getElementById('deliveryPhone').value.trim(),
         product_sent: document.getElementById('deliveryProductSent').value.trim(),
         seller_cont_status: document.getElementById('deliverySellerContStatus').value.trim(),
-        is_seller_cont: Boolean(document.getElementById('deliverySellerContFlag')?.checked),
+        is_seller_cont: document.getElementById('deliverySellerContFlag')?.checked !== false,
         spn_evaluation: document.getElementById('deliverySpnEvaluation').value
       };
 
@@ -6426,13 +6331,6 @@ body[data-theme="light"] {
           ${sellerContDetailTemplate(task)}
           ${deliveryControlDetailTemplate(task)}
 
-          ${task.status === 'Aguardando venda' ? `
-            <div class="detail-box">
-              <small>Chegada no FBA</small>
-              <strong>${escapeHTML(formatDateBR(task.fbaArrivalDate || findStatusDateInUpdates(task.updates, 'Chegada no FBA')))}</strong>
-            </div>
-          ` : ''}
-
           <div class="detail-box">
             <small>E-mail criação de conta</small>
             <strong>${escapeHTML(task.accountCreationEmail || 'Não informado')}</strong>
@@ -6450,7 +6348,7 @@ body[data-theme="light"] {
 
           <div class="detail-box">
             <small>Status Seller Cont</small>
-            <strong>${escapeHTML(task.deliverySellerContStatus || 'Não informado')}</strong>
+            <strong>${escapeHTML(task.deliverySellerContStatus || task.status || 'Não informado')}</strong>
           </div>
 
           <div class="detail-box">
