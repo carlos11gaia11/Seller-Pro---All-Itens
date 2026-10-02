@@ -2993,11 +2993,12 @@ body[data-theme="light"] {
       </div>
       <div class="form-grid">
         <div class="field full">
-          <div class="required-hint">Para concluir a movimentação para <strong>Aguardando venda</strong>, informe a data real em que o estoque chegou ao FBA. Sem esta data, o card não será movido.</div>
+          <div class="required-hint"><strong>Campo obrigatório.</strong> Para mover o card para <strong>Aguardando venda</strong>, confirme a data em que o produto chegou ao FBA da Amazon. Essa data ficará registrada como o início de “Aguardando venda” e será usada na contagem de dias.</div>
         </div>
         <div class="field full">
-          <label>Data que chegou no FBA</label>
+          <label>Data que chegou no FBA <span style="color:#fb923c;">*</span></label>
           <input id="fbaArrivalDate" type="date" required />
+          <small style="color:var(--muted);line-height:1.4;">Confirme o dia da chegada ao FBA. Sem preencher esta data, a movimentação não será concluída.</small>
         </div>
       </div>
       <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
@@ -5060,6 +5061,17 @@ body[data-theme="light"] {
       // Impede também a entrega pelo editor de cards sem um MCID preenchido.
       const destinationStatus = document.getElementById('taskStatus').value;
       const destinationMcid = document.getElementById('taskMcid').value.trim();
+
+      const editingTask = currentEditingTaskId
+        ? state.tasks.find(t => t.id === currentEditingTaskId)
+        : null;
+      const enteringAwaitingSale = destinationStatus === 'Aguardando venda'
+        && (!editingTask || editingTask.status !== 'Aguardando venda');
+
+      if (enteringAwaitingSale) {
+        alert('Para colocar uma loja em Aguardando venda, arraste o card para essa coluna. Assim será obrigatório confirmar a data de chegada no FBA.');
+        return;
+      }
       if (['Loja entregue', 'Venda finalizada'].includes(destinationStatus) && !destinationMcid) {
         alert('O MCID é obrigatório para entregar ou finalizar uma loja. Preencha o MCID antes de continuar.');
         document.getElementById('taskMcid').focus();
@@ -5419,7 +5431,12 @@ body[data-theme="light"] {
       pendingFbaArrivalTaskId = taskId;
       pendingFbaArrivalStatus = status;
       const input = document.getElementById('fbaArrivalDate');
-      if (input) input.value = task.fbaArrivalDate || findStatusDateInUpdates(task.updates, 'Chegada no FBA') || '';
+      if (input) {
+        const savedArrivalDate = task.fbaArrivalDate || findStatusDateInUpdates(task.updates, 'Chegada no FBA') || '';
+        input.value = savedArrivalDate || todayLocalISO();
+        input.max = todayLocalISO();
+        input.required = true;
+      }
 
       const button = document.getElementById('confirmFbaArrivalButton');
       if (button) { button.disabled = false; button.textContent = 'Salvar e mover'; }
@@ -5439,10 +5456,17 @@ body[data-theme="light"] {
       const task = state.tasks.find(t => t.id === pendingFbaArrivalTaskId);
       if (!task || !pendingFbaArrivalStatus) return;
 
-      const arrivalDate = document.getElementById('fbaArrivalDate')?.value || '';
+      const arrivalInput = document.getElementById('fbaArrivalDate');
+      const arrivalDate = arrivalInput?.value || '';
       if (!arrivalDate) {
-        alert('Informe a data em que o produto chegou no FBA para mover a loja para Aguardando venda.');
-        document.getElementById('fbaArrivalDate')?.focus();
+        alert('A data de chegada no FBA é obrigatória. Informe a data para mover o card para Aguardando venda.');
+        arrivalInput?.focus();
+        return;
+      }
+
+      if (arrivalDate > todayLocalISO()) {
+        alert('A data de chegada no FBA não pode ser uma data futura.');
+        arrivalInput?.focus();
         return;
       }
 
