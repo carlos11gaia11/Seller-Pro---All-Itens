@@ -1213,6 +1213,58 @@ body[data-theme="light"] {
       border-color: rgba(14, 165, 233, .18);
     }
 
+    .fba-arrival-box {
+      margin: 8px 0 10px;
+      padding: 10px 12px;
+      border-radius: 15px;
+      border: 1px solid rgba(56, 189, 248, .38);
+      background: linear-gradient(135deg, rgba(14, 165, 233, .18), rgba(37, 99, 235, .08));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 10px 26px rgba(14,165,233,.08);
+      position: relative;
+      z-index: 1;
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .fba-arrival-box:hover {
+      transform: translateY(-1px);
+      border-color: rgba(125, 211, 252, .62);
+      background: linear-gradient(135deg, rgba(14, 165, 233, .25), rgba(37, 99, 235, .12));
+    }
+
+    .fba-arrival-box small {
+      display: block;
+      color: #7dd3fc;
+      font-size: 9px;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      margin-bottom: 3px;
+    }
+
+    .fba-arrival-box strong {
+      display: block;
+      color: #f0f9ff;
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .fba-arrival-box span {
+      display: block;
+      color: #bae6fd;
+      font-size: 10px;
+      margin-top: 3px;
+    }
+
+    body[data-theme="light"] .fba-arrival-box {
+      background: linear-gradient(135deg, rgba(224, 242, 254, .94), rgba(219, 234, 254, .82));
+      border-color: rgba(14, 165, 233, .28);
+    }
+
+    body[data-theme="light"] .fba-arrival-box small { color: #0369a1; }
+    body[data-theme="light"] .fba-arrival-box strong { color: #0f172a; }
+    body[data-theme="light"] .fba-arrival-box span { color: #075985; }
+
     .meta {
       display: flex;
       gap: 8px;
@@ -2936,12 +2988,12 @@ body[data-theme="light"] {
   <div class="modal-backdrop" id="fbaArrivalModal">
     <div class="modal">
       <div class="modal-header">
-        <h3>Confirmar chegada no FBA</h3>
+        <h3>Data de chegada no FBA</h3>
         <button class="close" onclick="closeFbaArrivalModal()">×</button>
       </div>
       <div class="form-grid">
         <div class="field full">
-          <div class="required-hint">Para mover o card para <strong>Aguardando venda</strong>, informe obrigatoriamente a data em que o produto chegou ao FBA.</div>
+          <div class="required-hint">Para concluir a movimentação para <strong>Aguardando venda</strong>, informe a data real em que o estoque chegou ao FBA. Sem esta data, o card não será movido.</div>
         </div>
         <div class="field full">
           <label>Data que chegou no FBA</label>
@@ -2950,7 +3002,7 @@ body[data-theme="light"] {
       </div>
       <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
         <button class="btn secondary" onclick="closeFbaArrivalModal()">Cancelar</button>
-        <button class="btn" id="confirmFbaArrivalButton" onclick="confirmFbaArrivalMove()">Confirmar chegada</button>
+        <button class="btn" id="confirmFbaArrivalButton" onclick="confirmFbaArrivalMove()">Salvar e mover</button>
       </div>
     </div>
   </div>
@@ -4367,7 +4419,7 @@ body[data-theme="light"] {
         <div class="seller-cont-preview">
           <div class="seller-cont-preview-header">
             <span>Contabilidade Seller Cont</span>
-            <strong>${escapeHTML(task.deliverySellerContStatus || task.status || 'Não informado')}</strong>
+            <strong>${escapeHTML(task.deliverySellerContStatus || 'Não informado')}</strong>
           </div>
 
           <div class="seller-cont-date-grid">
@@ -4389,7 +4441,7 @@ body[data-theme="light"] {
               <small>Contabilidade</small>
               <strong>Seller Cont</strong>
             </div>
-            <span class="seller-cont-detail-status">${escapeHTML(task.deliverySellerContStatus || task.status || 'Não informado')}</span>
+            <span class="seller-cont-detail-status">${escapeHTML(task.deliverySellerContStatus || 'Não informado')}</span>
           </div>
 
           <div class="seller-cont-detail-grid">
@@ -4432,6 +4484,25 @@ body[data-theme="light"] {
       `;
     }
 
+    function fbaArrivalBoxTemplate(task) {
+      if (task?.status !== 'Aguardando venda') return '';
+
+      const arrivalDate = task.fbaArrivalDate || findStatusDateInUpdates(task.updates, 'Chegada no FBA');
+      if (!arrivalDate) return '';
+
+      return `
+        <div
+          class="fba-arrival-box"
+          onclick="event.stopPropagation(); openFbaArrivalModal('${escapeInlineJs(task.id)}', 'Aguardando venda')"
+          title="Clique para corrigir a data de chegada no FBA"
+        >
+          <small>Chegada no FBA</small>
+          <strong>${escapeHTML(formatDateBR(arrivalDate))}</strong>
+          <span>Data usada para contar os dias em Aguardando venda</span>
+        </div>
+      `;
+    }
+
     function taskTemplate(task) {
       const isSellerCont = isSellerContTask(task);
       const sellerContClass = isSellerCont ? ' seller-cont-card' : '';
@@ -4458,6 +4529,8 @@ body[data-theme="light"] {
           ` : ''}
 
           ${deliveryControlBadgeTemplate(task)}
+
+          ${fbaArrivalBoxTemplate(task)}
 
           ${task.description ? `<p>${escapeHTML(task.description)}</p>` : ''}
 
@@ -5346,10 +5419,10 @@ body[data-theme="light"] {
       pendingFbaArrivalTaskId = taskId;
       pendingFbaArrivalStatus = status;
       const input = document.getElementById('fbaArrivalDate');
-      if (input) input.value = task.fbaArrivalDate || todayLocalISO();
+      if (input) input.value = task.fbaArrivalDate || findStatusDateInUpdates(task.updates, 'Chegada no FBA') || '';
 
       const button = document.getElementById('confirmFbaArrivalButton');
-      if (button) { button.disabled = false; button.textContent = 'Confirmar chegada'; }
+      if (button) { button.disabled = false; button.textContent = 'Salvar e mover'; }
       playSound('modal');
       document.getElementById('fbaArrivalModal').classList.add('show');
     }
@@ -5394,7 +5467,7 @@ body[data-theme="light"] {
         task.fbaArrivalDate = previousArrivalDate;
         task.updates = previousUpdates;
         renderBoard();
-        if (button) { button.disabled = false; button.textContent = 'Confirmar chegada'; }
+        if (button) { button.disabled = false; button.textContent = 'Salvar e mover'; }
         showToast('Não consegui mover a loja para Aguardando venda.');
         console.error(error);
         return;
@@ -6283,6 +6356,13 @@ body[data-theme="light"] {
             <strong>${escapeHTML(task.status)}</strong>
           </div>
 
+          ${task.status === 'Aguardando venda' ? `
+            <div class="detail-box">
+              <small>Chegada no FBA</small>
+              <strong>${escapeHTML(formatDateBR(task.fbaArrivalDate || findStatusDateInUpdates(task.updates, 'Chegada no FBA')))}</strong>
+            </div>
+          ` : ''}
+
           <div class="detail-box">
             <small>MCID</small>
             <strong>${escapeHTML(task.mcid || 'Não informado')}</strong>
@@ -6309,11 +6389,6 @@ body[data-theme="light"] {
           <div class="detail-box">
             <small>Produto que enviou</small>
             <strong>${escapeHTML(task.deliveryProductSent || 'Não informado')}</strong>
-          </div>
-
-          <div class="detail-box">
-            <small>Status Seller Cont</small>
-            <strong>${escapeHTML(task.deliverySellerContStatus || task.status || 'Não informado')}</strong>
           </div>
 
           <div class="detail-box">
