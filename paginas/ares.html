@@ -2856,7 +2856,7 @@ body[data-theme="light"] {
       <div class="form-grid">
         <div class="field full">
           <div class="required-hint">
-            Para mover o card para <strong>Loja entregue</strong>, é obrigatório preencher a data de entrega, a avaliação SPN e o <strong>MCID</strong>, mesmo que Seller Cont não esteja selecionado. Os demais dados de Seller Cont só são obrigatórios quando a caixinha abaixo estiver marcada.
+            Para mover o card para <strong>Loja entregue</strong>, é obrigatório preencher a data de entrega, a avaliação SPN e o <strong>MCID</strong>. Os campos complementares abaixo podem ser preenchidos em qualquer loja, mas só são obrigatórios quando <strong>Seller Cont</strong> estiver marcado.
           </div>
         </div>
 
@@ -2880,7 +2880,7 @@ body[data-theme="light"] {
             <input id="deliverySellerContFlag" type="checkbox" onchange="syncDeliverySellerContFields()" />
             <span>
               <strong>Marcar como Seller Cont</strong>
-              <small>Quando esta caixinha estiver marcada, o card fica azul e exibe o aviso de Contabilidade Seller Cont.</small>
+              <small>Quando marcada, o card fica azul e os campos complementares abaixo passam a ser obrigatórios. Sem marcar, eles continuam disponíveis para preenchimento opcional.</small>
             </span>
           </label>
         </div>
@@ -2929,6 +2929,28 @@ body[data-theme="light"] {
       <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
         <button class="btn secondary" onclick="closeDeliveryModal()">Cancelar</button>
         <button class="btn" id="confirmDeliveryButton" onclick="confirmDeliveryMove()">Confirmar entrega</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="fbaArrivalModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Confirmar chegada no FBA</h3>
+        <button class="close" onclick="closeFbaArrivalModal()">×</button>
+      </div>
+      <div class="form-grid">
+        <div class="field full">
+          <div class="required-hint">Para mover o card para <strong>Aguardando venda</strong>, informe obrigatoriamente a data em que o produto chegou ao FBA.</div>
+        </div>
+        <div class="field full">
+          <label>Data que chegou no FBA</label>
+          <input id="fbaArrivalDate" type="date" required />
+        </div>
+      </div>
+      <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
+        <button class="btn secondary" onclick="closeFbaArrivalModal()">Cancelar</button>
+        <button class="btn" id="confirmFbaArrivalButton" onclick="confirmFbaArrivalMove()">Confirmar chegada</button>
       </div>
     </div>
   </div>
@@ -3113,6 +3135,7 @@ body[data-theme="light"] {
       'Configuração do faturador',
       'Criação do anúncio',
       'Envio ao FBA',
+      'Aguardando venda',
       'Call de onboard',
       'Loja entregue',
       'Venda finalizada',
@@ -3175,6 +3198,8 @@ body[data-theme="light"] {
     let currentTaskAttachments = [];
     let pendingDeliveryTaskId = null;
     let pendingDeliveryStatus = null;
+    let pendingFbaArrivalTaskId = null;
+    let pendingFbaArrivalStatus = null;
     let pendingSaleFinalizedTaskId = null;
     let pendingSaleFinalizedStatus = null;
     let pendingOnboardTaskId = null;
@@ -3667,6 +3692,7 @@ body[data-theme="light"] {
         const taskUpdates = Array.isArray(task.updates) ? task.updates : [];
         const deliveredAtFromUpdates = findStatusDateInUpdates(taskUpdates, 'Loja entregue');
         const finalizedAtFromUpdates = findStatusDateInUpdates(taskUpdates, 'Venda finalizada');
+        const fbaArrivalAtFromUpdates = findStatusDateInUpdates(taskUpdates, 'Chegada no FBA');
         const deliveredAtFallback = task.delivery_completed_at || deliveredStore?.delivery_completed_at || deliveredAtFromUpdates || deliveredStore?.created_at || '';
         const finalizedAtFallback = task.sale_finalized_at || deliveredStore?.sale_finalized_at || finalizedAtFromUpdates || '';
 
@@ -3688,6 +3714,7 @@ body[data-theme="light"] {
           spnConfirmed: Boolean(savedSpnConfirmationFlag),
           deliveryCompletedAt: String(deliveredAtFallback || '').slice(0, 10) || savedStatusDates.deliveredAt || '',
           saleFinalizedAt: String(finalizedAtFallback || '').slice(0, 10) || savedStatusDates.finalizedAt || '',
+          fbaArrivalDate: fbaArrivalAtFromUpdates || '',
           description: task.description || '',
           updates: taskUpdates,
           attachments: Array.isArray(task.attachments) ? task.attachments : []
@@ -3779,6 +3806,7 @@ body[data-theme="light"] {
         task.deliverySellerContStatus,
         task.deliveryCompletedAt,
         task.saleFinalizedAt,
+        task.fbaArrivalDate,
         task.shipmentDate,
         task.pickupDate,
         task.billingConfigDate,
@@ -3947,12 +3975,31 @@ body[data-theme="light"] {
       return `${days} dias`;
     }
 
-    function ensureUpdateHasDate(updateText) {
+    function normalizeUpdateDateText(updateText) {
       const cleanText = String(updateText || '').trim();
+      if (!cleanText) return '';
 
+      const shortDateAtStart = cleanText.match(/^(\d{1,2})[\/-](\d{1,2})(?![\/-]\d)/);
+      if (!shortDateAtStart) return cleanText;
+
+      const day = Number(shortDateAtStart[1]);
+      const month = Number(shortDateAtStart[2]);
+      const year = new Date().getFullYear();
+      const candidate = new Date(year, month - 1, day);
+
+      if (candidate.getFullYear() !== year || candidate.getMonth() !== month - 1 || candidate.getDate() !== day) {
+        return cleanText;
+      }
+
+      const fullDate = `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+      return cleanText.replace(shortDateAtStart[0], fullDate);
+    }
+
+    function ensureUpdateHasDate(updateText) {
+      const cleanText = normalizeUpdateDateText(updateText);
       if (!cleanText || parseDateFromUpdateLine(cleanText)) return cleanText;
 
-      const todayBR = formatDateBR(todayLocalISO()).slice(0, 5);
+      const todayBR = formatDateBR(todayLocalISO());
       return `${todayBR} - ${cleanText}`;
     }
 
@@ -4246,24 +4293,11 @@ body[data-theme="light"] {
       if (shortBrMatch) {
         const day = Number(shortBrMatch[1]);
         const month = Number(shortBrMatch[2]);
-        const today = new Date();
-        let year = today.getFullYear();
-        let candidate = new Date(year, month - 1, day);
+        const year = new Date().getFullYear();
+        const candidate = new Date(year, month - 1, day);
 
-        if (
-          candidate.getFullYear() !== year ||
-          candidate.getMonth() !== month - 1 ||
-          candidate.getDate() !== day
-        ) {
+        if (candidate.getFullYear() !== year || candidate.getMonth() !== month - 1 || candidate.getDate() !== day) {
           return '';
-        }
-
-        today.setHours(0, 0, 0, 0);
-        candidate.setHours(0, 0, 0, 0);
-
-        if (candidate > today) {
-          year -= 1;
-          candidate = new Date(year, month - 1, day);
         }
 
         return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -5078,6 +5112,7 @@ body[data-theme="light"] {
           spnConfirmed: Boolean(task.spnConfirmed),
           deliveryCompletedAt: statusDatePatch.deliveredAt || task.deliveryCompletedAt || '',
           saleFinalizedAt: statusDatePatch.finalizedAt || task.saleFinalizedAt || '',
+          fbaArrivalDate: task.fbaArrivalDate || '',
           description: taskData.description,
           updates,
           attachments: uploadedAttachments
@@ -5119,6 +5154,7 @@ body[data-theme="light"] {
           spnConfirmed: false,
           deliveryCompletedAt: statusDatePatch.deliveredAt || '',
           saleFinalizedAt: statusDatePatch.finalizedAt || '',
+          fbaArrivalDate: '',
           description: taskData.description,
           updates,
           attachments: uploadedAttachments
@@ -5233,6 +5269,11 @@ body[data-theme="light"] {
 
       if (!task || task.status === status) return;
 
+      if (status === 'Aguardando venda') {
+        openFbaArrivalModal(taskId, status);
+        return;
+      }
+
       if (status === 'Loja entregue') {
         openDeliveryModal(taskId, status);
         return;
@@ -5296,6 +5337,72 @@ body[data-theme="light"] {
       }
 
       showToast(`Card movido para: ${status}`);
+    }
+
+    function openFbaArrivalModal(taskId, status) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      pendingFbaArrivalTaskId = taskId;
+      pendingFbaArrivalStatus = status;
+      const input = document.getElementById('fbaArrivalDate');
+      if (input) input.value = task.fbaArrivalDate || todayLocalISO();
+
+      const button = document.getElementById('confirmFbaArrivalButton');
+      if (button) { button.disabled = false; button.textContent = 'Confirmar chegada'; }
+      playSound('modal');
+      document.getElementById('fbaArrivalModal').classList.add('show');
+    }
+
+    function closeFbaArrivalModal() {
+      document.getElementById('fbaArrivalModal').classList.remove('show');
+      pendingFbaArrivalTaskId = null;
+      pendingFbaArrivalStatus = null;
+      const input = document.getElementById('fbaArrivalDate');
+      if (input) input.value = '';
+    }
+
+    async function confirmFbaArrivalMove() {
+      const task = state.tasks.find(t => t.id === pendingFbaArrivalTaskId);
+      if (!task || !pendingFbaArrivalStatus) return;
+
+      const arrivalDate = document.getElementById('fbaArrivalDate')?.value || '';
+      if (!arrivalDate) {
+        alert('Informe a data em que o produto chegou no FBA para mover a loja para Aguardando venda.');
+        document.getElementById('fbaArrivalDate')?.focus();
+        return;
+      }
+
+      const previousStatus = task.status;
+      const previousArrivalDate = task.fbaArrivalDate || '';
+      const previousUpdates = Array.isArray(task.updates) ? [...task.updates] : [];
+      const button = document.getElementById('confirmFbaArrivalButton');
+      if (button) { button.disabled = true; button.textContent = 'Salvando...'; }
+
+      task.status = pendingFbaArrivalStatus;
+      task.fbaArrivalDate = arrivalDate;
+      task.updates = appendStatusUpdate(task, 'Chegada no FBA', arrivalDate);
+      renderBoard();
+
+      const { error } = await supabaseClient.from('sp_tasks').update({
+        status: pendingFbaArrivalStatus,
+        updates: task.updates
+      }).eq('id', task.id);
+
+      if (error) {
+        task.status = previousStatus;
+        task.fbaArrivalDate = previousArrivalDate;
+        task.updates = previousUpdates;
+        renderBoard();
+        if (button) { button.disabled = false; button.textContent = 'Confirmar chegada'; }
+        showToast('Não consegui mover a loja para Aguardando venda.');
+        console.error(error);
+        return;
+      }
+
+      closeFbaArrivalModal();
+      playSound('drop');
+      showToast(`Card movido para Aguardando venda • FBA em ${formatDateBR(arrivalDate)}`);
     }
 
     function openOnboardModal(taskId, status) {
@@ -5733,7 +5840,7 @@ body[data-theme="light"] {
       const checked = Boolean(document.getElementById('deliverySellerContFlag')?.checked);
 
       document.querySelectorAll('.seller-cont-only-field').forEach(field => {
-        field.classList.toggle('is-hidden', !checked);
+        field.classList.remove('is-hidden');
         field.querySelectorAll('input, select, textarea').forEach(input => {
           input.required = checked;
         });
@@ -5861,7 +5968,7 @@ body[data-theme="light"] {
         phone: document.getElementById('deliveryPhone').value.trim(),
         product_sent: document.getElementById('deliveryProductSent').value.trim(),
         seller_cont_status: document.getElementById('deliverySellerContStatus').value.trim(),
-        is_seller_cont: document.getElementById('deliverySellerContFlag')?.checked !== false,
+        is_seller_cont: Boolean(document.getElementById('deliverySellerContFlag')?.checked),
         spn_evaluation: document.getElementById('deliverySpnEvaluation').value
       };
 
