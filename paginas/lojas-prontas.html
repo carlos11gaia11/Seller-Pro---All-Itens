@@ -3972,14 +3972,67 @@
       return timestamps.length ? Math.max(...timestamps) : 0;
     }
 
-    function getAwaitingSaleStartInfo(task) {
-      // 1. Histórico do Ares: melhor fonte para saber quando o card entrou na coluna.
-      const movementTimestamp = getAwaitingSaleMovementTimestamp(task);
-      if (movementTimestamp) {
-        return { timestamp: movementTimestamp, source: "histórico do Ares", estimated: false };
+    function getAwaitingSaleTagTimestamp(task) {
+      // O Ares grava a data informada ao mover a loja para "Aguardando venda"
+      // dentro de sp_tasks.updates no formato:
+      // "DD/MM/AAAA - Chegada no FBA."
+      // Esta é a fonte oficial para a contagem dos dias aguardando venda.
+      const rawUpdates = getPossibleValue(task, ["updates"]);
+      let updates = rawUpdates;
+
+      if (typeof updates === "string") {
+        try {
+          const parsed = JSON.parse(updates);
+          updates = Array.isArray(parsed) ? parsed : [updates];
+        } catch (error) {
+          updates = [updates];
+        }
       }
 
-      // 2. Aceita campos dedicados caso sejam adicionados à base futuramente.
+      if (!Array.isArray(updates)) return 0;
+
+      const timestamps = [];
+
+      updates.forEach((update) => {
+        const line = stringifyHistoryValue(update).trim();
+        if (!line) return;
+
+        const normalizedLine = normalizeKey(line);
+        const isAwaitingSaleTag =
+          normalizedLine.includes("chegada no fba") ||
+          normalizedLine.includes("aguardando venda");
+
+        if (!isAwaitingSaleTag) return;
+
+        // Procura primeiro a data brasileira usada na tag do Ares.
+        const brMatch = line.match(/(\d{1,2}\/\d{1,2}\/\d{4})/);
+        if (brMatch) {
+          const date = parseDateSafely(brMatch[1]);
+          if (date) timestamps.push(date.getTime());
+          return;
+        }
+
+        // Compatibilidade com registros em ISO.
+        const isoMatch = line.match(/(\d{4}-\d{2}-\d{2})/);
+        if (isoMatch) {
+          const date = parseDateSafely(isoMatch[1]);
+          if (date) timestamps.push(date.getTime());
+        }
+      });
+
+      // Se houver mais de uma entrada, considera a mais recente.
+      return timestamps.length ? Math.max(...timestamps) : 0;
+    }
+
+    function getAwaitingSaleStartInfo(task) {
+      // 1. Fonte principal: tag/data registrada pelo próprio Ares
+      // quando a loja entra em "Aguardando venda".
+      const tagTimestamp = getAwaitingSaleTagTimestamp(task);
+      if (tagTimestamp) {
+        return { timestamp: tagTimestamp, source: "tag do Ares • Chegada no FBA", estimated: false };
+      }
+
+      // 2. Compatibilidade com bases que tenham uma coluna dedicada.
       const directValue = getPossibleValue(task, [
         "awaiting_sale_at", "awaitingSaleAt", "aguardando_venda_em",
         "data_aguardando_venda", "loja_aguardando_venda_em"
@@ -3989,27 +4042,15 @@
         return { timestamp: directDate.getTime(), source: "data de Aguardando Venda", estimated: false };
       }
 
-      // 3. Sem histórico específico, a data de entrega é somente uma aproximação.
-      const deliveryValue = getPossibleValue(task, [
-        "delivery_completed_at", "deliveryCompletedAt", "delivered_at",
-        "delivery_date", "data_loja_entregue", "data_entrega", "entregue_em"
-      ]);
-      const deliveryDate = parseDateSafely(deliveryValue);
-      if (deliveryDate) {
-        return { timestamp: deliveryDate.getTime(), source: "data de entrega (estimativa)", estimated: true };
+      // 3. Compatibilidade com histórico estruturado antigo.
+      const movementTimestamp = getAwaitingSaleMovementTimestamp(task);
+      if (movementTimestamp) {
+        return { timestamp: movementTimestamp, source: "histórico do Ares", estimated: false };
       }
 
-      const archiveDeliveryDate = parseDateSafely(task.archive_delivery_completed_at);
-      if (archiveDeliveryDate) {
-        return { timestamp: archiveDeliveryDate.getTime(), source: "arquivo de entregas (estimativa)", estimated: true };
-      }
-
-      const createdDate = parseDateSafely(getPossibleValue(task, ["created_at", "data_criacao", "createdAt", "inserted_at"]));
-      if (createdDate) {
-        return { timestamp: createdDate.getTime(), source: "criação do card (estimativa)", estimated: true };
-      }
-
-      return { timestamp: 0, source: "sem data", estimated: false };
+      // Não usa mais entrega, criação do card ou outras datas como estimativa.
+      // Sem a data real de Aguardando venda, o painel exibe "Sem data".
+      return { timestamp: 0, source: "sem data de Aguardando venda", estimated: false };
     }
 
     function getStatusStartInfo(task) {
