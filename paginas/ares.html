@@ -1401,17 +1401,6 @@ body[data-theme="light"] {
       transform: translateY(-1px);
     }
 
-    .fba-arrival-badge {
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      margin:6px 0 9px;padding:10px 12px;border-radius:15px;
-      border:1px solid rgba(56,189,248,.40);
-      background:linear-gradient(135deg,rgba(14,165,233,.22),rgba(37,99,235,.12));
-      position:relative;z-index:1;
-    }
-    .fba-arrival-badge small {display:block;color:#7dd3fc;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
-    .fba-arrival-badge strong {color:var(--text);font-size:14px;}
-    .fba-arrival-badge span {padding:5px 8px;border-radius:10px;background:rgba(56,189,248,.15);color:#bae6fd;font-size:10px;font-weight:950;}
-
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -2944,30 +2933,6 @@ body[data-theme="light"] {
     </div>
   </div>
 
-  <div class="modal-backdrop" id="fbaArrivalModal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>Registrar chegada no FBA</h3>
-        <button class="close" onclick="closeFbaArrivalModal()">×</button>
-      </div>
-      <div class="form-grid">
-        <div class="field full">
-          <div class="required-hint">Para mover o card para <strong>Aguardando venda</strong>, é obrigatório informar a data em que o produto chegou ao FBA da Amazon.</div>
-        </div>
-        <div class="field full">
-          <label>Data que chegou no FBA</label>
-          <input id="fbaArrivalDate" type="date" required />
-          <small style="color:var(--muted);line-height:1.4;">Preencha manualmente a data real de chegada no FBA. O sistema não preenche esta data automaticamente.</small>
-          <small style="color:var(--muted);line-height:1.4;">Essa data ficará registrada no card e será usada como início do período em Aguardando venda.</small>
-        </div>
-      </div>
-      <div class="actions" style="margin-top: 18px; justify-content: flex-end;">
-        <button class="btn secondary" onclick="closeFbaArrivalModal()">Cancelar</button>
-        <button class="btn" id="confirmFbaArrivalButton" onclick="confirmFbaArrivalMove()">Confirmar chegada no FBA</button>
-      </div>
-    </div>
-  </div>
-
   <div class="modal-backdrop" id="onboardModal">
     <div class="modal">
       <div class="modal-header">
@@ -3148,7 +3113,6 @@ body[data-theme="light"] {
       'Configuração do faturador',
       'Criação do anúncio',
       'Envio ao FBA',
-      'Aguardando venda',
       'Call de onboard',
       'Loja entregue',
       'Venda finalizada',
@@ -3211,8 +3175,6 @@ body[data-theme="light"] {
     let currentTaskAttachments = [];
     let pendingDeliveryTaskId = null;
     let pendingDeliveryStatus = null;
-    let pendingFbaArrivalTaskId = null;
-    let pendingFbaArrivalStatus = null;
     let pendingSaleFinalizedTaskId = null;
     let pendingSaleFinalizedStatus = null;
     let pendingOnboardTaskId = null;
@@ -3226,18 +3188,6 @@ body[data-theme="light"] {
         .trim()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');
-    }
-
-    function normalizeStageName(value) {
-      return String(value || '')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .trim()
-        .toLowerCase();
-    }
-
-    function isAwaitingSaleStatus(value) {
-      return normalizeStageName(value) === 'aguardando venda';
     }
 
     function escapeHTML(value) {
@@ -3717,7 +3667,6 @@ body[data-theme="light"] {
         const taskUpdates = Array.isArray(task.updates) ? task.updates : [];
         const deliveredAtFromUpdates = findStatusDateInUpdates(taskUpdates, 'Loja entregue');
         const finalizedAtFromUpdates = findStatusDateInUpdates(taskUpdates, 'Venda finalizada');
-        const fbaArrivalAtFromUpdates = findStatusDateInUpdates(taskUpdates, 'Chegada no FBA');
         const deliveredAtFallback = task.delivery_completed_at || deliveredStore?.delivery_completed_at || deliveredAtFromUpdates || deliveredStore?.created_at || '';
         const finalizedAtFallback = task.sale_finalized_at || deliveredStore?.sale_finalized_at || finalizedAtFromUpdates || '';
 
@@ -3739,7 +3688,6 @@ body[data-theme="light"] {
           spnConfirmed: Boolean(savedSpnConfirmationFlag),
           deliveryCompletedAt: String(deliveredAtFallback || '').slice(0, 10) || savedStatusDates.deliveredAt || '',
           saleFinalizedAt: String(finalizedAtFallback || '').slice(0, 10) || savedStatusDates.finalizedAt || '',
-          fbaArrivalDate: fbaArrivalAtFromUpdates || '',
           description: task.description || '',
           updates: taskUpdates,
           attachments: Array.isArray(task.attachments) ? task.attachments : []
@@ -4001,19 +3949,10 @@ body[data-theme="light"] {
 
     function ensureUpdateHasDate(updateText) {
       const cleanText = String(updateText || '').trim();
-      if (!cleanText) return cleanText;
 
-      const currentYear = new Date().getFullYear();
-      const shortDateAtStart = cleanText.match(/^(\d{1,2})[\/-](\d{1,2})(?![\/-]\d)/);
-      if (shortDateAtStart) {
-        const day = String(shortDateAtStart[1]).padStart(2, '0');
-        const month = String(shortDateAtStart[2]).padStart(2, '0');
-        const rest = cleanText.slice(shortDateAtStart[0].length);
-        return `${day}/${month}/${currentYear}${rest}`;
-      }
+      if (!cleanText || parseDateFromUpdateLine(cleanText)) return cleanText;
 
-      if (parseDateFromUpdateLine(cleanText)) return cleanText;
-      const todayBR = formatDateBR(todayLocalISO());
+      const todayBR = formatDateBR(todayLocalISO()).slice(0, 5);
       return `${todayBR} - ${cleanText}`;
     }
 
@@ -4394,7 +4333,7 @@ body[data-theme="light"] {
         <div class="seller-cont-preview">
           <div class="seller-cont-preview-header">
             <span>Contabilidade Seller Cont</span>
-            <strong>${escapeHTML(task.deliverySellerContStatus || 'Não informado')}</strong>
+            <strong>${escapeHTML(task.deliverySellerContStatus || task.status || 'Não informado')}</strong>
           </div>
 
           <div class="seller-cont-date-grid">
@@ -4416,7 +4355,7 @@ body[data-theme="light"] {
               <small>Contabilidade</small>
               <strong>Seller Cont</strong>
             </div>
-            <span class="seller-cont-detail-status">${escapeHTML(task.deliverySellerContStatus || 'Não informado')}</span>
+            <span class="seller-cont-detail-status">${escapeHTML(task.deliverySellerContStatus || task.status || 'Não informado')}</span>
           </div>
 
           <div class="seller-cont-detail-grid">
@@ -4459,18 +4398,6 @@ body[data-theme="light"] {
       `;
     }
 
-    function fbaArrivalBadgeTemplate(task) {
-      if (!isAwaitingSaleStatus(task?.status)) return '';
-      const arrivalDate = task?.fbaArrivalDate || findStatusDateInUpdates(task?.updates, 'Chegada no FBA');
-      if (!arrivalDate) return '';
-      return `
-        <div class="fba-arrival-badge">
-          <div><small>Chegada no FBA</small><strong>${escapeHTML(formatDateBR(arrivalDate))}</strong></div>
-          <span>FBA</span>
-        </div>
-      `;
-    }
-
     function taskTemplate(task) {
       const isSellerCont = isSellerContTask(task);
       const sellerContClass = isSellerCont ? ' seller-cont-card' : '';
@@ -4497,7 +4424,6 @@ body[data-theme="light"] {
           ` : ''}
 
           ${deliveryControlBadgeTemplate(task)}
-          ${fbaArrivalBadgeTemplate(task)}
 
           ${task.description ? `<p>${escapeHTML(task.description)}</p>` : ''}
 
@@ -5035,14 +4961,8 @@ body[data-theme="light"] {
 
       const updatesText = document.getElementById('taskUpdates').value.trim();
 
-      const editingTask = currentEditingTaskId ? state.tasks.find(t => String(t.id) === String(currentEditingTaskId)) : null;
-      if (isAwaitingSaleStatus(destinationStatus) && !isAwaitingSaleStatus(editingTask?.status)) {
-        alert('Para colocar a loja em Aguardando venda, arraste o card para essa coluna e confirme a data de chegada no FBA.');
-        return;
-      }
-
       const updates = updatesText
-        ? updatesText.split('\n').map(line => ensureUpdateHasDate(line)).filter(Boolean)
+        ? updatesText.split('\n').map(line => line.trim()).filter(Boolean)
         : [];
 
       await saveTaskData(name, updates);
@@ -5309,14 +5229,9 @@ body[data-theme="light"] {
       event.currentTarget.classList.remove('drag-over');
 
       const taskId = event.dataTransfer.getData('taskId');
-      const task = state.tasks.find(t => String(t.id) === String(taskId));
+      const task = state.tasks.find(t => t.id === taskId);
 
-      if (!task || normalizeStageName(task.status) === normalizeStageName(status)) return;
-
-      if (isAwaitingSaleStatus(status)) {
-        openFbaArrivalModal(taskId, status);
-        return;
-      }
+      if (!task || task.status === status) return;
 
       if (status === 'Loja entregue') {
         openDeliveryModal(taskId, status);
@@ -5381,64 +5296,6 @@ body[data-theme="light"] {
       }
 
       showToast(`Card movido para: ${status}`);
-    }
-
-    function openFbaArrivalModal(taskId, status) {
-      const task = state.tasks.find(t => String(t.id) === String(taskId));
-      if (!task) return;
-      pendingFbaArrivalTaskId = taskId;
-      pendingFbaArrivalStatus = status;
-      const input = document.getElementById('fbaArrivalDate');
-      if (input) { input.value = task.fbaArrivalDate || ''; input.max = todayLocalISO(); }
-      const button = document.getElementById('confirmFbaArrivalButton');
-      if (button) { button.disabled = false; button.textContent = 'Confirmar chegada no FBA'; }
-      playSound('modal');
-      document.getElementById('fbaArrivalModal')?.classList.add('show');
-    }
-
-    function closeFbaArrivalModal() {
-      document.getElementById('fbaArrivalModal')?.classList.remove('show');
-      pendingFbaArrivalTaskId = null;
-      pendingFbaArrivalStatus = null;
-      const input = document.getElementById('fbaArrivalDate');
-      if (input) input.value = '';
-    }
-
-    async function confirmFbaArrivalMove() {
-      const task = state.tasks.find(t => String(t.id) === String(pendingFbaArrivalTaskId));
-      if (!task || !pendingFbaArrivalStatus) return;
-      const input = document.getElementById('fbaArrivalDate');
-      const arrivalDate = input?.value || '';
-      if (!arrivalDate) {
-        alert('Informe a data em que o produto chegou no FBA. Essa data é obrigatória para entrar em Aguardando venda.');
-        input?.focus();
-        return;
-      }
-      if (arrivalDate > todayLocalISO()) {
-        alert('A data de chegada no FBA não pode ser futura.');
-        input?.focus();
-        return;
-      }
-      const targetStatus = pendingFbaArrivalStatus;
-      const previousUpdates = Array.isArray(task.updates) ? [...task.updates] : [];
-      const updatesWithoutOldFba = previousUpdates.filter(update => !String(update || '').toLowerCase().includes('chegada no fba'));
-      const nextUpdates = appendStatusUpdate({ ...task, updates: updatesWithoutOldFba }, 'Chegada no FBA', arrivalDate);
-      const button = document.getElementById('confirmFbaArrivalButton');
-      if (button) { button.disabled = true; button.textContent = 'Salvando...'; }
-      const { error } = await supabaseClient.from('sp_tasks').update({ status: targetStatus, updates: nextUpdates }).eq('id', task.id);
-      if (error) {
-        if (button) { button.disabled = false; button.textContent = 'Confirmar chegada no FBA'; }
-        showToast('Não consegui salvar a chegada no FBA. O card não foi movido.');
-        console.error(error);
-        return;
-      }
-      task.status = targetStatus;
-      task.fbaArrivalDate = arrivalDate;
-      task.updates = nextUpdates;
-      closeFbaArrivalModal();
-      playSound('drop');
-      renderBoard();
-      showToast(`Card movido para Aguardando venda • FBA em ${formatDateBR(arrivalDate)}`);
     }
 
     function openOnboardModal(taskId, status) {
@@ -5874,9 +5731,9 @@ body[data-theme="light"] {
 
     function syncDeliverySellerContFields() {
       const checked = Boolean(document.getElementById('deliverySellerContFlag')?.checked);
+
       document.querySelectorAll('.seller-cont-only-field').forEach(field => {
-        field.classList.remove('is-hidden');
-        field.style.display = '';
+        field.classList.toggle('is-hidden', !checked);
         field.querySelectorAll('input, select, textarea').forEach(input => {
           input.required = checked;
         });
@@ -5900,7 +5757,7 @@ body[data-theme="light"] {
       document.getElementById('deliveryAccountEmail').value = task.accountCreationEmail || '';
       document.getElementById('deliveryPhone').value = task.deliveryPhone || '';
       document.getElementById('deliveryProductSent').value = task.deliveryProductSent || '';
-      document.getElementById('deliverySellerContStatus').value = task.deliverySellerContStatus || '';
+      document.getElementById('deliverySellerContStatus').value = task.deliverySellerContStatus || status || 'Loja entregue';
       document.getElementById('deliverySellerContFlag').checked = isSellerContTask(task);
       syncDeliverySellerContFields();
 
@@ -6349,7 +6206,7 @@ body[data-theme="light"] {
 
           <div class="detail-box">
             <small>Status Seller Cont</small>
-            <strong>${escapeHTML(task.deliverySellerContStatus || 'Não informado')}</strong>
+            <strong>${escapeHTML(task.deliverySellerContStatus || task.status || 'Não informado')}</strong>
           </div>
 
           <div class="detail-box">
