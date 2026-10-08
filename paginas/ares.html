@@ -1166,7 +1166,7 @@ body[data-theme="light"] {
 
     .seller-cont-date-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 7px;
     }
 
@@ -2648,7 +2648,15 @@ body[data-theme="light"] {
       overscroll-behavior: contain;
     }
 
-  </style>
+    .workflow-date-preview { margin:5px 0 8px; padding:7px 10px; border-radius:11px; background:rgba(56,189,248,.10); border:1px solid rgba(56,189,248,.24); font-size:11px; font-weight:750; color:var(--text); }
+  .workflow-date-preview span { color:#7dd3fc; font-weight:900; }
+  .workflow-date-list { display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:10px; }
+  .workflow-date-list > div { border:1px solid var(--border);border-radius:12px;padding:10px;background:var(--field-bg); }
+  .workflow-date-list small {display:block;font-size:10px;color:var(--muted);margin-bottom:5px;}
+  .workflow-date-list strong {display:block;font-size:13px;}
+  #trackingPanelModal .modal { max-height:90vh;overflow-y:auto; }
+  @media(max-width:650px) { #trackingPanelModal .form-grid {grid-template-columns:1fr;} }
+</style>
 
   <!-- Seller Pro: tema e autenticação compartilhados -->
   <script>document.documentElement.classList.add('sp-auth-pending');</script>
@@ -2775,7 +2783,13 @@ body[data-theme="light"] {
 
         <div class="field">
           <label>Situação</label>
-          <select id="taskStatus"></select>
+          <select id="taskStatus" onchange="syncTaskStageDate()"></select>
+        </div>
+
+        <div class="field full">
+          <label for="taskStageDate">Data de entrada na situação selecionada *</label>
+          <input id="taskStageDate" type="date" required />
+          <small style="color:var(--muted)">Obrigatória ao criar um card ou alterar sua situação. Na edição sem mudança de situação, você pode deixar em branco.</small>
         </div>
 
         <div class="field">
@@ -2846,6 +2860,56 @@ body[data-theme="light"] {
     </div>
   </div>
 
+  <!-- Data obrigatória para qualquer movimentação comum do Kanban -->
+  <div class="modal-backdrop" id="stageDateModal">
+    <div class="modal" style="width:min(510px,96vw)">
+      <div class="modal-header">
+        <h3>Registrar data da etapa</h3>
+        <button class="close" type="button" onclick="closeStageDateModal()">×</button>
+      </div>
+      <div class="required-hint" style="margin-bottom:16px">
+        Ao mudar um card de situação, informe a data real em que esta etapa aconteceu. Sem a data, o card não será movido.
+      </div>
+      <div class="field" style="margin-bottom:14px">
+        <label>Etapa de destino</label>
+        <strong id="stageDateDestination" style="padding:10px 0"></strong>
+      </div>
+      <div class="field">
+        <label for="stageDateInput">Data da etapa *</label>
+        <input id="stageDateInput" type="date" required />
+      </div>
+      <div class="actions" style="margin-top:20px;justify-content:flex-end">
+        <button class="btn secondary" type="button" onclick="closeStageDateModal()">Cancelar</button>
+        <button class="btn" id="confirmStageDateButton" type="button" onclick="confirmStageDateMove()">Confirmar movimentação</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Painel de informações preenchido manualmente -->
+  <div class="modal-backdrop" id="trackingPanelModal">
+    <div class="modal" style="width:min(820px,96vw)">
+      <div class="modal-header">
+        <h3>Preencher painel de acompanhamento</h3>
+        <button class="close" type="button" onclick="closeTrackingPanel()">×</button>
+      </div>
+      <div class="required-hint" style="margin-bottom:16px">Preencha todos os campos para concluir e salvar o painel. Os valores ficam vinculados ao card no Supabase.</div>
+      <div class="form-grid">
+        <div class="field"><label for="trackingFormDate">Data do preenchimento do formulário *</label><input id="trackingFormDate" type="date" required /></div>
+        <div class="field"><label for="trackingShipmentDate">1° Data do 1° envio *</label><input id="trackingShipmentDate" type="date" required /></div>
+        <div class="field"><label for="trackingPickupDate">2° Data da coleta *</label><input id="trackingPickupDate" type="date" required /></div>
+        <div class="field"><label for="trackingBillingDate">3° Data que conf. faturador *</label><input id="trackingBillingDate" type="date" required /></div>
+        <div class="field"><label for="trackingMcid">MCID *</label><input id="trackingMcid" required /></div>
+        <div class="field"><label for="trackingPhone">Telefone *</label><input id="trackingPhone" type="tel" required /></div>
+        <div class="field full"><label for="trackingEmail">E-mail de criação de conta *</label><input id="trackingEmail" type="email" required /></div>
+        <div class="field full"><label for="trackingProduct">Produto que enviou *</label><input id="trackingProduct" required /></div>
+      </div>
+      <div class="actions" style="margin-top:20px;justify-content:flex-end">
+        <button class="btn secondary" type="button" onclick="closeTrackingPanel()">Cancelar</button>
+        <button class="btn" type="button" id="saveTrackingPanelButton" onclick="saveTrackingPanel()">Salvar painel completo</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-backdrop" id="deliveryModal">
     <div class="modal">
       <div class="modal-header">
@@ -2856,8 +2920,13 @@ body[data-theme="light"] {
       <div class="form-grid">
         <div class="field full">
           <div class="required-hint">
-            Para mover o card para <strong>Loja entregue</strong>, é obrigatório preencher a data de entrega, a avaliação SPN e o <strong>MCID</strong>, mesmo que Seller Cont não esteja selecionado. Os demais dados de Seller Cont só são obrigatórios quando a caixinha abaixo estiver marcada.
+            Para mover o card para <strong>Loja entregue</strong>, preencha <strong>todo o painel de informações</strong>, a data de entrega e a avaliação SPN. A caixinha Seller Cont continua controlando o destaque azul e a integração da contabilidade.
           </div>
+        </div>
+
+        <div class="field full">
+          <label>Data do preenchimento do formulário *</label>
+          <input id="deliveryFormDate" type="date" required />
         </div>
 
         <div class="field full">
@@ -2945,6 +3014,11 @@ body[data-theme="light"] {
           <div class="required-hint">
             Selecione se o seller precisa de solicitação SPN. Quando a resposta for <strong>Sim</strong>, os dados serão enviados para a aba <strong>Autorização</strong> e o card somente seguirá após a coluna <strong>Autorizado</strong> ser preenchida manualmente com Sim ou Não.
           </div>
+        </div>
+
+        <div class="field full">
+          <label>Data da Call de onboard *</label>
+          <input id="onboardStageDate" type="date" required />
         </div>
 
         <div class="field full">
@@ -3179,6 +3253,9 @@ body[data-theme="light"] {
     let pendingSaleFinalizedStatus = null;
     let pendingOnboardTaskId = null;
     let pendingOnboardStatus = null;
+    let pendingStageTaskId = null;
+    let pendingStageStatus = null;
+    let trackingPanelTaskId = null;
 
     function slugify(text) {
       return String(text || '')
@@ -3665,6 +3742,7 @@ body[data-theme="light"] {
           : Boolean(deliveredStore);
         const savedStatusDates = getDeliveryStatusDates(task.id);
         const taskUpdates = Array.isArray(task.updates) ? task.updates : [];
+        const savedWorkflow = getWorkflowMeta(taskUpdates);
         const deliveredAtFromUpdates = findStatusDateInUpdates(taskUpdates, 'Loja entregue');
         const finalizedAtFromUpdates = findStatusDateInUpdates(taskUpdates, 'Venda finalizada');
         const deliveredAtFallback = task.delivery_completed_at || deliveredStore?.delivery_completed_at || deliveredAtFromUpdates || deliveredStore?.created_at || '';
@@ -3681,8 +3759,8 @@ body[data-theme="light"] {
           shipmentDate: task.shipment_date || deliveredStore?.data_primeiro_envio || '',
           pickupDate: task.pickup_date || deliveredStore?.data_coleta || '',
           accountCreationEmail: task.account_creation_email || deliveredStore?.email || '',
-          deliveryPhone: deliveredStore?.telefone || '',
-          deliveryProductSent: deliveredStore?.produto_que_enviou || '',
+          deliveryPhone: savedWorkflow.panel?.phone || deliveredStore?.telefone || '',
+          deliveryProductSent: savedWorkflow.panel?.product || deliveredStore?.produto_que_enviou || '',
           deliverySellerContStatus: deliveredStore?.status_seller_cont || '',
           deliveryIsSellerCont: taskSellerContFlag ?? deliveredSellerContFlag,
           spnConfirmed: Boolean(savedSpnConfirmationFlag),
@@ -3785,7 +3863,8 @@ body[data-theme="light"] {
         task.status,
         task.description,
         getProjectName(task.project),
-        ...(task.updates || [])
+        getTaskFormDate(task),
+        ...(getVisibleUpdates(task))
       ].join(' ').toLowerCase();
     }
 
@@ -3907,7 +3986,7 @@ body[data-theme="light"] {
     }
 
     function getLastUpdate(task) {
-      const updates = Array.isArray(task.updates) ? task.updates.filter(Boolean) : [];
+      const updates = getVisibleUpdates(task).filter(Boolean);
       return updates.length ? updates[updates.length - 1] : 'Nenhuma atualização ainda.';
     }
 
@@ -4091,6 +4170,102 @@ body[data-theme="light"] {
       }
 
       writeDeliveryStatusDates(dates);
+    }
+
+    // Metadados de processo persistidos em sp_tasks.updates (sem exigir migration do banco).
+    // O marcador técnico é ocultado da interface, mas sobrevive à edição das atualizações.
+    const ARES_WORKFLOW_MARKER = '__ARES_WORKFLOW_V1__:';
+
+    function getVisibleUpdates(taskOrUpdates) {
+      const updates = Array.isArray(taskOrUpdates) ? taskOrUpdates : (taskOrUpdates?.updates || []);
+      return (Array.isArray(updates) ? updates : []).filter(line =>
+        typeof line === 'string' && !line.startsWith(ARES_WORKFLOW_MARKER)
+      );
+    }
+
+    function getWorkflowMeta(taskOrUpdates) {
+      const updates = Array.isArray(taskOrUpdates) ? taskOrUpdates : (taskOrUpdates?.updates || []);
+      const line = [...(Array.isArray(updates) ? updates : [])].reverse().find(value =>
+        typeof value === 'string' && value.startsWith(ARES_WORKFLOW_MARKER)
+      );
+      if (!line) return { stageDates: {}, history: [], panel: {} };
+      try {
+        const parsed = JSON.parse(line.slice(ARES_WORKFLOW_MARKER.length));
+        return {
+          ...parsed,
+          stageDates: parsed.stageDates && typeof parsed.stageDates === 'object' ? parsed.stageDates : {},
+          history: Array.isArray(parsed.history) ? parsed.history : [],
+          panel: parsed.panel && typeof parsed.panel === 'object' ? parsed.panel : {}
+        };
+      } catch (error) {
+        console.warn('Metadados do acompanhamento não puderam ser lidos.', error);
+        return { stageDates: {}, history: [], panel: {} };
+      }
+    }
+
+    function withWorkflowMeta(updates, metadata) {
+      return [...getVisibleUpdates(updates), ARES_WORKFLOW_MARKER + JSON.stringify(metadata)];
+    }
+
+    function validWorkflowDate(dateISO) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(String(dateISO || ''))) return false;
+      const date = new Date(`${dateISO}T12:00:00`);
+      return !Number.isNaN(date.getTime()) && date.getFullYear() === +dateISO.slice(0,4)
+        && date.getMonth()+1 === +dateISO.slice(5,7) && date.getDate() === +dateISO.slice(8,10);
+    }
+
+    function getTaskStageDate(task, status) {
+      const meta = getWorkflowMeta(task);
+      const recorded = meta.stageDates?.[status];
+      if (validWorkflowDate(recorded)) return recorded;
+      // Retrocompatibilidade: atualizações gravadas antes da implantação.
+      const prefix = 'Entrada na etapa: ' + String(status || '');
+      const lines = getVisibleUpdates(task);
+      for (let i = lines.length - 1; i >= 0; i--) {
+        if (lines[i].includes(prefix)) return parseDateFromUpdateLine(lines[i]) || '';
+      }
+      if (status === 'Loja entregue') return task?.deliveryCompletedAt || '';
+      if (status === 'Venda finalizada') return task?.saleFinalizedAt || '';
+      return '';
+    }
+
+    function getTaskFormDate(task) {
+      const meta = getWorkflowMeta(task);
+      return meta.formDate || getTaskStageDate(task, 'Preenchimento do formulário') || '';
+    }
+
+    function recordStageMove(task, newStatus, dateISO, oldStatus = '', addNote = true) {
+      if (!validWorkflowDate(dateISO)) throw new Error('Data inválida para a movimentação.');
+      const meta = getWorkflowMeta(task);
+      meta.stageDates[newStatus] = dateISO;
+      if (newStatus === 'Preenchimento do formulário') meta.formDate = dateISO;
+      meta.history.push({ from: oldStatus || '', to: newStatus, date: dateISO, recordedAt: new Date().toISOString() });
+      const updates = getVisibleUpdates(task);
+      if (addNote) updates.push(`${formatDateBR(dateISO)} - Entrada na etapa: ${newStatus}.`);
+      task.updates = withWorkflowMeta(updates, meta);
+    }
+
+    function setTaskFormDate(task, dateISO, updatesOverride = null) {
+      const meta = getWorkflowMeta(task);
+      meta.formDate = dateISO;
+      if (dateISO) meta.stageDates['Preenchimento do formulário'] = dateISO;
+      task.updates = withWorkflowMeta(updatesOverride === null ? task.updates : updatesOverride, meta);
+    }
+
+    function stageDatesTemplate(task) {
+      const meta = getWorkflowMeta(task);
+      const history = Array.isArray(meta.history) ? meta.history : [];
+      if (!history.length && !Object.keys(meta.stageDates || {}).length) return '<p>As próximas movimentações terão suas datas registradas aqui.</p>';
+      const items = Object.entries(meta.stageDates || {});
+      const historyHTML = history.length ? `<div style="margin-top:14px">
+        <small style="display:block;margin-bottom:9px">Histórico de movimentações (${history.length})</small>
+        <ul style="padding-left:20px;line-height:1.7;font-size:12px">${history.slice().reverse().map(entry => `
+          <li>${escapeHTML(formatDateBR(entry.date))}: ${escapeHTML(entry.from || 'Novo card')} → ${escapeHTML(entry.to)}</li>
+        `).join('')}</ul>
+      </div>` : '';
+      return `<div class="workflow-date-list">${items.map(([name, date]) => `
+        <div><small>${escapeHTML(name)}</small><strong>${escapeHTML(formatDateBR(date))}</strong></div>
+      `).join('')}</div>${historyHTML}`;
     }
 
     function todayLocalISO() {
@@ -4340,6 +4515,7 @@ body[data-theme="light"] {
             <small><b>1° envio</b>${escapeHTML(formatDateBR(task.shipmentDate))}</small>
             <small><b>Coleta</b>${escapeHTML(formatDateBR(task.pickupDate))}</small>
             <small><b>Faturador</b>${escapeHTML(formatDateBR(task.billingConfigDate))}</small>
+            <small><b>Formulário</b>${escapeHTML(formatDateBR(getTaskFormDate(task)))}</small>
           </div>
         </div>
       `;
@@ -4359,6 +4535,10 @@ body[data-theme="light"] {
           </div>
 
           <div class="seller-cont-detail-grid">
+            <div class="seller-cont-info-item">
+              <small>Data do preenchimento do formulário</small>
+              <strong>${escapeHTML(formatDateBR(getTaskFormDate(task)))}</strong>
+            </div>
             <div class="seller-cont-info-item">
               <small>1° Data do 1° envio</small>
               <strong>${escapeHTML(formatDateBR(task.shipmentDate))}</strong>
@@ -4424,6 +4604,7 @@ body[data-theme="light"] {
           ` : ''}
 
           ${deliveryControlBadgeTemplate(task)}
+          ${getTaskStageDate(task,task.status) ? `<div class="workflow-date-preview"><span>📅 Etapa:</span> ${escapeHTML(formatDateBR(getTaskStageDate(task,task.status)))}</div>` : ''}
 
           ${task.description ? `<p>${escapeHTML(task.description)}</p>` : ''}
 
@@ -4862,11 +5043,13 @@ body[data-theme="light"] {
         document.getElementById('taskName').value = task.name || '';
         document.getElementById('taskProject').value = task.project || state.activeProject;
         document.getElementById('taskStatus').value = task.status || state.columns[0];
+        document.getElementById('taskStageDate').value = getTaskStageDate(task, task.status) || '';
+        document.getElementById('taskStageDate').required = false;
         renderTaskOwnerOptions(task.owner || '');
         document.getElementById('taskMcid').value = task.mcid || '';
         document.getElementById('taskSellerContFlag').checked = isSellerContTask(task);
         document.getElementById('taskDescription').value = task.description || '';
-        document.getElementById('taskUpdates').value = (task.updates || []).join('\n');
+        document.getElementById('taskUpdates').value = getVisibleUpdates(task).join('\n');
         currentTaskAttachments = Array.isArray(task.attachments)
           ? task.attachments.map(file => ({ ...file }))
           : [];
@@ -4875,6 +5058,8 @@ body[data-theme="light"] {
         renderTaskOwnerOptions();
         document.getElementById('taskProject').value = state.activeProject;
         document.getElementById('taskStatus').value = state.columns[0];
+        document.getElementById('taskStageDate').value = todayLocalISO();
+        document.getElementById('taskStageDate').required = true;
         currentTaskAttachments = [];
       }
 
@@ -4914,6 +5099,8 @@ body[data-theme="light"] {
       renderTaskOwnerOptions();
       document.getElementById('taskProject').value = state.activeProject;
       document.getElementById('taskStatus').value = columnName;
+      document.getElementById('taskStageDate').value = todayLocalISO();
+      document.getElementById('taskStageDate').required = true;
       currentTaskAttachments = [];
 
       renderAttachmentManager();
@@ -4924,11 +5111,20 @@ body[data-theme="light"] {
       }, 80);
     }
 
+    function syncTaskStageDate() {
+      const task = currentEditingTaskId ? state.tasks.find(t=>t.id===currentEditingTaskId) : null;
+      const status = document.getElementById('taskStatus').value;
+      const field = document.getElementById('taskStageDate');
+      field.value = task && task.status === status ? (getTaskStageDate(task, status) || '') : todayLocalISO();
+      field.required = !task || task.status !== status;
+    }
+
     function clearForm() {
       ['taskName', 'taskOwner', 'taskMcid', 'taskDescription', 'taskUpdates'].forEach(id => {
         document.getElementById(id).value = '';
       });
 
+      document.getElementById('taskStageDate').value = '';
       const taskSellerContFlag = document.getElementById('taskSellerContFlag');
       if (taskSellerContFlag) taskSellerContFlag.checked = false;
 
@@ -4959,6 +5155,18 @@ body[data-theme="light"] {
         return;
       }
 
+      const originalTask = currentEditingTaskId ? state.tasks.find(t=>t.id===currentEditingTaskId) : null;
+      const statusChange = !originalTask || originalTask.status !== destinationStatus;
+      const stageDate = document.getElementById('taskStageDate').value;
+      if (statusChange && !validWorkflowDate(stageDate)) {
+        alert('Informe uma data válida para a situação selecionada.');
+        document.getElementById('taskStageDate').focus();
+        return;
+      }
+      if (statusChange && ['Call de onboard','Loja entregue','Venda finalizada'].includes(destinationStatus)) {
+        alert('Essa etapa possui confirmações obrigatórias. Crie o card em uma etapa comum e depois arraste-o para a etapa desejada.');
+        return;
+      }
       const updatesText = document.getElementById('taskUpdates').value.trim();
 
       const updates = updatesText
@@ -4994,6 +5202,24 @@ body[data-theme="light"] {
         return;
       }
 
+      // Preserva o histórico e o preenchimento do painel ao editar as atualizações.
+      const stageStatus = document.getElementById('taskStatus').value;
+      const selectedStageDate = document.getElementById('taskStageDate').value;
+      const stageChanged = !existingTask || existingTask.status !== stageStatus;
+      const target = existingTask || { updates: [] };
+      const originalUpdates = target.updates;
+      target.updates = withWorkflowMeta(updates, getWorkflowMeta(target));
+      if (stageChanged) {
+        recordStageMove(target, stageStatus, selectedStageDate, existingTask?.status || 'Novo card');
+      } else if (selectedStageDate && validWorkflowDate(selectedStageDate)) {
+        const meta = getWorkflowMeta(target);
+        meta.stageDates[stageStatus] = selectedStageDate;
+        if (stageStatus === 'Preenchimento do formulário') meta.formDate = selectedStageDate;
+        target.updates = withWorkflowMeta(target.updates,meta);
+      }
+      const allUpdates = target.updates;
+      target.updates = originalUpdates;
+
       const selectedOwner = document.getElementById('taskOwner').value.trim();
       const taskSellerContChecked = Boolean(document.getElementById('taskSellerContFlag')?.checked);
 
@@ -5017,7 +5243,7 @@ body[data-theme="light"] {
         pickup_date: currentEditingTaskId ? (existingTask?.pickupDate || null) : null,
         account_creation_email: currentEditingTaskId ? (existingTask?.accountCreationEmail || null) : null,
         description: document.getElementById('taskDescription').value.trim(),
-        updates,
+        updates: allUpdates,
         attachments: uploadedAttachments
       };
 
@@ -5079,7 +5305,7 @@ body[data-theme="light"] {
           deliveryCompletedAt: statusDatePatch.deliveredAt || task.deliveryCompletedAt || '',
           saleFinalizedAt: statusDatePatch.finalizedAt || task.saleFinalizedAt || '',
           description: taskData.description,
-          updates,
+          updates: allUpdates,
           attachments: uploadedAttachments
         });
       } else {
@@ -5120,7 +5346,7 @@ body[data-theme="light"] {
           deliveryCompletedAt: statusDatePatch.deliveredAt || '',
           saleFinalizedAt: statusDatePatch.finalizedAt || '',
           description: taskData.description,
-          updates,
+          updates: allUpdates,
           attachments: uploadedAttachments
         });
       }
@@ -5224,6 +5450,60 @@ body[data-theme="light"] {
       event.currentTarget.classList.remove('drag-over');
     }
 
+    function openStageDateModal(taskId, status) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task || task.status === status) return;
+      pendingStageTaskId = taskId;
+      pendingStageStatus = status;
+      document.getElementById('stageDateDestination').textContent = status;
+      document.getElementById('stageDateInput').value = todayLocalISO();
+      const button = document.getElementById('confirmStageDateButton');
+      button.disabled = false;
+      button.textContent = 'Confirmar movimentação';
+      playSound('modal');
+      document.getElementById('stageDateModal').classList.add('show');
+    }
+
+    function closeStageDateModal() {
+      document.getElementById('stageDateModal').classList.remove('show');
+      pendingStageTaskId = null;
+      pendingStageStatus = null;
+      document.getElementById('stageDateInput').value = '';
+    }
+
+    async function confirmStageDateMove() {
+      const task = state.tasks.find(t => t.id === pendingStageTaskId);
+      if (!task || !pendingStageStatus) return;
+      const date = document.getElementById('stageDateInput').value;
+      if (!validWorkflowDate(date)) {
+        alert('Preencha uma data válida para essa movimentação.');
+        document.getElementById('stageDateInput').focus();
+        return;
+      }
+      const previousStatus = task.status;
+      const previousUpdates = [...(task.updates || [])];
+      const button = document.getElementById('confirmStageDateButton');
+      button.disabled = true;
+      button.textContent = 'Salvando...';
+      task.status = pendingStageStatus;
+      recordStageMove(task, pendingStageStatus, date, previousStatus);
+      const { error } = await supabaseClient.from('sp_tasks')
+        .update({ status: task.status, updates: task.updates }).eq('id',task.id);
+      if (error) {
+        task.status = previousStatus;
+        task.updates = previousUpdates;
+        console.error(error);
+        showToast('Não foi possível salvar a data e a nova situação no Supabase.');
+        button.disabled = false;
+        button.textContent = 'Confirmar movimentação';
+        return;
+      }
+      playSound('drop');
+      closeStageDateModal();
+      renderBoard();
+      showToast(`Card movido para ${task.status} em ${formatDateBR(date)}.`);
+    }
+
     async function dropTask(event, status) {
       event.preventDefault();
       event.currentTarget.classList.remove('drag-over');
@@ -5248,54 +5528,7 @@ body[data-theme="light"] {
         return;
       }
 
-      const previousStatus = task.status;
-      const previousDeliveryCompletedAt = task.deliveryCompletedAt || '';
-      const previousSaleFinalizedAt = task.saleFinalizedAt || '';
-      const previousStoredDates = getDeliveryStatusDates(taskId);
-      const previousUpdates = Array.isArray(task.updates) ? [...task.updates] : [];
-      const today = todayLocalISO();
-
-      const movingToLojaEntregue = status === 'Loja entregue';
-
-      task.status = status;
-
-      if (movingToLojaEntregue) {
-        task.deliveryCompletedAt = task.deliveryCompletedAt || today;
-        task.saleFinalizedAt = '';
-        task.updates = appendStatusUpdate(task, 'Loja entregue', task.deliveryCompletedAt);
-        setDeliveryStatusDates(taskId, { deliveredAt: task.deliveryCompletedAt, finalizedAt: '' });
-      }
-
-      playSound('drop');
-      renderBoard();
-
-      const updatePayload = movingToLojaEntregue
-        ? {
-            status,
-            delivery_completed_at: task.deliveryCompletedAt,
-            sale_finalized_at: null,
-            updates: task.updates
-          }
-        : { status };
-
-      const { error } = await supabaseClient
-        .from('sp_tasks')
-        .update(updatePayload)
-        .eq('id', taskId);
-
-      if (error) {
-        task.status = previousStatus;
-        task.deliveryCompletedAt = previousDeliveryCompletedAt;
-        task.saleFinalizedAt = previousSaleFinalizedAt;
-        task.updates = previousUpdates;
-        replaceDeliveryStatusDates(taskId, previousStoredDates);
-        renderBoard();
-        showToast('Não consegui mover o card no Supabase.');
-        console.error(error);
-        return;
-      }
-
-      showToast(`Card movido para: ${status}`);
+      openStageDateModal(taskId, status);
     }
 
     function openOnboardModal(taskId, status) {
@@ -5304,6 +5537,7 @@ body[data-theme="light"] {
 
       pendingOnboardTaskId = taskId;
       pendingOnboardStatus = status;
+      document.getElementById('onboardStageDate').value = todayLocalISO();
 
       const spnData = getTaskSpnData(taskId);
       document.getElementById('onboardRequestSpn').value = spnData.requestSpn || '';
@@ -5326,7 +5560,7 @@ body[data-theme="light"] {
       document.getElementById('onboardModal').classList.remove('show');
       pendingOnboardTaskId = null;
       pendingOnboardStatus = null;
-      ['onboardRequestSpn','onboardSellerPhone','onboardSellerEmail'].forEach(id => {
+      ['onboardStageDate','onboardRequestSpn','onboardSellerPhone','onboardSellerEmail'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
       });
@@ -5344,6 +5578,8 @@ body[data-theme="light"] {
       const task = state.tasks.find(t => t.id === pendingOnboardTaskId);
       if (!task || !pendingOnboardStatus) return;
 
+      const onboardingDate = document.getElementById('onboardStageDate').value;
+      if (!validWorkflowDate(onboardingDate)) { alert('Informe a data da Call de onboard.'); return; }
       const requestSpn = document.getElementById('onboardRequestSpn').value;
       const phone = document.getElementById('onboardSellerPhone').value.trim();
       const email = document.getElementById('onboardSellerEmail').value.trim();
@@ -5400,7 +5636,8 @@ body[data-theme="light"] {
         const previousUpdates = Array.isArray(task.updates) ? [...task.updates] : [];
         task.status = pendingOnboardStatus;
         task.spnConfirmed = true;
-        task.updates = appendStatusUpdate(task, `Solicitar SPN: ${requestSpn}. Autorizado: ${authorization}`);
+        task.updates = appendStatusUpdate(task, `Solicitar SPN: ${requestSpn}. Autorizado: ${authorization}`, onboardingDate);
+        recordStageMove(task, pendingOnboardStatus, onboardingDate, previousStatus);
         setSpnConfirmationFlag(task.id, true);
         renderBoard();
 
@@ -5411,6 +5648,7 @@ body[data-theme="light"] {
 
         if (error) {
           task.status = previousStatus;
+          task.spnConfirmed = Boolean(getSpnConfirmationFlag(task.id));
           task.updates = previousUpdates;
           renderBoard();
           throw error;
@@ -5530,6 +5768,7 @@ body[data-theme="light"] {
       task.deliveryCompletedAt = task.deliveryCompletedAt || finalizedAt;
       task.saleFinalizedAt = finalizedAt;
       task.updates = appendStatusUpdate(task, 'Venda finalizada', finalizedAt);
+      recordStageMove(task, pendingSaleFinalizedStatus, finalizedAt, previousStatus);
       setDeliveryStatusDates(task.id, {
         deliveredAt: task.deliveryCompletedAt,
         finalizedAt
@@ -5733,9 +5972,9 @@ body[data-theme="light"] {
       const checked = Boolean(document.getElementById('deliverySellerContFlag')?.checked);
 
       document.querySelectorAll('.seller-cont-only-field').forEach(field => {
-        field.classList.toggle('is-hidden', !checked);
+        field.classList.remove('is-hidden');
         field.querySelectorAll('input, select, textarea').forEach(input => {
-          input.required = checked;
+          input.required = true;
         });
       });
     }
@@ -5749,6 +5988,7 @@ body[data-theme="light"] {
       pendingDeliveryStatus = status;
 
       document.getElementById('deliveryCompletedDate').value = task.deliveryCompletedAt || todayLocalISO();
+      document.getElementById('deliveryFormDate').value = getTaskFormDate(task) || '';
       document.getElementById('deliverySpnEvaluation').value = getTaskSpnData(taskId).evaluation || '';
       document.getElementById('deliveryBillingDate').value = task.billingConfigDate || '';
       document.getElementById('deliveryShipmentDate').value = task.shipmentDate || '';
@@ -5778,6 +6018,7 @@ body[data-theme="light"] {
 
       [
         'deliveryCompletedDate',
+        'deliveryFormDate',
         'deliveryBillingDate',
         'deliveryShipmentDate',
         'deliveryPickupDate',
@@ -5852,6 +6093,7 @@ body[data-theme="light"] {
       if (!task || !pendingDeliveryStatus) return;
 
       const deliveryData = {
+        form_date: document.getElementById('deliveryFormDate').value,
         delivery_completed_at: document.getElementById('deliveryCompletedDate').value,
         billing_config_date: document.getElementById('deliveryBillingDate').value,
         shipment_date: document.getElementById('deliveryShipmentDate').value,
@@ -5871,19 +6113,22 @@ body[data-theme="light"] {
         return;
       }
 
-      const requiredFields = deliveryData.is_seller_cont
-        ? [
-            deliveryData.delivery_completed_at,
-            deliveryData.billing_config_date,
-            deliveryData.shipment_date,
-            deliveryData.pickup_date,
-            deliveryData.mcid,
-            deliveryData.account_creation_email,
-            deliveryData.phone,
-            deliveryData.product_sent,
-            deliveryData.seller_cont_status
-          ]
-        : [deliveryData.delivery_completed_at, deliveryData.mcid];
+      const requiredFields = [
+        deliveryData.form_date,
+        deliveryData.delivery_completed_at,
+        deliveryData.billing_config_date,
+        deliveryData.shipment_date,
+        deliveryData.pickup_date,
+        deliveryData.mcid,
+        deliveryData.account_creation_email,
+        deliveryData.phone,
+        deliveryData.product_sent,
+        deliveryData.seller_cont_status
+      ];
+      if (![deliveryData.form_date, deliveryData.delivery_completed_at, deliveryData.billing_config_date,
+            deliveryData.shipment_date, deliveryData.pickup_date].every(validWorkflowDate)) {
+        alert('Informe todas as datas do painel de acompanhamento.'); return;
+      }
 
       requiredFields.push(deliveryData.spn_evaluation);
 
@@ -5938,6 +6183,11 @@ body[data-theme="light"] {
       task.deliveryCompletedAt = deliveryData.delivery_completed_at;
       task.saleFinalizedAt = '';
       task.updates = appendStatusUpdate(task, 'Loja entregue', task.deliveryCompletedAt);
+      setTaskFormDate(task, deliveryData.form_date);
+      const deliveryMeta = getWorkflowMeta(task);
+      deliveryMeta.panel = { phone: deliveryData.phone, product: deliveryData.product_sent };
+      task.updates = withWorkflowMeta(task.updates, deliveryMeta);
+      recordStageMove(task, pendingDeliveryStatus, deliveryData.delivery_completed_at, previousStatus);
       setDeliveryStatusDates(task.id, { deliveredAt: task.deliveryCompletedAt });
 
       renderBoard();
@@ -6129,6 +6379,101 @@ body[data-theme="light"] {
       }, 120);
     }
 
+    function openTrackingPanel(taskId) {
+      const task = state.tasks.find(t=>t.id===taskId);
+      if (!task) return;
+      closeTaskDetails();
+      trackingPanelTaskId = taskId;
+      const values = {
+        trackingFormDate: getTaskFormDate(task),
+        trackingShipmentDate: task.shipmentDate,
+        trackingPickupDate: task.pickupDate,
+        trackingBillingDate: task.billingConfigDate,
+        trackingMcid: task.mcid,
+        trackingPhone: task.deliveryPhone,
+        trackingEmail: task.accountCreationEmail,
+        trackingProduct: task.deliveryProductSent
+      };
+      for (const [id,value] of Object.entries(values)) document.getElementById(id).value = value || '';
+      document.getElementById('trackingPanelModal').classList.add('show');
+    }
+
+    function closeTrackingPanel() {
+      document.getElementById('trackingPanelModal').classList.remove('show');
+      trackingPanelTaskId = null;
+    }
+
+    async function saveTrackingPanel() {
+      const task = state.tasks.find(t => t.id === trackingPanelTaskId);
+      if (!task) return;
+      const inputIds = ['trackingFormDate','trackingShipmentDate','trackingPickupDate','trackingBillingDate',
+        'trackingMcid','trackingPhone','trackingEmail','trackingProduct'];
+      for (const id of inputIds) {
+        const el = document.getElementById(id);
+        if (!String(el.value || '').trim() || !el.checkValidity()) {
+          el.reportValidity(); el.focus();
+          alert('Todos os campos do painel são obrigatórios.');
+          return;
+        }
+      }
+      const values = Object.fromEntries(inputIds.map(id => [id,document.getElementById(id).value.trim()]));
+      if (!['trackingFormDate','trackingShipmentDate','trackingPickupDate','trackingBillingDate']
+           .every(id => validWorkflowDate(values[id]))) {
+        alert('Confira as datas informadas.'); return;
+      }
+      const originalUpdates = [...(task.updates || [])];
+      const meta = getWorkflowMeta(task);
+      meta.formDate = values.trackingFormDate;
+      meta.stageDates['Preenchimento do formulário'] = values.trackingFormDate;
+      meta.panel = { ...(meta.panel || {}), phone: values.trackingPhone, product: values.trackingProduct };
+      task.updates = withWorkflowMeta(task.updates,meta);
+      const button = document.getElementById('saveTrackingPanelButton');
+      button.disabled = true;
+      button.textContent = 'Salvando...';
+      const taskPayload = {
+        mcid: values.trackingMcid,
+        shipment_date: values.trackingShipmentDate,
+        pickup_date: values.trackingPickupDate,
+        billing_config_date: values.trackingBillingDate,
+        account_creation_email: values.trackingEmail,
+        updates: task.updates
+      };
+      try {
+        const {error} = await supabaseClient.from('sp_tasks').update(taskPayload).eq('id',task.id);
+        if (error) throw error;
+        // Cards já entregues têm um segundo registro, utilizado pelas integrações existentes.
+        if (task.status === 'Loja entregue' || task.status === 'Venda finalizada') {
+          const { error: deliveryError } = await supabaseClient.from('sp_lojas_entregues').update({
+            mcid: values.trackingMcid,
+            data_primeiro_envio: values.trackingShipmentDate,
+            data_coleta: values.trackingPickupDate,
+            data_conf_faturador: values.trackingBillingDate,
+            email: values.trackingEmail,
+            telefone: values.trackingPhone,
+            produto_que_enviou: values.trackingProduct
+          }).eq('task_id', String(task.id));
+          if (deliveryError) console.warn('Painel atualizado no card; não foi possível atualizar o registro da loja entregue.', deliveryError);
+        }
+        Object.assign(task, {
+          mcid: values.trackingMcid, shipmentDate: values.trackingShipmentDate,
+          pickupDate: values.trackingPickupDate, billingConfigDate: values.trackingBillingDate,
+          accountCreationEmail: values.trackingEmail, deliveryPhone: values.trackingPhone,
+          deliveryProductSent: values.trackingProduct
+        });
+        closeTrackingPanel();
+        renderBoard();
+        openTaskDetails(task.id);
+        showToast('Painel completo salvo com sucesso.');
+      } catch (error) {
+        task.updates = originalUpdates;
+        console.error(error);
+        showToast('Não consegui salvar o painel no Supabase.');
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Salvar painel completo';
+      }
+    }
+
     function openTaskDetails(taskId) {
       const task = state.tasks.find(t => t.id === taskId);
 
@@ -6136,8 +6481,9 @@ body[data-theme="light"] {
 
       document.getElementById('detailTitle').textContent = task.name;
 
-      const updates = (task.updates || []).length
-        ? `<ul>${task.updates.map(update => `<li>${escapeHTML(update)}</li>`).join('')}</ul>`
+      const visibleUpdates = getVisibleUpdates(task);
+      const updates = visibleUpdates.length
+        ? `<ul>${visibleUpdates.map(update => `<li>${escapeHTML(update)}</li>`).join('')}</ul>`
         : '<p>Nenhuma atualização ainda.</p>';
 
       const attachments = Array.isArray(task.attachments) && task.attachments.length
@@ -6188,6 +6534,18 @@ body[data-theme="light"] {
 
           ${sellerContDetailTemplate(task)}
           ${deliveryControlDetailTemplate(task)}
+          <div class="detail-box">
+            <small>Data do preenchimento do formulário</small>
+            <strong>${escapeHTML(formatDateBR(getTaskFormDate(task)))}</strong>
+          </div>
+          <div class="detail-box">
+            <small>Data da etapa atual</small>
+            <strong>${escapeHTML(formatDateBR(getTaskStageDate(task,task.status)))}</strong>
+          </div>
+          <div class="detail-box full">
+            <small>Datas registradas em todas as etapas</small>
+            ${stageDatesTemplate(task)}
+          </div>
 
           <div class="detail-box">
             <small>E-mail criação de conta</small>
@@ -6242,6 +6600,7 @@ body[data-theme="light"] {
 
         <div class="detail-actions">
           <button class="btn secondary" onclick="closeTaskDetails()">Fechar</button>
+          <button class="btn secondary" onclick="openTrackingPanel('${escapeHTML(task.id)}')">Preencher painel</button>
           <button class="btn" onclick="editTaskFromDetails('${escapeHTML(task.id)}')">Editar trabalho</button>
         </div>
       `;
