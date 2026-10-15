@@ -7,8 +7,6 @@
 
   
   <style>
-500;600;700;800;900&display=swap"[bad string]
-
 
     * {
       box-sizing: border-box;
@@ -2823,6 +2821,166 @@ body[data-theme="light"] .modal::-webkit-scrollbar-thumb { background: #cbd5e1; 
   body[data-theme="light"] .column { flex-basis: 84vw; width: 84vw; }
   body[data-theme="light"] .board { height: 65vh; }
 }
+
+/* Correções de layout do tema Claro (Kanban Atlas) — preserva o tema Escuro. */
+.board-scroll-track { display: none; }
+.card-resize-handle { display: none; }
+
+body[data-theme="light"] .board-area {
+  grid-template-rows: auto minmax(0, 1fr) 20px;
+  min-height: 0;
+  overflow: hidden;
+}
+body[data-theme="light"] .board-wrap {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+body[data-theme="light"] .board {
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
+  padding: 2px 3px 8px 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* A barra visível fica logo abaixo do quadro. */
+}
+body[data-theme="light"] .board::-webkit-scrollbar { height: 0; }
+body[data-theme="light"] .board-scroll-track {
+  display: block;
+  box-sizing: border-box;
+  height: 20px;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: auto;
+  scrollbar-color: #94a3b8 #e2e8f0;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f1f5f9;
+}
+body[data-theme="light"] .board-scroll-track:not(.has-overflow) { opacity: .35; }
+body[data-theme="light"] .board-scroll-track::-webkit-scrollbar { height: 14px; }
+body[data-theme="light"] .board-scroll-track::-webkit-scrollbar-track {
+  background: #e2e8f0; border-radius: 8px;
+}
+body[data-theme="light"] .board-scroll-track::-webkit-scrollbar-thumb {
+  background: #94a3b8; border-radius: 8px; border: 2px solid #e2e8f0;
+}
+body[data-theme="light"] .board-scroll-track::-webkit-scrollbar-thumb:hover { background: #64748b; }
+body[data-theme="light"] .board-scroll-spacer { height: 1px; pointer-events: none; }
+
+/* Dimensões consistentes para cards simples e para cards com muitos dados. */
+body[data-theme="light"] .cards { overflow-y: auto; overflow-x: hidden; min-height: 0; }
+body[data-theme="light"] .card {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 205px;
+  height: auto;
+  max-height: min(620px, 78vh);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+  overflow-wrap: anywhere;
+}
+body[data-theme="light"] .card * { min-width: 0; }
+body[data-theme="light"] .card .owner-highlight,
+body[data-theme="light"] .card .update-box,
+body[data-theme="light"] .card .card-actions { flex-shrink: 0; }
+body[data-theme="light"] .card .owner-info { flex: 1; }
+body[data-theme="light"] .card .owner-info strong { overflow-wrap: anywhere; }
+body[data-theme="light"] .card .meta { max-width: 100%; }
+body[data-theme="light"] .card .pill { overflow-wrap: anywhere; max-width: 100%; }
+body[data-theme="light"] .card .update-box { height: auto; }
+body[data-theme="light"] .card .card-actions { margin-top: 8px; flex-wrap: wrap; }
+body[data-theme="light"] .card .mini-btn { min-width: 55px; }
+body[data-theme="light"] .card .attachment-summary-button { max-width: 100%; }
+body[data-theme="light"] .card.card-is-resizing { transition: none; cursor: ns-resize; user-select: none; }
+body[data-theme="light"] .card-resize-handle {
+  display: block;
+  box-sizing: border-box;
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  align-self: flex-end;
+  flex: 0 0 22px;
+  width: 30px;
+  height: 22px;
+  margin: 1px -8px -9px 0;
+  border-radius: 6px 0 4px 0;
+  cursor: ns-resize;
+  touch-action: none;
+  background: linear-gradient(135deg, transparent 48%, #94a3b8 49%, #94a3b8 54%, transparent 55%) bottom right / 15px 15px no-repeat;
+  opacity: .9;
+}
+body[data-theme="light"] .card-resize-handle:hover,
+body[data-theme="light"] .card-resize-handle:focus-visible {
+  outline: 1px solid #60a5fa;
+  background-color: #dbeafe;
+  opacity: 1;
+}
+@media (max-width: 1100px) {
+  body[data-theme="light"] .board { height: 100%; min-height: 0; }
+  body[data-theme="light"] .board-wrap { height: min(65vh, 650px); min-height: 420px; }
+  body[data-theme="light"] .board-area { grid-template-rows: auto auto 20px; }
+}
+@media (max-width: 700px) {
+  body[data-theme="light"] .board-wrap { height: 65vh; min-height: 430px; }
+  body[data-theme="light"] .board { height: 100%; min-height: 0; }
+}
+
+/* Barra acompanha diretamente o gesto de arrastar, sem suavização ou snap. */
+body[data-theme="light"] .board { scroll-behavior: auto; scroll-snap-type: none; }
+/* Alça de rolagem visível mesmo em sistemas com scrollbar sobreposta/oculta. */
+.board-scroll-container { display: none; }
+body[data-theme="light"] .board-scroll-container {
+  display: block;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  height: 20px;
+  background: #e2e8f0;
+  border-radius: 9px;
+  border: 1px solid #cbd5e1;
+}
+body[data-theme="light"] .board-scroll-container:not(.has-overflow) { opacity: .4; }
+body[data-theme="light"] .board-scroll-track {
+  position: absolute;
+  display: block;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+body[data-theme="light"] .board-scroll-track::-webkit-scrollbar { display: none; }
+body[data-theme="light"] .board-scroll-visible-thumb {
+  display: block;
+  position: absolute;
+  z-index: 3;
+  left: 3px;
+  top: 3px;
+  height: 12px;
+  min-width: 60px;
+  border-radius: 999px;
+  background: #64748b;
+  border: 1px solid #475569;
+  cursor: grab;
+  touch-action: none;
+  box-shadow: 0 1px 2px rgba(15,23,42,.13);
+}
+body[data-theme="light"] .board-scroll-visible-thumb:hover,
+body[data-theme="light"] .board-scroll-visible-thumb:focus-visible { background: #475569; outline: 2px solid #93c5fd; }
+body[data-theme="light"] .board-scroll-visible-thumb.dragging { cursor: grabbing; background: #2563eb; }
 </style>
 </head>
 
@@ -2931,6 +3089,15 @@ body[data-theme="light"] .modal::-webkit-scrollbar-thumb { background: #cbd5e1; 
 
         <div class="board-wrap">
           <section class="board" id="board"></section>
+        </div>
+        <div class="board-scroll-container" id="boardScrollContainer" aria-label="Navegação horizontal do Kanban">
+          <div class="board-scroll-track" id="boardScrollTrack" aria-label="Barra de rolagem horizontal das colunas" title="Arraste para navegar entre as colunas" tabindex="0" onclick="jumpBoardScroll(event)">
+            <div class="board-scroll-spacer" id="boardScrollSpacer"></div>
+          </div>
+          <div class="board-scroll-visible-thumb" id="boardScrollThumb" role="slider" tabindex="0"
+            aria-label="Posição horizontal do Kanban" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+            title="Arraste para navegar à esquerda ou à direita"
+            onpointerdown="startBoardThumbDrag(event)" onkeydown="boardThumbKeydown(event)" onclick="event.stopPropagation()"></div>
         </div>
       </section>
     </main>
@@ -3651,6 +3818,7 @@ body[data-theme="light"] .modal::-webkit-scrollbar-thumb { background: #cbd5e1; 
       document.body.setAttribute('data-theme', normalizedTheme);
       const selector = document.getElementById('aresThemeSelect');
       if (selector && selector.value !== normalizedTheme) selector.value = normalizedTheme;
+      requestAnimationFrame(syncBoardScrollbar);
     }
 
     function changeAresTheme(theme) {
@@ -4192,6 +4360,7 @@ body[data-theme="light"] .modal::-webkit-scrollbar-thumb { background: #cbd5e1; 
           </div>
         `;
       }).join('');
+      requestAnimationFrame(syncBoardScrollbar);
     }
 
     function getInitials(name) {
@@ -4798,6 +4967,93 @@ body[data-theme="light"] .modal::-webkit-scrollbar-thumb { background: #cbd5e1; 
       `;
     }
 
+    const ARES_CARD_HEIGHTS_KEY = 'sellerProAresCardHeights';
+    let cardCustomHeights = {};
+    try {
+      const loadedCardHeights = JSON.parse(localStorage.getItem(ARES_CARD_HEIGHTS_KEY) || '{}');
+      if (loadedCardHeights && typeof loadedCardHeights === 'object' && !Array.isArray(loadedCardHeights)) {
+        cardCustomHeights = loadedCardHeights;
+      }
+    } catch (_) { /* Mantém o quadro utilizável caso a preferência não exista. */ }
+
+    function saveCardCustomHeights() {
+      try { localStorage.setItem(ARES_CARD_HEIGHTS_KEY, JSON.stringify(cardCustomHeights)); }
+      catch (_) { /* Em navegadores com armazenamento restrito, o ajuste permanece nesta sessão. */ }
+    }
+
+    function aresCardHeightStyle(taskId) {
+      const saved = Number(cardCustomHeights[String(taskId)]);
+      if (!Number.isFinite(saved) || saved < 210 || saved > 950) return '';
+      return ` style="height:${Math.round(saved)}px;max-height:${Math.round(saved)}px;overflow-y:auto"`;
+    }
+
+    // Apenas visual: alça de redimensionamento dos cards no tema Claro.
+    function startCardResize(event) {
+      if (document.body.dataset.theme !== 'light' || (event.pointerType === 'mouse' && event.button !== 0)) return;
+      const handle = event.currentTarget;
+      const card = handle.closest('.card');
+      if (!card) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const taskId = card.dataset.taskId;
+      const startY = event.clientY;
+      const originalHeight = card.getBoundingClientRect().height;
+      card.draggable = false;
+      card.classList.add('card-is-resizing');
+      handle.setPointerCapture?.(event.pointerId);
+
+      function move(e) {
+        if (e.pointerId !== event.pointerId) return;
+        const newHeight = Math.max(210, Math.min(950, Math.round(originalHeight + e.clientY - startY)));
+        card.style.height = `${newHeight}px`;
+        card.style.maxHeight = `${newHeight}px`;
+        card.style.overflowY = 'auto';
+      }
+      function stop(e) {
+        if (e.pointerId !== event.pointerId) return;
+        handle.removeEventListener('pointermove', move);
+        handle.removeEventListener('pointerup', stop);
+        handle.removeEventListener('pointercancel', stop);
+        card.classList.remove('card-is-resizing');
+        card.draggable = true;
+        const finalHeight = Math.max(210, Math.min(950, Math.round(card.getBoundingClientRect().height)));
+        card.style.height = `${finalHeight}px`;
+        card.style.maxHeight = `${finalHeight}px`;
+        cardCustomHeights[String(taskId)] = finalHeight;
+        saveCardCustomHeights();
+      }
+      handle.addEventListener('pointermove', move);
+      handle.addEventListener('pointerup', stop);
+      handle.addEventListener('pointercancel', stop);
+    }
+
+    function resetCardResize(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      const card = event.currentTarget.closest('.card');
+      if (!card) return;
+      delete cardCustomHeights[String(card.dataset.taskId)];
+      card.style.height = '';
+      card.style.maxHeight = '';
+      card.style.overflowY = '';
+      saveCardCustomHeights();
+    }
+
+    function resizeCardWithKeyboard(event) {
+      if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+      const card = event.currentTarget.closest('.card');
+      if (!card) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const delta = event.key === 'ArrowUp' ? -30 : 30;
+      const height = Math.max(210, Math.min(950, Math.round(card.getBoundingClientRect().height + delta)));
+      card.style.height = `${height}px`;
+      card.style.maxHeight = `${height}px`;
+      card.style.overflowY = 'auto';
+      cardCustomHeights[String(card.dataset.taskId)] = height;
+      saveCardCustomHeights();
+    }
+
     function taskTemplate(task) {
       const isSellerCont = isSellerContTask(task);
       const sellerContClass = isSellerCont ? ' seller-cont-card' : '';
@@ -4806,7 +5062,7 @@ body[data-theme="light"] .modal::-webkit-scrollbar-thumb { background: #cbd5e1; 
       const updateAgeLabel = formatUpdateAge(lastUpdateInfo.days);
 
       return `
-        <article class="card${sellerContClass}${deliveryClass}" data-task-id="${escapeHTML(task.id)}" draggable="true" onclick="openTaskDetails('${escapeHTML(task.id)}')" ondragstart="dragStart(event, '${escapeHTML(task.id)}')" ondragend="dragEnd(event)">
+        <article class="card${sellerContClass}${deliveryClass}" data-task-id="${escapeHTML(task.id)}"${aresCardHeightStyle(task.id)} draggable="true" onclick="openTaskDetails('${escapeHTML(task.id)}')" ondragstart="dragStart(event, '${escapeHTML(task.id)}')" ondragend="dragEnd(event)">
           <h3>${escapeHTML(task.name)}</h3>
 
           <div class="owner-highlight">
@@ -4843,6 +5099,11 @@ body[data-theme="light"] .modal::-webkit-scrollbar-thumb { background: #cbd5e1; 
             <button class="mini-btn" onclick="event.stopPropagation(); addUpdate('${escapeHTML(task.id)}')">Atualizar</button>
             <button class="mini-btn" onclick="event.stopPropagation(); removeTask('${escapeHTML(task.id)}')">Excluir</button>
           </div>
+          <span class="card-resize-handle" role="button" tabindex="0"
+            aria-label="Arraste para redimensionar o card. Dois cliques para restaurar."
+            title="Arraste para aumentar ou diminuir. Dois cliques para restaurar."
+            onpointerdown="startCardResize(event)" onclick="event.stopPropagation()"
+            ondblclick="resetCardResize(event)" onkeydown="resizeCardWithKeyboard(event)"></span>
         </article>
       `;
     }
@@ -6551,6 +6812,106 @@ body[data-theme="light"] .modal::-webkit-scrollbar-thumb { background: #cbd5e1; 
 
       showToast('Loja entregue salva no Supabase e enviada para a planilha.');
     }
+    function syncBoardScrollbar() {
+      const kanban = document.getElementById('board');
+      const track = document.getElementById('boardScrollTrack');
+      const spacer = document.getElementById('boardScrollSpacer');
+      const shell = document.getElementById('boardScrollContainer');
+      if (!kanban || !track || !spacer || !shell) return;
+      spacer.style.width = `${Math.max(1, kanban.scrollWidth)}px`;
+      const needsScroll = kanban.scrollWidth > kanban.clientWidth + 2;
+      shell.classList.toggle('has-overflow', needsScroll);
+      track.scrollLeft = kanban.scrollLeft;
+      updateBoardVisibleThumb();
+    }
+
+    function updateBoardVisibleThumb() {
+      const boardEl = document.getElementById('board');
+      const shell = document.getElementById('boardScrollContainer');
+      const thumb = document.getElementById('boardScrollThumb');
+      if (!boardEl || !shell || !thumb) return;
+      const trackWidth = Math.max(1, shell.clientWidth - 6);
+      const overflow = Math.max(0, boardEl.scrollWidth - boardEl.clientWidth);
+      const width = overflow ? Math.max(60, Math.min(trackWidth, trackWidth * boardEl.clientWidth / boardEl.scrollWidth)) : trackWidth;
+      const start = overflow ? (boardEl.scrollLeft / overflow) * (trackWidth - width) : 0;
+      thumb.style.width = `${width}px`;
+      thumb.style.left = `${Math.max(3, start + 3)}px`;
+      thumb.setAttribute('aria-valuenow', String(overflow ? Math.round(boardEl.scrollLeft / overflow * 100) : 0));
+    }
+
+    function startBoardThumbDrag(event) {
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
+      const thumb = event.currentTarget;
+      const shell = document.getElementById('boardScrollContainer');
+      const boardEl = document.getElementById('board');
+      if (!shell || !boardEl) return;
+      event.preventDefault();
+      event.stopPropagation();
+      thumb.setPointerCapture(event.pointerId);
+      const initialX = event.clientX;
+      const original = boardEl.scrollLeft;
+      const maxScroll = Math.max(0, boardEl.scrollWidth - boardEl.clientWidth);
+      const travel = Math.max(1, shell.clientWidth - 6 - thumb.getBoundingClientRect().width);
+      thumb.classList.add('dragging');
+      const move = e => {
+        if (e.pointerId !== event.pointerId) return;
+        boardEl.scrollLeft = Math.max(0, Math.min(maxScroll, original + (e.clientX - initialX) * maxScroll / travel));
+        updateBoardVisibleThumb();
+      };
+      const stop = e => {
+        if (e.pointerId !== event.pointerId) return;
+        thumb.removeEventListener('pointermove', move);
+        thumb.removeEventListener('pointerup', stop);
+        thumb.removeEventListener('pointercancel', stop);
+        thumb.classList.remove('dragging');
+      };
+      thumb.addEventListener('pointermove', move);
+      thumb.addEventListener('pointerup', stop);
+      thumb.addEventListener('pointercancel', stop);
+    }
+
+    function boardThumbKeydown(event) {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      const el = document.getElementById('board');
+      if (el) el.scrollLeft += event.key === 'ArrowLeft' ? -130 : 130;
+      updateBoardVisibleThumb();
+    }
+
+    function jumpBoardScroll(event) {
+      if (document.body.dataset.theme !== 'light') return;
+      const shell = document.getElementById('boardScrollContainer');
+      const boardEl = document.getElementById('board');
+      if (!shell || !boardEl) return;
+      const rect = shell.getBoundingClientRect();
+      const position = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+      boardEl.scrollLeft = position * Math.max(0, boardEl.scrollWidth - boardEl.clientWidth);
+      updateBoardVisibleThumb();
+    }
+
+    function setupBoardScrollbar() {
+      const kanban = document.getElementById('board');
+      const track = document.getElementById('boardScrollTrack');
+      const wrapper = document.querySelector('.board-wrap');
+      if (!kanban || !track || track.dataset.wired) return;
+      track.dataset.wired = 'true';
+      track.addEventListener('scroll', () => {
+        if (kanban.scrollLeft !== track.scrollLeft) kanban.scrollLeft = track.scrollLeft;
+        updateBoardVisibleThumb();
+      }, { passive: true });
+      kanban.addEventListener('scroll', () => {
+        if (track.scrollLeft !== kanban.scrollLeft) track.scrollLeft = kanban.scrollLeft;
+        updateBoardVisibleThumb();
+      }, { passive: true });
+      window.addEventListener('resize', syncBoardScrollbar, { passive: true });
+      if ('ResizeObserver' in window && wrapper) {
+        const observer = new ResizeObserver(syncBoardScrollbar);
+        observer.observe(wrapper);
+        observer.observe(kanban);
+      }
+      requestAnimationFrame(syncBoardScrollbar);
+    }
+
     function scrollBoard(direction) {
       const boardElement = document.getElementById('board');
       const amount = Math.max(320, Math.floor(boardElement.clientWidth * 0.75));
@@ -7101,6 +7462,7 @@ body[data-theme="light"] .modal::-webkit-scrollbar-thumb { background: #cbd5e1; 
     });
 
     setupGlobalSoundEvents();
+    setupBoardScrollbar();
     window.SellerProApp.ready
       .then(() => initApp())
       .catch(error => console.error('Falha na autenticação do Ares:', error));
