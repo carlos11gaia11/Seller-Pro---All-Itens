@@ -2513,10 +2513,10 @@
   <script src="../assets/js/file-session.js?v=20260720-loginfix2"></script>
   <script src="../assets/js/app-core.js?v=20260818-eng3"></script>
 
-<style id="ares-clear-theme">
-/* Modo Claro: aparência clara do Ares, sem alterar funcionalidades do Ares. */
-.ares-visual-rail, .ares-visual-page-eyebrow, .ares-visual-headline-title, .ares-visual-project-summary,
-.ares-visual-month-chip, .ares-visual-project-count { display: none; }
+<style id="ares-kanban-atlas-theme">
+/* Modo Claro: aparência Kanban Atlas, sem alterar funcionalidades do Ares. */
+.atlas-rail, .atlas-page-eyebrow, .atlas-headline-title, .atlas-project-summary,
+.atlas-month-chip, .atlas-project-count { display: none; }
 .ares-theme-control { display: flex; align-items: center; gap: 7px; min-height: 43px;
   padding: 5px 10px; border: 1px solid var(--border); border-radius: 14px;
   background: var(--field-bg); color: var(--text); font-size: 12px; font-weight: 700; }
@@ -2548,38 +2548,38 @@ body[data-theme="light"] .app {
   display: grid; grid-template-columns: 256px 260px minmax(0,1fr);
   min-height: 100vh; height: 100vh; overflow: hidden; background: #f8fafc;
 }
-body[data-theme="light"] .ares-visual-rail {
+body[data-theme="light"] .atlas-rail {
   display: flex; position: sticky; top: 0; height: 100vh;
   min-width: 0; flex-direction: column; color: #cbd5e1;
   background: linear-gradient(180deg, #0f172a, #1e1b4b);
   border-right: 1px solid rgba(255,255,255,.06); overflow-y: auto;
 }
-body[data-theme="light"] .ares-visual-rail-brand {
+body[data-theme="light"] .atlas-rail-brand {
   display: flex; align-items: center; gap: 12px; height: 67px;
   flex-shrink: 0; padding: 0 19px; border-bottom: 1px solid rgba(255,255,255,.08);
 }
-body[data-theme="light"] .ares-visual-rail-logo { width: 34px; height: 34px; border-radius: 9px;
+body[data-theme="light"] .atlas-rail-logo { width: 34px; height: 34px; border-radius: 9px;
   display: grid; place-items: center; flex-shrink: 0; color: white; font-size: 23px;
   background: linear-gradient(135deg,#6366f1,#7c3aed); box-shadow: 0 5px 15px rgba(99,102,241,.15); }
-body[data-theme="light"] .ares-visual-rail-brand strong { color: white; font-size: 14px; display: block; letter-spacing: -.025em; }
-body[data-theme="light"] .ares-visual-rail-brand small { color: #94a3b8; font-size: 11px; }
-body[data-theme="light"] .ares-visual-rail-nav { padding: 23px 12px; flex: 1; }
-body[data-theme="light"] .ares-visual-rail-section { padding: 0 12px 9px;
+body[data-theme="light"] .atlas-rail-brand strong { color: white; font-size: 14px; display: block; letter-spacing: -.025em; }
+body[data-theme="light"] .atlas-rail-brand small { color: #94a3b8; font-size: 11px; }
+body[data-theme="light"] .atlas-rail-nav { padding: 23px 12px; flex: 1; }
+body[data-theme="light"] .atlas-rail-section { padding: 0 12px 9px;
   color: #94a3b8; font-size: 10px; font-weight: 700; letter-spacing: .12em; }
-body[data-theme="light"] .ares-visual-rail-section-later { margin-top: 28px; }
-body[data-theme="light"] .ares-visual-rail-active, body[data-theme="light"] .ares-visual-rail-muted {
+body[data-theme="light"] .atlas-rail-section-later { margin-top: 28px; }
+body[data-theme="light"] .atlas-rail-active, body[data-theme="light"] .atlas-rail-muted {
   display: flex; gap: 11px; align-items: center; font-weight: 550; font-size: 13px;
   padding: 11px 12px; border-radius: 8px; }
-body[data-theme="light"] .ares-visual-rail-active { background: rgba(99,102,241,.21); color: white;
+body[data-theme="light"] .atlas-rail-active { background: rgba(99,102,241,.21); color: white;
   box-shadow: inset 0 0 0 1px rgba(129,140,248,.23); }
-body[data-theme="light"] .ares-visual-rail-active > span,
-body[data-theme="light"] .ares-visual-rail-muted > span { display: inline-block; width: 18px; font-size: 19px; text-align: center; }
-body[data-theme="light"] .ares-visual-rail-muted { color: #a0aec4; }
-body[data-theme="light"] .ares-visual-rail-footer { display: flex; gap: 10px; align-items: center;
+body[data-theme="light"] .atlas-rail-active > span,
+body[data-theme="light"] .atlas-rail-muted > span { display: inline-block; width: 18px; font-size: 19px; text-align: center; }
+body[data-theme="light"] .atlas-rail-muted { color: #a0aec4; }
+body[data-theme="light"] .atlas-rail-footer { display: flex; gap: 10px; align-items: center;
   border-top: 1px solid rgba(255,255,255,.08); padding: 16px 18px; color: #fff; font-size: 12px; }
-body[data-theme="light"] .ares-visual-rail-footer-mark { background: #dbeafe; color: #1d4ed8; width: 32px; height: 32px;
+body[data-theme="light"] .atlas-rail-footer-mark { background: #dbeafe; color: #1d4ed8; width: 32px; height: 32px;
   border-radius: 50%; display: grid; place-items: center; font-weight: 750; }
-body[data-theme="light"] .ares-visual-rail-footer small { color: #94a3b8; }
+body[data-theme="light"] .atlas-rail-footer small { color: #94a3b8; }
 
 /* Pasta e ações da lateral original: sem alterações de funcionalidade. */
 body[data-theme="light"] .app > aside#sidebar {
@@ -2607,18 +2607,18 @@ body[data-theme="light"] .project:hover { background: #f8fafc; border-color: tra
   box-shadow: none; transform: none; }
 body[data-theme="light"] .project.active { background: #eff6ff; border-color: transparent;
   box-shadow: inset 3px 0 0 #2563eb; transform: none; }
-body[data-theme="light"] .ares-visual-month-chip { display: flex; align-items: center; justify-content: center;
+body[data-theme="light"] .atlas-month-chip { display: flex; align-items: center; justify-content: center;
   flex-direction: column; grid-row: 1/4; grid-column: 1; width: 39px; height: 39px;
   background: #f1f5f9; border-radius: 8px; color: #475569; }
-body[data-theme="light"] .ares-visual-month-chip b { font-weight: 750; font-size: 10px; text-transform: uppercase; }
-body[data-theme="light"] .ares-visual-month-chip small { font-weight: 500; font-size: 11px; line-height: 1.2; }
-body[data-theme="light"] .project.active .ares-visual-month-chip { background: #2563eb; color: white; }
+body[data-theme="light"] .atlas-month-chip b { font-weight: 750; font-size: 10px; text-transform: uppercase; }
+body[data-theme="light"] .atlas-month-chip small { font-weight: 500; font-size: 11px; line-height: 1.2; }
+body[data-theme="light"] .project.active .atlas-month-chip { background: #2563eb; color: white; }
 body[data-theme="light"] .project strong { grid-column: 2; grid-row: 1; display: block;
   color: #334155; margin: 0; min-width: 0; font-size: 12px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 body[data-theme="light"] .project.active strong { color: #1e3a8a; }
 body[data-theme="light"] .project .project-description { display: none; }
-body[data-theme="light"] .project .ares-visual-project-count { display: block; grid-column: 2;
+body[data-theme="light"] .project .atlas-project-count { display: block; grid-column: 2;
   font-size: 11px; color: #94a3b8; }
 body[data-theme="light"] .project-edit-btn { background: transparent; border: 0; box-shadow: none;
   color: #94a3b8; font-size: 12px; padding: 6px 3px; }
@@ -2630,21 +2630,21 @@ body[data-theme="light"] .add-project:hover { background: #eff6ff; border-color:
 body[data-theme="light"] .app.sidebar-collapsed { grid-template-columns: 256px 77px minmax(0,1fr); }
 body[data-theme="light"] .app.sidebar-collapsed aside { padding: 14px 8px; }
 
-/* Conteúdo do Ares em estilo do Ares. */
+/* Conteúdo do Ares em padrão Atlas. */
 body[data-theme="light"] .app > main { grid-column: 3; min-height: 0; height: 100vh;
   overflow: hidden; padding: 22px 24px 16px; }
 body[data-theme="light"] .app > main > header { display: flex; align-items: center;
   flex-direction: row; padding: 0; margin: 0 0 15px; border: 0;
   border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: none;
   overflow: visible; gap: 12px; }
-body[data-theme="light"] .ares-visual-page-eyebrow { display: block; font-size: 10px;
+body[data-theme="light"] .atlas-page-eyebrow { display: block; font-size: 10px;
   color: #6366f1; font-weight: 750; letter-spacing: .1em; margin-bottom: 5px; }
 body[data-theme="light"] .headline h2#projectTitle,
 body[data-theme="light"] .headline .ares-original-intro { display: none; }
-body[data-theme="light"] .ares-visual-headline-title { display: block; color: #0f172a;
+body[data-theme="light"] .atlas-headline-title { display: block; color: #0f172a;
   font-size: 19px; font-weight: 700; letter-spacing: -.03em; line-height: 1.35;
   margin: 0 0 3px; background: none; -webkit-text-fill-color: #0f172a; animation: none; }
-body[data-theme="light"] .ares-visual-project-summary { display: block; max-width: unset;
+body[data-theme="light"] .atlas-project-summary { display: block; max-width: unset;
   color: #64748b; font-size: 12px; line-height: 1.45; }
 body[data-theme="light"] .actions { align-items: center; gap: 8px; }
 body[data-theme="light"] .btn { border-radius: 7px; box-shadow: 0 1px 2px rgba(15,23,42,.08);
@@ -2794,17 +2794,17 @@ body[data-theme="light"] .modal::-webkit-scrollbar-thumb { background: #cbd5e1; 
 @media (max-width:1250px) and (min-width:1101px) {
   body[data-theme="light"] .app { grid-template-columns: 205px 220px minmax(0,1fr); }
   body[data-theme="light"] .app.sidebar-collapsed { grid-template-columns: 205px 77px minmax(0,1fr); }
-  body[data-theme="light"] .ares-visual-rail-brand { padding: 0 12px; }
-  body[data-theme="light"] .ares-visual-rail-brand strong { font-size: 12px; }
+  body[data-theme="light"] .atlas-rail-brand { padding: 0 12px; }
+  body[data-theme="light"] .atlas-rail-brand strong { font-size: 12px; }
   body[data-theme="light"] .app > main { padding: 16px; }
   body[data-theme="light"] .app > main > header { flex-wrap: wrap; }
 }
 @media (max-width:1100px) {
   body[data-theme="light"] .app { grid-template-columns: 1fr; height: auto; min-height: 100vh; overflow: visible; }
-  body[data-theme="light"] .ares-visual-rail { position: relative; grid-column: 1; height: 61px;
+  body[data-theme="light"] .atlas-rail { position: relative; grid-column: 1; height: 61px;
     overflow: hidden; flex-direction: row; align-items: center; }
-  body[data-theme="light"] .ares-visual-rail-brand { border: 0; height: 61px; }
-  body[data-theme="light"] .ares-visual-rail-nav, body[data-theme="light"] .ares-visual-rail-footer { display: none; }
+  body[data-theme="light"] .atlas-rail-brand { border: 0; height: 61px; }
+  body[data-theme="light"] .atlas-rail-nav, body[data-theme="light"] .atlas-rail-footer { display: none; }
   body[data-theme="light"] .app > aside#sidebar { grid-column: 1; height: auto; position: relative;
     padding: 12px; border-right: 0; border-bottom: 1px solid #e2e8f0; }
   body[data-theme="light"] .app > main { grid-column: 1; height: auto; min-height: 780px;
@@ -2822,7 +2822,7 @@ body[data-theme="light"] .modal::-webkit-scrollbar-thumb { background: #cbd5e1; 
   body[data-theme="light"] .board { height: 65vh; }
 }
 
-/* Correções de layout do tema Claro do Ares — preserva o tema Escuro. */
+/* Correções de layout do tema Claro (Kanban Atlas) — preserva o tema Escuro. */
 .board-scroll-track { display: none; }
 .card-resize-handle { display: none; }
 
@@ -2981,172 +2981,6 @@ body[data-theme="light"] .board-scroll-visible-thumb {
 body[data-theme="light"] .board-scroll-visible-thumb:hover,
 body[data-theme="light"] .board-scroll-visible-thumb:focus-visible { background: #475569; outline: 2px solid #93c5fd; }
 body[data-theme="light"] .board-scroll-visible-thumb.dragging { cursor: grabbing; background: #2563eb; }
-
-/* ARES - Navegação lateral única no modo Claro. Evita conflito com a barra compartilhada. */
-.ares-main-side-nav, .ares-external-nav-slot, .ares-theme-sidebar-mount, .ares-sidebar-footer,
-.ares-side-heading { display:none; }
-.ares-external-theme-disabled { display:none !important; }
-
-body[data-theme="light"] .app,
-body[data-theme="light"] .app.sidebar-collapsed {
-  display:grid !important; grid-template-columns: 278px minmax(0, 1fr) !important;
-  min-height:100dvh; height:100dvh; overflow:hidden;
-}
-body[data-theme="light"] .app > aside#sidebar,
-body[data-theme="light"] .app.sidebar-collapsed > aside#sidebar {
-  grid-column:1; grid-row:1; position:sticky; inset:auto; top:0; height:100dvh;
-  min-width:0; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column;
-  padding:0 10px 14px; background:linear-gradient(180deg,#0f172a,#1e1b4b);
-  border:0; border-right:1px solid rgba(255,255,255,.09); box-shadow:none;
-  color:#cbd5e1; scrollbar-color:#475569 transparent;
-}
-body[data-theme="light"] .app > main,
-body[data-theme="light"] .app.sidebar-collapsed > main {
-  grid-column:2; grid-row:1; height:100dvh; min-height:0; min-width:0;
-  padding:22px 22px 14px; overflow:hidden;
-}
-body[data-theme="light"] .app.sidebar-collapsed .sidebar-content,
-body[data-theme="light"] .app.sidebar-collapsed .brand-copy { display:block !important; }
-body[data-theme="light"] .app.sidebar-collapsed .brand { flex-direction:row; }
-body[data-theme="light"] aside .brand,
-body[data-theme="light"] .app.sidebar-collapsed aside .brand {
-  display:flex; flex-shrink:0; align-items:center; gap:12px; margin:0 -10px;
-  padding:16px 15px; min-height:74px; background:transparent;
-  border:0; border-bottom:1px solid rgba(255,255,255,.09); border-radius:0;
-}
-body[data-theme="light"] aside .logo,
-body[data-theme="light"] .app.sidebar-collapsed aside .logo {
-  width:39px; height:39px; min-width:39px; border-radius:10px;
-  background:linear-gradient(135deg,#6366f1,#7c3aed); font-size:24px;
-  color:#fff; box-shadow:0 6px 16px rgba(99,102,241,.2);
-}
-body[data-theme="light"] aside .brand h1 { color:#fff; font-size:16px; font-weight:800; }
-body[data-theme="light"] aside .brand span { color:#94a3b8; font-size:11px; }
-body[data-theme="light"] aside .sidebar-toggle { display:none; }
-body[data-theme="light"] aside .ares-main-side-nav { display:block; padding:20px 0 11px; }
-body[data-theme="light"] aside .ares-side-heading { display:block; color:#94a3b8;
-  padding:0 12px 10px; font-size:10px; font-weight:800; letter-spacing:.09em; }
-body[data-theme="light"] aside .ares-side-current { width:100%; display:flex; align-items:center;
-  gap:12px; background:rgba(99,102,241,.22); color:#f8fafc;
-  border:1px solid rgba(129,140,248,.35); border-radius:9px;
-  padding:12px 13px; font-weight:750; cursor:pointer; font-size:13px; text-align:left;
-}
-body[data-theme="light"] aside .ares-side-current span:first-child { font-size:20px; width:20px; }
-body[data-theme="light"] aside .ares-side-current:hover { background:rgba(99,102,241,.3); }
-body[data-theme="light"] aside .sidebar-content,
-body[data-theme="light"] .app.sidebar-collapsed aside .sidebar-content {
-  display:block !important; min-width:0; padding:0; flex:0 0 auto;
-}
-body[data-theme="light"] aside .ares-side-heading-sub { padding-top:14px; padding-bottom:2px; }
-body[data-theme="light"] aside .section-title { padding:0 12px; margin:16px 0 7px;
-  color:#94a3b8; letter-spacing:.07em; font-size:10px; font-weight:750;
-}
-body[data-theme="light"] aside .project-list { display:grid; gap:5px; }
-body[data-theme="light"] aside .project { background:rgba(255,255,255,.025);
-  border:1px solid transparent; padding:10px 5px; color:#e2e8f0;
-}
-body[data-theme="light"] aside .project:hover { background:rgba(255,255,255,.065);
-  border-color:rgba(129,140,248,.2); }
-body[data-theme="light"] aside .project.active { background:rgba(99,102,241,.21);
-  border-color:rgba(129,140,248,.32); box-shadow:none; }
-body[data-theme="light"] aside .project strong,
-body[data-theme="light"] aside .project.active strong { color:#e2e8f0; }
-body[data-theme="light"] aside .ares-visual-month-chip { background:rgba(255,255,255,.09); color:#cbd5e1; }
-body[data-theme="light"] aside .project.active .ares-visual-month-chip { background:#6366f1; color:#fff; }
-body[data-theme="light"] aside .ares-visual-project-count { color:#94a3b8; }
-body[data-theme="light"] aside .project-edit-btn { color:#a5b4fc; }
-body[data-theme="light"] aside .add-project { width:100%; color:#cbd5e1;
-  background:rgba(255,255,255,.045); border:1px dashed rgba(148,163,184,.29);
-  margin-top:7px; padding:10px; text-align:center;
-}
-body[data-theme="light"] aside .add-project:hover { color:#fff; background:rgba(99,102,241,.18); }
-body[data-theme="light"] aside .ares-theme-sidebar-mount { display:block; margin:18px 0 8px;
-  padding:12px 8px 10px; border-top:1px solid rgba(255,255,255,.09);
-}
-body[data-theme="light"] aside .ares-theme-control { display:flex; align-items:center;
-  color:#cbd5e1; background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.12);
-  box-shadow:none; padding:8px 9px; border-radius:9px;
-}
-body[data-theme="light"] aside .ares-theme-control select { flex:1; min-width:0;
-  background:#111827; color:#f8fafc; border:1px solid #475569;
-}
-body[data-theme="light"] aside .ares-theme-control select option { background:#111827; color:#fff; }
-body[data-theme="light"] aside .ares-sidebar-footer { display:flex; align-items:center;
-  padding:14px 12px 2px; border-top:1px solid rgba(255,255,255,.08);
-  gap:10px; color:#fff; font-size:12px;
-}
-body[data-theme="light"] aside .ares-footer-avatar { display:grid; place-items:center;
-  flex:0 0 32px; height:32px; border-radius:100%; background:#dbeafe;
-  color:#1d4ed8; font-weight:800; }
-body[data-theme="light"] aside .ares-sidebar-footer small { display:block; color:#94a3b8; font-size:11px; }
-body[data-theme="light"] aside .ares-external-nav-slot { display:flex; flex-direction:column;
-  gap:6px; padding:0 2px; min-width:0;
-}
-body[data-theme="light"] aside .ares-external-nav-slot:empty { display:none; }
-body[data-theme="light"] aside .ares-relocated-global-nav { position:static !important;
-  inset:auto !important; transform:none !important; width:100% !important;
-  min-width:0 !important; max-width:100% !important; height:auto !important;
-  min-height:0 !important; display:flex !important; flex-direction:column !important;
-  align-items:stretch !important; gap:9px !important; padding:8px 10px !important;
-  margin:0 !important; border-radius:8px !important;
-  background:rgba(255,255,255,.035) !important;
-  border:1px solid rgba(255,255,255,.08) !important;
-  box-shadow:none !important; color:#e2e8f0 !important;
-  z-index:auto !important;
-}
-body[data-theme="light"] aside .ares-relocated-global-nav * { max-width:100%; }
-body[data-theme="light"] aside .ares-relocated-global-nav :is(a,button) {
-  color:inherit; white-space:normal; }
-/* Ares tem seletor próprio: o botão de alternar tema da barra geral fica oculto. */
-body .ares-external-theme-disabled { display:none !important; }
-/* Aplica-se somente à página do Ares, sem afetar o restante do sistema. */
-body:not([data-theme="light"]) :is(
-  .sp-topbar, .sp-navbar, .seller-pro-topbar, .seller-pro-navbar, #spTopbar, #spNavbar,
-  #global-navbar, #globalNavbar
-) :is([data-theme-toggle], .theme-toggle, .sp-theme-toggle, #spThemeToggle, #themeToggle,
-  [aria-label*="tema" i], [aria-label*="theme" i], [title*="tema" i], [title*="theme" i]) {
-  display:none !important;
-}
-/* O cabeçalho de trabalho mantém ações e filtros; não é mais uma barra de navegação duplicada. */
-body[data-theme="light"] .app > main > header { min-width:0; }
-body[data-theme="light"] .app > main > header .actions { min-width:0; }
-body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
-@media (max-width:1150px) and (min-width:761px) {
-  body[data-theme="light"] .app,
-  body[data-theme="light"] .app.sidebar-collapsed { grid-template-columns:242px minmax(0,1fr) !important; }
-  body[data-theme="light"] .app > main { padding:16px 12px; }
-}
-@media (max-width:760px) {
-  body[data-theme="light"] .app,
-  body[data-theme="light"] .app.sidebar-collapsed {
-    display:grid !important; grid-template-columns: minmax(0,1fr) !important;
-    grid-template-rows:auto minmax(0,1fr); height:auto; min-height:100dvh; overflow:visible;
-  }
-  body[data-theme="light"] .app > aside#sidebar,
-  body[data-theme="light"] .app.sidebar-collapsed > aside#sidebar {
-    grid-column:1; grid-row:1; position:relative; height:auto;
-    min-height:74px; max-height:none; overflow:visible;
-  }
-  body[data-theme="light"] aside .sidebar-toggle { display:grid !important;
-    margin-left:auto; border-color:#475569; background:#1e293b; color:#fff;
-    width:34px; height:34px; flex-shrink:0;
-  }
-  body[data-theme="light"] aside .ares-main-side-nav,
-  body[data-theme="light"] aside .sidebar-content,
-  body[data-theme="light"] aside .ares-theme-sidebar-mount,
-  body[data-theme="light"] aside .ares-sidebar-footer,
-  body[data-theme="light"] aside .ares-external-nav-slot { display:none !important; }
-  body[data-theme="light"] .app.ares-mobile-open aside :is(
-    .ares-main-side-nav, .sidebar-content, .ares-theme-sidebar-mount,
-    .ares-sidebar-footer, .ares-external-nav-slot) { display:block !important; }
-  body[data-theme="light"] .app.ares-mobile-open aside .ares-sidebar-footer { display:flex !important; }
-  body[data-theme="light"] .app > main,
-  body[data-theme="light"] .app.sidebar-collapsed > main {
-    grid-column:1; grid-row:2; height:auto; min-height:780px; padding:15px 12px;
-    overflow:visible;
-  }
-  body[data-theme="light"] .app > main > header { flex-direction:column; align-items:stretch; }
-}
 </style>
 </head>
 
@@ -3154,13 +2988,27 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
   <div class="ambient-light"></div>
 
   <div class="app">
-    <!-- Navegação única do Ares: menu e pastas funcionais. -->
+    <!-- Navegação visual inspirada no Atlas; as operações seguem sendo do Ares. -->
+    <div class="atlas-rail" aria-label="Identidade visual Kanban Atlas">
+      <div class="atlas-rail-brand">
+        <span class="atlas-rail-logo" aria-hidden="true">▦</span>
+        <span><strong>Atlas Gestão Pro</strong><small>Ares · Loja Pronta</small></span>
+      </div>
+      <div class="atlas-rail-nav">
+        <div class="atlas-rail-section">LOJA PRONTA</div>
+        <div class="atlas-rail-active" aria-current="page"><span aria-hidden="true">▥</span> Kanban Ares</div>
+        <div class="atlas-rail-section atlas-rail-section-later">ACOMPANHAMENTO</div>
+        <div class="atlas-rail-muted"><span aria-hidden="true">▤</span> Pastas mensais</div>
+        <div class="atlas-rail-muted"><span aria-hidden="true">☷</span> Situações do quadro</div>
+      </div>
+      <div class="atlas-rail-footer"><span class="atlas-rail-footer-mark">SP</span><span>Seller Pro<br><small>Ambiente Ares</small></span></div>
+    </div>
     <aside id="sidebar">
       <div class="brand">
-        <div class="logo">A</div>
+        <div class="logo">SP</div>
         <div class="brand-copy">
-          <h1>Ares</h1>
-          <span>Loja Pronta · Gestão de projetos</span>
+          <h1>Seller Pro Ares</h1>
+          <span>Operação, sellers e projetos</span>
         </div>
         <button
           type="button"
@@ -3173,44 +3021,33 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
         >←</button>
       </div>
 
-      <nav class="ares-main-side-nav" aria-label="Navegação do Ares">
-        <div class="ares-side-heading">LOJA PRONTA</div>
-        <button type="button" class="ares-side-current" onclick="scrollToAresSection('board')" aria-current="page">
-          <span aria-hidden="true">▥</span><span>Ares</span>
-        </button>
-      </nav>
-
-      <div id="aresExternalNavSlot" class="ares-external-nav-slot" aria-label="Navegação do sistema"></div>
-      <div class="sidebar-content" id="aresSidebarContent">
-        <div class="ares-side-heading ares-side-heading-sub">ACOMPANHAMENTO</div>
-        <div class="section-title" id="aresMonthlySection">Pastas mensais</div>
+      <div class="sidebar-content">
+        <div class="section-title">Pastas de Projetos por Mês</div>
         <div class="project-list" id="projectList"></div>
         <button class="add-project" onclick="addProject()">+ Criar pasta mensal</button>
 
-        <div class="section-title" id="aresSituationsSection">Situações do quadro</div>
+        <div class="section-title">Divisões do Quadro</div>
         <button class="add-project" onclick="addColumn()">+ Criar nova situação</button>
       </div>
-      <div id="aresThemeSidebarMount" class="ares-theme-sidebar-mount"></div>
-      <div class="ares-sidebar-footer"><span class="ares-footer-avatar">SP</span><span>Seller Pro<small>Ambiente Ares</small></span></div>
     </aside>
 
     <main>
       <header>
         <div class="headline">
-          <div class="ares-visual-page-eyebrow">ARES / LOJA PRONTA</div>
-          <h2 class="ares-visual-headline-title">Ares · Acompanhamento de projetos</h2>
+          <div class="atlas-page-eyebrow">LOJA PRONTA / KANBAN</div>
+          <h2 class="atlas-headline-title">Acompanhamento Loja Pronta</h2>
           <h2 id="projectTitle">Operação Seller Pro</h2>
           <p class="ares-original-intro">Painel premium para acompanhar lojas, divisões de trabalho, responsáveis e atualizações com uma experiência mais moderna, rápida e visual.</p>
-          <p class="ares-visual-project-summary" id="aresProjectSummary" aria-live="polite"></p>
+          <p class="atlas-project-summary" id="atlasProjectSummary" aria-live="polite"></p>
         </div>
 
         <div class="actions">
-          <div id="aresThemeHeaderMount"><label class="ares-theme-control" for="aresThemeSelect"><span>🎨 Tema</span>
+          <label class="ares-theme-control" for="aresThemeSelect"><span>🎨 Tema</span>
             <select id="aresThemeSelect" aria-label="Tema visual do Ares" onchange="changeAresTheme(this.value)">
               <option value="dark">Escuro</option>
               <option value="light">Claro</option>
             </select>
-          </label></div>
+          </label>
           <div class="reminder-wrapper">
             <button class="btn secondary reminder-bell" onclick="openReminderModal()" title="Lembretes">🔔</button>
             <span class="reminder-count" id="reminderCount">0</span>
@@ -3253,12 +3090,12 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
         <div class="board-wrap">
           <section class="board" id="board"></section>
         </div>
-        <div class="board-scroll-container" id="boardScrollContainer" aria-label="Navegação horizontal do Ares">
+        <div class="board-scroll-container" id="boardScrollContainer" aria-label="Navegação horizontal do Kanban">
           <div class="board-scroll-track" id="boardScrollTrack" aria-label="Barra de rolagem horizontal das colunas" title="Arraste para navegar entre as colunas" tabindex="0" onclick="jumpBoardScroll(event)">
             <div class="board-scroll-spacer" id="boardScrollSpacer"></div>
           </div>
           <div class="board-scroll-visible-thumb" id="boardScrollThumb" role="slider" tabindex="0"
-            aria-label="Posição horizontal do Ares" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+            aria-label="Posição horizontal do Kanban" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
             title="Arraste para navegar à esquerda ou à direita"
             onpointerdown="startBoardThumbDrag(event)" onkeydown="boardThumbKeydown(event)" onclick="event.stopPropagation()"></div>
         </div>
@@ -3373,7 +3210,7 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
     </div>
   </div>
 
-  <!-- Data obrigatória para qualquer movimentação comum do Ares -->
+  <!-- Data obrigatória para qualquer movimentação comum do Kanban -->
   <div class="modal-backdrop" id="stageDateModal">
     <div class="modal" style="width:min(510px,96vw)">
       <div class="modal-header">
@@ -3971,7 +3808,8 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
 
     function normalizeTheme(theme) {
       const value = String(theme || '').trim().toLowerCase();
-      if (['light', 'claro'].includes(value)) return 'light';
+      // Compatibilidade: preferência antiga "Kanban Atlas" agora é o Modo Claro.
+      if (['light', 'claro', 'atlas', 'kanban atlas', 'kanman atlas', 'kanban-atlas'].includes(value)) return 'light';
       return 'dark';
     }
 
@@ -3980,8 +3818,6 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
       document.body.setAttribute('data-theme', normalizedTheme);
       const selector = document.getElementById('aresThemeSelect');
       if (selector && selector.value !== normalizedTheme) selector.value = normalizedTheme;
-      moveAresThemeControl(normalizedTheme);
-      scheduleAresNavSync();
       requestAnimationFrame(syncBoardScrollbar);
     }
 
@@ -3999,105 +3835,18 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
         || localStorage.getItem('sellerProTema')
         || 'dark';
       const normalizedTheme = normalizeTheme(savedTheme);
+      // Migra preferências prévias de "atlas" sem alterar a escolha do usuário.
+      if (localStorage.getItem(ARES_THEME_KEY) === 'atlas') {
+        localStorage.setItem(ARES_THEME_KEY, 'light');
+      }
       applyAresTheme(normalizedTheme);
     }
 
-    // O Ares mantém seu tema independente; eventos da interface geral não sobrepõem a preferência local.
-    document.addEventListener('sellerpro:theme', () => {
-      const selected = localStorage.getItem(ARES_THEME_KEY) || document.body.dataset.theme || 'dark';
-      applyAresTheme(selected);
+    // Mantém compatibilidade com o seletor de tema do Seller Pro, quando utilizado.
+    document.addEventListener('sellerpro:theme', event => {
+      const theme = normalizeTheme(event.detail);
+      changeAresTheme(theme);
     });
-
-    // Na tela Ares, o seletor interno é a única maneira de mudar o tema da página.
-    // A barra geral é movida (não duplicada) para a navegação lateral, caso seja injetada.
-    const aresExternalNavOrigins = new Map();
-    let aresNavSyncQueued = false;
-    let aresNavObserver = null;
-
-    function moveAresThemeControl(theme) {
-      const control = document.querySelector('.ares-theme-control');
-      const target = document.getElementById(theme === 'light' ? 'aresThemeSidebarMount' : 'aresThemeHeaderMount');
-      if (control && target && control.parentElement !== target) target.appendChild(control);
-    }
-
-    function hideExternalThemeButtons(root) {
-      if (!root) return;
-      root.querySelectorAll('button, [role="button"]').forEach(button => {
-        const identifier = [button.id, button.className, button.title,
-          button.getAttribute('aria-label'), button.getAttribute('data-tooltip'),
-          button.getAttribute('data-action')].filter(v => typeof v === 'string').join(' ').toLowerCase();
-        if (/tema|theme|dark.mode|light.mode|appearance|modo.claro|modo.escuro/.test(identifier)) {
-          button.classList.add('ares-external-theme-disabled');
-          button.setAttribute('aria-hidden', 'true');
-          button.setAttribute('tabindex', '-1');
-        }
-      });
-    }
-
-    function syncAresSharedNavbar() {
-      const slot = document.getElementById('aresExternalNavSlot');
-      if (!slot) return;
-      const isLight = document.body.dataset.theme === 'light';
-      const sharedSelectors = [
-        '.sp-topbar', '.sp-navbar', '.seller-pro-topbar', '.seller-pro-navbar',
-        '#spTopbar', '#spNavbar', '#global-navbar', '#globalNavbar',
-        '[data-sp-topbar]', '[data-global-navbar]', 'body > header', 'body > nav'
-      ];
-      if (!isLight) {
-        aresExternalNavOrigins.forEach((placeholder, node) => {
-          if (placeholder.parentNode) placeholder.parentNode.replaceChild(node, placeholder);
-          node.classList.remove('ares-relocated-global-nav');
-        });
-        aresExternalNavOrigins.clear();
-        slot.textContent = '';
-        sharedSelectors.forEach(selector => document.querySelectorAll(selector).forEach(node => {
-          if (!node.closest('.app')) hideExternalThemeButtons(node);
-        }));
-        return;
-      }
-      const candidates = new Set();
-      sharedSelectors.forEach(selector => document.querySelectorAll(selector).forEach(node => candidates.add(node)));
-      candidates.forEach(node => {
-        if (node.closest('.app, .modal-backdrop, .modal')) return;
-        if (aresExternalNavOrigins.has(node) || node === slot || node.contains(slot)) return;
-        if (!node.parentNode || node.tagName === 'SCRIPT') return;
-        const placeholder = document.createComment('Posição original da navegação compartilhada do Ares');
-        node.parentNode.insertBefore(placeholder, node);
-        aresExternalNavOrigins.set(node, placeholder);
-        node.classList.add('ares-relocated-global-nav');
-        slot.appendChild(node);
-        hideExternalThemeButtons(node);
-      });
-      slot.querySelectorAll('.ares-relocated-global-nav').forEach(hideExternalThemeButtons);
-    }
-
-    function scheduleAresNavSync() {
-      if (aresNavSyncQueued) return;
-      aresNavSyncQueued = true;
-      requestAnimationFrame(() => {
-        aresNavSyncQueued = false;
-        syncAresSharedNavbar();
-      });
-    }
-
-    function setupAresNavObserver() {
-      if (aresNavObserver) return;
-      aresNavObserver = new MutationObserver(mutations => {
-        if (mutations.some(mutation => Array.from(mutation.addedNodes).some(node =>
-          node.nodeType === Node.ELEMENT_NODE && !node.closest?.('.app')))) {
-          scheduleAresNavSync();
-        }
-      });
-      aresNavObserver.observe(document.body, { childList: true, subtree: true });
-      scheduleAresNavSync();
-    }
-
-    function scrollToAresSection(id) {
-      const target = document.getElementById(id);
-      if (!target) return;
-      target.scrollIntoView({behavior:'smooth',block:'nearest',inline:'nearest'});
-      if (window.innerWidth <= 760) document.querySelector('.app')?.classList.remove('ares-mobile-open');
-    }
 
     const SIDEBAR_STATE_KEY = 'sellerProSidebarCollapsed';
 
@@ -4133,20 +3882,9 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
 
     function toggleSidebar() {
       const app = document.querySelector('.app');
+
       if (!app) return;
-      if (document.body.dataset.theme === 'light') {
-        if (window.innerWidth <= 760) {
-          app.classList.toggle('ares-mobile-open');
-          const expanded = app.classList.contains('ares-mobile-open');
-          const toggle = document.getElementById('sidebarToggle');
-          if (toggle) {
-            toggle.setAttribute('aria-expanded', String(expanded));
-            toggle.setAttribute('aria-label', expanded ? 'Fechar menu Ares' : 'Abrir menu Ares');
-            toggle.textContent = expanded ? '×' : '☰';
-          }
-        }
-        return;
-      }
+
       setSidebarCollapsed(!app.classList.contains('sidebar-collapsed'));
     }
 
@@ -4244,7 +3982,6 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
     async function initApp() {
       applySavedTheme();
       applySavedSidebarState();
-      setupAresNavObserver();
       playSound('site');
 
       try {
@@ -4425,7 +4162,7 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
       }
     }
 
-    function aresMonthChip(project) {
+    function atlasMonthChip(project) {
       const dateMatch = String(project.id || '').match(/^(\d{4})-(\d{1,2})$/);
       if (!dateMatch) return { month: '📁', year: '' };
       const month = Number(dateMatch[2]);
@@ -4435,15 +4172,15 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
 
     function renderProjects() {
       projectList.innerHTML = state.projects.map(project => {
-        const chip = aresMonthChip(project);
+        const chip = atlasMonthChip(project);
         const count = state.tasks.filter(task => task.project === project.id).length;
         return `
         <div class="project-row">
           <div class="project ${project.id === state.activeProject ? 'active' : ''}" onclick="selectProject('${escapeHTML(project.id)}')">
-            <span class="ares-visual-month-chip" aria-hidden="true"><b>${escapeHTML(chip.month)}</b><small>${escapeHTML(chip.year)}</small></span>
+            <span class="atlas-month-chip" aria-hidden="true"><b>${escapeHTML(chip.month)}</b><small>${escapeHTML(chip.year)}</small></span>
             <strong>${escapeHTML(project.name)}</strong>
             <span class="project-description">${escapeHTML(project.description)}</span>
-            <span class="ares-visual-project-count">${count} ${count === 1 ? 'card' : 'cards'}</span>
+            <span class="atlas-project-count">${count} ${count === 1 ? 'card' : 'cards'}</span>
           </div>
           <button class="project-edit-btn" onclick="event.stopPropagation(); editProject('${escapeHTML(project.id)}')" title="Editar nome da pasta">✏️</button>
         </div>`;
@@ -4452,7 +4189,7 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
       const current = state.projects.find(p => p.id === state.activeProject);
       document.getElementById('projectTitle').textContent = current?.name || 'Seller Pro Board';
       const count = state.tasks.filter(task => task.project === state.activeProject).length;
-      const summary = document.getElementById('aresProjectSummary');
+      const summary = document.getElementById('atlasProjectSummary');
       if (summary) summary.textContent = `${current?.name || 'Pasta mensal'} · ${count} ${count === 1 ? 'card' : 'cards'} · Quadro Ares`;
     }
 
@@ -7076,15 +6813,15 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
       showToast('Loja entregue salva no Supabase e enviada para a planilha.');
     }
     function syncBoardScrollbar() {
-      const boardEl = document.getElementById('board');
+      const kanban = document.getElementById('board');
       const track = document.getElementById('boardScrollTrack');
       const spacer = document.getElementById('boardScrollSpacer');
       const shell = document.getElementById('boardScrollContainer');
-      if (!boardEl || !track || !spacer || !shell) return;
-      spacer.style.width = `${Math.max(1, boardEl.scrollWidth)}px`;
-      const needsScroll = boardEl.scrollWidth > boardEl.clientWidth + 2;
+      if (!kanban || !track || !spacer || !shell) return;
+      spacer.style.width = `${Math.max(1, kanban.scrollWidth)}px`;
+      const needsScroll = kanban.scrollWidth > kanban.clientWidth + 2;
       shell.classList.toggle('has-overflow', needsScroll);
-      track.scrollLeft = boardEl.scrollLeft;
+      track.scrollLeft = kanban.scrollLeft;
       updateBoardVisibleThumb();
     }
 
@@ -7153,24 +6890,24 @@ body[data-theme="light"] #aresThemeHeaderMount:empty { display:none; }
     }
 
     function setupBoardScrollbar() {
-      const boardEl = document.getElementById('board');
+      const kanban = document.getElementById('board');
       const track = document.getElementById('boardScrollTrack');
       const wrapper = document.querySelector('.board-wrap');
-      if (!boardEl || !track || track.dataset.wired) return;
+      if (!kanban || !track || track.dataset.wired) return;
       track.dataset.wired = 'true';
       track.addEventListener('scroll', () => {
-        if (boardEl.scrollLeft !== track.scrollLeft) boardEl.scrollLeft = track.scrollLeft;
+        if (kanban.scrollLeft !== track.scrollLeft) kanban.scrollLeft = track.scrollLeft;
         updateBoardVisibleThumb();
       }, { passive: true });
-      boardEl.addEventListener('scroll', () => {
-        if (track.scrollLeft !== boardEl.scrollLeft) track.scrollLeft = boardEl.scrollLeft;
+      kanban.addEventListener('scroll', () => {
+        if (track.scrollLeft !== kanban.scrollLeft) track.scrollLeft = kanban.scrollLeft;
         updateBoardVisibleThumb();
       }, { passive: true });
       window.addEventListener('resize', syncBoardScrollbar, { passive: true });
       if ('ResizeObserver' in window && wrapper) {
         const observer = new ResizeObserver(syncBoardScrollbar);
         observer.observe(wrapper);
-        observer.observe(boardEl);
+        observer.observe(kanban);
       }
       requestAnimationFrame(syncBoardScrollbar);
     }
