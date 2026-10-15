@@ -2665,12 +2665,337 @@ body[data-theme="light"] {
   <script src="../assets/js/config.js?v=20260818-eng3"></script>
   <script src="../assets/js/file-session.js?v=20260720-loginfix2"></script>
   <script src="../assets/js/app-core.js?v=20260818-eng3"></script>
+
+<style id="ares-kanban-atlas-theme">
+/* Tema visual Kanban Atlas: interface somente; nenhuma ação do Ares é substituída. */
+.atlas-rail, .atlas-page-eyebrow, .atlas-headline-title, .atlas-project-summary,
+.atlas-month-chip, .atlas-project-count { display: none; }
+.ares-theme-control { display: flex; align-items: center; gap: 7px; min-height: 43px;
+  padding: 5px 10px; border: 1px solid var(--border); border-radius: 14px;
+  background: var(--field-bg); color: var(--text); font-size: 12px; font-weight: 700; }
+.ares-theme-control > span { white-space: nowrap; }
+.ares-theme-control select { width: 146px; min-width: 120px; padding: 6px 23px 6px 8px;
+  border-radius: 8px; background: var(--panel-strong); color: var(--text); font-size: 12px;
+  border-color: var(--border); cursor: pointer; }
+.ares-theme-control select option { background: #171717; color: #fff; }
+body[data-theme="light"] .ares-theme-control select option { background: #fff; color: #2b1220; }
+
+body[data-theme="atlas"], body[data-theme="atlas"] * {
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+body[data-theme="atlas"] {
+  --bg: #f8fafc; --bg-soft: #f1f5f9;
+  --panel: #ffffff; --panel-strong: #ffffff; --card: #ffffff; --card-hover: #ffffff;
+  --border: #e2e8f0; --border-orange: #dbeafe;
+  --text: #0f172a; --muted: #64748b;
+  --primary: #2563eb; --primary-2: #4f46e5; --primary-3: #1d4ed8;
+  --cyan: #0284c7; --radius: 10px;
+  --field-bg: #ffffff; --empty-bg: rgba(248,250,252,.8);
+  --shadow-soft: 0 1px 3px rgba(15,23,42,.045);
+  --header-bg: transparent; --sidebar-bg: #ffffff;
+  color: #0f172a; background: #f8fafc !important; font-size: 13px;
+}
+body[data-theme="atlas"]::before,
+body[data-theme="atlas"] .ambient-light { display: none !important; }
+body[data-theme="atlas"] .app {
+  display: grid; grid-template-columns: 256px 260px minmax(0,1fr);
+  min-height: 100vh; height: 100vh; overflow: hidden; background: #f8fafc;
+}
+body[data-theme="atlas"] .atlas-rail {
+  display: flex; position: sticky; top: 0; height: 100vh;
+  min-width: 0; flex-direction: column; color: #cbd5e1;
+  background: linear-gradient(180deg, #0f172a, #1e1b4b);
+  border-right: 1px solid rgba(255,255,255,.06); overflow-y: auto;
+}
+body[data-theme="atlas"] .atlas-rail-brand {
+  display: flex; align-items: center; gap: 12px; height: 67px;
+  flex-shrink: 0; padding: 0 19px; border-bottom: 1px solid rgba(255,255,255,.08);
+}
+body[data-theme="atlas"] .atlas-rail-logo { width: 34px; height: 34px; border-radius: 9px;
+  display: grid; place-items: center; flex-shrink: 0; color: white; font-size: 23px;
+  background: linear-gradient(135deg,#6366f1,#7c3aed); box-shadow: 0 5px 15px rgba(99,102,241,.15); }
+body[data-theme="atlas"] .atlas-rail-brand strong { color: white; font-size: 14px; display: block; letter-spacing: -.025em; }
+body[data-theme="atlas"] .atlas-rail-brand small { color: #94a3b8; font-size: 11px; }
+body[data-theme="atlas"] .atlas-rail-nav { padding: 23px 12px; flex: 1; }
+body[data-theme="atlas"] .atlas-rail-section { padding: 0 12px 9px;
+  color: #94a3b8; font-size: 10px; font-weight: 700; letter-spacing: .12em; }
+body[data-theme="atlas"] .atlas-rail-section-later { margin-top: 28px; }
+body[data-theme="atlas"] .atlas-rail-active, body[data-theme="atlas"] .atlas-rail-muted {
+  display: flex; gap: 11px; align-items: center; font-weight: 550; font-size: 13px;
+  padding: 11px 12px; border-radius: 8px; }
+body[data-theme="atlas"] .atlas-rail-active { background: rgba(99,102,241,.21); color: white;
+  box-shadow: inset 0 0 0 1px rgba(129,140,248,.23); }
+body[data-theme="atlas"] .atlas-rail-active > span,
+body[data-theme="atlas"] .atlas-rail-muted > span { display: inline-block; width: 18px; font-size: 19px; text-align: center; }
+body[data-theme="atlas"] .atlas-rail-muted { color: #a0aec4; }
+body[data-theme="atlas"] .atlas-rail-footer { display: flex; gap: 10px; align-items: center;
+  border-top: 1px solid rgba(255,255,255,.08); padding: 16px 18px; color: #fff; font-size: 12px; }
+body[data-theme="atlas"] .atlas-rail-footer-mark { background: #dbeafe; color: #1d4ed8; width: 32px; height: 32px;
+  border-radius: 50%; display: grid; place-items: center; font-weight: 750; }
+body[data-theme="atlas"] .atlas-rail-footer small { color: #94a3b8; }
+
+/* Pasta e ações da lateral original: sem alterações de funcionalidade. */
+body[data-theme="atlas"] .app > aside#sidebar {
+  grid-column: 2; position: sticky; top: 0; min-width: 0; height: 100vh;
+  border-right: 1px solid #e2e8f0; padding: 16px 12px; background: #ffffff;
+  box-shadow: none; backdrop-filter: none; border-radius: 0;
+}
+body[data-theme="atlas"] .brand { gap: 9px; border: 0; border-bottom: 1px solid #f1f5f9;
+  background: transparent; box-shadow: none; padding: 8px 2px 17px; margin-bottom: 18px; border-radius: 0; }
+body[data-theme="atlas"] .logo { width: 37px; height: 37px; border-radius: 9px; color: white;
+  background: linear-gradient(135deg,#2563eb,#4f46e5); box-shadow: none; font-size: 13px; }
+body[data-theme="atlas"] .brand h1 { font-size: 13px; font-weight: 750; letter-spacing: -.01em; color: #0f172a; }
+body[data-theme="atlas"] .brand span { color: #94a3b8; font-size: 10px; }
+body[data-theme="atlas"] .sidebar-toggle { border-color: #e2e8f0; background: #f8fafc; color: #64748b;
+  width: 30px; min-width: 30px; height: 30px; font-size: 15px; border-radius: 8px; }
+body[data-theme="atlas"] .section-title { margin: 17px 4px 10px; color: #64748b;
+  letter-spacing: .065em; font-size: 10px; font-weight: 750; }
+body[data-theme="atlas"] .project-list { gap: 5px; }
+body[data-theme="atlas"] .project-row { gap: 4px; }
+body[data-theme="atlas"] .project { display: grid; grid-template-columns: 39px minmax(0,1fr);
+  grid-template-rows: auto auto auto; align-items: center; gap: 1px 10px;
+  background: transparent; border: 1px solid transparent; border-radius: 8px;
+  padding: 9px 6px; min-width: 0; box-shadow: none; transform: none; }
+body[data-theme="atlas"] .project:hover { background: #f8fafc; border-color: transparent;
+  box-shadow: none; transform: none; }
+body[data-theme="atlas"] .project.active { background: #eff6ff; border-color: transparent;
+  box-shadow: inset 3px 0 0 #2563eb; transform: none; }
+body[data-theme="atlas"] .atlas-month-chip { display: flex; align-items: center; justify-content: center;
+  flex-direction: column; grid-row: 1/4; grid-column: 1; width: 39px; height: 39px;
+  background: #f1f5f9; border-radius: 8px; color: #475569; }
+body[data-theme="atlas"] .atlas-month-chip b { font-weight: 750; font-size: 10px; text-transform: uppercase; }
+body[data-theme="atlas"] .atlas-month-chip small { font-weight: 500; font-size: 11px; line-height: 1.2; }
+body[data-theme="atlas"] .project.active .atlas-month-chip { background: #2563eb; color: white; }
+body[data-theme="atlas"] .project strong { grid-column: 2; grid-row: 1; display: block;
+  color: #334155; margin: 0; min-width: 0; font-size: 12px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body[data-theme="atlas"] .project.active strong { color: #1e3a8a; }
+body[data-theme="atlas"] .project .project-description { display: none; }
+body[data-theme="atlas"] .project .atlas-project-count { display: block; grid-column: 2;
+  font-size: 11px; color: #94a3b8; }
+body[data-theme="atlas"] .project-edit-btn { background: transparent; border: 0; box-shadow: none;
+  color: #94a3b8; font-size: 12px; padding: 6px 3px; }
+body[data-theme="atlas"] .add-project { padding: 9px 10px; border-radius: 8px;
+  background: #f8fafc; border: 1px dashed #cbd5e1; color: #475569;
+  font-size: 11px; font-weight: 650; margin-top: 10px; box-shadow: none; }
+body[data-theme="atlas"] .add-project:hover { background: #eff6ff; border-color: #93c5fd;
+  transform: none; box-shadow: none; }
+body[data-theme="atlas"] .app.sidebar-collapsed { grid-template-columns: 256px 77px minmax(0,1fr); }
+body[data-theme="atlas"] .app.sidebar-collapsed aside { padding: 14px 8px; }
+
+/* Conteúdo do Ares em padrão Atlas. */
+body[data-theme="atlas"] .app > main { grid-column: 3; min-height: 0; height: 100vh;
+  overflow: hidden; padding: 22px 24px 16px; }
+body[data-theme="atlas"] .app > main > header { display: flex; align-items: center;
+  flex-direction: row; padding: 0; margin: 0 0 15px; border: 0;
+  border-radius: 0; background: transparent; box-shadow: none; backdrop-filter: none;
+  overflow: visible; gap: 12px; }
+body[data-theme="atlas"] .atlas-page-eyebrow { display: block; font-size: 10px;
+  color: #6366f1; font-weight: 750; letter-spacing: .1em; margin-bottom: 5px; }
+body[data-theme="atlas"] .headline h2#projectTitle,
+body[data-theme="atlas"] .headline .ares-original-intro { display: none; }
+body[data-theme="atlas"] .atlas-headline-title { display: block; color: #0f172a;
+  font-size: 19px; font-weight: 700; letter-spacing: -.03em; line-height: 1.35;
+  margin: 0 0 3px; background: none; -webkit-text-fill-color: #0f172a; animation: none; }
+body[data-theme="atlas"] .atlas-project-summary { display: block; max-width: unset;
+  color: #64748b; font-size: 12px; line-height: 1.45; }
+body[data-theme="atlas"] .actions { align-items: center; gap: 8px; }
+body[data-theme="atlas"] .btn { border-radius: 7px; box-shadow: 0 1px 2px rgba(15,23,42,.08);
+  padding: 9px 12px; font-size: 12px; font-weight: 650;
+  color: white; background: #2563eb; }
+body[data-theme="atlas"] .btn:hover { background: #1d4ed8; transform: none; filter: none;
+  box-shadow: 0 2px 5px rgba(15,23,42,.09); }
+body[data-theme="atlas"] .btn.secondary { background: #ffffff; color: #475569;
+  border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(15,23,42,.035); }
+body[data-theme="atlas"] .btn.secondary:hover { background: #f8fafc; }
+body[data-theme="atlas"] .ares-theme-control { background: #fff; border-color: #e2e8f0;
+  min-height: 34px; height: 34px; border-radius: 7px; padding: 3px 7px; gap: 5px;
+  color: #64748b; font-size: 11px; }
+body[data-theme="atlas"] .ares-theme-control select { width: 117px; min-width: 0; font-size: 11px;
+  border: 0; box-shadow: none; color: #1e293b; padding: 3px 16px 3px 5px; background: #fff; }
+body[data-theme="atlas"] .ares-theme-control select option { background: #fff; color: #0f172a; }
+body[data-theme="atlas"] .filters { grid-template-columns: 1.4fr 1fr 1fr; align-items: end;
+  padding: 12px; margin-bottom: 13px; border: 1px solid #e2e8f0; border-radius: 9px;
+  background: white; box-shadow: none; backdrop-filter: none; animation: none; }
+body[data-theme="atlas"] label:not(.ares-theme-control) { color: #64748b; }
+body[data-theme="atlas"] .field label { color: #64748b; font-size: 10px;
+  letter-spacing: .04em; font-weight: 700; }
+body[data-theme="atlas"] input:not([type="checkbox"]),
+body[data-theme="atlas"] select:not(#aresThemeSelect),
+body[data-theme="atlas"] textarea { border: 1px solid #cbd5e1; border-radius: 7px;
+  background: #fff; color: #0f172a; font-size: 12px; }
+body[data-theme="atlas"] input:focus, body[data-theme="atlas"] select:focus,
+body[data-theme="atlas"] textarea:focus { background: #fff; border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.14); }
+body[data-theme="atlas"] input::placeholder, body[data-theme="atlas"] textarea::placeholder { color: #94a3b8; }
+body[data-theme="atlas"] select option { background: #fff; color: #0f172a; }
+body[data-theme="atlas"] .board-area { gap: 10px; overflow: hidden; }
+body[data-theme="atlas"] .board-nav { border: 0; padding: 0 2px;
+  background: transparent; border-radius: 0; box-shadow: none; backdrop-filter: none; }
+body[data-theme="atlas"] .board-nav-title { color: #94a3b8; font-size: 11px; }
+body[data-theme="atlas"] .nav-btn { border-color: #e2e8f0; background: white;
+  color: #475569; font-size: 11px; font-weight: 600; border-radius: 7px; padding: 7px 10px; }
+body[data-theme="atlas"] .nav-btn:hover { background: #eff6ff; border-color: #bfdbfe; transform: none; }
+body[data-theme="atlas"] .board-wrap { border-radius: 0; overflow: hidden; }
+body[data-theme="atlas"] .board { min-height: 420px; height: 100%; gap: 12px;
+  padding: 0 4px 12px 1px; scroll-behavior: smooth; }
+body[data-theme="atlas"] .column { flex: 0 0 288px; width: 288px; border: 1px solid #e2e8f0;
+  background: rgba(241,245,249,.77); border-radius: 9px; padding: 0; box-shadow: none;
+  animation: none; transform: none; }
+body[data-theme="atlas"] .column:hover { transform: none; border-color: #cbd5e1; }
+body[data-theme="atlas"] .column.drag-over { background: #dbeafe; border-color: #60a5fa;
+  box-shadow: inset 0 0 0 2px rgba(59,130,246,.2); }
+body[data-theme="atlas"] .column-header { top: 0; min-height: 43px;
+  border-bottom: 1px solid #e2e8f0; padding: 11px 12px;
+  margin: 0; background: #f1f5f9; }
+body[data-theme="atlas"] .column-title { color: #334155; font-size: 12px; font-weight: 750; gap: 8px; }
+body[data-theme="atlas"] .dot { width: 8px; height: 8px; box-shadow: none; background: #3b82f6; }
+body[data-theme="atlas"] .badge { padding: 3px 8px; font-size: 11px;
+  background: #fff; border: 1px solid #e2e8f0; color: #64748b; }
+body[data-theme="atlas"] .cards { gap: 8px; padding: 9px; scrollbar-gutter: auto; }
+body[data-theme="atlas"] .card { max-height: none; padding: 12px; border-radius: 9px;
+  border: 1px solid #e2e8f0; background: white; box-shadow: 0 1px 2px rgba(15,23,42,.05);
+  transition: box-shadow .16s ease, border-color .16s ease; }
+body[data-theme="atlas"] .card::before { display: none; }
+body[data-theme="atlas"] .card:hover { background: white; transform: none;
+  border-color: #cbd5e1; box-shadow: 0 5px 12px rgba(15,23,42,.10); }
+body[data-theme="atlas"] .card h3 { color: #0f172a; font-size: 13px; line-height: 1.35; font-weight: 750; }
+body[data-theme="atlas"] .card p { color: #64748b; font-size: 11px; }
+body[data-theme="atlas"] .owner-highlight { padding: 7px 9px; border-radius: 7px;
+  background: #f8fafc; border: 1px solid #f1f5f9; box-shadow: none; }
+body[data-theme="atlas"] .owner-avatar { background: #e0e7ff; color: #4338ca; box-shadow: none; }
+body[data-theme="atlas"] .owner-info small { color: #64748b; }
+body[data-theme="atlas"] .owner-info strong { color: #334155; }
+body[data-theme="atlas"] .pill { background: #eff6ff; color: #1d4ed8;
+  border-color: #dbeafe; border-radius: 6px; font-size: 10px; padding: 4px 7px; }
+body[data-theme="atlas"] .workflow-date-preview { color: #475569; border-color: #e2e8f0;
+  background: #f8fafc; border-radius: 6px; font-size: 10px; }
+body[data-theme="atlas"] .workflow-date-preview span { color: #2563eb; }
+body[data-theme="atlas"] .update-box { background: #f8fafc; border: 1px solid #f1f5f9;
+  box-shadow: none; border-radius: 7px; margin-top: 9px; min-height: 77px; max-height: 77px;
+  padding: 9px 10px; }
+body[data-theme="atlas"] .update-box strong { color: #64748b; font-size: 10px;
+  font-weight: 750; letter-spacing: .02em; }
+body[data-theme="atlas"] .last-update-preview { color: #475569; font-size: 11px; font-weight: 500; }
+body[data-theme="atlas"] .update-age { color: #64748b; background: white;
+  border-color: #e2e8f0; font-size: 9px; }
+body[data-theme="atlas"] .update-box.stale-update { background: #fef2f2;
+  border-color: #fecaca; box-shadow: none; animation: none; }
+body[data-theme="atlas"] .update-box.stale-update strong,
+body[data-theme="atlas"] .update-box.stale-update .last-update-preview,
+body[data-theme="atlas"] .update-box.stale-update .update-age { color: #991b1b; }
+body[data-theme="atlas"] .update-box.stale-update .update-age { background: #fee2e2; border-color: #fecaca; }
+body[data-theme="atlas"] .card-actions { gap: 5px; padding-top: 8px; }
+body[data-theme="atlas"] .mini-btn { border-radius: 6px; font-size: 10px; padding: 7px 8px;
+  background: #f8fafc; color: #475569; border: 1px solid #e2e8f0; }
+body[data-theme="atlas"] .mini-btn:hover { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+body[data-theme="atlas"] .column > .btn.icon-btn { align-self: stretch; margin: 6px 9px 9px;
+  width: auto; min-width: 0; height: 33px; min-height: 33px; border-radius: 7px;
+  border: 1px dashed #cbd5e1; color: #64748b; background: #fff;
+  font-size: 19px; font-weight: 500; box-shadow: none; backdrop-filter: none; }
+body[data-theme="atlas"] .column > .btn.icon-btn:hover { background: #eff6ff; border-color: #93c5fd; }
+body[data-theme="atlas"] .empty { background: transparent; border: 0;
+  color: #94a3b8; font-size: 11px; }
+body[data-theme="atlas"] .card.seller-cont-card { background: #eff6ff;
+  border: 1px solid #38bdf8; box-shadow: inset 3px 0 0 #0ea5e9; }
+body[data-theme="atlas"] .card.seller-cont-card:hover { background: #eff6ff;
+  border-color: #0284c7; box-shadow: inset 3px 0 0 #0ea5e9, 0 3px 10px rgba(14,165,233,.12); }
+body[data-theme="atlas"] .card.requires-attention-card:not(.seller-cont-card) {
+  background: #fff7f7; border-color: #fca5a5; box-shadow: inset 3px 0 0 #ef4444; }
+body[data-theme="atlas"] .card.sale-finalized-card:not(.seller-cont-card) {
+  background: #f0fdf4; border-color: #86efac; box-shadow: inset 3px 0 0 #22c55e; }
+body[data-theme="atlas"] .seller-cont-checkbox-badge { background: #dbeafe;
+  color: #1e40af; border-color: #bfdbfe; }
+body[data-theme="atlas"] .seller-cont-checkbox-badge small { color: #1d4ed8; }
+body[data-theme="atlas"] .seller-cont-preview,
+body[data-theme="atlas"] .seller-cont-detail { background: #eff6ff; border-color: #bfdbfe; }
+body[data-theme="atlas"] .seller-cont-preview-header strong,
+body[data-theme="atlas"] .seller-cont-date-grid small,
+body[data-theme="atlas"] .seller-cont-info-item strong { color: #1e3a8a; }
+body[data-theme="atlas"] .delivery-status-badge { background: #eff6ff;
+  color: #1e40af; border-color: #bfdbfe; box-shadow: none; }
+body[data-theme="atlas"] .delivery-status-badge small { color: #1e40af; }
+body[data-theme="atlas"] .delivery-status-badge.attention { background: #fee2e2;
+  border-color: #fca5a5; color: #7f1d1d; }
+body[data-theme="atlas"] .delivery-status-badge.finalized { background: #dcfce7;
+  border-color: #86efac; color: #166534; }
+body[data-theme="atlas"] .modal { background: #fff; color: #0f172a;
+  border-color: #e2e8f0; border-radius: 12px; box-shadow: 0 28px 75px rgba(15,23,42,.24); }
+body[data-theme="atlas"] .modal-header h3 { color: #0f172a; }
+body[data-theme="atlas"] .modal-header .close { color: #64748b; background: #f8fafc;
+  border-color: #e2e8f0; }
+body[data-theme="atlas"] .detail-box { background: #f8fafc; border-color: #e2e8f0;
+  border-radius: 8px; box-shadow: none; }
+body[data-theme="atlas"] .detail-box small { color: #2563eb; }
+body[data-theme="atlas"] .attachment-summary-button,
+body[data-theme="atlas"] .attachment-saved-placeholder,
+body[data-theme="atlas"] .detail-print-btn.detail-print-placeholder { background: #f8fafc;
+  color: #0f172a; border-color: #e2e8f0; }
+body[data-theme="atlas"] .attachment-summary-copy strong,
+body[data-theme="atlas"] .attachment-saved-placeholder strong,
+body[data-theme="atlas"] .detail-print-copy strong { color: #0f172a; }
+body[data-theme="atlas"] .search-results { background: white; border-color: #e2e8f0; color: #334155; }
+body[data-theme="atlas"] .search-item { color: #334155; background: #f8fafc; border-color: #e2e8f0; }
+body[data-theme="atlas"] .board::-webkit-scrollbar-thumb,
+body[data-theme="atlas"] .cards::-webkit-scrollbar-thumb,
+body[data-theme="atlas"] .modal::-webkit-scrollbar-thumb { background: #cbd5e1; box-shadow: none; }
+
+@media (min-width:1101px) {
+  body[data-theme="atlas"] .app.sidebar-collapsed { grid-template-columns: 256px 77px minmax(0,1fr); }
+  body[data-theme="atlas"] .app.sidebar-collapsed .brand { padding: 8px 3px; }
+}
+@media (max-width:1250px) and (min-width:1101px) {
+  body[data-theme="atlas"] .app { grid-template-columns: 205px 220px minmax(0,1fr); }
+  body[data-theme="atlas"] .app.sidebar-collapsed { grid-template-columns: 205px 77px minmax(0,1fr); }
+  body[data-theme="atlas"] .atlas-rail-brand { padding: 0 12px; }
+  body[data-theme="atlas"] .atlas-rail-brand strong { font-size: 12px; }
+  body[data-theme="atlas"] .app > main { padding: 16px; }
+  body[data-theme="atlas"] .app > main > header { flex-wrap: wrap; }
+}
+@media (max-width:1100px) {
+  body[data-theme="atlas"] .app { grid-template-columns: 1fr; height: auto; min-height: 100vh; overflow: visible; }
+  body[data-theme="atlas"] .atlas-rail { position: relative; grid-column: 1; height: 61px;
+    overflow: hidden; flex-direction: row; align-items: center; }
+  body[data-theme="atlas"] .atlas-rail-brand { border: 0; height: 61px; }
+  body[data-theme="atlas"] .atlas-rail-nav, body[data-theme="atlas"] .atlas-rail-footer { display: none; }
+  body[data-theme="atlas"] .app > aside#sidebar { grid-column: 1; height: auto; position: relative;
+    padding: 12px; border-right: 0; border-bottom: 1px solid #e2e8f0; }
+  body[data-theme="atlas"] .app > main { grid-column: 1; height: auto; min-height: 780px;
+    padding: 18px; overflow: visible; }
+  body[data-theme="atlas"] .project-list { grid-template-columns: repeat(auto-fit, minmax(170px,1fr)); }
+  body[data-theme="atlas"] .project-list .project { min-height: 63px; }
+  body[data-theme="atlas"] .board { height: 65vh; min-height: 530px; }
+}
+@media (max-width:700px) {
+  body[data-theme="atlas"] .app > main > header { flex-direction: column; align-items: stretch; }
+  body[data-theme="atlas"] .actions { justify-content: flex-start; }
+  body[data-theme="atlas"] .filters { grid-template-columns: 1fr; }
+  body[data-theme="atlas"] .board-nav { align-items: stretch; }
+  body[data-theme="atlas"] .column { flex-basis: 84vw; width: 84vw; }
+  body[data-theme="atlas"] .board { height: 65vh; }
+}
+</style>
 </head>
 
 <body data-theme="dark">
   <div class="ambient-light"></div>
 
   <div class="app">
+    <!-- Navegação visual inspirada no Atlas; as operações seguem sendo do Ares. -->
+    <div class="atlas-rail" aria-label="Identidade visual Kanban Atlas">
+      <div class="atlas-rail-brand">
+        <span class="atlas-rail-logo" aria-hidden="true">▦</span>
+        <span><strong>Atlas Gestão Pro</strong><small>Ares · Loja Pronta</small></span>
+      </div>
+      <div class="atlas-rail-nav">
+        <div class="atlas-rail-section">LOJA PRONTA</div>
+        <div class="atlas-rail-active" aria-current="page"><span aria-hidden="true">▥</span> Kanban Ares</div>
+        <div class="atlas-rail-section atlas-rail-section-later">ACOMPANHAMENTO</div>
+        <div class="atlas-rail-muted"><span aria-hidden="true">▤</span> Pastas mensais</div>
+        <div class="atlas-rail-muted"><span aria-hidden="true">☷</span> Situações do quadro</div>
+      </div>
+      <div class="atlas-rail-footer"><span class="atlas-rail-footer-mark">SP</span><span>Seller Pro<br><small>Ambiente Ares</small></span></div>
+    </div>
     <aside id="sidebar">
       <div class="brand">
         <div class="logo">SP</div>
@@ -2702,11 +3027,21 @@ body[data-theme="light"] {
     <main>
       <header>
         <div class="headline">
+          <div class="atlas-page-eyebrow">LOJA PRONTA / KANBAN</div>
+          <h2 class="atlas-headline-title">Acompanhamento Loja Pronta</h2>
           <h2 id="projectTitle">Operação Seller Pro</h2>
-          <p>Painel premium para acompanhar lojas, divisões de trabalho, responsáveis e atualizações com uma experiência mais moderna, rápida e visual.</p>
+          <p class="ares-original-intro">Painel premium para acompanhar lojas, divisões de trabalho, responsáveis e atualizações com uma experiência mais moderna, rápida e visual.</p>
+          <p class="atlas-project-summary" id="atlasProjectSummary" aria-live="polite"></p>
         </div>
 
         <div class="actions">
+          <label class="ares-theme-control" for="aresThemeSelect"><span>🎨 Tema</span>
+            <select id="aresThemeSelect" aria-label="Tema visual do Ares" onchange="changeAresTheme(this.value)">
+              <option value="dark">Escuro</option>
+              <option value="light">Claro</option>
+              <option value="atlas">Kanban Atlas</option>
+            </select>
+          </label>
           <div class="reminder-wrapper">
             <button class="btn secondary reminder-bell" onclick="openReminderModal()" title="Lembretes">🔔</button>
             <span class="reminder-count" id="reminderCount">0</span>
@@ -3453,27 +3788,42 @@ body[data-theme="light"] {
       showToast.timer = setTimeout(() => toast.classList.remove('show'), 3200);
     }
 
+    // Tema Ares independente do tema global: não altera nem quebra as outras páginas.
+    const ARES_THEME_KEY = 'sellerProAresTheme';
+
     function normalizeTheme(theme) {
-      return theme === 'light' || theme === 'claro' ? 'light' : 'dark';
+      const value = String(theme || '').trim().toLowerCase();
+      if (['atlas', 'kanban atlas', 'kanman atlas', 'kanban-atlas'].includes(value)) return 'atlas';
+      return value === 'light' || value === 'claro' ? 'light' : 'dark';
     }
 
     function applyAresTheme(theme) {
       const normalizedTheme = normalizeTheme(theme);
       document.body.setAttribute('data-theme', normalizedTheme);
+      const selector = document.getElementById('aresThemeSelect');
+      if (selector && selector.value !== normalizedTheme) selector.value = normalizedTheme;
+    }
+
+    function changeAresTheme(theme) {
+      const normalizedTheme = normalizeTheme(theme);
+      localStorage.setItem(ARES_THEME_KEY, normalizedTheme);
+      applyAresTheme(normalizedTheme);
     }
 
     function applySavedTheme() {
-      const globalTheme = document.documentElement.dataset.spTheme;
-      const savedTheme = globalTheme
+      // Preferência exclusiva do Ares tem prioridade sobre o claro/escuro global.
+      const savedTheme = localStorage.getItem(ARES_THEME_KEY)
+        || document.documentElement.dataset.spTheme
         || localStorage.getItem('sellerProTheme')
         || localStorage.getItem('sellerProTema')
         || 'dark';
-
       applyAresTheme(savedTheme);
     }
 
+    // Mantém compatibilidade com o seletor de tema do Seller Pro, quando utilizado.
     document.addEventListener('sellerpro:theme', event => {
-      applyAresTheme(event.detail);
+      const theme = normalizeTheme(event.detail);
+      changeAresTheme(theme);
     });
 
     const SIDEBAR_STATE_KEY = 'sellerProSidebarCollapsed';
@@ -3790,19 +4140,35 @@ body[data-theme="light"] {
       }
     }
 
+    function atlasMonthChip(project) {
+      const dateMatch = String(project.id || '').match(/^(\d{4})-(\d{1,2})$/);
+      if (!dateMatch) return { month: '📁', year: '' };
+      const month = Number(dateMatch[2]);
+      const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+      return { month: months[month - 1] || '📁', year: dateMatch[1].slice(-2) };
+    }
+
     function renderProjects() {
-      projectList.innerHTML = state.projects.map(project => `
+      projectList.innerHTML = state.projects.map(project => {
+        const chip = atlasMonthChip(project);
+        const count = state.tasks.filter(task => task.project === project.id).length;
+        return `
         <div class="project-row">
           <div class="project ${project.id === state.activeProject ? 'active' : ''}" onclick="selectProject('${escapeHTML(project.id)}')">
+            <span class="atlas-month-chip" aria-hidden="true"><b>${escapeHTML(chip.month)}</b><small>${escapeHTML(chip.year)}</small></span>
             <strong>${escapeHTML(project.name)}</strong>
-            <span>${escapeHTML(project.description)}</span>
+            <span class="project-description">${escapeHTML(project.description)}</span>
+            <span class="atlas-project-count">${count} ${count === 1 ? 'card' : 'cards'}</span>
           </div>
           <button class="project-edit-btn" onclick="event.stopPropagation(); editProject('${escapeHTML(project.id)}')" title="Editar nome da pasta">✏️</button>
-        </div>
-      `).join('');
+        </div>`;
+      }).join('');
 
       const current = state.projects.find(p => p.id === state.activeProject);
       document.getElementById('projectTitle').textContent = current?.name || 'Seller Pro Board';
+      const count = state.tasks.filter(task => task.project === state.activeProject).length;
+      const summary = document.getElementById('atlasProjectSummary');
+      if (summary) summary.textContent = `${current?.name || 'Pasta mensal'} · ${count} ${count === 1 ? 'card' : 'cards'} · Quadro Ares`;
     }
 
     function renderFilters() {
